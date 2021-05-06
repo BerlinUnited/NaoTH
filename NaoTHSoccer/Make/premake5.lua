@@ -333,6 +333,12 @@ workspace "NaoTHSoccer"
         kind "ConsoleApp"
         links { "NaoTHSoccer", "Commons", naoth_links}
         vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/WhistleSimulator" }
+
+      dofile (FRAMEWORK_PATH .. "/Platforms/Make/Webots.lua")
+        kind "ConsoleApp"
+        links { "NaoTHSoccer", "Commons", naoth_links}
+        vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/Webots" }
+        debugargs { "--sync" }
       
     -- generate tests if required
     if _OPTIONS["Test"] ~= nil then

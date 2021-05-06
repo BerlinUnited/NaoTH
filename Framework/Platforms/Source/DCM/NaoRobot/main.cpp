@@ -159,13 +159,31 @@ void* motionThreadCallback(void* ref)
   return NULL;
 }//end motionThreadCallback
 
+
+// used to determine the NAO version
+bool fileExists(const std::string& filename) {
+  struct stat buffer;
+  return (stat(filename.c_str(), &buffer) == 0);
+}
+
+// determine if it's NAO 6
+bool isNAO6() {
+    return fileExists("/usr/bin/lola") ||
+           fileExists("/opt/aldebaran/bin/lola");
+}
+
 #define TO_STRING_INT(x) #x
 #define TO_STRING(x) TO_STRING_INT(x)
 
 int main(int /*argc*/, char **/*argv[]*/)
 {
+  // determine the NAO version
+  const bool NAO6 = isNAO6();
+
   std::cout << "=========================================="  << std::endl;
   std::cout << "NaoTH compiled on: " << __DATE__ << " at " << __TIME__ << std::endl;
+
+  std::cout << "Detected NAO version " << (NAO6 ? "V6" : "<= V5") << std::endl;
 
   #ifdef REVISION
   std::cout << "Revision number: " << TO_STRING(REVISION) << std::endl;
@@ -209,7 +227,7 @@ int main(int /*argc*/, char **/*argv[]*/)
   }
 
   // create the controller
-  NaoController theController;
+  NaoController theController(NAO6);
   naoth::init_agent(theController);
 
 

@@ -43,7 +43,7 @@ namespace naoth
     double b1;
     double b2;
     */
-    CameraInfoParameter(std::string idName);
+    CameraInfoParameter(const std::string& idName);
   };
 
   class CameraInfo: public Printable
@@ -90,6 +90,10 @@ namespace naoth
     double getOpticalCenterY() const;
     unsigned long getSize() const;
     double getOpeningAngleDiagonal() const;
+
+    CameraInfoParameter& getCameraInfoParameter() {
+      return params;
+    }
 
     virtual void print(std::ostream& stream) const;
 

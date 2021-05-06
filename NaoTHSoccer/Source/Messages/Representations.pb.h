@@ -166,6 +166,9 @@ extern ScanLineEndPointDefaultTypeInternal _ScanLineEndPoint_default_instance_;
 class ShortLinePercept;
 class ShortLinePerceptDefaultTypeInternal;
 extern ShortLinePerceptDefaultTypeInternal _ShortLinePercept_default_instance_;
+class StepBuffer;
+class StepBufferDefaultTypeInternal;
+extern StepBufferDefaultTypeInternal _StepBuffer_default_instance_;
 class StepControlRequest;
 class StepControlRequestDefaultTypeInternal;
 extern StepControlRequestDefaultTypeInternal _StepControlRequest_default_instance_;
@@ -181,6 +184,9 @@ extern WhistlePerceptDefaultTypeInternal _WhistlePercept_default_instance_;
 class WhistlePercept_Whistle;
 class WhistlePercept_WhistleDefaultTypeInternal;
 extern WhistlePercept_WhistleDefaultTypeInternal _WhistlePercept_Whistle_default_instance_;
+class bodyAwareness;
+class bodyAwarenessDefaultTypeInternal;
+extern bodyAwarenessDefaultTypeInternal _bodyAwareness_default_instance_;
 }  // namespace naothmessages
 
 namespace naothmessages {
@@ -7919,6 +7925,248 @@ class DebugModify : public ::google::protobuf::Message /* @@protoc_insertion_poi
   ::google::protobuf::RepeatedPtrField< ::naothmessages::DebugModify_ModifyValue > valuemap_;
   friend struct protobuf_Representations_2eproto::TableStruct;
 };
+// -------------------------------------------------------------------
+
+class StepBuffer : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:naothmessages.StepBuffer) */ {
+ public:
+  StepBuffer();
+  virtual ~StepBuffer();
+
+  StepBuffer(const StepBuffer& from);
+
+  inline StepBuffer& operator=(const StepBuffer& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  #if LANG_CXX11
+  StepBuffer(StepBuffer&& from) noexcept
+    : StepBuffer() {
+    *this = ::std::move(from);
+  }
+
+  inline StepBuffer& operator=(StepBuffer&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+  #endif
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _internal_metadata_.unknown_fields();
+  }
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return _internal_metadata_.mutable_unknown_fields();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const StepBuffer& default_instance();
+
+  static inline const StepBuffer* internal_default_instance() {
+    return reinterpret_cast<const StepBuffer*>(
+               &_StepBuffer_default_instance_);
+  }
+  static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
+    49;
+
+  void Swap(StepBuffer* other);
+  friend void swap(StepBuffer& a, StepBuffer& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline StepBuffer* New() const PROTOBUF_FINAL { return New(NULL); }
+
+  StepBuffer* New(::google::protobuf::Arena* arena) const PROTOBUF_FINAL;
+  void CopyFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void MergeFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void CopyFrom(const StepBuffer& from);
+  void MergeFrom(const StepBuffer& from);
+  void Clear() PROTOBUF_FINAL;
+  bool IsInitialized() const PROTOBUF_FINAL;
+
+  size_t ByteSizeLong() const PROTOBUF_FINAL;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) PROTOBUF_FINAL;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const PROTOBUF_FINAL;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const PROTOBUF_FINAL;
+  int GetCachedSize() const PROTOBUF_FINAL { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const PROTOBUF_FINAL;
+  void InternalSwap(StepBuffer* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const PROTOBUF_FINAL;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // optional .naothmessages.Pose3D support_foot = 1;
+  bool has_support_foot() const;
+  void clear_support_foot();
+  static const int kSupportFootFieldNumber = 1;
+  const ::naothmessages::Pose3D& support_foot() const;
+  ::naothmessages::Pose3D* mutable_support_foot();
+  ::naothmessages::Pose3D* release_support_foot();
+  void set_allocated_support_foot(::naothmessages::Pose3D* support_foot);
+
+  // @@protoc_insertion_point(class_scope:naothmessages.StepBuffer)
+ private:
+  void set_has_support_foot();
+  void clear_has_support_foot();
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::internal::HasBits<1> _has_bits_;
+  mutable int _cached_size_;
+  ::naothmessages::Pose3D* support_foot_;
+  friend struct protobuf_Representations_2eproto::TableStruct;
+};
+// -------------------------------------------------------------------
+
+class bodyAwareness : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:naothmessages.bodyAwareness) */ {
+ public:
+  bodyAwareness();
+  virtual ~bodyAwareness();
+
+  bodyAwareness(const bodyAwareness& from);
+
+  inline bodyAwareness& operator=(const bodyAwareness& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  #if LANG_CXX11
+  bodyAwareness(bodyAwareness&& from) noexcept
+    : bodyAwareness() {
+    *this = ::std::move(from);
+  }
+
+  inline bodyAwareness& operator=(bodyAwareness&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+  #endif
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _internal_metadata_.unknown_fields();
+  }
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return _internal_metadata_.mutable_unknown_fields();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const bodyAwareness& default_instance();
+
+  static inline const bodyAwareness* internal_default_instance() {
+    return reinterpret_cast<const bodyAwareness*>(
+               &_bodyAwareness_default_instance_);
+  }
+  static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
+    50;
+
+  void Swap(bodyAwareness* other);
+  friend void swap(bodyAwareness& a, bodyAwareness& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline bodyAwareness* New() const PROTOBUF_FINAL { return New(NULL); }
+
+  bodyAwareness* New(::google::protobuf::Arena* arena) const PROTOBUF_FINAL;
+  void CopyFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void MergeFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void CopyFrom(const bodyAwareness& from);
+  void MergeFrom(const bodyAwareness& from);
+  void Clear() PROTOBUF_FINAL;
+  bool IsInitialized() const PROTOBUF_FINAL;
+
+  size_t ByteSizeLong() const PROTOBUF_FINAL;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) PROTOBUF_FINAL;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const PROTOBUF_FINAL;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const PROTOBUF_FINAL;
+  int GetCachedSize() const PROTOBUF_FINAL { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const PROTOBUF_FINAL;
+  void InternalSwap(bodyAwareness* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const PROTOBUF_FINAL;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // optional .naothmessages.DoubleVector3 calculatedCoM = 2;
+  bool has_calculatedcom() const;
+  void clear_calculatedcom();
+  static const int kCalculatedCoMFieldNumber = 2;
+  const ::naothmessages::DoubleVector3& calculatedcom() const;
+  ::naothmessages::DoubleVector3* mutable_calculatedcom();
+  ::naothmessages::DoubleVector3* release_calculatedcom();
+  void set_allocated_calculatedcom(::naothmessages::DoubleVector3* calculatedcom);
+
+  // optional .naothmessages.DoubleVector3 currentCoMError = 3;
+  bool has_currentcomerror() const;
+  void clear_currentcomerror();
+  static const int kCurrentCoMErrorFieldNumber = 3;
+  const ::naothmessages::DoubleVector3& currentcomerror() const;
+  ::naothmessages::DoubleVector3* mutable_currentcomerror();
+  ::naothmessages::DoubleVector3* release_currentcomerror();
+  void set_allocated_currentcomerror(::naothmessages::DoubleVector3* currentcomerror);
+
+  // optional bool isLifted = 1;
+  bool has_islifted() const;
+  void clear_islifted();
+  static const int kIsLiftedFieldNumber = 1;
+  bool islifted() const;
+  void set_islifted(bool value);
+
+  // @@protoc_insertion_point(class_scope:naothmessages.bodyAwareness)
+ private:
+  void set_has_islifted();
+  void clear_has_islifted();
+  void set_has_calculatedcom();
+  void clear_has_calculatedcom();
+  void set_has_currentcomerror();
+  void clear_has_currentcomerror();
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::internal::HasBits<1> _has_bits_;
+  mutable int _cached_size_;
+  ::naothmessages::DoubleVector3* calculatedcom_;
+  ::naothmessages::DoubleVector3* currentcomerror_;
+  bool islifted_;
+  friend struct protobuf_Representations_2eproto::TableStruct;
+};
 // ===================================================================
 
 
@@ -15327,10 +15575,184 @@ DebugModify::valuemap() const {
   return valuemap_;
 }
 
+// -------------------------------------------------------------------
+
+// StepBuffer
+
+// optional .naothmessages.Pose3D support_foot = 1;
+inline bool StepBuffer::has_support_foot() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void StepBuffer::set_has_support_foot() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void StepBuffer::clear_has_support_foot() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void StepBuffer::clear_support_foot() {
+  if (support_foot_ != NULL) support_foot_->::naothmessages::Pose3D::Clear();
+  clear_has_support_foot();
+}
+inline const ::naothmessages::Pose3D& StepBuffer::support_foot() const {
+  const ::naothmessages::Pose3D* p = support_foot_;
+  // @@protoc_insertion_point(field_get:naothmessages.StepBuffer.support_foot)
+  return p != NULL ? *p : *reinterpret_cast<const ::naothmessages::Pose3D*>(
+      &::naothmessages::_Pose3D_default_instance_);
+}
+inline ::naothmessages::Pose3D* StepBuffer::mutable_support_foot() {
+  set_has_support_foot();
+  if (support_foot_ == NULL) {
+    support_foot_ = new ::naothmessages::Pose3D;
+  }
+  // @@protoc_insertion_point(field_mutable:naothmessages.StepBuffer.support_foot)
+  return support_foot_;
+}
+inline ::naothmessages::Pose3D* StepBuffer::release_support_foot() {
+  // @@protoc_insertion_point(field_release:naothmessages.StepBuffer.support_foot)
+  clear_has_support_foot();
+  ::naothmessages::Pose3D* temp = support_foot_;
+  support_foot_ = NULL;
+  return temp;
+}
+inline void StepBuffer::set_allocated_support_foot(::naothmessages::Pose3D* support_foot) {
+  delete support_foot_;
+  support_foot_ = support_foot;
+  if (support_foot) {
+    set_has_support_foot();
+  } else {
+    clear_has_support_foot();
+  }
+  // @@protoc_insertion_point(field_set_allocated:naothmessages.StepBuffer.support_foot)
+}
+
+// -------------------------------------------------------------------
+
+// bodyAwareness
+
+// optional bool isLifted = 1;
+inline bool bodyAwareness::has_islifted() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void bodyAwareness::set_has_islifted() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void bodyAwareness::clear_has_islifted() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void bodyAwareness::clear_islifted() {
+  islifted_ = false;
+  clear_has_islifted();
+}
+inline bool bodyAwareness::islifted() const {
+  // @@protoc_insertion_point(field_get:naothmessages.bodyAwareness.isLifted)
+  return islifted_;
+}
+inline void bodyAwareness::set_islifted(bool value) {
+  set_has_islifted();
+  islifted_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.bodyAwareness.isLifted)
+}
+
+// optional .naothmessages.DoubleVector3 calculatedCoM = 2;
+inline bool bodyAwareness::has_calculatedcom() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void bodyAwareness::set_has_calculatedcom() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void bodyAwareness::clear_has_calculatedcom() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void bodyAwareness::clear_calculatedcom() {
+  if (calculatedcom_ != NULL) calculatedcom_->::naothmessages::DoubleVector3::Clear();
+  clear_has_calculatedcom();
+}
+inline const ::naothmessages::DoubleVector3& bodyAwareness::calculatedcom() const {
+  const ::naothmessages::DoubleVector3* p = calculatedcom_;
+  // @@protoc_insertion_point(field_get:naothmessages.bodyAwareness.calculatedCoM)
+  return p != NULL ? *p : *reinterpret_cast<const ::naothmessages::DoubleVector3*>(
+      &::naothmessages::_DoubleVector3_default_instance_);
+}
+inline ::naothmessages::DoubleVector3* bodyAwareness::mutable_calculatedcom() {
+  set_has_calculatedcom();
+  if (calculatedcom_ == NULL) {
+    calculatedcom_ = new ::naothmessages::DoubleVector3;
+  }
+  // @@protoc_insertion_point(field_mutable:naothmessages.bodyAwareness.calculatedCoM)
+  return calculatedcom_;
+}
+inline ::naothmessages::DoubleVector3* bodyAwareness::release_calculatedcom() {
+  // @@protoc_insertion_point(field_release:naothmessages.bodyAwareness.calculatedCoM)
+  clear_has_calculatedcom();
+  ::naothmessages::DoubleVector3* temp = calculatedcom_;
+  calculatedcom_ = NULL;
+  return temp;
+}
+inline void bodyAwareness::set_allocated_calculatedcom(::naothmessages::DoubleVector3* calculatedcom) {
+  delete calculatedcom_;
+  calculatedcom_ = calculatedcom;
+  if (calculatedcom) {
+    set_has_calculatedcom();
+  } else {
+    clear_has_calculatedcom();
+  }
+  // @@protoc_insertion_point(field_set_allocated:naothmessages.bodyAwareness.calculatedCoM)
+}
+
+// optional .naothmessages.DoubleVector3 currentCoMError = 3;
+inline bool bodyAwareness::has_currentcomerror() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void bodyAwareness::set_has_currentcomerror() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void bodyAwareness::clear_has_currentcomerror() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void bodyAwareness::clear_currentcomerror() {
+  if (currentcomerror_ != NULL) currentcomerror_->::naothmessages::DoubleVector3::Clear();
+  clear_has_currentcomerror();
+}
+inline const ::naothmessages::DoubleVector3& bodyAwareness::currentcomerror() const {
+  const ::naothmessages::DoubleVector3* p = currentcomerror_;
+  // @@protoc_insertion_point(field_get:naothmessages.bodyAwareness.currentCoMError)
+  return p != NULL ? *p : *reinterpret_cast<const ::naothmessages::DoubleVector3*>(
+      &::naothmessages::_DoubleVector3_default_instance_);
+}
+inline ::naothmessages::DoubleVector3* bodyAwareness::mutable_currentcomerror() {
+  set_has_currentcomerror();
+  if (currentcomerror_ == NULL) {
+    currentcomerror_ = new ::naothmessages::DoubleVector3;
+  }
+  // @@protoc_insertion_point(field_mutable:naothmessages.bodyAwareness.currentCoMError)
+  return currentcomerror_;
+}
+inline ::naothmessages::DoubleVector3* bodyAwareness::release_currentcomerror() {
+  // @@protoc_insertion_point(field_release:naothmessages.bodyAwareness.currentCoMError)
+  clear_has_currentcomerror();
+  ::naothmessages::DoubleVector3* temp = currentcomerror_;
+  currentcomerror_ = NULL;
+  return temp;
+}
+inline void bodyAwareness::set_allocated_currentcomerror(::naothmessages::DoubleVector3* currentcomerror) {
+  delete currentcomerror_;
+  currentcomerror_ = currentcomerror;
+  if (currentcomerror) {
+    set_has_currentcomerror();
+  } else {
+    clear_has_currentcomerror();
+  }
+  // @@protoc_insertion_point(field_set_allocated:naothmessages.bodyAwareness.currentCoMError)
+}
+
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
 #endif  // !PROTOBUF_INLINE_NOT_IN_HEADERS
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------

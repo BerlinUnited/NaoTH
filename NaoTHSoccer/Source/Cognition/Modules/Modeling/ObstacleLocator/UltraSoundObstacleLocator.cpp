@@ -131,10 +131,22 @@ void UltraSoundObstacleLocator::fillBuffer()
     return;
   }
   lastValidUltraSoundReceiveData = getUltraSoundReceiveData();
+  
+  // http://doc.aldebaran.com/2-1/family/nao_dcm/actuator_sensor_names.html#actuator-sensor-list-nao
+  // http://doc.aldebaran.com/2-8/family/nao_technical/lola/actuator_sensor_names.html#sonars
+  // http://doc.aldebaran.com/1-14/family/robots/sonar_robot.html
 
   // convert to mm
   double leftMeasurement = getUltraSoundReceiveData().dataLeft[0] * 1000.0;
   double rightMeasurement = getUltraSoundReceiveData().dataRight[0] * 1000.0;
+
+  // for v5 and v6 the 0.0 value should be treated as invalid
+  if(leftMeasurement == 0.0){
+    leftMeasurement = invalidDistanceValue;
+  }
+  if (rightMeasurement == 0.0) {
+    rightMeasurement = invalidDistanceValue;
+  }
 
   bufferRight.add(rightMeasurement);
   bufferLeft.add(leftMeasurement);

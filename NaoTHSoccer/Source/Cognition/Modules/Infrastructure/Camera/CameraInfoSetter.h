@@ -21,13 +21,14 @@
 #include <Representations/Infrastructure/CameraInfo.h>
 #include <Representations/Infrastructure/CameraSettings.h>
 #include <Representations/Infrastructure/Image.h>
-
+#include <Tools/Debug/DebugParameterList.h>
 
 using namespace naoth;
 
 BEGIN_DECLARE_MODULE(CameraInfoSetter)
   REQUIRE(CameraSettingsRequest)
   REQUIRE(CameraSettingsRequestTop)
+  PROVIDE(DebugParameterList)
 
   // we don't actually provide the Image but rather set the CameraInfo for it
   PROVIDE(Image)

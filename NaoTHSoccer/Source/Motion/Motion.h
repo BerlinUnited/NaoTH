@@ -25,6 +25,7 @@
 #include "SensorFilter/IMUModel.h"
 #include "SensorFilter/ArmCollisionDetector.h"
 #include "SensorFilter/ArmCollisionDetector2018.h"
+#include "SensorFilter/BodyCollisionDetector.h"
 #include "SensorFilter/BumperCollisionDetector.h"
 #include "SensorFilter/CoPProvider.h"
 #include "SensorFilter/SensorLogger.h"
@@ -42,6 +43,7 @@
 #include "Representations/Modeling/GroundContactModel.h"
 #include "Representations/Motion/CollisionPercept.h"
 #include "Representations/Motion/Walk2018/Walk2018Parameters.h"
+#include "Representations/Motion/Walk2018/StepBuffer.h"
 
 #include "Representations/Perception/CameraMatrix.h"
 #include <Representations/Modeling/CameraMatrixOffset.h>
@@ -77,6 +79,7 @@ BEGIN_DECLARE_MODULE(Motion)
   PROVIDE(DebugParameterList)
   PROVIDE(DebugModify)
 
+  REQUIRE(StepBuffer) // hack
   REQUIRE(MotionStatus)
   PROVIDE(OdometryData) // hack
   PROVIDE(InertialModel) // need to overwrite the old filter value by IMUModel
@@ -91,7 +94,7 @@ BEGIN_DECLARE_MODULE(Motion)
   PROVIDE(MotorJointData) // TODO: check
 
   PROVIDE(OffsetJointData)
-  
+
   PROVIDE(RobotInfo)
   PROVIDE(KinematicChainSensor)
   PROVIDE(KinematicChainMotor)
@@ -185,6 +188,7 @@ private: // motion modules
 
   ModuleCreator<ArmCollisionDetector>* theArmCollisionDetector;
   ModuleCreator<ArmCollisionDetector2018>* theArmCollisionDetector2018;
+  ModuleCreator<BodyCollisionDetector>* theBodyCollisionDetector;
   ModuleCreator<BumperCollisionDetector>* theBumperCollisionDetector;
    
   ModuleCreator<CoPProvider>* theCoPProvider;

@@ -56050,6 +56050,1504 @@ public final class Representations {
 
   }
 
+  public interface StepBufferOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:naothmessages.StepBuffer)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>optional .naothmessages.Pose3D support_foot = 1;</code>
+     */
+    boolean hasSupportFoot();
+    /**
+     * <code>optional .naothmessages.Pose3D support_foot = 1;</code>
+     */
+    de.naoth.rc.core.messages.CommonTypes.Pose3D getSupportFoot();
+    /**
+     * <code>optional .naothmessages.Pose3D support_foot = 1;</code>
+     */
+    de.naoth.rc.core.messages.CommonTypes.Pose3DOrBuilder getSupportFootOrBuilder();
+  }
+  /**
+   * Protobuf type {@code naothmessages.StepBuffer}
+   */
+  public  static final class StepBuffer extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:naothmessages.StepBuffer)
+      StepBufferOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use StepBuffer.newBuilder() to construct.
+    private StepBuffer(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private StepBuffer() {
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private StepBuffer(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              de.naoth.rc.core.messages.CommonTypes.Pose3D.Builder subBuilder = null;
+              if (((bitField0_ & 0x00000001) == 0x00000001)) {
+                subBuilder = supportFoot_.toBuilder();
+              }
+              supportFoot_ = input.readMessage(de.naoth.rc.core.messages.CommonTypes.Pose3D.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(supportFoot_);
+                supportFoot_ = subBuilder.buildPartial();
+              }
+              bitField0_ |= 0x00000001;
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return de.naoth.rc.core.messages.Representations.internal_static_naothmessages_StepBuffer_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return de.naoth.rc.core.messages.Representations.internal_static_naothmessages_StepBuffer_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              de.naoth.rc.core.messages.Representations.StepBuffer.class, de.naoth.rc.core.messages.Representations.StepBuffer.Builder.class);
+    }
+
+    private int bitField0_;
+    public static final int SUPPORT_FOOT_FIELD_NUMBER = 1;
+    private de.naoth.rc.core.messages.CommonTypes.Pose3D supportFoot_;
+    /**
+     * <code>optional .naothmessages.Pose3D support_foot = 1;</code>
+     */
+    public boolean hasSupportFoot() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>optional .naothmessages.Pose3D support_foot = 1;</code>
+     */
+    public de.naoth.rc.core.messages.CommonTypes.Pose3D getSupportFoot() {
+      return supportFoot_ == null ? de.naoth.rc.core.messages.CommonTypes.Pose3D.getDefaultInstance() : supportFoot_;
+    }
+    /**
+     * <code>optional .naothmessages.Pose3D support_foot = 1;</code>
+     */
+    public de.naoth.rc.core.messages.CommonTypes.Pose3DOrBuilder getSupportFootOrBuilder() {
+      return supportFoot_ == null ? de.naoth.rc.core.messages.CommonTypes.Pose3D.getDefaultInstance() : supportFoot_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      if (hasSupportFoot()) {
+        if (!getSupportFoot().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeMessage(1, getSupportFoot());
+      }
+      unknownFields.writeTo(output);
+    }
+
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(1, getSupportFoot());
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof de.naoth.rc.core.messages.Representations.StepBuffer)) {
+        return super.equals(obj);
+      }
+      de.naoth.rc.core.messages.Representations.StepBuffer other = (de.naoth.rc.core.messages.Representations.StepBuffer) obj;
+
+      boolean result = true;
+      result = result && (hasSupportFoot() == other.hasSupportFoot());
+      if (hasSupportFoot()) {
+        result = result && getSupportFoot()
+            .equals(other.getSupportFoot());
+      }
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (hasSupportFoot()) {
+        hash = (37 * hash) + SUPPORT_FOOT_FIELD_NUMBER;
+        hash = (53 * hash) + getSupportFoot().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static de.naoth.rc.core.messages.Representations.StepBuffer parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static de.naoth.rc.core.messages.Representations.StepBuffer parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static de.naoth.rc.core.messages.Representations.StepBuffer parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static de.naoth.rc.core.messages.Representations.StepBuffer parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static de.naoth.rc.core.messages.Representations.StepBuffer parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static de.naoth.rc.core.messages.Representations.StepBuffer parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static de.naoth.rc.core.messages.Representations.StepBuffer parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static de.naoth.rc.core.messages.Representations.StepBuffer parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static de.naoth.rc.core.messages.Representations.StepBuffer parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static de.naoth.rc.core.messages.Representations.StepBuffer parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static de.naoth.rc.core.messages.Representations.StepBuffer parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static de.naoth.rc.core.messages.Representations.StepBuffer parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(de.naoth.rc.core.messages.Representations.StepBuffer prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code naothmessages.StepBuffer}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:naothmessages.StepBuffer)
+        de.naoth.rc.core.messages.Representations.StepBufferOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return de.naoth.rc.core.messages.Representations.internal_static_naothmessages_StepBuffer_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return de.naoth.rc.core.messages.Representations.internal_static_naothmessages_StepBuffer_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                de.naoth.rc.core.messages.Representations.StepBuffer.class, de.naoth.rc.core.messages.Representations.StepBuffer.Builder.class);
+      }
+
+      // Construct using de.naoth.rc.core.messages.Representations.StepBuffer.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+          getSupportFootFieldBuilder();
+        }
+      }
+      public Builder clear() {
+        super.clear();
+        if (supportFootBuilder_ == null) {
+          supportFoot_ = null;
+        } else {
+          supportFootBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000001);
+        return this;
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return de.naoth.rc.core.messages.Representations.internal_static_naothmessages_StepBuffer_descriptor;
+      }
+
+      public de.naoth.rc.core.messages.Representations.StepBuffer getDefaultInstanceForType() {
+        return de.naoth.rc.core.messages.Representations.StepBuffer.getDefaultInstance();
+      }
+
+      public de.naoth.rc.core.messages.Representations.StepBuffer build() {
+        de.naoth.rc.core.messages.Representations.StepBuffer result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public de.naoth.rc.core.messages.Representations.StepBuffer buildPartial() {
+        de.naoth.rc.core.messages.Representations.StepBuffer result = new de.naoth.rc.core.messages.Representations.StepBuffer(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        if (supportFootBuilder_ == null) {
+          result.supportFoot_ = supportFoot_;
+        } else {
+          result.supportFoot_ = supportFootBuilder_.build();
+        }
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof de.naoth.rc.core.messages.Representations.StepBuffer) {
+          return mergeFrom((de.naoth.rc.core.messages.Representations.StepBuffer)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(de.naoth.rc.core.messages.Representations.StepBuffer other) {
+        if (other == de.naoth.rc.core.messages.Representations.StepBuffer.getDefaultInstance()) return this;
+        if (other.hasSupportFoot()) {
+          mergeSupportFoot(other.getSupportFoot());
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        if (hasSupportFoot()) {
+          if (!getSupportFoot().isInitialized()) {
+            return false;
+          }
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        de.naoth.rc.core.messages.Representations.StepBuffer parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (de.naoth.rc.core.messages.Representations.StepBuffer) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      private de.naoth.rc.core.messages.CommonTypes.Pose3D supportFoot_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          de.naoth.rc.core.messages.CommonTypes.Pose3D, de.naoth.rc.core.messages.CommonTypes.Pose3D.Builder, de.naoth.rc.core.messages.CommonTypes.Pose3DOrBuilder> supportFootBuilder_;
+      /**
+       * <code>optional .naothmessages.Pose3D support_foot = 1;</code>
+       */
+      public boolean hasSupportFoot() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>optional .naothmessages.Pose3D support_foot = 1;</code>
+       */
+      public de.naoth.rc.core.messages.CommonTypes.Pose3D getSupportFoot() {
+        if (supportFootBuilder_ == null) {
+          return supportFoot_ == null ? de.naoth.rc.core.messages.CommonTypes.Pose3D.getDefaultInstance() : supportFoot_;
+        } else {
+          return supportFootBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>optional .naothmessages.Pose3D support_foot = 1;</code>
+       */
+      public Builder setSupportFoot(de.naoth.rc.core.messages.CommonTypes.Pose3D value) {
+        if (supportFootBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          supportFoot_ = value;
+          onChanged();
+        } else {
+          supportFootBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000001;
+        return this;
+      }
+      /**
+       * <code>optional .naothmessages.Pose3D support_foot = 1;</code>
+       */
+      public Builder setSupportFoot(
+          de.naoth.rc.core.messages.CommonTypes.Pose3D.Builder builderForValue) {
+        if (supportFootBuilder_ == null) {
+          supportFoot_ = builderForValue.build();
+          onChanged();
+        } else {
+          supportFootBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000001;
+        return this;
+      }
+      /**
+       * <code>optional .naothmessages.Pose3D support_foot = 1;</code>
+       */
+      public Builder mergeSupportFoot(de.naoth.rc.core.messages.CommonTypes.Pose3D value) {
+        if (supportFootBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) == 0x00000001) &&
+              supportFoot_ != null &&
+              supportFoot_ != de.naoth.rc.core.messages.CommonTypes.Pose3D.getDefaultInstance()) {
+            supportFoot_ =
+              de.naoth.rc.core.messages.CommonTypes.Pose3D.newBuilder(supportFoot_).mergeFrom(value).buildPartial();
+          } else {
+            supportFoot_ = value;
+          }
+          onChanged();
+        } else {
+          supportFootBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000001;
+        return this;
+      }
+      /**
+       * <code>optional .naothmessages.Pose3D support_foot = 1;</code>
+       */
+      public Builder clearSupportFoot() {
+        if (supportFootBuilder_ == null) {
+          supportFoot_ = null;
+          onChanged();
+        } else {
+          supportFootBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000001);
+        return this;
+      }
+      /**
+       * <code>optional .naothmessages.Pose3D support_foot = 1;</code>
+       */
+      public de.naoth.rc.core.messages.CommonTypes.Pose3D.Builder getSupportFootBuilder() {
+        bitField0_ |= 0x00000001;
+        onChanged();
+        return getSupportFootFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>optional .naothmessages.Pose3D support_foot = 1;</code>
+       */
+      public de.naoth.rc.core.messages.CommonTypes.Pose3DOrBuilder getSupportFootOrBuilder() {
+        if (supportFootBuilder_ != null) {
+          return supportFootBuilder_.getMessageOrBuilder();
+        } else {
+          return supportFoot_ == null ?
+              de.naoth.rc.core.messages.CommonTypes.Pose3D.getDefaultInstance() : supportFoot_;
+        }
+      }
+      /**
+       * <code>optional .naothmessages.Pose3D support_foot = 1;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          de.naoth.rc.core.messages.CommonTypes.Pose3D, de.naoth.rc.core.messages.CommonTypes.Pose3D.Builder, de.naoth.rc.core.messages.CommonTypes.Pose3DOrBuilder> 
+          getSupportFootFieldBuilder() {
+        if (supportFootBuilder_ == null) {
+          supportFootBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              de.naoth.rc.core.messages.CommonTypes.Pose3D, de.naoth.rc.core.messages.CommonTypes.Pose3D.Builder, de.naoth.rc.core.messages.CommonTypes.Pose3DOrBuilder>(
+                  getSupportFoot(),
+                  getParentForChildren(),
+                  isClean());
+          supportFoot_ = null;
+        }
+        return supportFootBuilder_;
+      }
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:naothmessages.StepBuffer)
+    }
+
+    // @@protoc_insertion_point(class_scope:naothmessages.StepBuffer)
+    private static final de.naoth.rc.core.messages.Representations.StepBuffer DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new de.naoth.rc.core.messages.Representations.StepBuffer();
+    }
+
+    public static de.naoth.rc.core.messages.Representations.StepBuffer getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    @java.lang.Deprecated public static final com.google.protobuf.Parser<StepBuffer>
+        PARSER = new com.google.protobuf.AbstractParser<StepBuffer>() {
+      public StepBuffer parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+          return new StepBuffer(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<StepBuffer> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<StepBuffer> getParserForType() {
+      return PARSER;
+    }
+
+    public de.naoth.rc.core.messages.Representations.StepBuffer getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface bodyAwarenessOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:naothmessages.bodyAwareness)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>optional bool isLifted = 1;</code>
+     */
+    boolean hasIsLifted();
+    /**
+     * <code>optional bool isLifted = 1;</code>
+     */
+    boolean getIsLifted();
+
+    /**
+     * <code>optional .naothmessages.DoubleVector3 calculatedCoM = 2;</code>
+     */
+    boolean hasCalculatedCoM();
+    /**
+     * <code>optional .naothmessages.DoubleVector3 calculatedCoM = 2;</code>
+     */
+    de.naoth.rc.core.messages.CommonTypes.DoubleVector3 getCalculatedCoM();
+    /**
+     * <code>optional .naothmessages.DoubleVector3 calculatedCoM = 2;</code>
+     */
+    de.naoth.rc.core.messages.CommonTypes.DoubleVector3OrBuilder getCalculatedCoMOrBuilder();
+
+    /**
+     * <code>optional .naothmessages.DoubleVector3 currentCoMError = 3;</code>
+     */
+    boolean hasCurrentCoMError();
+    /**
+     * <code>optional .naothmessages.DoubleVector3 currentCoMError = 3;</code>
+     */
+    de.naoth.rc.core.messages.CommonTypes.DoubleVector3 getCurrentCoMError();
+    /**
+     * <code>optional .naothmessages.DoubleVector3 currentCoMError = 3;</code>
+     */
+    de.naoth.rc.core.messages.CommonTypes.DoubleVector3OrBuilder getCurrentCoMErrorOrBuilder();
+  }
+  /**
+   * Protobuf type {@code naothmessages.bodyAwareness}
+   */
+  public  static final class bodyAwareness extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:naothmessages.bodyAwareness)
+      bodyAwarenessOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use bodyAwareness.newBuilder() to construct.
+    private bodyAwareness(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private bodyAwareness() {
+      isLifted_ = false;
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private bodyAwareness(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 8: {
+              bitField0_ |= 0x00000001;
+              isLifted_ = input.readBool();
+              break;
+            }
+            case 18: {
+              de.naoth.rc.core.messages.CommonTypes.DoubleVector3.Builder subBuilder = null;
+              if (((bitField0_ & 0x00000002) == 0x00000002)) {
+                subBuilder = calculatedCoM_.toBuilder();
+              }
+              calculatedCoM_ = input.readMessage(de.naoth.rc.core.messages.CommonTypes.DoubleVector3.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(calculatedCoM_);
+                calculatedCoM_ = subBuilder.buildPartial();
+              }
+              bitField0_ |= 0x00000002;
+              break;
+            }
+            case 26: {
+              de.naoth.rc.core.messages.CommonTypes.DoubleVector3.Builder subBuilder = null;
+              if (((bitField0_ & 0x00000004) == 0x00000004)) {
+                subBuilder = currentCoMError_.toBuilder();
+              }
+              currentCoMError_ = input.readMessage(de.naoth.rc.core.messages.CommonTypes.DoubleVector3.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(currentCoMError_);
+                currentCoMError_ = subBuilder.buildPartial();
+              }
+              bitField0_ |= 0x00000004;
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return de.naoth.rc.core.messages.Representations.internal_static_naothmessages_bodyAwareness_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return de.naoth.rc.core.messages.Representations.internal_static_naothmessages_bodyAwareness_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              de.naoth.rc.core.messages.Representations.bodyAwareness.class, de.naoth.rc.core.messages.Representations.bodyAwareness.Builder.class);
+    }
+
+    private int bitField0_;
+    public static final int ISLIFTED_FIELD_NUMBER = 1;
+    private boolean isLifted_;
+    /**
+     * <code>optional bool isLifted = 1;</code>
+     */
+    public boolean hasIsLifted() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>optional bool isLifted = 1;</code>
+     */
+    public boolean getIsLifted() {
+      return isLifted_;
+    }
+
+    public static final int CALCULATEDCOM_FIELD_NUMBER = 2;
+    private de.naoth.rc.core.messages.CommonTypes.DoubleVector3 calculatedCoM_;
+    /**
+     * <code>optional .naothmessages.DoubleVector3 calculatedCoM = 2;</code>
+     */
+    public boolean hasCalculatedCoM() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>optional .naothmessages.DoubleVector3 calculatedCoM = 2;</code>
+     */
+    public de.naoth.rc.core.messages.CommonTypes.DoubleVector3 getCalculatedCoM() {
+      return calculatedCoM_ == null ? de.naoth.rc.core.messages.CommonTypes.DoubleVector3.getDefaultInstance() : calculatedCoM_;
+    }
+    /**
+     * <code>optional .naothmessages.DoubleVector3 calculatedCoM = 2;</code>
+     */
+    public de.naoth.rc.core.messages.CommonTypes.DoubleVector3OrBuilder getCalculatedCoMOrBuilder() {
+      return calculatedCoM_ == null ? de.naoth.rc.core.messages.CommonTypes.DoubleVector3.getDefaultInstance() : calculatedCoM_;
+    }
+
+    public static final int CURRENTCOMERROR_FIELD_NUMBER = 3;
+    private de.naoth.rc.core.messages.CommonTypes.DoubleVector3 currentCoMError_;
+    /**
+     * <code>optional .naothmessages.DoubleVector3 currentCoMError = 3;</code>
+     */
+    public boolean hasCurrentCoMError() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>optional .naothmessages.DoubleVector3 currentCoMError = 3;</code>
+     */
+    public de.naoth.rc.core.messages.CommonTypes.DoubleVector3 getCurrentCoMError() {
+      return currentCoMError_ == null ? de.naoth.rc.core.messages.CommonTypes.DoubleVector3.getDefaultInstance() : currentCoMError_;
+    }
+    /**
+     * <code>optional .naothmessages.DoubleVector3 currentCoMError = 3;</code>
+     */
+    public de.naoth.rc.core.messages.CommonTypes.DoubleVector3OrBuilder getCurrentCoMErrorOrBuilder() {
+      return currentCoMError_ == null ? de.naoth.rc.core.messages.CommonTypes.DoubleVector3.getDefaultInstance() : currentCoMError_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      if (hasCalculatedCoM()) {
+        if (!getCalculatedCoM().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      if (hasCurrentCoMError()) {
+        if (!getCurrentCoMError().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeBool(1, isLifted_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeMessage(2, getCalculatedCoM());
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeMessage(3, getCurrentCoMError());
+      }
+      unknownFields.writeTo(output);
+    }
+
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(1, isLifted_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(2, getCalculatedCoM());
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(3, getCurrentCoMError());
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof de.naoth.rc.core.messages.Representations.bodyAwareness)) {
+        return super.equals(obj);
+      }
+      de.naoth.rc.core.messages.Representations.bodyAwareness other = (de.naoth.rc.core.messages.Representations.bodyAwareness) obj;
+
+      boolean result = true;
+      result = result && (hasIsLifted() == other.hasIsLifted());
+      if (hasIsLifted()) {
+        result = result && (getIsLifted()
+            == other.getIsLifted());
+      }
+      result = result && (hasCalculatedCoM() == other.hasCalculatedCoM());
+      if (hasCalculatedCoM()) {
+        result = result && getCalculatedCoM()
+            .equals(other.getCalculatedCoM());
+      }
+      result = result && (hasCurrentCoMError() == other.hasCurrentCoMError());
+      if (hasCurrentCoMError()) {
+        result = result && getCurrentCoMError()
+            .equals(other.getCurrentCoMError());
+      }
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (hasIsLifted()) {
+        hash = (37 * hash) + ISLIFTED_FIELD_NUMBER;
+        hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+            getIsLifted());
+      }
+      if (hasCalculatedCoM()) {
+        hash = (37 * hash) + CALCULATEDCOM_FIELD_NUMBER;
+        hash = (53 * hash) + getCalculatedCoM().hashCode();
+      }
+      if (hasCurrentCoMError()) {
+        hash = (37 * hash) + CURRENTCOMERROR_FIELD_NUMBER;
+        hash = (53 * hash) + getCurrentCoMError().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static de.naoth.rc.core.messages.Representations.bodyAwareness parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static de.naoth.rc.core.messages.Representations.bodyAwareness parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static de.naoth.rc.core.messages.Representations.bodyAwareness parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static de.naoth.rc.core.messages.Representations.bodyAwareness parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static de.naoth.rc.core.messages.Representations.bodyAwareness parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static de.naoth.rc.core.messages.Representations.bodyAwareness parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static de.naoth.rc.core.messages.Representations.bodyAwareness parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static de.naoth.rc.core.messages.Representations.bodyAwareness parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static de.naoth.rc.core.messages.Representations.bodyAwareness parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static de.naoth.rc.core.messages.Representations.bodyAwareness parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static de.naoth.rc.core.messages.Representations.bodyAwareness parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static de.naoth.rc.core.messages.Representations.bodyAwareness parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(de.naoth.rc.core.messages.Representations.bodyAwareness prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code naothmessages.bodyAwareness}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:naothmessages.bodyAwareness)
+        de.naoth.rc.core.messages.Representations.bodyAwarenessOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return de.naoth.rc.core.messages.Representations.internal_static_naothmessages_bodyAwareness_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return de.naoth.rc.core.messages.Representations.internal_static_naothmessages_bodyAwareness_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                de.naoth.rc.core.messages.Representations.bodyAwareness.class, de.naoth.rc.core.messages.Representations.bodyAwareness.Builder.class);
+      }
+
+      // Construct using de.naoth.rc.core.messages.Representations.bodyAwareness.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+          getCalculatedCoMFieldBuilder();
+          getCurrentCoMErrorFieldBuilder();
+        }
+      }
+      public Builder clear() {
+        super.clear();
+        isLifted_ = false;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        if (calculatedCoMBuilder_ == null) {
+          calculatedCoM_ = null;
+        } else {
+          calculatedCoMBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000002);
+        if (currentCoMErrorBuilder_ == null) {
+          currentCoMError_ = null;
+        } else {
+          currentCoMErrorBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000004);
+        return this;
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return de.naoth.rc.core.messages.Representations.internal_static_naothmessages_bodyAwareness_descriptor;
+      }
+
+      public de.naoth.rc.core.messages.Representations.bodyAwareness getDefaultInstanceForType() {
+        return de.naoth.rc.core.messages.Representations.bodyAwareness.getDefaultInstance();
+      }
+
+      public de.naoth.rc.core.messages.Representations.bodyAwareness build() {
+        de.naoth.rc.core.messages.Representations.bodyAwareness result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public de.naoth.rc.core.messages.Representations.bodyAwareness buildPartial() {
+        de.naoth.rc.core.messages.Representations.bodyAwareness result = new de.naoth.rc.core.messages.Representations.bodyAwareness(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.isLifted_ = isLifted_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        if (calculatedCoMBuilder_ == null) {
+          result.calculatedCoM_ = calculatedCoM_;
+        } else {
+          result.calculatedCoM_ = calculatedCoMBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        if (currentCoMErrorBuilder_ == null) {
+          result.currentCoMError_ = currentCoMError_;
+        } else {
+          result.currentCoMError_ = currentCoMErrorBuilder_.build();
+        }
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof de.naoth.rc.core.messages.Representations.bodyAwareness) {
+          return mergeFrom((de.naoth.rc.core.messages.Representations.bodyAwareness)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(de.naoth.rc.core.messages.Representations.bodyAwareness other) {
+        if (other == de.naoth.rc.core.messages.Representations.bodyAwareness.getDefaultInstance()) return this;
+        if (other.hasIsLifted()) {
+          setIsLifted(other.getIsLifted());
+        }
+        if (other.hasCalculatedCoM()) {
+          mergeCalculatedCoM(other.getCalculatedCoM());
+        }
+        if (other.hasCurrentCoMError()) {
+          mergeCurrentCoMError(other.getCurrentCoMError());
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        if (hasCalculatedCoM()) {
+          if (!getCalculatedCoM().isInitialized()) {
+            return false;
+          }
+        }
+        if (hasCurrentCoMError()) {
+          if (!getCurrentCoMError().isInitialized()) {
+            return false;
+          }
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        de.naoth.rc.core.messages.Representations.bodyAwareness parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (de.naoth.rc.core.messages.Representations.bodyAwareness) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      private boolean isLifted_ ;
+      /**
+       * <code>optional bool isLifted = 1;</code>
+       */
+      public boolean hasIsLifted() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>optional bool isLifted = 1;</code>
+       */
+      public boolean getIsLifted() {
+        return isLifted_;
+      }
+      /**
+       * <code>optional bool isLifted = 1;</code>
+       */
+      public Builder setIsLifted(boolean value) {
+        bitField0_ |= 0x00000001;
+        isLifted_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional bool isLifted = 1;</code>
+       */
+      public Builder clearIsLifted() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        isLifted_ = false;
+        onChanged();
+        return this;
+      }
+
+      private de.naoth.rc.core.messages.CommonTypes.DoubleVector3 calculatedCoM_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          de.naoth.rc.core.messages.CommonTypes.DoubleVector3, de.naoth.rc.core.messages.CommonTypes.DoubleVector3.Builder, de.naoth.rc.core.messages.CommonTypes.DoubleVector3OrBuilder> calculatedCoMBuilder_;
+      /**
+       * <code>optional .naothmessages.DoubleVector3 calculatedCoM = 2;</code>
+       */
+      public boolean hasCalculatedCoM() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector3 calculatedCoM = 2;</code>
+       */
+      public de.naoth.rc.core.messages.CommonTypes.DoubleVector3 getCalculatedCoM() {
+        if (calculatedCoMBuilder_ == null) {
+          return calculatedCoM_ == null ? de.naoth.rc.core.messages.CommonTypes.DoubleVector3.getDefaultInstance() : calculatedCoM_;
+        } else {
+          return calculatedCoMBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector3 calculatedCoM = 2;</code>
+       */
+      public Builder setCalculatedCoM(de.naoth.rc.core.messages.CommonTypes.DoubleVector3 value) {
+        if (calculatedCoMBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          calculatedCoM_ = value;
+          onChanged();
+        } else {
+          calculatedCoMBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000002;
+        return this;
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector3 calculatedCoM = 2;</code>
+       */
+      public Builder setCalculatedCoM(
+          de.naoth.rc.core.messages.CommonTypes.DoubleVector3.Builder builderForValue) {
+        if (calculatedCoMBuilder_ == null) {
+          calculatedCoM_ = builderForValue.build();
+          onChanged();
+        } else {
+          calculatedCoMBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000002;
+        return this;
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector3 calculatedCoM = 2;</code>
+       */
+      public Builder mergeCalculatedCoM(de.naoth.rc.core.messages.CommonTypes.DoubleVector3 value) {
+        if (calculatedCoMBuilder_ == null) {
+          if (((bitField0_ & 0x00000002) == 0x00000002) &&
+              calculatedCoM_ != null &&
+              calculatedCoM_ != de.naoth.rc.core.messages.CommonTypes.DoubleVector3.getDefaultInstance()) {
+            calculatedCoM_ =
+              de.naoth.rc.core.messages.CommonTypes.DoubleVector3.newBuilder(calculatedCoM_).mergeFrom(value).buildPartial();
+          } else {
+            calculatedCoM_ = value;
+          }
+          onChanged();
+        } else {
+          calculatedCoMBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000002;
+        return this;
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector3 calculatedCoM = 2;</code>
+       */
+      public Builder clearCalculatedCoM() {
+        if (calculatedCoMBuilder_ == null) {
+          calculatedCoM_ = null;
+          onChanged();
+        } else {
+          calculatedCoMBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000002);
+        return this;
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector3 calculatedCoM = 2;</code>
+       */
+      public de.naoth.rc.core.messages.CommonTypes.DoubleVector3.Builder getCalculatedCoMBuilder() {
+        bitField0_ |= 0x00000002;
+        onChanged();
+        return getCalculatedCoMFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector3 calculatedCoM = 2;</code>
+       */
+      public de.naoth.rc.core.messages.CommonTypes.DoubleVector3OrBuilder getCalculatedCoMOrBuilder() {
+        if (calculatedCoMBuilder_ != null) {
+          return calculatedCoMBuilder_.getMessageOrBuilder();
+        } else {
+          return calculatedCoM_ == null ?
+              de.naoth.rc.core.messages.CommonTypes.DoubleVector3.getDefaultInstance() : calculatedCoM_;
+        }
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector3 calculatedCoM = 2;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          de.naoth.rc.core.messages.CommonTypes.DoubleVector3, de.naoth.rc.core.messages.CommonTypes.DoubleVector3.Builder, de.naoth.rc.core.messages.CommonTypes.DoubleVector3OrBuilder> 
+          getCalculatedCoMFieldBuilder() {
+        if (calculatedCoMBuilder_ == null) {
+          calculatedCoMBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              de.naoth.rc.core.messages.CommonTypes.DoubleVector3, de.naoth.rc.core.messages.CommonTypes.DoubleVector3.Builder, de.naoth.rc.core.messages.CommonTypes.DoubleVector3OrBuilder>(
+                  getCalculatedCoM(),
+                  getParentForChildren(),
+                  isClean());
+          calculatedCoM_ = null;
+        }
+        return calculatedCoMBuilder_;
+      }
+
+      private de.naoth.rc.core.messages.CommonTypes.DoubleVector3 currentCoMError_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          de.naoth.rc.core.messages.CommonTypes.DoubleVector3, de.naoth.rc.core.messages.CommonTypes.DoubleVector3.Builder, de.naoth.rc.core.messages.CommonTypes.DoubleVector3OrBuilder> currentCoMErrorBuilder_;
+      /**
+       * <code>optional .naothmessages.DoubleVector3 currentCoMError = 3;</code>
+       */
+      public boolean hasCurrentCoMError() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector3 currentCoMError = 3;</code>
+       */
+      public de.naoth.rc.core.messages.CommonTypes.DoubleVector3 getCurrentCoMError() {
+        if (currentCoMErrorBuilder_ == null) {
+          return currentCoMError_ == null ? de.naoth.rc.core.messages.CommonTypes.DoubleVector3.getDefaultInstance() : currentCoMError_;
+        } else {
+          return currentCoMErrorBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector3 currentCoMError = 3;</code>
+       */
+      public Builder setCurrentCoMError(de.naoth.rc.core.messages.CommonTypes.DoubleVector3 value) {
+        if (currentCoMErrorBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          currentCoMError_ = value;
+          onChanged();
+        } else {
+          currentCoMErrorBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000004;
+        return this;
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector3 currentCoMError = 3;</code>
+       */
+      public Builder setCurrentCoMError(
+          de.naoth.rc.core.messages.CommonTypes.DoubleVector3.Builder builderForValue) {
+        if (currentCoMErrorBuilder_ == null) {
+          currentCoMError_ = builderForValue.build();
+          onChanged();
+        } else {
+          currentCoMErrorBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000004;
+        return this;
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector3 currentCoMError = 3;</code>
+       */
+      public Builder mergeCurrentCoMError(de.naoth.rc.core.messages.CommonTypes.DoubleVector3 value) {
+        if (currentCoMErrorBuilder_ == null) {
+          if (((bitField0_ & 0x00000004) == 0x00000004) &&
+              currentCoMError_ != null &&
+              currentCoMError_ != de.naoth.rc.core.messages.CommonTypes.DoubleVector3.getDefaultInstance()) {
+            currentCoMError_ =
+              de.naoth.rc.core.messages.CommonTypes.DoubleVector3.newBuilder(currentCoMError_).mergeFrom(value).buildPartial();
+          } else {
+            currentCoMError_ = value;
+          }
+          onChanged();
+        } else {
+          currentCoMErrorBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000004;
+        return this;
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector3 currentCoMError = 3;</code>
+       */
+      public Builder clearCurrentCoMError() {
+        if (currentCoMErrorBuilder_ == null) {
+          currentCoMError_ = null;
+          onChanged();
+        } else {
+          currentCoMErrorBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000004);
+        return this;
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector3 currentCoMError = 3;</code>
+       */
+      public de.naoth.rc.core.messages.CommonTypes.DoubleVector3.Builder getCurrentCoMErrorBuilder() {
+        bitField0_ |= 0x00000004;
+        onChanged();
+        return getCurrentCoMErrorFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector3 currentCoMError = 3;</code>
+       */
+      public de.naoth.rc.core.messages.CommonTypes.DoubleVector3OrBuilder getCurrentCoMErrorOrBuilder() {
+        if (currentCoMErrorBuilder_ != null) {
+          return currentCoMErrorBuilder_.getMessageOrBuilder();
+        } else {
+          return currentCoMError_ == null ?
+              de.naoth.rc.core.messages.CommonTypes.DoubleVector3.getDefaultInstance() : currentCoMError_;
+        }
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector3 currentCoMError = 3;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          de.naoth.rc.core.messages.CommonTypes.DoubleVector3, de.naoth.rc.core.messages.CommonTypes.DoubleVector3.Builder, de.naoth.rc.core.messages.CommonTypes.DoubleVector3OrBuilder> 
+          getCurrentCoMErrorFieldBuilder() {
+        if (currentCoMErrorBuilder_ == null) {
+          currentCoMErrorBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              de.naoth.rc.core.messages.CommonTypes.DoubleVector3, de.naoth.rc.core.messages.CommonTypes.DoubleVector3.Builder, de.naoth.rc.core.messages.CommonTypes.DoubleVector3OrBuilder>(
+                  getCurrentCoMError(),
+                  getParentForChildren(),
+                  isClean());
+          currentCoMError_ = null;
+        }
+        return currentCoMErrorBuilder_;
+      }
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:naothmessages.bodyAwareness)
+    }
+
+    // @@protoc_insertion_point(class_scope:naothmessages.bodyAwareness)
+    private static final de.naoth.rc.core.messages.Representations.bodyAwareness DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new de.naoth.rc.core.messages.Representations.bodyAwareness();
+    }
+
+    public static de.naoth.rc.core.messages.Representations.bodyAwareness getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    @java.lang.Deprecated public static final com.google.protobuf.Parser<bodyAwareness>
+        PARSER = new com.google.protobuf.AbstractParser<bodyAwareness>() {
+      public bodyAwareness parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+          return new bodyAwareness(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<bodyAwareness> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<bodyAwareness> getParserForType() {
+      return PARSER;
+    }
+
+    public de.naoth.rc.core.messages.Representations.bodyAwareness getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_naothmessages_CameraMatrix_descriptor;
   private static final 
@@ -56295,6 +57793,16 @@ public final class Representations {
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_naothmessages_DebugModify_ModifyValue_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_naothmessages_StepBuffer_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_naothmessages_StepBuffer_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_naothmessages_bodyAwareness_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_naothmessages_bodyAwareness_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -56553,8 +58061,13 @@ public final class Representations {
       "\002(\001\"\203\001\n\013DebugModify\0228\n\010valueMap\030\001 \003(\0132&." +
       "naothmessages.DebugModify.ModifyValue\032:\n" +
       "\013ModifyValue\022\014\n\004name\030\001 \002(\t\022\016\n\006modify\030\002 \001" +
-      "(\010\022\r\n\005value\030\003 \001(\001B\033\n\031de.naoth.rc.core.me",
-      "ssages"
+      "(\010\022\r\n\005value\030\003 \001(\001\"9\n\nStepBuffer\022+\n\014suppo",
+      "rt_foot\030\001 \001(\0132\025.naothmessages.Pose3D\"\215\001\n" +
+      "\rbodyAwareness\022\020\n\010isLifted\030\001 \001(\010\0223\n\rcalc" +
+      "ulatedCoM\030\002 \001(\0132\034.naothmessages.DoubleVe" +
+      "ctor3\0225\n\017currentCoMError\030\003 \001(\0132\034.naothme" +
+      "ssages.DoubleVector3B\033\n\031de.naoth.rc.core" +
+      ".messages"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -56864,6 +58377,18 @@ public final class Representations {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_naothmessages_DebugModify_ModifyValue_descriptor,
         new java.lang.String[] { "Name", "Modify", "Value", });
+    internal_static_naothmessages_StepBuffer_descriptor =
+      getDescriptor().getMessageTypes().get(41);
+    internal_static_naothmessages_StepBuffer_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_naothmessages_StepBuffer_descriptor,
+        new java.lang.String[] { "SupportFoot", });
+    internal_static_naothmessages_bodyAwareness_descriptor =
+      getDescriptor().getMessageTypes().get(42);
+    internal_static_naothmessages_bodyAwareness_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_naothmessages_bodyAwareness_descriptor,
+        new java.lang.String[] { "IsLifted", "CalculatedCoM", "CurrentCoMError", });
     de.naoth.rc.core.messages.CommonTypes.getDescriptor();
     de.naoth.rc.core.messages.FrameworkRepresentations.getDescriptor();
   }
