@@ -1,5 +1,8 @@
 #!/bin/bash
 
+mkdir -p /home/logstick
+mount /dev/logstick /home/logstick
+
 destination="/home/logstick/log"
 echo "cd into $destination"
 cd "${destination}" || exit 1
@@ -8,3 +11,5 @@ echo "Making startBrainwashing.sh executable ..."
 echo "Running startBrainwashing.sh ..."
 chmod +x startBrainwashing.sh
 ./startBrainwashing.sh
+
+#umount /home/logstick

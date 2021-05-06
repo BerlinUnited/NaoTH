@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# print all commands just in case
+set -x #echo on
+
 # redirect all the output to the logger
 exec 1> >(logger -s -t mount_logstick) 2>&1
 
@@ -8,7 +11,7 @@ mount_point=/home/logstick
 mkdir -p "${mount_point}"
 
 # mount usb drive
-mount /dev/logstick "${mount_point}"
+su root -c "mount /dev/logstick /home/logstick"
 
 # check success
 if [ $? -ne 0 ]; then

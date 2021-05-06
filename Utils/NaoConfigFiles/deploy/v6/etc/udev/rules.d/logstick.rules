@@ -1,3 +1,3 @@
 # mounts the usb stick for naoth logs
 
-KERNEL=="sd*", SUBSYSTEMS=="usb", ENV{ID_FS_TYPE}=="ext3|ext4", ACTION=="add", SYMLINK+="logstick", RUN+="/usr/bin/mount_logstick.sh"
+KERNEL=="sd*", SUBSYSTEMS=="usb", ENV{ID_FS_TYPE}=="ext3|ext4", ACTION=="add", SYMLINK+="logstick", RUN+="/usr/bin/mount_logstick"

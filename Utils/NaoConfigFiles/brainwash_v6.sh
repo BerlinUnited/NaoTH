@@ -151,7 +151,7 @@ naoth stop
 # brainwashinit
 deployFile "/usr/bin/brainwash" "root" "755" "v6"
 
-deployFile "/usr/bin/mount_logstick.sh" "root" "755" "v6"
+deployFile "/usr/bin/mount_logstick" "root" "755" "v6"
 deployFile "/usr/bin/collect_logs" "root" "755" "v6"
 
 # NaoTH binary start script
