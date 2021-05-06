@@ -20,7 +20,9 @@ public interface RobotControl extends Plugin
   public boolean checkConnected();
   public MessageServer getMessageServer();
   public Properties getConfig();
+  public String getConfigPath();
   
   public int getFontSize();
+  public String getTheme();
   public void addToStatusBar(Component c);
 }

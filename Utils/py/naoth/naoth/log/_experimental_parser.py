@@ -26,6 +26,12 @@ class Parser:
 
         self.name_to_type = {}
 
+        # register representations that are not present in the protobuf messages
+        self.register("ImageTop", "Image")
+        self.register("CameraMatrixTop", "CameraMatrix")
+        self.register("MotorJointData", "JointData")
+        self.register("ScanLineEdgelPerceptTop", "ScanLineEdgelPercept")
+
     def register(self, name: str, _type: str):
         """
         Register name corresponding protobuf type.

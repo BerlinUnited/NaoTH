@@ -60,6 +60,7 @@ import de.naoth.rc.core.messages.Representations.MultiBallPercept;
 import de.naoth.rc.core.messages.Representations.RansacCirclePercept2018;
 import de.naoth.rc.core.messages.Representations.RansacLinePercept;
 import de.naoth.rc.core.messages.Representations.ShortLinePercept;
+import de.naoth.rc.core.messages.RobotPoseOuterClass.RobotPose;
 import de.naoth.rc.core.messages.TeamMessageOuterClass;
 import de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessage;
 import java.awt.Color;
@@ -926,6 +927,18 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
         }
         
         private void drawRobot(BlackBoard b, DrawingCollection dc) {
+            // parse the explicitely avaliable RobotPose if avaliable
+            LogDataFrame data = b.get("RobotPose");
+            
+            if(data != null) {
+                try {
+                    RobotPose pose = RobotPose.parseFrom(data.getData());
+                    robotPose = new Pose2D(pose.getPose().getTranslation().getX(), pose.getPose().getTranslation().getY(), pose.getPose().getRotation());
+                } catch(InvalidProtocolBufferException ex) {
+                    Logger.getLogger(FieldViewer.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            
             if(robotPose != null) {
                 dc.add(new Pen(1.0f, Color.red));
                 dc.add(new Robot(robotPose.translation.x, robotPose.translation.y, robotPose.rotation, cmBottom.rotation.getZAngle()));

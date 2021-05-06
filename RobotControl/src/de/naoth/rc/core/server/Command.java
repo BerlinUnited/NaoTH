@@ -1,5 +1,6 @@
 package de.naoth.rc.core.server;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -7,7 +8,7 @@ import java.util.Map;
  *
  * @author thomas
  */
-public class Command
+public class Command implements Serializable
 {
   private String name;
   private Map<String,byte[]> arguments;

@@ -26,7 +26,8 @@ GameController::GameController()
   DEBUG_REQUEST_REGISTER("gamecontroller:gamephase:overtime", "force the gamephase", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:gamephase:timeout", "force the gamephase", false);
 
-  DEBUG_REQUEST_REGISTER("gamecontroller:kickoff", "forces the kickoff to be ours", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:kickoff:own", "forces the kickoff to be ours", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:kickoff:opp", "forces the kickoff to be opponents", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:secondaryTime:30", "sets the secondary time of the gamecontroller to 30s", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:secondaryTime:20", "sets the secondary time of the gamecontroller to 20s", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:secondaryTime:10", "sets the secondary time of the gamecontroller to 10s", false);
@@ -142,7 +143,6 @@ void GameController::execute()
   lastGameState = getGameData().gameState;
   // set teamcomm: whistle detected!
   getTeamMessageData().custom.whistleDetected = getWhistlePercept().whistleDetected;
-  getTeamMessageData().custom.whistleCount = getWhistlePercept().counter;
 
   // provide the return message
   getGameReturnData().team = getPlayerInfo().teamNumber;
@@ -208,7 +208,10 @@ void GameController::handleDebugRequest()
   );
 
   // DebugRequests for the kickoff state
-  DEBUG_REQUEST("gamecontroller:kickoff",
+  DEBUG_REQUEST("gamecontroller:kickoff:opp",
+    getPlayerInfo().kickoff = false;
+  );
+  DEBUG_REQUEST("gamecontroller:kickoff:own",
     getPlayerInfo().kickoff = true;
   );
 

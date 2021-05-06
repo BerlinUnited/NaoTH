@@ -185,7 +185,7 @@ public:
   DATATYPE getXAngle() const
   {
         DATATYPE h = sqrt(this->c[2].y * this->c[2].y + this->c[2].z * this->c[2].z);
-        return h ? acos(this->c[2].z / h) * (this->c[2].y > 0 ? -1 : 1) : 0;
+        return h != 0 ? acos(this->c[2].z / h) * (this->c[2].y > 0 ? -1 : 1) : 0;
   }
 
   /**
@@ -197,7 +197,7 @@ public:
   DATATYPE getYAngle() const
   {
         DATATYPE h = sqrt(this->c[2].x * this->c[2].x + this->c[2].z * this->c[2].z);
-        return h ? acos(this->c[2].z / h) * (this->c[2].x > 0 ? 1 : -1) : 0;
+        return h != 0 ? acos(this->c[2].z / h) * (this->c[2].x > 0 ? 1 : -1) : 0;
   }
 
   /**
@@ -209,7 +209,7 @@ public:
   DATATYPE getZAngle() const
   {
         double h = sqrt(this->c[0].x * this->c[0].x + this->c[0].y * this->c[0].y);
-        return h ? acos(this->c[0].x / h) * (this->c[0].y < 0 ? -1 : 1) : 0;
+        return h != 0 ? acos(this->c[0].x / h) * (this->c[0].y < 0 ? -1 : 1) : 0;
   }
 
   Vector3<DATATYPE> getAngleAxis() const

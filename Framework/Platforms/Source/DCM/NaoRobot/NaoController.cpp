@@ -17,20 +17,15 @@ using namespace naoth;
 
 #define TEAMCOMM_MAX_MSG_SIZE 4096
 
-NaoController::NaoController()
-    :
-    lolaAvailable(false),
+NaoController::NaoController(bool nao6)
+    : 
+    nao6(nao6),
     theSoundHandler(NULL),
     theTeamCommSender(NULL),
     theTeamCommListener(NULL),
     theRemoteCommandListener(NULL),
     theDebugServer(NULL)
 {
-  if(fileExists("/usr/bin/lola") || fileExists("/opt/aldebaran/bin/lola"))
-  {
-    lolaAvailable = true;
-  }
-
   // init shared memory
   // sensor data
   const std::string naoSensorDataPath = "/nao_sensor_data";
@@ -161,7 +156,7 @@ NaoController::NaoController()
   theGameController = new SPLGameController();
 
   // HACK: we are in NAO V6
-  if(lolaAvailable)
+  if (nao6)
   {
     std::cout << "[NaoController] " << "Init CameraHandler V6 (bottom)" << std::endl;
     theBottomCameraHandler.init("/dev/video1", CameraInfo::Bottom, true);

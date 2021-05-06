@@ -20,6 +20,7 @@
 #include <Representations/Infrastructure/JointData.h>
 #include <Representations/Infrastructure/FrameInfo.h>
 #include "Representations/Modeling/BallModel.h"
+#include <Representations/Motion/CollisionPercept.h>
 
 BEGIN_DECLARE_MODULE(MotionSymbols)
   REQUIRE(MotionStatus)
@@ -27,6 +28,7 @@ BEGIN_DECLARE_MODULE(MotionSymbols)
   REQUIRE(SensorJointData)
 
   REQUIRE(BallModel)
+  REQUIRE(CollisionPercept)
 
   PROVIDE(HeadMotionRequest)
   PROVIDE(MotionRequest)
@@ -103,6 +105,9 @@ private:
 
   static double getHeadPitchAngle();
   static double getHeadYawAngle();
+
+  static double getlastComputedCollisionRight();
+  static double getlastComputedCollisionLeft();
 
   static void setHeadPositionX(double rot);
   static double getHeadPositionX();

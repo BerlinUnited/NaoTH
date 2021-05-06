@@ -44,6 +44,7 @@ public abstract class AbstractJFXDialog extends AbstractDialog implements Dialog
         Scene scene = createScene();
         container.setScene(scene);
         scene.getAccelerators().putAll(getGlobalShortcuts());
+        if (getTheme() != null) { scene.getStylesheets().add(getTheme()); }
         afterInit();
       }
     });
@@ -116,4 +117,20 @@ public abstract class AbstractJFXDialog extends AbstractDialog implements Dialog
     return null;
   }
 
+  protected Scene getScene() {
+      return container.getScene();
+  }
+
+  /**
+   * Returns the theme stylesheet, which should be used or null, if there's no
+   * specific theme.
+   *
+   * This must be overwritten by the child classes, if they want to use the global
+   * theme!
+   *
+   * @return path to the themes stylesheet file
+   */
+  protected String getTheme() {
+    return null;
+  }
 }

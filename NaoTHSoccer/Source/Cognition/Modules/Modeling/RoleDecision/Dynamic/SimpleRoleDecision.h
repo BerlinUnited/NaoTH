@@ -72,7 +72,7 @@ public:
     
     virtual ~Parameters() {
     }
-  } parameters;
+  } params;
 
 };
 

@@ -1,6 +1,6 @@
 
-#ifndef _AUDIO_CONTROL_H_
-#define _AUDIO_CONTROL_H_
+#ifndef AUDIO_CONTROL_H
+#define AUDIO_CONTROL_H
 
 #include <string>
 #include "Tools/DataStructures/Printable.h"
@@ -11,14 +11,14 @@ namespace naoth
   {
   public:
     bool capture;                 // controls if detection and audio capture is active or not
-    int numChannels;
-    int sampleRate;
-    int buffer_size;
+    unsigned int numChannels;
+    unsigned int sampleRate;
+    unsigned int buffer_size;
 
     AudioControl();
     virtual void print(std::ostream& stream) const;
   };
 }
 
-#endif  /* _AUDIO_CONTROL_H_ */
+#endif  /* AUDIO_CONTROL_H */
 

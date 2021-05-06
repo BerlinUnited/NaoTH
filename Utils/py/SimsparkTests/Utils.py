@@ -3,10 +3,10 @@ import time
 import os
 import traceback
 
-from AgentController import AgentController
+__all__ = ['wait_for', 'remove_simspark_logfile', 'TestRun']
 
 
-def wait_for(condition:callable, sleeper:float, min_time:float=0.0, max_time:float=3600.0, *kwargs):
+def wait_for(condition: callable, sleeper: float, min_time: float = 0.0, max_time: float = 3600.0, *kwargs):
     """
     Waits as long as the condition doesn't return True. The condition is a callable, which returns True or False.
     Between two condition tests, it waits :sleeper: seconds. If the condition is True, it waits at least :min_time:
@@ -26,22 +26,6 @@ def wait_for(condition:callable, sleeper:float, min_time:float=0.0, max_time:flo
     except Exception as e:
         logging.error("%s\n%s", e, traceback.format_exc(limit=2))
 
-def wait_for_cmd(agent:AgentController, cmd_id:int, sleeper:float=0.1):
-    """
-    Waits for a command to be executed (and returned) by an agent instance. The command to wait for is identified by its
-    id. Between two checks, if the command has returned, it is waiting :sleeper: seconds (or fractional). The agent
-    instance must be the one, where the command was scheduled!
-
-    :param agent:   the agent instance, where the command was scheduled and for which the result should be waiting for
-    :param cmd_id:  the scheduled command id
-    :param sleeper: how long should be waited between to checks, if the command returned
-    :return:        the result of the command
-    """
-    data = agent.command_result(cmd_id)
-    while data is None:
-        time.sleep(sleeper)
-        data = agent.command_result(cmd_id)
-    return data
 
 def remove_simspark_logfile():
     """
@@ -54,3 +38,36 @@ def remove_simspark_logfile():
             os.remove('sparkmonitor.log')
         except:
             logging.warning("Could not remove simspark log file!")
+
+
+class TestRun:
+
+    def __init__(self):
+        self.logger = logging.getLogger(self.__class__.__name__)
+
+    def setUp(self):
+        pass
+
+    def tearDown(self):
+        pass
+
+    def run(self):
+        tests = 0
+        successful = 0
+
+        for attr in dir(self):
+            if not attr.startswith('test'):
+                continue
+            testFunc = getattr(self, attr)
+            if not callable(testFunc):
+                continue
+
+            print(attr, '... ', end='', flush=True)
+            tests += 1
+            if testFunc():
+                successful += 1
+                print('ok', flush=True)
+            else:
+                print('FAIL', flush=True)
+
+        return (tests, successful)

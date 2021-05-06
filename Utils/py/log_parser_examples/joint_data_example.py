@@ -3,6 +3,7 @@ from matplotlib import pyplot as plt
 from naoth.log import Parser
 from naoth.log import Reader as LogReader
 from naoth.datasets import joints
+from naoth.constants import get_joint_id
 
 
 def unpack_frame(frame):
@@ -19,15 +20,14 @@ def unpack_frame(frame):
       21: LAnkleRoll            22: LWristYaw           23: RWristYaw
       24: LHand                 25: RHand               26: numOfJoint
     '''
-    return [sensor_joint_data[16], sensor_joint_data[17],
-            motor_joint_data[16], motor_joint_data[17]]
+    return [sensor_joint_data[get_joint_id("RKneePitch")], sensor_joint_data[get_joint_id("LKneePitch")],
+            motor_joint_data[get_joint_id("RKneePitch")], motor_joint_data[get_joint_id("LKneePitch")]]
 
 
 if __name__ == "__main__":
     path = joints.load_data()
 
     myParser = Parser()
-    myParser.register("MotorJointData", "JointData")
 
     with LogReader(path, myParser) as log:
         print(log[0]["SensorJointData"])

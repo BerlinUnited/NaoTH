@@ -55,7 +55,6 @@ int main(int argc, char** argv) {
     unsigned short channels = 0;
     unsigned short samples = 1024;
     unsigned short overlap = 0;
-    bool start = false;
 
     char* logpath = getenv("NAOTH_AUDIOFILE");
     if (logpath == NULL && argc > 1) {
@@ -115,16 +114,11 @@ int main(int argc, char** argv) {
                 return (EXIT_FAILURE);
             }
         }
-
-        if (strcmp(argv[i], "-a") == 0) {
-            start = true;
-        }
     }
     if (logpath == NULL) {
         cerr << "You need to give the path to the logfile as argument" << endl;
         cerr << "arguments: (-h)? (-p <port number>)? <logfile>" << endl;
         cerr << "\"--port\" debug port number, range of valid values: [1,65535]" << std::endl;
-        cerr << "\"-a\" starts playing the log file immediatly" << std::endl;
         cerr << "\"-h\" help" << endl;
         return (EXIT_FAILURE);
     }

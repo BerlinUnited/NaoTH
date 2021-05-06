@@ -71,6 +71,7 @@ else
   # copy binaries and start naoqi/naoth again
   if [ -f "./deploy/home/nao/bin/lola_adaptor" ]; then
     echo "[deploy] replace lola_adaptor"
+    lola_adaptor stop
     rm -f /home/nao/bin/lola_adaptor
     su nao -c "cp ./deploy/home/nao/bin/lola_adaptor /home/nao/bin/lola_adaptor"
     chmod 755 /home/nao/bin/lola_adaptor

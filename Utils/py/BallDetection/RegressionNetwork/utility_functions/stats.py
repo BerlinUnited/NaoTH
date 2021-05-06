@@ -8,6 +8,7 @@ import cv2
 from os import makedirs
 import re
 
+
 def keras_infer(x, model_path):
     model = load_model(model_path)
     return model.predict(x)
@@ -36,7 +37,7 @@ def keras_eval_thresh(x, y, model_path):
     FalsePositive = []
     FalseNegative = []
     TrueNegative = []
-    threshs = [float(x)/1000 for x in range(990,1000)]
+    threshs = [float(x) / 1000 for x in range(990, 1000)]
     print("Plotting...", end="")
     for thresh in threshs:
         print(".", end="")
@@ -81,4 +82,3 @@ def save_false_positives(pred, x, y, p, mean):
     idxs = [gt_noball_idx[i] for i in np.where(pred[gt_noball_idx][:, 1] > pred[gt_noball_idx][:, 0])[0]]
     for img, path, _pred in zip(x[idxs], p[idxs], pred[idxs, 1]):
         cv2.imwrite('false_positives/' + "(" + str(_pred) + ")" + re.sub('[^\w\-_\. ]', '_', path), (img + mean) * 255)
-

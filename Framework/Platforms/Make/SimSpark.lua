@@ -1,5 +1,7 @@
 -- controller for SimSpark simulator
 project "SimSpark"
+  removeplatforms { "Nao" }
+
   kind "StaticLib"
   language "C++"
         
