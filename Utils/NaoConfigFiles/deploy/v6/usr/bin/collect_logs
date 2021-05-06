@@ -1,0 +1,10 @@
+#!/bin/bash
+
+destination="/home/logstick/log"
+echo "cd into $destination"
+cd "${destination}" || exit 1
+
+echo "Making startBrainwashing.sh executable ..."
+echo "Running startBrainwashing.sh ..."
+chmod +x startBrainwashing.sh
+./startBrainwashing.sh
