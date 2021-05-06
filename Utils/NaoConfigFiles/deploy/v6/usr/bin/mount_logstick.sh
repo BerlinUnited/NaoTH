@@ -8,7 +8,10 @@ mount_point=/home/logstick
 mkdir -p "${mount_point}"
 
 # mount usb drive
-if ! mount /dev/logstick "${mount_point}"; then
+mount /dev/logstick "${mount_point}"
+
+# check success
+if [ $? -ne 0 ]; then
   logger -t mount_logstick "ERROR: usb unknown mount error"
   su nao -c "/usr/bin/paplay /home/nao/naoqi/Media/error_usb_unknown_mount_error.wav"
   exit 0
