@@ -241,7 +241,7 @@ Vector2d CameraGeometry::lookAtPoint(const Vector3d& point, double cameraHeight)
   vector.z -= cameraHeight;
 
   double yaw   =  atan2(vector.y, vector.x);
-  double pitch = -atan2(vector.z, sqrt(vector.y*vector.y + vector.x*vector.x));
+  double pitch = -atan2(vector.z, std::hypot(vector.x,vector.y));
 
   return Vector2d(yaw, pitch);
 }//end lookAtPoint
@@ -251,8 +251,8 @@ Vector2d CameraGeometry::lookAtPoint(const CameraMatrix& cameraMatrix, const Vec
   // vector: O ---> point (in camera coordinates)
   Vector3d vectorToPoint = cameraMatrix.invert()*point;
 
-  double yaw   =  atan2(vectorToPoint.y, vectorToPoint.x);
-  double pitch = -atan2(vectorToPoint.z, std::hypot(vectorToPoint.x, vectorToPoint.y));
+  double yaw   =   atan2(vectorToPoint.y, vectorToPoint.x);
+  double pitch =  -atan2(vectorToPoint.z, std::hypot(vectorToPoint.x,vectorToPoint.y));
 
   return Vector2d(yaw, pitch);
 }//end lookAtPoint
