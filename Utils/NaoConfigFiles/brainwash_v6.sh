@@ -79,6 +79,9 @@ setEtc(){
 
 	# brainwash udev rule
 	deployFile "/etc/udev/rules.d/brainwashing.rules" "root" "644" "v6"
+	
+	# logstick udev rule
+	deployFile "/etc/udev/rules.d/logstick.rules" "root" "644" "v6"
 
 	# ====================  host stuff ====================
 
