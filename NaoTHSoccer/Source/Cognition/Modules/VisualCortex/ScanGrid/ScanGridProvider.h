@@ -74,7 +74,7 @@ public:
       PARAMETER_REGISTER(max_scan_distance_mm) = 9700;
 
       // maxium number of scanlines
-      PARAMETER_REGISTER(max_vertical_scanlines) = 40;
+      PARAMETER_REGISTER(max_vertical_scanlines) = 160;
       PARAMETER_REGISTER(max_horizontal_scanlines) = 120;
 
       PARAMETER_REGISTER(vertical_gap_mm) = 50;
@@ -86,7 +86,7 @@ public:
       PARAMETER_REGISTER(min_horizontal_gap_px) = 2;
       PARAMETER_REGISTER(min_vertical_gap_px) = 2;
 
-      PARAMETER_REGISTER(uniform_vertical_lengths) = true;
+      PARAMETER_REGISTER(uniform_vertical_lengths) = false;
 
       syncWithConfig();
     }

@@ -4440,6 +4440,13 @@ class EdgelPair : public ::google::protobuf::Message /* @@protoc_insertion_point
   ::google::protobuf::int32 id() const;
   void set_id(::google::protobuf::int32 value);
 
+  // optional bool adaptive = 4;
+  bool has_adaptive() const;
+  void clear_adaptive();
+  static const int kAdaptiveFieldNumber = 4;
+  bool adaptive() const;
+  void set_adaptive(bool value);
+
   // @@protoc_insertion_point(class_scope:naothmessages.EdgelPair)
  private:
   void set_has_begin();
@@ -4448,6 +4455,8 @@ class EdgelPair : public ::google::protobuf::Message /* @@protoc_insertion_point
   void clear_has_end();
   void set_has_id();
   void clear_has_id();
+  void set_has_adaptive();
+  void clear_has_adaptive();
 
   // helper for ByteSizeLong()
   size_t RequiredFieldsByteSizeFallback() const;
@@ -4458,6 +4467,7 @@ class EdgelPair : public ::google::protobuf::Message /* @@protoc_insertion_point
   ::google::protobuf::int32 begin_;
   ::google::protobuf::int32 end_;
   ::google::protobuf::int32 id_;
+  bool adaptive_;
   friend struct protobuf_Representations_2eproto::TableStruct;
 };
 // -------------------------------------------------------------------
@@ -12454,6 +12464,30 @@ inline void EdgelPair::set_id(::google::protobuf::int32 value) {
   set_has_id();
   id_ = value;
   // @@protoc_insertion_point(field_set:naothmessages.EdgelPair.id)
+}
+
+// optional bool adaptive = 4;
+inline bool EdgelPair::has_adaptive() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void EdgelPair::set_has_adaptive() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void EdgelPair::clear_has_adaptive() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline void EdgelPair::clear_adaptive() {
+  adaptive_ = false;
+  clear_has_adaptive();
+}
+inline bool EdgelPair::adaptive() const {
+  // @@protoc_insertion_point(field_get:naothmessages.EdgelPair.adaptive)
+  return adaptive_;
+}
+inline void EdgelPair::set_adaptive(bool value) {
+  set_has_adaptive();
+  adaptive_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.EdgelPair.adaptive)
 }
 
 // -------------------------------------------------------------------
