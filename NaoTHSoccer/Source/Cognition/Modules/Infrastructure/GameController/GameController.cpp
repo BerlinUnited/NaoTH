@@ -249,7 +249,6 @@ void GameController::handleButtons()
 
   if (getButtonState()[ButtonState::Chest].isSingleClick())
   {
-    //handle unstiff
     switch (getPlayerInfo().robotState)
     {
     case PlayerInfo::initial:
@@ -318,7 +317,6 @@ void GameController::handleButtons()
     )
   {
     getPlayerInfo().robotState = PlayerInfo::initial;
-
   }
 } // end handleButtons
 
@@ -384,6 +382,7 @@ void GameController::updateLEDs()
     case PlayerInfo::penalized:
         getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::RED] = 1.0;
       break;
+    //TODO if this would be called continously we could implement the blinking chest led here as well
     default:
       break;
   }
