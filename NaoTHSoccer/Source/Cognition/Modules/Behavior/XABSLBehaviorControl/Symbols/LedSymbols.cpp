@@ -204,3 +204,4 @@ int LedSymbols::getLeftEye()
 {
   return theInstance->lastLEye;
 }
+

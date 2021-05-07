@@ -46,12 +46,12 @@ private:
   void setEye(naoth::LEDData::MultiLEDID from, naoth::LEDData::MultiLEDID to, int value);
 
   // setter and getter
+
   static void setRightEar(double id);
   static void setLeftEar(double id);
   static void setHead(double id);
   static void setRightEye(int value);
   static void setLeftEye(int value);
-  
 
   double lastREar;
   double lastLEar;
