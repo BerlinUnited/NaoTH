@@ -1,9 +1,10 @@
 #!/usr/bin/python
-
+import os
 from setuptools import setup, find_packages
+version_file = open(os.path.join(".", 'VERSION'))
 
 setup(name='naoth',
-      version='0.3.1',
+      version=version_file.read().strip(),
       author='NaoTH Berlin United',
       author_email='nao-team@informatik.hu-berlin.de',
       description='Python utils for the NaoTH toolchain',

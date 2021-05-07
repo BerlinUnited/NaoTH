@@ -28,13 +28,13 @@ LineGraphProvider::LineGraphProvider()
   DEBUG_REQUEST_REGISTER("Vision:LineGraphProvider:draw_extended_line_graph", "", false);
   DEBUG_REQUEST_REGISTER("Vision:LineGraphProvider:draw_extended_line_graph_top", "", false);
 
-  getDebugParameterList().add(&parameters);
+  getDebugParameterList().add(&params);
 }
 
 
 LineGraphProvider::~LineGraphProvider()
 {
-  getDebugParameterList().remove(&parameters);
+  getDebugParameterList().remove(&params);
 }
 
 
@@ -42,7 +42,7 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
 {
   cameraID = id;
 
-  calculatePairsAndNeigbors(getScanLineEdgelPercept().pairs, edgelPairs, edgelNeighbors, parameters.edgelSimThreshold);
+  calculatePairsAndNeigbors(getScanLineEdgelPercept().pairs, edgelPairs, edgelNeighbors, params.edgelSimThreshold);
 
 
   // calculate the projection for all edgels
@@ -116,7 +116,7 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
     //const ScanLineEdgelPercept::EdgelPair& el = getScanLineEdgelPercept().pairs[edgelPair.left];
     //const ScanLineEdgelPercept::EdgelPair& er = getScanLineEdgelPercept().pairs[edgelPair.right];
 
-    if(projectedWidthLeft > parameters.maximalProjectedLineWidth && projectedWidthRight > parameters.maximalProjectedLineWidth) {
+    if(projectedWidthLeft > params.maximalProjectedLineWidth && projectedWidthRight > params.maximalProjectedLineWidth) {
       getLineGraphPercept().edgelsOnField.push_back(edgel);
 
       DEBUG_REQUEST("Vision:LineGraphProvider:edgel_pairs_field",

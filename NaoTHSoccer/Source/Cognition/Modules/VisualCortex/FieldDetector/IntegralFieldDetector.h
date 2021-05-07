@@ -67,6 +67,8 @@ public:
 
     Parameters() : ParameterList("IntegralFieldDetector")
     {
+      PARAMETER_REGISTER(min_field_area) = 5600;
+
       PARAMETER_REGISTER(max_skip_cells) = 1;
       PARAMETER_REGISTER(min_successive_green) = 3;
 
@@ -76,13 +78,18 @@ public:
       PARAMETER_REGISTER(positive_score) = 1;
       PARAMETER_REGISTER(negative_score) = -1;
 
-      PARAMETER_REGISTER(grid_size_top) = 20;
-      PARAMETER_REGISTER(grid_size_bottom) = 30;
+      // number of columns and rows in the grid
+      PARAMETER_REGISTER(top.column_count) = 32;
+      PARAMETER_REGISTER(top.row_count) = 24;
+      PARAMETER_REGISTER(bottom.column_count) = 22;
+      PARAMETER_REGISTER(bottom.row_count) = 14;
 
-      PARAMETER_REGISTER(set_whole_image_as_field_bottom) = false;
-      PARAMETER_REGISTER(set_whole_image_as_field_top) = false;
+      PARAMETER_REGISTER(top.set_image_as_field) = false;
+      PARAMETER_REGISTER(bottom.set_image_as_field) = false;
       syncWithConfig();
     }
+    int min_field_area;
+
     double proportion_of_green;
     double end_proportion_of_green;
 
@@ -92,39 +99,44 @@ public:
     double positive_score;
     double negative_score;
 
-    int grid_size_top;
-    int grid_size_bottom;
+    struct cam_params {
+        int column_count;
+        int row_count;
 
-    bool set_whole_image_as_field_bottom;
-    bool set_whole_image_as_field_top;
+        bool set_image_as_field;
+    } ;
+    cam_params top, bottom;
   } params;
 
 private:
-  struct Cell {
+  class Cell {
+    public:
       int minX;
       int minY;
       int maxX;
       int maxY;
-      int sum_of_green;
+
+      inline double calc_green_density(const BallDetectorIntegralImage& integralImage) {
+          const int factor = integralImage.FACTOR;
+
+          const int minX = this->minX/factor;
+          const int minY = this->minY/factor;
+          const int maxX = this->maxX/factor;
+          const int maxY = this->maxY/factor;
+
+          const double sum = integralImage.getSumForRect(minX, minY, maxX, maxY, 1);
+          const double density = sum / ((maxX - minX + 1) * (maxY - minY + 1));
+          ASSERT(density <= 1.);
+          return density;
+      }
+
+      inline int count_pixel() {
+          return (maxX - minX + 1) * (maxY - minY + 1);
+      }
   };
 
   CameraInfo::CameraID cameraID;
-  int factor;
   std::vector<Vector2i> endpoints;
-
-  /**
-  converts integral image coordinates to image coordinates
-  */
-  inline int toImage(int i) {
-    return i * factor;
-  }
-
-  /**
-  converts image coordinates to integral image coordinates
-  */
-  inline int toIntegral(int i) {
-    return i / factor;
-  }
 
   void find_endpoint(int x, const Cell& cell, Vector2i& endpoint);
   void create_field();

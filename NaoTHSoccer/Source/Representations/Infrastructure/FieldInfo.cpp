@@ -11,20 +11,23 @@
 
 FieldInfo::FieldInfo() : ParameterList("FieldInfo")
 {
-  // default values as of SPL rules from 2012
+  // default values as of SPL rules from 2012 -> 2020
   PARAMETER_REGISTER(ballRadius) = 50.0;
   PARAMETER_REGISTER(ballRRCoefficient) = 0.0245;
 
-  PARAMETER_REGISTER(xLength) = 6000;
-  PARAMETER_REGISTER(yLength) = 4000;
+  PARAMETER_REGISTER(xLength) = 9000;
+  PARAMETER_REGISTER(yLength) = 6000;
 
   PARAMETER_REGISTER(xFieldLength) = xLength + 2*700;
   PARAMETER_REGISTER(yFieldLength) = yLength + 2*700;
 
-  PARAMETER_REGISTER(xPenaltyAreaLength) = 600;
-  PARAMETER_REGISTER(yPenaltyAreaLength) = 2200;
+  PARAMETER_REGISTER(xGoalboxAreaLength) = 600;
+  PARAMETER_REGISTER(yGoalboxAreaLength) = 2200;
 
-  PARAMETER_REGISTER(centerCircleRadius) = 600;
+  PARAMETER_REGISTER(xPenaltyAreaLength) = 1650;
+  PARAMETER_REGISTER(yPenaltyAreaLength) = 4000;
+
+  PARAMETER_REGISTER(centerCircleRadius) = 750;
   PARAMETER_REGISTER(fieldLinesWidth) = 50;
 
   PARAMETER_REGISTER(goalWidth) = 1400;
@@ -34,6 +37,8 @@ FieldInfo::FieldInfo() : ParameterList("FieldInfo")
   PARAMETER_REGISTER(xPenaltyMarkDistance) = 1300;
 
   PARAMETER_REGISTER(goalBoxAsLines) = true;
+
+  PARAMETER_REGISTER(goalBoxPresent) = false;
 
   syncWithConfig();
 
@@ -51,6 +56,11 @@ void FieldInfo::calculateValues()
 
 void FieldInfo::calculateCrossings()
 {
+  if (goalBoxPresent == false){
+    xPenaltyAreaLength = xGoalboxAreaLength;
+    yPenaltyAreaLength = yGoalboxAreaLength;
+  }
+
   xPosHalfWayLine = 0;
 
   xPosOpponentGroundline  =  xLength / 2.0;
@@ -59,11 +69,17 @@ void FieldInfo::calculateCrossings()
   xPosOpponentGoal        =  xPosOpponentGroundline;
   xPosOwnGoal             = -xPosOpponentGoal;
 
+  xPosOpponentGoalboxArea = xPosOpponentGroundline - xGoalboxAreaLength;
+  xPosOwnGoalboxArea      = -xPosOpponentGoalboxArea;
+
   xPosOpponentPenaltyArea =  xPosOpponentGroundline - xPenaltyAreaLength;
   xPosOwnPenaltyArea      = -xPosOpponentPenaltyArea;
 
   yPosLeftGoalpost        =  goalWidth / 2.0;
   yPosRightGoalpost       = -yPosLeftGoalpost;
+
+  yPosLeftGoalboxArea     = yGoalboxAreaLength / 2.0;
+  yPosRightGoalboxArea    = -yPosLeftGoalboxArea;
 
   yPosLeftPenaltyArea     =  yPenaltyAreaLength / 2.0;
   yPosRightPenaltyArea    = -yPosLeftPenaltyArea;
@@ -91,18 +107,31 @@ void FieldInfo::calculateCrossings()
   crossings[ownCornerLeft].position               = Vector2d(xPosOwnGroundline, yPosLeftSideline);
   crossings[ownCornerRight].position              = Vector2d(xPosOwnGroundline, yPosRightSideline);
 
+  crossings[opponentGoalboxCornerLeft].position   = Vector2d(xPosOpponentGoalboxArea, yPosLeftGoalboxArea);
+  crossings[opponentGoalboxCornerRight].position  = Vector2d(xPosOpponentGoalboxArea, yPosRightGoalboxArea);
+  crossings[ownGoalboxCornerLeft].position        = Vector2d(xPosOwnGoalboxArea, yPosLeftGoalboxArea);
+  crossings[ownGoalboxCornerRight].position       = Vector2d(xPosOwnGoalboxArea, yPosRightGoalboxArea);
+
   crossings[opponentPenaltyCornerLeft].position   = Vector2d(xPosOpponentPenaltyArea, yPosLeftPenaltyArea);
   crossings[opponentPenaltyCornerRight].position  = Vector2d(xPosOpponentPenaltyArea, yPosRightPenaltyArea);
   crossings[ownPenaltyCornerLeft].position        = Vector2d(xPosOwnPenaltyArea, yPosLeftPenaltyArea);
   crossings[ownPenaltyCornerRight].position       = Vector2d(xPosOwnPenaltyArea, yPosRightPenaltyArea);
 
+
+
   // T crossings
-  crossings[opponentGoalTCrossingLeft].position   = Vector2d(xPosOpponentGroundline, yPosLeftPenaltyArea);
-  crossings[opponentGoalTCrossingRight].position  = Vector2d(xPosOpponentGroundline, yPosRightPenaltyArea);
-  crossings[ownGoalTCrossingLeft].position        = Vector2d(xPosOwnGroundline, yPosLeftPenaltyArea);
-  crossings[ownGoalTCrossingRight].position       = Vector2d(xPosOwnGroundline, yPosRightPenaltyArea);
-  crossings[centerTCrossingLeft].position         = Vector2d(xPosHalfWayLine, yPosLeftSideline);
-  crossings[centerTCrossingRight].position        = Vector2d(xPosHalfWayLine, yPosRightSideline);
+  crossings[opponentGoalboxTCrossingLeft].position   = Vector2d(xPosOpponentGroundline, yPosLeftGoalboxArea);
+  crossings[opponentGoalboxTCrossingRight].position  = Vector2d(xPosOpponentGroundline, yPosRightGoalboxArea);
+  crossings[ownGoalboxTCrossingLeft].position        = Vector2d(xPosOwnGroundline, yPosLeftGoalboxArea);
+  crossings[ownGoalboxTCrossingRight].position       = Vector2d(xPosOwnGroundline, yPosRightGoalboxArea);
+
+  crossings[opponentPenaltyTCrossingLeft].position   = Vector2d(xPosOpponentGroundline, yPosLeftPenaltyArea);
+  crossings[opponentPenaltyTCrossingRight].position  = Vector2d(xPosOpponentGroundline, yPosRightPenaltyArea);
+  crossings[ownPenaltyTCrossingLeft].position        = Vector2d(xPosOwnGroundline, yPosLeftPenaltyArea);
+  crossings[ownPenaltyTCrossingRight].position       = Vector2d(xPosOwnGroundline, yPosRightPenaltyArea);
+
+  crossings[centerTCrossingLeft].position            = Vector2d(xPosHalfWayLine, yPosLeftSideline);
+  crossings[centerTCrossingRight].position           = Vector2d(xPosHalfWayLine, yPosRightSideline);
 
   // X Crossings
   crossings[crossingCenterCircleLeft].position    = Vector2d(xPosHalfWayLine, -centerCircleRadius);
@@ -162,26 +191,38 @@ void FieldInfo::calculateCrossings()
 }//end calculateCrossings
 
 
-/**
-
-    |---------------|---------------|
+ /**
+    Old field:
+    +---------------+---------------+
     |               |               |
-    |---|          _|_          |---|
+    |---+          _|_          +---|
     |   |        /  |  \        |   |
-    |   |   +   (   |   )   +   |   |
+    |   |  +    (   |   )    +  |   |
     |   |        \ _|_ /        |   |
-    |---|           |           |---|
+    |---+           |           +---|
     |               |               |
-    |---------------|---------------|
+    +---------------+---------------+
+
+    New field (2020):
+    +---------------+---------------+
+    |-------+       |       +-------|
+    |---+   |      _|_      |   +---|
+    |   |   |    /  |  \    |   |   |
+    |   | + |   (   |   )   | + |   |
+    |   |   |    \ _|_ /    |   |   |
+    |---+   |       |       |   +---|
+    |-------+       |       +-------|
+    +---------------+---------------+
 
 */
 
 void FieldInfo::createLinesTable()
 {
   fieldLinesTable = LinesTable();
-  // HACK: remove it
-  fieldLinesTable.circle_radius = centerCircleRadius;
-  fieldLinesTable.penalty_area_width = xPosOpponentGoal - xPosOpponentPenaltyArea;
+  
+  // set parameters
+  fieldLinesTable.setCircleRadius(centerCircleRadius);
+  fieldLinesTable.setShortLineLengthThreshold(xGoalboxAreaLength);
 
   // 0 - right side line - sideLineRight
   fieldLinesTable.addLine(
@@ -213,40 +254,79 @@ void FieldInfo::createLinesTable()
     crossings[centerTCrossingLeft].position
     );
 
-  // 5 - own penalty line - ownPenaltyLine
+  if (goalBoxPresent)
+  {
+    // 5 - own goalbox line - ownGoalboxLine
+    fieldLinesTable.addLine(
+      crossings[ownGoalboxCornerRight].position,
+      crossings[ownGoalboxCornerLeft].position
+      );
+
+    // 6 - own goalbox right line - ownGoalboxLineRight
+    fieldLinesTable.addLine(
+      crossings[ownGoalboxTCrossingRight].position,
+      crossings[ownGoalboxCornerRight].position
+      );
+
+    // 7 - own goalbox left line - ownGoalboxLineLeft
+    fieldLinesTable.addLine(
+      crossings[ownGoalboxTCrossingLeft].position,
+      crossings[ownGoalboxCornerLeft].position
+      );
+
+    // 8 - opponent goalbox line - opponentGoalboxLine
+    fieldLinesTable.addLine(
+      crossings[opponentGoalboxCornerRight].position,
+      crossings[opponentGoalboxCornerLeft].position
+      );
+
+    // 9 - opponent goalbox right line - opponentGoalboxLineRight
+    fieldLinesTable.addLine(
+      crossings[opponentGoalboxCornerRight].position,
+      crossings[opponentGoalboxTCrossingRight].position
+      );
+
+    // 10 - opponent goalbox left line - opponentGoalboxLineLeft
+    fieldLinesTable.addLine(
+      crossings[opponentGoalboxCornerLeft].position,
+      crossings[opponentGoalboxTCrossingLeft].position
+      );
+  }
+
+  // 11 - own penalty line - ownPenaltyLine
   fieldLinesTable.addLine(
     crossings[ownPenaltyCornerRight].position,
     crossings[ownPenaltyCornerLeft].position
     );
 
-  // 6 - own penalty right line - ownPenaltyLineRight
+  // 12 - own penalty right line - ownPenaltyLineRight
   fieldLinesTable.addLine(
-    crossings[ownGoalTCrossingRight].position,
+    crossings[ownPenaltyTCrossingRight].position,
     crossings[ownPenaltyCornerRight].position
     );
 
-  // 7 - own penalty left line - ownPenaltyLineLeft
+  // 13 - own penalty left line - ownPenaltyLineLeft
   fieldLinesTable.addLine(
-    crossings[ownGoalTCrossingLeft].position,
+    crossings[ownPenaltyTCrossingLeft].position,
     crossings[ownPenaltyCornerLeft].position
     );
 
-  // 8 - opponent penalty line - opponentPenaltyLine
+  // 14 - opponent penalty line - opponentPenaltyLine
   fieldLinesTable.addLine(
     crossings[opponentPenaltyCornerRight].position,
     crossings[opponentPenaltyCornerLeft].position
     );
 
-  // 9 - opponent penalty right line - opponentPenaltyLineRight
+  // 15 - opponent penalty right line - opponentPenaltyLineRight
   fieldLinesTable.addLine(
     crossings[opponentPenaltyCornerRight].position,
-    crossings[opponentGoalTCrossingRight].position
+    crossings[opponentPenaltyTCrossingRight].position
     );
 
-  // 10 - opponent penalty left line - opponentPenaltyLineLeft
+  // 16 - opponent penalty left line - opponentPenaltyLineLeft
   fieldLinesTable.addLine(
     crossings[opponentPenaltyCornerLeft].position,
-    crossings[opponentGoalTCrossingLeft].position
+    crossings[opponentPenaltyTCrossingLeft].position
     );
 
   //
@@ -360,6 +440,9 @@ void FieldInfo::print(std::ostream& stream) const
   stream << "xLength = "<< xLength <<"\n";
   stream << "yLength = "<< yLength <<"\n";
 
+  stream << "xPosOpponentGoalboxArea = " << xPosOpponentGoalboxArea << "\n";
+  stream << "yPosLeftGoalboxArea = " << yPosLeftGoalboxArea << "\n";
+
   stream << "xPosOpponentPenaltyArea = "<< xPosOpponentPenaltyArea <<"\n";
   stream << "yPosLeftPenaltyArea = "<< yPosLeftPenaltyArea <<"\n";
 
@@ -376,10 +459,12 @@ void FieldInfo::print(std::ostream& stream) const
   stream << "xPosOpponentGoal = "<< xPosOpponentGoal <<"\n";
   stream << "xPosOwnGroundline = "<< xPosOwnGroundline <<"\n";
   stream << "xPosOpponentGroundline = "<< xPosOpponentGroundline <<"\n";
+  stream << "xPosOwnGoalboxArea = " << xPosOwnGoalboxArea << "\n";
   stream << "xPosOwnPenaltyArea = "<< xPosOwnPenaltyArea <<"\n";
 
   stream << "yPosLeftSideline = "<< yPosLeftSideline <<"\n";
   stream << "yPosRightSideline = "<< yPosRightSideline <<"\n";
+  stream << "yPosRightGoalboxArea = " << yPosRightGoalboxArea << "\n";
   stream << "yPosRightPenaltyArea = "<< yPosRightPenaltyArea <<"\n";
 
   stream << "yPosRightGoalpost = "<< yPosRightGoalpost <<"\n";

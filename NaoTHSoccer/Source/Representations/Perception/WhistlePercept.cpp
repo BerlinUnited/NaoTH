@@ -6,21 +6,22 @@
 using namespace naoth;
 
 WhistlePercept::WhistlePercept():
-  counter(0), // NOTE: obsolete
   whistleDetected(false)
 {
 }
 
 void WhistlePercept::print(std::ostream& stream) const
 { 
-  stream << "whistleDetected: " << whistleDetected << std::endl;
-  stream << "counter: " << counter << std::endl; // NOTE: obsolete
+  //stream << "whistleDetected: " << whistleDetected << std::endl;
+  stream << "Frame number of last detected whistle: " << frameWhenWhistleDetected << std::endl;
+  /*
   stream << "capture to file: " << captureFile << std::endl;
   stream << "recognized whistles: " << recognizedWhistles.size() << std::endl;
   for (size_t wIdx = 0; wIdx < recognizedWhistles.size(); wIdx++) 
   {
     stream << " " << recognizedWhistles[wIdx].name << " @" << recognizedWhistles[wIdx].positionInCapture << " response=" << recognizedWhistles[wIdx] .responseValue << std::endl; 
   }
+  */
 }
 
 WhistlePercept::~WhistlePercept()
@@ -34,8 +35,8 @@ void Serializer<WhistlePercept>::deserialize(std::istream& stream, WhistlePercep
   message.ParseFromZeroCopyStream(&buf);
 
   // NOTE: obsolete
-  if(message.has_counter()) {
-    representation.counter = message.counter();
+  if(message.has_framewhenwhistledetected()) {
+    representation.frameWhenWhistleDetected = message.framewhenwhistledetected();
   }
 
   if(message.has_capturefile()) {
@@ -61,7 +62,6 @@ void Serializer<WhistlePercept>::serialize(const WhistlePercept& representation,
   naothmessages::WhistlePercept message;
 
   // NOTE: obsolete
-  message.set_counter(representation.counter);
   message.set_capturefile(representation.captureFile);
   message.set_whistledetected(representation.whistleDetected);
 

@@ -1,11 +1,13 @@
 
-#ifndef _WHISTLE_PERCEPT_H
-#define _WHISTLE_PERCEPT_H
+#ifndef WHISTLE_PERCEPT_H
+#define WHISTLE_PERCEPT_H
 
 #include <string>
 #include <vector>
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/DataStructures/Serializer.h"
+
+#include "Representations/Infrastructure/FrameInfo.h"
 
 namespace naoth
 {
@@ -32,8 +34,7 @@ namespace naoth
     std::vector<Whistle> recognizedWhistles;
     std::string captureFile;
 
-    // NOTE: obsolete, this is here for documentation purposes
-    int counter;
+    unsigned int frameWhenWhistleDetected;
 
     bool whistleDetected;
 
@@ -44,7 +45,6 @@ namespace naoth
     void reset()
     {
       recognizedWhistles.clear();
-      counter = 0; // NOTE: obsolete?
       whistleDetected = false;
     }
 
@@ -63,5 +63,5 @@ namespace naoth
   };
 }
 
-#endif  /* _WHISTLE_PERCEPT_H */
+#endif  /* WHISTLE_PERCEPT_H */
 

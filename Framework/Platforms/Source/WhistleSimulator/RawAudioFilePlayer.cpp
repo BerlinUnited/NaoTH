@@ -82,12 +82,10 @@ namespace naoth {
 
     void RawAudioFilePlayer::readAupFile(std::ifstream& aupFile) {
         string line;
-        bool paramsFound = false;
 
         std::vector<std::string> tracks;
         while (getline(aupFile, line)) {
             if (line.find("<wavetrack") != string::npos) {
-                paramsFound = true;
                 tracks.emplace_back(line);
             }
         }

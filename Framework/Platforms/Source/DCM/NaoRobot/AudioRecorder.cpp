@@ -17,7 +17,7 @@ AudioRecorder::AudioRecorder()
   recordingTimestamp(0)
 {
   std::cout << "[INFO] AudioRecorder thread started" << std::endl;
-  audioRecorderThread = std::thread([this] {this->execute();});
+  audioRecorderThread = std::thread(&AudioRecorder::execute, this);
   ThreadUtil::setPriority(audioRecorderThread, ThreadUtil::Priority::lowest);
   ThreadUtil::setName(audioRecorderThread, "AudioRecorder");
 }

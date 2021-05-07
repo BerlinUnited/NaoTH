@@ -28,12 +28,12 @@ GoalCrossBarDetector::GoalCrossBarDetector()
   DEBUG_REQUEST_REGISTER("Vision:GoalCrossBarDetector:markGradients", "mark found gradients in image", false);
   DEBUG_REQUEST_REGISTER("Vision:GoalCrossBarDetector:showTestBackProjection", "mark found gradients in image", false);
 
-  getDebugParameterList().add(&parameters);
+  getDebugParameterList().add(&params);
 }
 
 GoalCrossBarDetector::~GoalCrossBarDetector()
 {
-  getDebugParameterList().remove(&parameters);
+  getDebugParameterList().remove(&params);
 }
 
 bool GoalCrossBarDetector::execute(CameraInfo::CameraID id)
@@ -221,7 +221,7 @@ bool GoalCrossBarDetector::checkProjectedPostDistance(const GoalPercept::GoalPos
   double goalWidth = getFieldInfo().goalWidth;
   double widthRatio = goalWidth > projectedGoalWidth ? goalWidth / projectedGoalWidth : projectedGoalWidth/ goalWidth;
 
-  return (post0.positionReliable || post1.positionReliable) && widthRatio < parameters.maxGoalWidthRatio;
+  return (post0.positionReliable || post1.positionReliable) && widthRatio < params.maxGoalWidthRatio;
 }
 
 Vector2d GoalCrossBarDetector::getBackProjectedTopPoint(const GoalPercept::GoalPost& post)
@@ -292,7 +292,7 @@ bool GoalCrossBarDetector::estimateCrossBarDirection(const GoalPercept::GoalPost
     for(size_t j = 0; j < features[i].size(); j++)
     {
       double d = fabs(features[i][j].width - post.seenWidth);
-      if(d < widthDiff &&  features[i][j].width >= post.seenWidth * parameters.barWidthSimilarity)
+      if(d < widthDiff &&  features[i][j].width >= post.seenWidth * params.barWidthSimilarity)
       {
         ii = i;
         jj = j;
@@ -329,7 +329,7 @@ bool GoalCrossBarDetector::estimateCrossBarDirection(const GoalPercept::GoalPost
     for(size_t j = 0; j < features[2].size(); j++)
     {
       double d = fabs(features[2][j].width - post.seenWidth);
-      if(d < widthDiff &&  features[2][j].width >= post.seenWidth * parameters.barWidthSimilarity)
+      if(d < widthDiff &&  features[2][j].width >= post.seenWidth * params.barWidthSimilarity)
       {
         jjj = j;
         widthDiff = d;
@@ -402,7 +402,7 @@ void GoalCrossBarDetector::scanAlongCrossBar(const Vector2i& start, const Vector
       POINT_PX(ColorClasses::gray, pos.x,pos.y);
     );
     
-    int pixValue = parameters.detectWhiteGoals ? pixel.y : (int) Math::round(((double) pixel.v - (double)pixel.u) * ((double) pixel.y / 255.0));
+    int pixValue = params.detectWhiteGoals ? pixel.y : (int) Math::round(((double) pixel.v - (double)pixel.u) * ((double) pixel.y / 255.0));
     filter.add(pos, pixValue);
 
     //if(filter.ready() && filter.value() < parameters.threshold) 
@@ -428,7 +428,7 @@ void GoalCrossBarDetector::scanAlongCrossBar(const Vector2i& start, const Vector
 
 size_t GoalCrossBarDetector::scanDown(size_t id, const Vector2i& downStart, const Vector2i& downEnd, double barWidth)
 {
-  if(parameters.useColorFeatures)
+  if(params.useColorFeatures)
   {
     return scanDownColor(id, downStart, downEnd, barWidth);
   }
@@ -466,7 +466,7 @@ size_t GoalCrossBarDetector::scanDownColor(size_t id, const Vector2i& downStart,
       continue;
     }
     getImage().get(pos.x, pos.y, pixel);
-    int pixValue = parameters.detectWhiteGoals ? pixel.y : (int) Math::round(((double) pixel.v - (double)pixel.u) * ((double) pixel.y / 255.0));
+    int pixValue = params.detectWhiteGoals ? pixel.y : (int) Math::round(((double) pixel.v - (double)pixel.u) * ((double) pixel.y / 255.0));
 
     DEBUG_REQUEST("Vision:GoalCrossBarDetector:draw_scanlines",
       POINT_PX(ColorClasses::gray, pos.x, pos.y );
@@ -479,7 +479,7 @@ size_t GoalCrossBarDetector::scanDownColor(size_t id, const Vector2i& downStart,
 
     if(!begin_found)
     {
-      if(filter.value() > parameters.threshold)
+      if(filter.value() > params.threshold)
       {
         begin = filter.point();
         DEBUG_REQUEST("Vision:GoalCrossBarDetector:markPeaks",
@@ -494,27 +494,27 @@ size_t GoalCrossBarDetector::scanDownColor(size_t id, const Vector2i& downStart,
       }
     }
 
-    if(begin_found && filter.value() + jump*0.5 < parameters.threshold)
+    if(begin_found && filter.value() + jump*0.5 < params.threshold)
     {
       const Vector2i& end = filter.point();
       DEBUG_REQUEST("Vision:GoalCrossBarDetector:markPeaks",
         POINT_PX(ColorClasses::red, end.x, end.y );
       );
 
-      Vector2d gradientBegin = parameters.detectWhiteGoals ? calculateGradientY(begin) : calculateGradientUV(begin);
+      Vector2d gradientBegin = params.detectWhiteGoals ? calculateGradientY(begin) : calculateGradientUV(begin);
       DEBUG_REQUEST("Vision:GoalCrossBarDetector:markGradients", 
         LINE_PX(ColorClasses::black, begin.x, begin.y, begin.x + (int)(10*gradientBegin.x+0.5), begin.y + (int)(10*gradientBegin.y+0.5));
       );
-      Vector2d gradientEnd = parameters.detectWhiteGoals ? calculateGradientY(end) : calculateGradientUV(end);
+      Vector2d gradientEnd = params.detectWhiteGoals ? calculateGradientY(end) : calculateGradientUV(end);
       DEBUG_REQUEST("Vision:GoalCrossBarDetector:markGradients", 
         LINE_PX(ColorClasses::black, end.x, end.y, end.x + (int)(10*gradientEnd.x+0.5), end.y + (int)(10*gradientEnd.y+0.5));
       );
       int featureWidth = (end - begin).abs();
       if
       (
-        fabs(gradientBegin*gradientEnd) > parameters.thresholdFeatureGradient && 
-        featureWidth < parameters.maxFeatureWidth &&
-        featureWidth >= barWidth * parameters.barWidthSimilarity
+        fabs(gradientBegin*gradientEnd) > params.thresholdFeatureGradient &&
+        featureWidth < params.maxFeatureWidth &&
+        featureWidth >= barWidth * params.barWidthSimilarity
       ) 
       {
         DEBUG_REQUEST("Vision:GoalCrossBarDetector:markPeaks", 
@@ -561,7 +561,7 @@ size_t GoalCrossBarDetector::scanDownDiff(size_t id, const Vector2i& downStart, 
 
   // initialize the scanner
   Vector2i peak_point(pos);
-  MaximumScan<Vector2i,double> maxScan(peak_point, parameters.thresholdGradient);
+  MaximumScan<Vector2i,double> maxScan(peak_point, params.thresholdGradient);
 
   for(int p = 0; p < downScan.numberOfPixels; p++)
   {
@@ -572,19 +572,19 @@ size_t GoalCrossBarDetector::scanDownDiff(size_t id, const Vector2i& downStart, 
       continue;
     }
     getImage().get(pos.x, pos.y, pixel);
-    int pixValue =  parameters.detectWhiteGoals ? pixel.y : (int) Math::round(((double) pixel.v - (double)pixel.u) * ((double) pixel.y / 255.0));
+    int pixValue = params.detectWhiteGoals ? pixel.y : (int) Math::round(((double) pixel.v - (double)pixel.u) * ((double) pixel.y / 255.0));
 
       DEBUG_REQUEST("Vision:GoalCrossBarDetector:draw_scanlines",
       POINT_PX(ColorClasses::gray, pos.x, pos.y );
     );
 
-    if(pixValue > parameters.threshold)
+    if(pixValue > params.threshold)
     {
       filter.add(pos, pixValue);
     }
     else
     {
-      filter.add(pos, parameters.threshold);
+      filter.add(pos, params.threshold);
     }
     if(!filter.ready()) {
       continue;
@@ -594,7 +594,7 @@ size_t GoalCrossBarDetector::scanDownDiff(size_t id, const Vector2i& downStart, 
 
     if(maxScan.add(filter.point(), absValue))
     {
-      Vector2d gradient = parameters.detectWhiteGoals ? calculateGradientY(peak_point) : calculateGradientUV(peak_point);
+      Vector2d gradient = params.detectWhiteGoals ? calculateGradientY(peak_point) : calculateGradientUV(peak_point);
       EdgelD newEdgel;
 
       if(gradient.y < 0)
@@ -633,19 +633,19 @@ size_t GoalCrossBarDetector::scanDownDiff(size_t id, const Vector2i& downStart, 
       if(edgeFound)
       { 
         double sim = lastEdgel.sim2(newEdgel);
-        if(sim > parameters.thresholdFeatureGradient)
+        if(sim > params.thresholdFeatureGradient)
         {
           GoalBarFeature feature;
           feature.point = Vector2d(lastEdgel.point + newEdgel.point) * 0.5;
           double featureWidth = (newEdgel.point - lastEdgel.point).abs();
           
           getImage().get((int)  feature.point.x, (int)  feature.point.y, pixel);
-          int pixValue =  parameters.detectWhiteGoals ? pixel.y : (int) Math::round(((double) pixel.v - (double)pixel.u) * ((double) pixel.y / 255.0));
+          int pixValue = params.detectWhiteGoals ? pixel.y : (int) Math::round(((double) pixel.v - (double)pixel.u) * ((double) pixel.y / 255.0));
           if
           (
-            pixValue > parameters.threshold &&
-            featureWidth < parameters.maxFeatureWidth/* &&
-            featureWidth >= barWidth * parameters.barWidthSimilarity*/
+            pixValue > params.threshold &&
+            featureWidth < params.maxFeatureWidth/* &&
+            featureWidth >= barWidth * params.barWidthSimilarity*/
           )
           {
             GoalBarFeature crossBarFeature;
@@ -693,7 +693,7 @@ void GoalCrossBarDetector::clusterEdgelFeatures()
       {
         const GoalBarFeature& e2 = features[scanIdTwo][j];
 
-        if(e1.sim(e2) > parameters.thresholdFeatureSimilarity) 
+        if(e1.sim(e2) > params.thresholdFeatureSimilarity)
         {
           GoalBarFeature pair;
           pair.point = (e1.point + e2.point)*0.5;
@@ -722,7 +722,7 @@ void GoalCrossBarDetector::clusterEdgelFeatures()
       }
     }
 
-    if(max_sim > parameters.thresholdFeatureSimilarity) {
+    if(max_sim > params.thresholdFeatureSimilarity) {
       clusters[cluster_idx].add(e1);
     } else {
       Cluster cluster;
@@ -738,7 +738,7 @@ void GoalCrossBarDetector::calcuateCrossBars()
   {
     Cluster& cluster = clusters[j];
       
-    if(cluster.size() > parameters.minGoodPoints) 
+    if(cluster.size() > params.minGoodPoints)
     {
       Math::Line line = cluster.getLine();
 

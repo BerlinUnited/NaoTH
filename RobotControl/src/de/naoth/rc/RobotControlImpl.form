@@ -6,12 +6,8 @@
       <Properties>
         <Property name="alwaysOnTop" type="boolean" value="true"/>
         <Property name="locationByPlatform" type="boolean" value="true"/>
-        <Property name="modal" type="boolean" value="true"/>
         <Property name="name" type="java.lang.String" value="dialogFastAccessDialog" noResource="true"/>
         <Property name="undecorated" type="boolean" value="true"/>
-        <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[600, 300]"/>
-        </Property>
       </Properties>
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
@@ -129,6 +125,14 @@
             <AuxValue name="JavaCodeGenerator_LayoutCodePost" type="java.lang.String" value="helpMenu.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);&#xa;mainMenuBar.add(javax.swing.Box.createHorizontalGlue());"/>
           </AuxValues>
           <SubComponents>
+            <MenuItem class="javax.swing.JMenuItem" name="helpMenuItem">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Help"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="helpMenuItemActionPerformed"/>
+              </Events>
+            </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="aboutMenuItem">
               <Properties>
                 <Property name="mnemonic" type="int" value="97"/>
@@ -208,12 +212,12 @@
         </DimensionLayout>
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
+              <Component id="jSeparator5" alignment="1" max="32767" attributes="0"/>
+              <Component id="lblSentBytesS" alignment="0" max="32767" attributes="0"/>
+              <Component id="lblFramesS" alignment="0" max="32767" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="btManager" alignment="3" min="-2" pref="25" max="-2" attributes="0"/>
                   <Component id="lblReceivedBytesS" alignment="3" max="32767" attributes="0"/>
-                  <Component id="jSeparator5" alignment="1" max="32767" attributes="0"/>
-                  <Component id="lblSentBytesS" alignment="0" max="32767" attributes="0"/>
-                  <Component id="lblFramesS" alignment="0" max="32767" attributes="0"/>
               </Group>
               <Group type="102" alignment="0" attributes="0">
                   <Component id="statusPanelPlugins" min="-2" max="-2" attributes="0"/>

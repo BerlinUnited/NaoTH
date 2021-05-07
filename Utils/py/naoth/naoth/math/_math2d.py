@@ -62,6 +62,9 @@ class Vector2:
     def __str__(self):
         return "({0},{1})".format(self.x, self.y)
 
+    def __repr__(self):
+        return str(self)
+
     def __eq__(self, other):
         if self.x == other.x and self.y == other.y:
             return True
@@ -146,6 +149,9 @@ class Pose2D:
 
     def __str__(self):
         return "(translation = {0}, rotation = {1})".format(self.translation, self.rotation)
+
+    def __repr__(self):
+        return str(self)
 
     def rotate(self, a):
         self.rotation += a

@@ -106,7 +106,7 @@ public:
     int min_vertical_gap_px;
 
     bool uniform_vertical_lengths;
-  } parameters;
+  } params;
 
 private:
   CameraInfo::CameraID cameraID;

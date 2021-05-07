@@ -135,7 +135,7 @@ public:
       PARAMETER_REGISTER(minimalNumberOfPairs) = 0;
       PARAMETER_REGISTER(maximalProjectedLineWidth) = 30;
 
-      // pixels, pairs must be apart from each other
+      // pixels, pairs must be apart from each other, to avoid aliasing
       PARAMETER_REGISTER(min_pair_pixel_distance) = 10;
 
       syncWithConfig();
@@ -150,7 +150,7 @@ public:
     int maximalProjectedLineWidth;
 
     int min_pair_pixel_distance;
-  } parameters;
+  } params;
 
   struct Neighbors {
     Neighbors():left(-1), right(-1), w_left(0), w_right(0){}

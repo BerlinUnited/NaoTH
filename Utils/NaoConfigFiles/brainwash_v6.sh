@@ -2,6 +2,10 @@
 
 echo "using $BACKUP_DIRECTORY and $DEPLOY_DIRECTORY"
 
+HEAD_ID=$(cat /sys/qi/head_id)
+N=$(grep "$HEAD_ID" robots.cfg | sed 's/.*=\([0-9]\+\)/\1/')
+if [[ -z "$N" ]]; then N=99; fi # fallback number 99 !
+
 # ==================== fun definition ====================
 
 deployFile() {
@@ -79,7 +83,7 @@ setEtc(){
 	# ====================  host stuff ====================
 
 	# hostname
-	deployFile "/etc/hostname" "root" "644" "v6"
+	echo "nao$N" > /etc/hostname
 
 	# ====================  pulseaudio stuff ====================
 
@@ -310,7 +314,6 @@ NETWORK_ETH_IP="192.168.13"
 NETWORK_ETH_MASK="255.255.255.0"
 NETWORK_ETH_BROADCAST="192.168.13.255"
 
-N=$(cat /etc/hostname | grep -Eo "[0-9]{2}")
 NETWORK_WLAN_IP="$NETWORK_WLAN_IP.$N"
 NETWORK_ETH_IP="$NETWORK_ETH_IP.$N"
 

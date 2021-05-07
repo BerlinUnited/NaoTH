@@ -378,7 +378,7 @@ void DCMHandler::initAllSensorData()
     allSensorsList[currentIndex++] = DCMPath_UltraSoundReceiveRight[i];
   }
 
-  ASSERT(theBatteryDataIdex == currentIndex);
+  ASSERT(theBatteryDataIndex == currentIndex);
   allSensorsList[currentIndex++] = DCMPath_BatteryCharge;
   allSensorsList[currentIndex++] = DCMPath_BatteryCurrent;
   allSensorsList[currentIndex++] = DCMPath_BatteryTemperature;
