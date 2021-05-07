@@ -631,6 +631,11 @@ public class NaoSCP extends javax.swing.JPanel {
                         FileUtils.writeToFile(networkScript, new File(setupDir, "startBrainwashing.sh"));
                         
                         
+                        // zip the deploy directory for faster network transfer
+                        File setupZip = new File(tmpDir, "setup.zip");
+                        Logger.getGlobal().log(Level.INFO, "ZIP files to " + setupZip.getPath());
+                        FileUtils.zipDirectory(setupDir, setupZip);
+                        
                         // try to connect to the robot
                         Scp scp = null;
                         String ip = null;
@@ -651,15 +656,18 @@ public class NaoSCP extends javax.swing.JPanel {
 
                         scp.mkdir("/home/nao/tmp");
                         scp.cleardir("/home/nao/tmp");
-                        scp.put(setupDir, "/home/nao/tmp");
+                        
+                        // copy files
+                        //scp.put(setupDir, "/home/nao/tmp");
+                        scp.put(setupZip, "/home/nao/tmp/setup.zip");
 
-                        scp.chmod(755, "/home/nao/tmp/startBrainwashing.sh");
+                        //scp.chmod(755, "/home/nao/tmp/startBrainwashing.sh");
 
                         Scp.CommandStream shell = scp.getShell();
                         shell.run("su", "Password:");
                         shell.run("root");
                         shell.run("cd /home/nao/tmp/");
-                        shell.run("./startBrainwashing.sh", "DONE");
+                        shell.run("sudo -u nao unzip -q setup.zip; cd ./setup; bash ./startBrainwashing.sh", "DONE");
 
                         scp.disconnect();
 
