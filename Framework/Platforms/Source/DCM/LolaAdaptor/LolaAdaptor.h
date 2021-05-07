@@ -42,7 +42,7 @@ private:
   /**
    * @brief Writes the nao bodyId and the nickname to the "Config/nao.info" file.
    */
-  void writeNaoInfo() const;
+  void writeNaoInfo(const std::string& theBodyID, const std::string& /*theHeadID*/) const;
 
   static bool fileExists (const std::string& filename);
 
