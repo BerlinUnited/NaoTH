@@ -24,6 +24,7 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
   getFieldPercept().reset();
   endpoints.clear();
 
+  // Get the camera parameters of the camera image we run the detection on
   Parameters::cam_params cam_params = cameraID==CameraInfo::Top? params.top:
                                                                  params.bottom;
   if(cam_params.set_image_as_field) {
