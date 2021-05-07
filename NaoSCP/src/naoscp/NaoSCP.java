@@ -305,7 +305,7 @@ public class NaoSCP extends javax.swing.JPanel {
         });
         statusBarPanel.add(btInintRobot);
 
-        btnActions.setText("▲");
+        btnActions.setText("\u25B2"); // Black Up-Pointing Triangle
         btnActions.setMargin(new java.awt.Insets(2, -4, 2, -4));
         btnActions.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -613,6 +613,29 @@ public class NaoSCP extends javax.swing.JPanel {
                         File libDir = chooser.getSelectedFile();
                         FileUtils.copyFiles(libDir, new File(setupDir + "/deploy", "/home/nao/lib"));
 
+                        
+                        // adjust network configuration
+                        NetwokPanel.NetworkConfig cfg = netwokPanel.getNetworkConfig();
+
+                        String networkScript = FileUtils.readFile(new File(setupDir, "startBrainwashing.sh"));
+                        networkScript = networkScript.replaceAll("NETWORK_WLAN_SSID=\".*\"", "NETWORK_WLAN_SSID=\""+cfg.getWlan_encryption().ssid+"\"");
+                        networkScript = networkScript.replaceAll("NETWORK_WLAN_PW=\".*\"", "NETWORK_WLAN_PW=\""+cfg.getWlan_encryption().key+"\"");
+                        networkScript = networkScript.replaceAll("NETWORK_WLAN_IP=\".*\"", "NETWORK_WLAN_IP=\""+cfg.getWlan().subnet+"\"");
+                        networkScript = networkScript.replaceAll("NETWORK_WLAN_MASK=\".*\"", "NETWORK_WLAN_MASK=\""+cfg.getWlan().mask+"\"");
+                        networkScript = networkScript.replaceAll("NETWORK_WLAN_BROADCAST=\".*\"", "NETWORK_WLAN_BROADCAST=\""+cfg.getWlan().broadcast+"\"");
+
+                        networkScript = networkScript.replaceAll("NETWORK_ETH_IP=\".*\"", "NETWORK_ETH_IP=\""+cfg.getLan().subnet+"\"");
+                        networkScript = networkScript.replaceAll("NETWORK_ETH_MASK=\".*\"", "NETWORK_ETH_MASK=\""+cfg.getLan().mask+"\"");
+                        networkScript = networkScript.replaceAll("NETWORK_ETH_BROADCAST=\".*\"", "NETWORK_ETH_BROADCAST=\""+cfg.getLan().broadcast+"\"");
+
+                        FileUtils.writeToFile(networkScript, new File(setupDir, "startBrainwashing.sh"));
+                        
+                        
+                        // zip the deploy directory for faster network transfer
+                        File setupZip = new File(tmpDir, "setup.zip");
+                        Logger.getGlobal().log(Level.INFO, "ZIP files to " + setupZip.getPath());
+                        FileUtils.zipDirectory(setupDir, setupZip);
+                        
                         // try to connect to the robot
                         Scp scp = null;
                         String ip = null;
@@ -633,15 +656,18 @@ public class NaoSCP extends javax.swing.JPanel {
 
                         scp.mkdir("/home/nao/tmp");
                         scp.cleardir("/home/nao/tmp");
-                        scp.put(setupDir, "/home/nao/tmp");
+                        
+                        // copy files
+                        //scp.put(setupDir, "/home/nao/tmp");
+                        scp.put(setupZip, "/home/nao/tmp/setup.zip");
 
-                        scp.chmod(755, "/home/nao/tmp/startBrainwashing.sh");
+                        //scp.chmod(755, "/home/nao/tmp/startBrainwashing.sh");
 
                         Scp.CommandStream shell = scp.getShell();
                         shell.run("su", "Password:");
                         shell.run("root");
                         shell.run("cd /home/nao/tmp/");
-                        shell.run("./startBrainwashing.sh", "DONE");
+                        shell.run("sudo -u nao unzip -q setup.zip; cd ./setup; bash ./startBrainwashing.sh", "DONE");
 
                         scp.disconnect();
 
