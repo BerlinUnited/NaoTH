@@ -5,7 +5,6 @@
 
 GameController::GameController()
   : 
-  lastGameState(GameData::GameState::unknown_game_state),
   debug_whistle_heard(false),
   play_by_whistle(false)
 {
@@ -109,7 +108,10 @@ void GameController::execute()
       getPlayerInfo().playerNumber = getGameData().newPlayerNumber;
     }
 
-    getPlayerInfo().update(getGameData());
+    // ignore information from game controller when unstiff
+    if (getPlayerInfo().robotState != PlayerInfo::unstiff) {
+      getPlayerInfo().update(getGameData());
+    }
 
     // take the ownership of the play state
     if(getPlayerInfo().robotState == PlayerInfo::playing) {
@@ -131,16 +133,14 @@ void GameController::execute()
     }
   }
 
-
   if(  oldRobotState != getPlayerInfo().robotState
     || oldTeamColor  != getPlayerInfo().teamColor
-    || getPlayerInfo().robotState == PlayerInfo::initial)
+    || getPlayerInfo().robotState == PlayerInfo::initial
+    || getPlayerInfo().robotState == PlayerInfo::unstiff)
   {
     updateLEDs();
   }
 
-  // remember last game state (from gamecontroller)
-  lastGameState = getGameData().gameState;
   // set teamcomm: whistle detected!
   getTeamMessageData().custom.whistleDetected = getWhistlePercept().whistleDetected;
 
@@ -259,6 +259,11 @@ void GameController::handleButtons()
       play_by_whistle = false;
       break;
     }
+    case PlayerInfo::unstiff:
+    {
+      getPlayerInfo().robotState = PlayerInfo::initial;
+      break;
+    }
     default:
       ASSERT(false);
     }
@@ -305,7 +310,6 @@ void GameController::handleButtons()
   {
     getPlayerInfo().robotState = PlayerInfo::initial;
   }
-
 } // end handleButtons
 
 
@@ -323,6 +327,14 @@ void GameController::handleHeadButtons()
       getSoundPlayData().mute = false;
       getSoundPlayData().soundFile = ssWav.str();
     }
+  }
+
+
+  if((getButtonState().buttons[ButtonState::HeadFront].isPressed && getButtonState()[ButtonState::HeadFront].timeSinceEvent() > 1000) &&
+    (getButtonState()[ButtonState::HeadMiddle].isPressed && getButtonState()[ButtonState::HeadMiddle].timeSinceEvent() > 1000) &&
+    (getButtonState()[ButtonState::HeadRear].isPressed && getButtonState()[ButtonState::HeadRear].timeSinceEvent() > 1000)) {
+
+    getPlayerInfo().robotState = PlayerInfo::unstiff;
   }
 }
 
@@ -361,6 +373,15 @@ void GameController::updateLEDs()
       break;
     case PlayerInfo::penalized:
         getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::RED] = 1.0;
+      break;
+    case PlayerInfo::unstiff:
+      //Hack handle blinking chest button for unstiff here
+      if (getFrameInfo().getFrameNumber() % 8 < 4) {
+        getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::BLUE] = 1.0;
+      }
+      else {
+        getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::BLUE] = 0.0;
+      }
       break;
     default:
       break;
