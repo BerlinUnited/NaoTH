@@ -36,10 +36,11 @@ public:
   class EdgelPair : public EdgelT<double>
   {
   public:
-    EdgelPair() : begin(-1), end(-1), id(-1) {}
+    EdgelPair() : begin(-1), end(-1), id(-1), adaptive(false){}
     int begin;
     int end;
     int id;
+    bool adaptive;
   };
 
   std::vector<EdgelPair> pairs; // this depends on edgels
