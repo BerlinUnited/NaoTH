@@ -103,6 +103,7 @@ option decide_game_state
       audio.capture = false;  //whistledetector off
       last_state_was_penalized = false;
 
+      set_head = 1;
       //TODO set chest led
     }
   }

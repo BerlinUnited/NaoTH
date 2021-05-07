@@ -131,6 +131,16 @@ void GameController::execute()
     }
   }
 
+  //Hack handle blinking chest button for unstiff here
+  if (getPlayerInfo().robotState == PlayerInfo::unstiff) {
+    if (getFrameInfo().getFrameNumber() % 8 < 4) {
+      getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::BLUE] = 1.0;
+    }
+    else {
+      getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::BLUE] = 0.0;
+    }
+  }      
+
 
   if(  oldRobotState != getPlayerInfo().robotState
     || oldTeamColor  != getPlayerInfo().teamColor
