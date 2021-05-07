@@ -15,8 +15,6 @@ LolaAdaptor::LolaAdaptor()
     openSharedMemory(naoCommandMotorJointData, "/nao_command.MotorJointData");
     openSharedMemory(naoCommandUltraSoundSendData, "/nao_command.UltraSoundSendData");
     openSharedMemory(naoCommandLEDData, "/nao_command.LEDData");
-
-    writeNaoInfo();
 }
 
 LolaAdaptor::~LolaAdaptor()
@@ -39,14 +37,16 @@ void LolaAdaptor::openSharedMemory(SharedMemory<T> &sm, const std::string &path)
     sm.open(path);
 }
 
-void LolaAdaptor::writeNaoInfo() const
+void LolaAdaptor::writeNaoInfo(const std::string& theBodyID, const std::string& /*theHeadID*/) const
 {
     // save the body ID
-    std::string theBodyID = "ALDT_lola"; //theDCMHandler.getBodyID();
-    std::cout << "[LolaAdaptor] bodyID: "<< theBodyID << std::endl;
+    std::cout << "[LolaAdaptor] bodyID: " << theBodyID << std::endl;
 
     // save the nick name
-    std::string theBodyNickName = "nao_lola"; //theDCMHandler.getBodyNickName();
+    std::string theBodyNickName = "error";
+    if(theBodyID.length() >= 4) {
+      theBodyNickName = "Nao" + theBodyID.substr( theBodyID.length() - 4 ); //theDCMHandler.getBodyNickName();
+    }
     std::cout << "[LolaAdaptor] nickName: "<< theBodyNickName << std::endl;
 
     // save the value to file
@@ -128,9 +128,16 @@ void LolaAdaptor::run()
     SensorData sensors;
     ActuatorData actuators;
 
+    bool firstRun = true;
+    
     while(!exiting)
     {
         lola.readSensors(sensors);
+        
+        if(firstRun) {
+          writeNaoInfo(sensors.RobotConfig.Body.BodyId, sensors.RobotConfig.Head.FullHeadId);
+          firstRun = false;
+        }
 
         // like old DCM motionCallbackPre
         if(!runEmergencyMotion(actuators))
