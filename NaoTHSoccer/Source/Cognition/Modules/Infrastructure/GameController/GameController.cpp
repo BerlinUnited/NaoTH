@@ -155,7 +155,6 @@ void GameController::execute()
   // provide the return message
   getGameReturnData().team = getPlayerInfo().teamNumber;
   getGameReturnData().player = getPlayerInfo().playerNumber;
-  //getGameReturnData().
   getGameReturnData().message = getWifiMode().wifiEnabled ? GameReturnData::alive : GameReturnData::dead;
 } // end execute
 
