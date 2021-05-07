@@ -262,6 +262,7 @@ void GameController::handleButtons()
     case PlayerInfo::unstiff:
     {
       getPlayerInfo().robotState = PlayerInfo::initial;
+      break;
     }
     default:
       ASSERT(false);
