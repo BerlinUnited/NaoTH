@@ -108,9 +108,11 @@ void GameController::execute()
       getPlayerInfo().playerNumber = getGameData().newPlayerNumber;
     }
 
+    // ignore information from game controller when unstiff
     if (getPlayerInfo().robotState != PlayerInfo::unstiff) {
       getPlayerInfo().update(getGameData());
     }
+
     // take the ownership of the play state
     if(getPlayerInfo().robotState == PlayerInfo::playing) {
       play_by_whistle = false;
@@ -131,20 +133,10 @@ void GameController::execute()
     }
   }
 
-  //Hack handle blinking chest button for unstiff here
-  if (getPlayerInfo().robotState == PlayerInfo::unstiff) {
-    if (getFrameInfo().getFrameNumber() % 8 < 4) {
-      getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::BLUE] = 1.0;
-    }
-    else {
-      getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::BLUE] = 0.0;
-    }
-  }      
-
-
   if(  oldRobotState != getPlayerInfo().robotState
     || oldTeamColor  != getPlayerInfo().teamColor
-    || getPlayerInfo().robotState == PlayerInfo::initial)
+    || getPlayerInfo().robotState == PlayerInfo::initial
+    || getPlayerInfo().robotState == PlayerInfo::unstiff)
   {
     updateLEDs();
   }
@@ -382,7 +374,15 @@ void GameController::updateLEDs()
     case PlayerInfo::penalized:
         getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::RED] = 1.0;
       break;
-    //TODO if this would be called continously we could implement the blinking chest led here as well
+    case PlayerInfo::unstiff:
+      //Hack handle blinking chest button for unstiff here
+      if (getFrameInfo().getFrameNumber() % 8 < 4) {
+        getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::BLUE] = 1.0;
+      }
+      else {
+        getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::BLUE] = 0.0;
+      }
+      break;
     default:
       break;
   }
