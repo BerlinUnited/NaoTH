@@ -440,7 +440,7 @@ void LineGraphProvider::calculatePairsAndNeigbors(
 
         ASSERT(edgelTwo.id >= edgelOne.id);
 
-        if(edgelTwo.point.x - edgelOne.point.x < parameters.min_pair_pixel_distance) {
+        if(edgelTwo.point.x - edgelOne.point.x < params.min_pair_pixel_distance) {
           // edgels should be at least min_pair_pixel_distance apart from each other, to avoid aliasing
           continue;
         }

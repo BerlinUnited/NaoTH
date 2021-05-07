@@ -390,7 +390,7 @@ inline bool ScanGridEdgelDetector::refine_vertical(MaxPeakScan& maximumPeak, int
     // HACK: -1, -1 cause interval isn't of interest here
     if(maximumPeak.add(y, -1, -1, gradient)) {
       // we are just looking for one peak here
-      if(!parameters.full_refinement) {
+      if(!params.full_refinement) {
         break;
       }
     }
@@ -651,7 +651,7 @@ inline bool ScanGridEdgelDetector::refine_horizontal(MaxPeakScan& maximumPeak, i
     // HACK: -1, -1 cause interval isn't of interest here
     if(maximumPeak.add(x, -1, -1, gradient)) {
       // we are just looking for one peak here
-      if(!parameters.full_refinement) {
+      if(!params.full_refinement) {
         break;
       }
     }
