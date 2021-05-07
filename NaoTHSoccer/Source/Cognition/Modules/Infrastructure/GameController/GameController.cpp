@@ -375,7 +375,7 @@ void GameController::updateLEDs()
         getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::RED] = 1.0;
       break;
     case PlayerInfo::unstiff:
-      //Hack handle blinking chest button for unstiff here
+      // handle blinking chest button for unstiff state
       if (getFrameInfo().getFrameNumber() % 8 < 4) {
         getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::BLUE] = 1.0;
       }
