@@ -59,7 +59,7 @@ if __name__ == '__main__':
     parser.add_argument("-l", "--limit-noball", type=str2bool, nargs='?', dest="limit_noball",
                         const=True, help="Randomly select at most |balls| from no balls class")
     parser.add_argument("--data_type", dest="data_type",
-                        choices=["classification", "detection", "semantic_segmentation"], default="semantic_segmentation")
+                        choices=["classification", "detection", "semantic_segmentation"], default="detection")
 
     args = parser.parse_args()
     if args.download:
@@ -99,6 +99,7 @@ if __name__ == '__main__':
 
     if args.data_type == "detection":
         x, y, p = create_natural_dataset(args.img_path, res, args.limit_noball, "detection")
+        print("sum:", np.sum(y))
         mean = calculate_mean(x)
         x = subtract_mean(x, mean)
 
@@ -110,7 +111,7 @@ if __name__ == '__main__':
         x_syn, y_syn, p_syn = create_blender_detection_dataset(path, res)
         mean_b = calculate_mean(x_syn)
         x_syn = subtract_mean(x_syn, mean_b)
-
+    
         print("save detection dataset with synthetic images")
         output_name = str(DATA_DIR / 'tk03_synthetic_detection.pkl')
         store_output(output_name, mean_b, x_syn, y_syn, p_syn)

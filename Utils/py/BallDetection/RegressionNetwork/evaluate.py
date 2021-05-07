@@ -13,7 +13,7 @@ MODEL_DIR = Path(Path(__file__).parent.absolute() / "data/best_models").resolve(
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Evaluate the network given ')
 
-    parser.add_argument('-b', '--database-path', dest='imgdb_path', default=str(DATA_DIR / 'imgdb.pkl'),
+    parser.add_argument('-b', '--database-path', dest='imgdb_path', default=str(DATA_DIR / 'tk03_natural_detection.pkl'),
                         help='Path to the image database containing test data.'
                              'Default is imgdb.pkl in the data folder.')
     parser.add_argument('-m', '--model-path', dest='model_path', default=str(MODEL_DIR / 'fy1500_conf.h5'),
@@ -27,8 +27,8 @@ if __name__ == '__main__':
         x = pickle.load(f)
         y = pickle.load(f)
 
+    print(args.model_path)
     model = keras.models.load_model(args.model_path)
-
     model.summary()
 
     # compare image size to network size and resize if necessary

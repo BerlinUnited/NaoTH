@@ -284,7 +284,6 @@ def create_natural_detection_dataset(path, res):
                         x_coord = (x_coord / res["x"])
                         y_coord = (y_coord / res["y"])
                         radius = radius / max(res["x"], res["y"])
-
                         is_ball = True
                     else:
                         # we only support circles
@@ -330,6 +329,7 @@ def create_natural_detection_dataset(path, res):
                     else:
                         db_noballs.append((adjust_gamma(img, g).astype(float) / 255.0, target, p))
 
+        print("len db_balls:", len(db_balls))
     return db_balls, db_noballs
 
 
@@ -410,8 +410,8 @@ def create_natural_segmentation_dataset(path, res):
 
 def create_natural_dataset(root_path, res, limit_noballs, dataset_type="detection"):
     print("Looking for csv files in: ", root_path)
-    db_ball_list = []
-    db_noball_list = []
+    complete_db_ball_list = []
+    complete_db_noball_list = []
 
     # find csv files
     all_paths = list(Path(root_path).absolute().glob('**/*.csv'))
@@ -422,20 +422,27 @@ def create_natural_dataset(root_path, res, limit_noballs, dataset_type="detectio
     for path in all_paths:
         if dataset_type == "classification":
             db_ball_list, db_noball_list = create_natural_classification_dataset(str(path), res)
+            complete_db_ball_list.extend(db_ball_list)
+            complete_db_noball_list.extend(db_noball_list)
         elif dataset_type == "detection":
             db_ball_list, db_noball_list = create_natural_detection_dataset(str(path), res)
+            complete_db_ball_list.extend(db_ball_list)
+            complete_db_noball_list.extend(db_noball_list)
         elif dataset_type == "segmentation":
             db_ball_list, db_noball_list = create_natural_segmentation_dataset(str(path), res)
+            complete_db_ball_list.extend(db_ball_list)
+            complete_db_noball_list.extend(db_noball_list)
         else:
             print("ERROR: unsupported dataset type")
             sys.exit()
+    print("len db_ball", len(complete_db_ball_list))
+    print("len db_noball_list", len(complete_db_noball_list))
+    if limit_noballs is True and len(complete_db_ball_list) < len(complete_db_noball_list):
+        print("Limit negative images to ", len(complete_db_ball_list))
+        no_ball_mask = np.random.choice(len(complete_db_noball_list), len(complete_db_ball_list))
+        complete_db_noball_list = [complete_db_noball_list[i] for i in no_ball_mask]
 
-    if limit_noballs is True and len(db_ball_list) < len(db_noball_list):
-        print("Limit negative images to ", len(db_ball_list))
-        no_ball_mask = np.random.choice(len(db_noball_list), len(db_ball_list))
-        db_noball_list = [db_noball_list[i] for i in no_ball_mask]
-
-    db = db_ball_list + db_noball_list
+    db = complete_db_ball_list + complete_db_noball_list
     random.shuffle(db)
 
     input_images, targets, file_paths = list(map(np.array, list(zip(*db))))
@@ -445,8 +452,8 @@ def create_natural_dataset(root_path, res, limit_noballs, dataset_type="detectio
 
     print("Loading finished")
     print("\nStatistic:")
-    print("number of images: " + str(len(input_images)) + " balls images: " + str(len(db_ball_list)) +
-          " no ball images: " + str(len(db_noball_list)))
+    print("number of images: " + str(len(input_images)) + " balls images: " + str(len(complete_db_ball_list)) +
+          " no ball images: " + str(len(complete_db_noball_list)))
 
     return input_images, targets, file_paths
 
