@@ -82,18 +82,19 @@ def main(raw_args=None, model=None):
     # history = model.fit(x, y, batch_size=args.batch_size, epochs=args.epochs, verbose=1,
     # validation_data=(X_test, Y_test),callbacks=callbacks)
 
-    history = model.fit(x, y, batch_size=args.batch_size, epochs=args.epochs, verbose=1, validation_split=0.1,
+    history = model.fit(x, y, batch_size=args.batch_size, epochs=1, verbose=1, validation_split=0.1,
                         callbacks=callbacks)
-    return history
+    history_filename = "history_" + model.name + "_" + Path(args.imgdb_path).stem + ".pkl"
+    return history, history_filename
 
 
 if __name__ == '__main__':
-    test_model = model_zoo.fy_1500_old()
+    test_model = model_zoo.fy_1500_new2()
     output_dir = "models"
     # forward commandline arguments to the argparser in the main function
-    train_history = main(sys.argv[1:] + ['--output', output_dir], model=test_model)
+    train_history, history_filename = main(sys.argv[1:] + ['--output', output_dir], model=test_model)
 
     # save history in same folder as model
-    history_filepath = Path(output_dir) / ("history_" + test_model.name + "_tk03.pkl")
+    history_filepath = Path(output_dir) / history_filename
     with open(str(history_filepath), "wb") as f:
         pickle.dump(train_history.history, f)
