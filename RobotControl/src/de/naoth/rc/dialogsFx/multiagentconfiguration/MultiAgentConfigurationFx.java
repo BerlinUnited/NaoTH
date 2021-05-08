@@ -31,7 +31,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCombination;
 import javafx.stage.Stage;
@@ -39,6 +38,11 @@ import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
 /**
+ * This dialog can handle multiple connections and can be used to configure multiple
+ * robots or show their representations at once.
+ *
+ * NOTE: this is only for intermediate usage and should be removed, if the other
+ *       dialogs can handle multiple connections!
  *
  * @author Philipp Strobel <philippstrobel@posteo.de>
  */
@@ -81,6 +85,15 @@ public class MultiAgentConfigurationFx extends AbstractJFXDialog
         return getClass().getResource("MultiAgentConfigurationFx.fxml");
     }
 
+    /**
+     * Returns the global theme.
+     * @return path to the global theme stylesheet
+     */
+    @Override
+    protected String getTheme() {
+        return Plugin.parent.getTheme();
+    }
+    
     @Override
     public void afterInit() {
         if(Plugin.parent != null) {
@@ -99,6 +112,8 @@ public class MultiAgentConfigurationFx extends AbstractJFXDialog
         miDisconnect.disableProperty().bind(b);
         miReconnect.disableProperty().bind(b);
         miClose.disableProperty().bind(b);
+        // apply theme to connection dialog
+        dialog.getDialogPane().getStylesheets().add(getTheme());
     }
 
     public void setConfig(Properties c) {
@@ -107,7 +122,7 @@ public class MultiAgentConfigurationFx extends AbstractJFXDialog
 
     @Override
     public Map<KeyCombination, Runnable> getGlobalShortcuts() {
-        HashMap<KeyCombination, Runnable> shortcuts = new HashMap<KeyCombination, Runnable>();
+        HashMap<KeyCombination, Runnable> shortcuts = new HashMap<>();
         // TODO: add shortcuts!!
         /*
         shortcuts.put(new KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN), () -> {
@@ -253,9 +268,5 @@ public class MultiAgentConfigurationFx extends AbstractJFXDialog
             } catch (IOException ex) {}
             return config;
         }
-    }
-    
-    class AgentListCell extends CheckBoxListCell {
-        
     }
 }
