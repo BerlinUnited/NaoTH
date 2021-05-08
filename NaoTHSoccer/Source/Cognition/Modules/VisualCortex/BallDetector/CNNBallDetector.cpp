@@ -337,8 +337,8 @@ void CNNBallDetector::addPatchByLastBall()
   if (getBallModel().valid)
   {
     Vector3d ballInField;
-    ballInField.x = getBallModel().positionPreview.x;
-    ballInField.y = getBallModel().positionPreview.y;
+    ballInField.x = getBallModel().position.x;
+    ballInField.y = getBallModel().position.y;
     ballInField.z = getFieldInfo().ballRadius;
 
     Vector2i ballInImage;
