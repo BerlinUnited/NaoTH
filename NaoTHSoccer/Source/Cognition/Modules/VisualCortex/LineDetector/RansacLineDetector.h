@@ -20,117 +20,122 @@
 #include "Ellipse.h"
 
 BEGIN_DECLARE_MODULE(RansacLineDetector)
-  PROVIDE(DebugRequest)
-  PROVIDE(DebugModify)
-  PROVIDE(DebugDrawings)
-  PROVIDE(DebugParameterList)
+PROVIDE(DebugRequest)
+PROVIDE(DebugModify)
+PROVIDE(DebugDrawings)
+PROVIDE(DebugParameterList)
 
-  REQUIRE(LineGraphPercept)
-  REQUIRE(FieldInfo)
+REQUIRE(LineGraphPercept)
+REQUIRE(FieldInfo)
 
-  PROVIDE(RansacLinePercept)
-  PROVIDE(RansacCirclePercept2018)
+PROVIDE(RansacLinePercept)
+PROVIDE(RansacCirclePercept2018)
 END_DECLARE_MODULE(RansacLineDetector)
 
 class RansacLineDetector: public RansacLineDetectorBase
 {
 public:
- RansacLineDetector();
- ~RansacLineDetector();
+RansacLineDetector();
+~RansacLineDetector();
 
- virtual void execute();
+virtual void execute();
 
 private:
-  class Parameters: public ParameterList
-  {
-  public:
+class Parameters: public ParameterList
+{
+public:
     Parameters() : ParameterList("RansacLineDetector")
     {
-      //Lines
-      PARAMETER_REGISTER(line.maxLines) = 11;
-      PARAMETER_REGISTER(line.maxIterations) = 100;
-      PARAMETER_REGISTER(line.minInliers) = 12;
+        PARAMETER_REGISTER(detect_lines_first) = false;
 
-      PARAMETER_REGISTER(line.outlierThresholdDist) = 70;
-      PARAMETER_ANGLE_REGISTER(line.outlierThresholdAngle) = 8;
-      
-      PARAMETER_REGISTER(line.maxVariance) = 0.009;
-      PARAMETER_REGISTER(line.max_length_for_var_check) = 800;
-      PARAMETER_REGISTER(line.min_line_length) = 100;
-      //PARAMETER_REGISTER(line.fit_lines_to_inliers) = false;
+        //Lines
+        PARAMETER_REGISTER(line.maxLines) = 11;
+        PARAMETER_REGISTER(line.maxIterations) = 100;
+        PARAMETER_REGISTER(line.minInliers) = 12;
 
-      //Circle
-      PARAMETER_REGISTER(circle.maxIterations) = 50;
-      PARAMETER_REGISTER(circle.minInliers) = 7;
-      PARAMETER_REGISTER(circle.outlierThresholdDist) = 70;
-      PARAMETER_ANGLE_REGISTER(circle.outlierThresholdAngle) = 8;
-      
-      PARAMETER_REGISTER(circle.enable) = true;
-      PARAMETER_REGISTER(circle.refine) = true;
+        PARAMETER_REGISTER(line.outlierThresholdDist) = 70;
+        PARAMETER_ANGLE_REGISTER(line.outlierThresholdAngle) = 8;
 
-      PARAMETER_REGISTER(circle.validate) = true;
-      PARAMETER_REGISTER(circle.validation_thresh) = 200;
+        PARAMETER_REGISTER(line.maxVariance) = 0.009;
+        PARAMETER_REGISTER(line.max_length_for_var_check) = 800;
+        PARAMETER_REGISTER(line.min_line_length) = 100;
+        //PARAMETER_REGISTER(line.fit_lines_to_inliers) = false;
 
-      syncWithConfig();
+        //Circle
+        PARAMETER_REGISTER(circle.maxIterations) = 50;
+        PARAMETER_REGISTER(circle.minInliers) = 7;
+        PARAMETER_REGISTER(circle.outlierThresholdDist) = 70;
+        PARAMETER_ANGLE_REGISTER(circle.outlierThresholdAngle) = 8;
+
+        PARAMETER_REGISTER(circle.enable) = true;
+        PARAMETER_REGISTER(circle.refine) = true;
+
+        PARAMETER_REGISTER(circle.validate) = true;
+        PARAMETER_REGISTER(circle.validation_thresh) = 200;
+
+        syncWithConfig();
     }
 
+    bool detect_lines_first;
+
     struct Line {
-      int maxLines;
-      int maxIterations;
-      int minInliers;
-      double outlierThresholdDist;
-      double outlierThresholdAngle;
+        int maxLines;
+        int maxIterations;
+        int minInliers;
+        double outlierThresholdDist;
+        double outlierThresholdAngle;
 
-      double maxVariance;
-      double max_length_for_var_check;
-      double min_line_length;
+        double maxVariance;
+        double max_length_for_var_check;
+        double min_line_length;
 
-      //bool fit_lines_to_inliers;
+        //bool fit_lines_to_inliers;
     } line;
 
     struct Circle {
-      int maxIterations;
-      int minInliers;
-      double outlierThresholdDist;
-      double outlierThresholdAngle;
-      
-      bool enable;
-      bool refine;
+        int maxIterations;
+        int minInliers;
+        double outlierThresholdDist;
+        double outlierThresholdAngle;
 
-      bool validate;
-      double validation_thresh;
+        bool enable;
+        bool refine;
+
+        bool validate;
+        double validation_thresh;
     } circle;
 
-  } params;
+} params;
 
-  // index vector on remaining outlier edgels
-  std::vector<size_t> outliers;
+// index vector on remaining outlier edgels
+std::vector<size_t> outliers;
 
 
 private: // detectors
-  ransac::RansacLine lineRansac;
-  ransac::RansacCircle circleRansac;
+ransac::RansacLine lineRansac;
+ransac::RansacCircle circleRansac;
 
-  int ransacEllipse(Ellipse& result);
+void find_middle_circle(std::vector<size_t>& inlier_idx);
+void find_field_lines(std::vector<size_t>& inlier_idx);
+
+int ransacEllipse(Ellipse& result);
 
 private: // helper methods
 
-  /**
-    Get random items without replacement from a vector.
-    Beware: This changes the order of the items.
+/**
+Get random items without replacement from a vector. Beware: This changes the order of the items.
 
-    @param vec vector to choose random item from.
-    @param ith choose the ith random item without replacement.
-    Ex: For 3 random items without replacement call
-    the function 3 times with ith=1, ith=2 and ith=3.
-    @return random item of the vector without replacement.
-  */
-  size_t choose_random_from(std::vector<size_t> &vec, int ith)  const {
+@param vec vector to choose random item from.
+@param ith choose the ith random item without replacement.
+       Ex: For 3 random items without replacement call the function 3 times with ith=1, ith=2 and ith=3.
+@return random item of the vector without replacement.
+*/
+size_t choose_random_from(std::vector<size_t> &vec, int ith)  const {
     int max = static_cast<int>(vec.size())-1;
     int random_pos = Math::random(ith, max);
     std::swap(vec[random_pos], vec[ith-1]);
     return vec[ith-1];
-  }
+}
 };
 
 #endif // RANSACLINEDETECTOR_H

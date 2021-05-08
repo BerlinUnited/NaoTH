@@ -79,6 +79,9 @@ setEtc(){
 
 	# brainwash udev rule
 	deployFile "/etc/udev/rules.d/brainwashing.rules" "root" "644" "v6"
+	
+	# logstick udev rule
+	deployFile "/etc/udev/rules.d/logstick.rules" "root" "644" "v6"
 
 	# ====================  host stuff ====================
 
@@ -147,6 +150,9 @@ naoth stop
 
 # brainwashinit
 deployFile "/usr/bin/brainwash" "root" "755" "v6"
+
+deployFile "/usr/bin/mount_logstick" "root" "755" "v6"
+deployFile "/usr/bin/collect_logs" "root" "755" "v6"
 
 # NaoTH binary start script
 deployFile "/usr/bin/naoth" "root" "755" "v6"
@@ -304,15 +310,16 @@ mount -o remount,ro /
 
 echo "Generate network configuration";
 
-NETWORK_WLAN_SSID="NAONET"
-NETWORK_WLAN_PW="a1b0a1b0a1"
-NETWORK_WLAN_IP="10.0.4"
-NETWORK_WLAN_MASK="255.255.255.0"
-NETWORK_WLAN_BROADCAST="10.0.4.255"
+# NOTE: defined as environmental variables in the main script
+#NETWORK_WLAN_SSID="NAONET"
+#NETWORK_WLAN_PW="a1b0a1b0a1"
+#NETWORK_WLAN_IP="10.0.4"
+#NETWORK_WLAN_MASK="255.255.255.0"
+#NETWORK_WLAN_BROADCAST="10.0.4.255"
 
-NETWORK_ETH_IP="192.168.13"
-NETWORK_ETH_MASK="255.255.255.0"
-NETWORK_ETH_BROADCAST="192.168.13.255"
+#NETWORK_ETH_IP="192.168.13"
+#NETWORK_ETH_MASK="255.255.255.0"
+#NETWORK_ETH_BROADCAST="192.168.13.255"
 
 NETWORK_WLAN_IP="$NETWORK_WLAN_IP.$N"
 NETWORK_ETH_IP="$NETWORK_ETH_IP.$N"

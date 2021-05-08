@@ -13,6 +13,8 @@ ScanGridEdgelDetector::ScanGridEdgelDetector()
                          "mark the edgels on the image", false);
   DEBUG_REQUEST_REGISTER("Vision:ScanGridEdgelDetector:mark_double_edgels",
                          "mark the edgels on the image", false);
+  DEBUG_REQUEST_REGISTER("Vision:ScanGridEdgelDetector:mark_double_edgels_field",
+                         "Project edgel positions onto the field", false);
   DEBUG_REQUEST_REGISTER("Vision:ScanGridEdgelDetector:mark_jump_vertical",
                          "mark brightness jumps on image", false);
   DEBUG_REQUEST_REGISTER("Vision:ScanGridEdgelDetector:mark_jump_horizontal",
@@ -72,29 +74,57 @@ void ScanGridEdgelDetector::execute(CameraInfo::CameraID id)
   }
 
   DEBUG_REQUEST("Vision:ScanGridEdgelDetector:mark_edgels",
+    IMAGE_DRAWING_CONTEXT;
+    CANVAS(((cameraID==CameraInfo::Top)? "ImageTop": "ImageBottom"));
+
     for(size_t i = 0; i < getScanLineEdgelPercept().edgels.size(); i++) {
       const Edgel& edgel = getScanLineEdgelPercept().edgels[i];
-      ColorClasses::Color color = ColorClasses::black;
+
+      PEN("000000", 1);
       if(edgel.type == Edgel::positive) {
-        color = ColorClasses::blue;
+        PEN("FF0000", 1);
       } else if(edgel.type == Edgel::negative) {
-        color = ColorClasses::red;
+        PEN("00FFFF", 1);
       }
-      LINE_PX(color, edgel.point.x, edgel.point.y,
-              edgel.point.x + (int)(edgel.direction.x*5),
-              edgel.point.y + (int)(edgel.direction.y*5));
+      LINE(edgel.point.x - (int)(edgel.direction.x*5),
+           edgel.point.y - (int)(edgel.direction.y*5),
+           edgel.point.x + (int)(edgel.direction.x*5),
+           edgel.point.y + (int)(edgel.direction.y*5));
     }
   );
 
   // mark finished valid edgels
   DEBUG_REQUEST("Vision:ScanGridEdgelDetector:mark_double_edgels",
+    IMAGE_DRAWING_CONTEXT;
+    CANVAS(((cameraID==CameraInfo::Top)? "ImageTop": "ImageBottom"));
     for(size_t i = 0; i < getScanLineEdgelPercept().pairs.size(); i++)
     {
       const ScanLineEdgelPercept::EdgelPair& pair = getScanLineEdgelPercept().pairs[i];
-      CIRCLE_PX(ColorClasses::black, (int)pair.point.x, (int)pair.point.y, 3);
-      LINE_PX(ColorClasses::red, (int)pair.point.x, (int)pair.point.y,
-              (int)(pair.point.x + pair.direction.x*10),
-              (int)(pair.point.y + pair.direction.y*10));
+      PEN("000000", 1);
+      CIRCLE((int)pair.point.x, (int)pair.point.y, 3);
+      PEN("FF66DD", 1);
+      LINE((int)pair.point.x, (int)pair.point.y,
+           (int)(pair.point.x + pair.direction.x*10),
+           (int)(pair.point.y + pair.direction.y*10));
+    }
+  );
+
+  DEBUG_REQUEST("Vision:ScanGridEdgelDetector:mark_double_edgels_field",
+    FIELD_DRAWING_CONTEXT;
+    for(size_t i = 0; i < getScanLineEdgelPercept().pairs.size(); i++)
+    {
+      const ScanLineEdgelPercept::EdgelPair& pair = getScanLineEdgelPercept().pairs[i];
+      Vector2d field_point;
+      CameraGeometry::imagePixelToFieldCoord(getCameraMatrix(),
+                                             getCameraInfo(),
+                                             pair.point.x,
+                                             pair.point.y,
+                                             0.0,
+                                             field_point);
+      PEN("000000", 1);
+      TEXT_DRAWING2(field_point.x+25, field_point.y+25, 0.1, pair.id);
+      PEN("000000", 2);
+      CIRCLE(field_point.x, field_point.y, 10);
     }
   );
 }//end execute
@@ -115,8 +145,10 @@ void ScanGridEdgelDetector::scan_vertical(MaxPeakScan& maximumPeak,
   );
 
   // vertical scanlines
-  for(const ScanGrid::VScanLine scanline: getScanGrid().vertical)
+  for(scan_id = 0; scan_id < static_cast<int>(getScanGrid().vertical.size()); ++scan_id)
   {
+    const ScanGrid::VScanLine& scanline = getScanGrid().vertical[scan_id];
+
     int x = scanline.x;
     int y = getScanGrid().vScanPattern[scanline.bottom];
 
@@ -169,24 +201,14 @@ void ScanGridEdgelDetector::scan_vertical(MaxPeakScan& maximumPeak,
       continue;
     }
 
+    int end_of_body = getBodyContour().getFirstFreeCell(Vector2i(scanline.x, y)).y;
+
     DEBUG_REQUEST("Vision:ScanGridEdgelDetector:scanlines:vertical",
       IMAGE_DRAWING_CONTEXT;
       CANVAS(((cameraID==CameraInfo::Top)? "ImageTop": "ImageBottom"));
-      int top = std::max(getScanGrid().vScanPattern.at(scanline.top), end_of_field);
       PEN("FFFFFF", 2);
-      LINE(scanline.x, getScanGrid().vScanPattern.at(scanline.bottom),
-           scanline.x, top);
-      PEN("FF0000", 2);
-      for(size_t i=scanline.bottom; i<=scanline.top; ++i)
-      {
-        if (getScanGrid().vScanPattern.at(i) < top) {
-          continue;
-        }
-        FILLOVAL(scanline.x, getScanGrid().vScanPattern.at(i), 1, 1);
-      }
+      LINE(scanline.x, end_of_body, scanline.x, end_of_field);
     );
-
-    int end_of_body = getBodyContour().getFirstFreeCell(Vector2i(scanline.x, y)).y;
 
     // TODO: cleanup
     if(getScanGrid().vScanPattern.size() < 2) {
@@ -200,163 +222,182 @@ void ScanGridEdgelDetector::scan_vertical(MaxPeakScan& maximumPeak,
     minimumPeak.reset();
     maximumPeak.reset();
 
-    // TODO: Is this correct or can we do better?
-    int prev_y = getScanGrid().vScanPattern[scanline.bottom];
-    int prevLuma = getImage().getY(scanline.x, prev_y);
-
-    // TODO: cleanup
-    size_t i = scanline.bottom;
-    for(y = getScanGrid().vScanPattern[i]; y >= end_of_field; y = (++i < getScanGrid().vScanPattern.size())? getScanGrid().vScanPattern[i]: y - last_scan_pattern_gap) {
-      int luma = getImage().getY(x, y);
-
-      // TODO: "y >" should be enough
-      if(y >= end_of_body) {
-        // don't scan inside own body
+    y = end_of_body;
+    for(size_t i = scanline.bottom + 1; true; ++i) {
+      int prev_y;
+      // get y values for gradient calculations
+      if(i < getScanGrid().vScanPattern.size()) {
+        prev_y = getScanGrid().vScanPattern[i-1];
+        y = getScanGrid().vScanPattern[i];
+      } else {
         prev_y = y;
-        prevLuma = luma;
+        y -= last_scan_pattern_gap;
+      }
+
+      if(prev_y > end_of_body) {
+        // don't scan own body
         continue;
       }
 
-      // calculate gradient
-      int check_y = (prev_y + y)/2;
-      int gradient = luma - prevLuma;
-
-      DEBUG_REQUEST("Vision:ScanGridEdgelDetector:plot_gradient_vertical_scan",
-        std::ostringstream os;
-        os << ((cameraID==CameraInfo::Top)? "GradiantTop": "GradiantBottom") << " x=" << x;
-        std::cout << os.str() << " " << i-scanline.bottom << " = " << check_y << " " << minimumPeak.found << std::endl;
-        PLOT_GENERIC(os.str(), static_cast<int>(i-scanline.bottom), gradient);
+      DEBUG_REQUEST("Vision:ScanGridEdgelDetector:scanlines:vertical",
+        PEN("FF0000", 2);
+        FILLOVAL(x, y, 1, 1);
       );
 
-      // begin
-      if(maximumPeak.add(check_y, prev_y, y, gradient)) {
-        // found local maximum peak
-        DEBUG_REQUEST("Vision:ScanGridEdgelDetector:plot_gradient_vertical_scan",
-          std::cout << "x=" << x << " max " << check_y << " point=" << maximumPeak.point << std::endl;
-        );
-        DEBUG_REQUEST("Vision:ScanGridEdgelDetector:mark_jump_vertical",
-          LINE_PX(ColorClasses::red, x, maximumPeak.prev_point, x, maximumPeak.next_point);
-        );
-
-        if(prev_y - y <= 2)
-        {
-          // gap is small, just make a simple refinement
-          refine_vertical(maximumPeak, x);
-          // add edgel to percept
-          bool success = add_edgel(x, maximumPeak.point, Edgel::positive);
-          if(success) {
-            begin_found = true;
-          }
-        }
-        else if(refine_range_vertical(maximumPeak, x))
-        {
-          // if peak found in range add edgel to percept
-          bool success = add_edgel(x, maximumPeak.point, Edgel::positive);
-          if(success) {
-            begin_found = true;
-          }
-        }
-
-        maximumPeak.reset();
-      }
-
-      // end
-      if(minimumPeak.add(check_y, prev_y, y, gradient))
+      if(prev_y - y > 1)
       {
-        // found local minimum peak
+        // we are skipping pixels, do an interval scan
+        if(y < end_of_field) {
+          // reached the end
+          break;
+        }
+
+        int check_y = (prev_y + y)/2;
+        // gradient = next - previous
+        int gradient = getImage().getY(x, y) - getImage().getY(x, prev_y);
+
         DEBUG_REQUEST("Vision:ScanGridEdgelDetector:plot_gradient_vertical_scan",
-          std::cout <<  "x=" << x << " min " << check_y << " point=" << minimumPeak.point << std::endl;
+          // HACK: Pad x values with 0 so entries are sorted correctly in robot control
+          std::string padding = "";
+          if (x < 10) {
+            padding = "00";
+          } else if (x < 100) {
+            padding = "0";
+          }
+          std::string camera = (cameraID==CameraInfo::Top)? "GradiantTop": "GradiantBottom";
+          std::ostringstream os;
+          os << camera << " x=" << padding << x;
+          // HACK: -check_y because robot control seems to require accending order
+          PLOT_GENERIC(os.str(), -check_y, gradient);
         );
-        DEBUG_REQUEST("Vision:ScanGridEdgelDetector:mark_jump_vertical",
-          LINE_PX(ColorClasses::yellow, x, minimumPeak.prev_point, x, minimumPeak.next_point);
-        );
-        if(std::abs(prev_y - y) <= 2)
-        {
-          // gap is small, just make a simple refinement
-          refine_vertical(minimumPeak, x);
 
-          // add edgel to percept
-          bool success = add_edgel(x, minimumPeak.point, Edgel::negative);
-          if(success) {
-            // found a new double edgel
+        if(maximumPeak.add(check_y, prev_y, y, gradient))
+        {
+          DEBUG_REQUEST("Vision:ScanGridEdgelDetector:mark_jump_vertical",
+            IMAGE_DRAWING_CONTEXT;
+            CANVAS(((cameraID==CameraInfo::Top)? "ImageTop": "ImageBottom"));
+            PEN("FF0000", 2);
+            LINE(x, maximumPeak.prev_point, x, maximumPeak.next_point);
+          );
+          // found a peak, do a fine scan
+          if(refine_vertical(maximumPeak, x))
+          {
+            // found an edgel
+            add_edgel(x, maximumPeak.point, Edgel::positive);
+            begin_found = true;
+          }
+          maximumPeak.reset();
+        }
+
+        if(minimumPeak.add(check_y, prev_y, y, gradient))
+        {
+          DEBUG_REQUEST("Vision:ScanGridEdgelDetector:mark_jump_vertical",
+            IMAGE_DRAWING_CONTEXT;
+            CANVAS(((cameraID==CameraInfo::Top)? "ImageTop": "ImageBottom"));
+            PEN("00FFFF", 2);
+            LINE(x, minimumPeak.prev_point, x, minimumPeak.next_point);
+          );
+          // found a peak, do a fine scan
+          if(refine_vertical(minimumPeak, x))
+          {
+            // found an edgel
+            add_edgel(x, minimumPeak.point, Edgel::negative);
             if(begin_found) {
-              add_double_edgel(scan_id);
+              // found a new double edgel
+              add_double_edgel(scan_id, true);
               begin_found = false;
             }
           }
+          minimumPeak.reset();
         }
-        else if(refine_range_vertical(minimumPeak, x))
-        {
-          // if peak found in range add edgel to percept
-          bool success = add_edgel(x, minimumPeak.point, Edgel::negative);
-          if(success) {
-            // found a new double edgel
-            if(begin_found) {
-              add_double_edgel(scan_id);
-              begin_found = false;
-            }
+      } else {
+        // scan every pixel
+        int next_y = y-1;
+        if(next_y < end_of_field) {
+          // reached the end
+          break;
+        }
+        int gradient = getImage().getY(x, next_y) - getImage().getY(x, prev_y);
+
+        DEBUG_REQUEST("Vision:ScanGridEdgelDetector:plot_gradient_vertical_scan",
+          // HACK: Pad x values with 0 so entries are sorted correctly in robot control
+          std::string padding = "";
+          if (x < 10) {
+            padding = "00";
+          } else if (x < 100) {
+            padding = "0";
           }
+          std::string camera = (cameraID==CameraInfo::Top)? "GradiantTop": "GradiantBottom";
+          std::ostringstream os;
+          os << camera << " x=" << padding << x;
+          // HACK: -y because robot control seems to require accending order
+          PLOT_GENERIC(os.str(), -y, gradient);
+        );
 
+        if(maximumPeak.add(y, prev_y, next_y, gradient))
+        {
+          DEBUG_REQUEST("Vision:ScanGridEdgelDetector:mark_jump_vertical",
+            IMAGE_DRAWING_CONTEXT;
+            CANVAS(((cameraID==CameraInfo::Top)? "ImageTop": "ImageBottom"));
+            PEN("FF0000", 2);
+            LINE(x, maximumPeak.prev_point, x, maximumPeak.next_point);
+          );
+          // found an edgel
+          add_edgel(x, maximumPeak.point, Edgel::positive);
+          begin_found = true;
+
+          maximumPeak.reset();
         }
 
-        minimumPeak.reset();
+        if(minimumPeak.add(y, prev_y, next_y, gradient))
+        {
+          DEBUG_REQUEST("Vision:ScanGridEdgelDetector:mark_jump_vertical",
+            IMAGE_DRAWING_CONTEXT;
+            CANVAS(((cameraID==CameraInfo::Top)? "ImageTop": "ImageBottom"));
+            PEN("00FFFF", 2);
+            LINE(x, minimumPeak.prev_point, x, minimumPeak.next_point);
+          );
+          // found an edgel
+          add_edgel(x, minimumPeak.point, Edgel::negative);
+
+          if(begin_found) {
+              // found a new double edgel
+              add_double_edgel(scan_id, true);
+              begin_found = false;
+          }
+          minimumPeak.reset();
+        }
+
       }
-
-      prevLuma = luma;
-      prev_y = y;
     }
-    ++scan_id;
   }
 }// end scan_vertical
 
-inline void ScanGridEdgelDetector::refine_vertical(MaxPeakScan& maximumPeak, int x) {
+
+inline bool ScanGridEdgelDetector::refine_vertical(MaxPeakScan& maximumPeak, int x)
+{
   int height = getImage().height();
 
-  // refine the position of the peak
-  int f0 = getImage().getY(x, maximumPeak.point);
-  if (maximumPeak.point+2 < height) {
-    int f2 = getImage().getY(x, maximumPeak.point+2);
-    maximumPeak.check(maximumPeak.point+1, f0-f2);
-  }
-  if(maximumPeak.point-2 >= 0) {
-    int f_2 = getImage().getY(x, maximumPeak.point-2);
-    maximumPeak.check(maximumPeak.point-1, f_2-f0);
-  }
-}
-
-inline bool ScanGridEdgelDetector::refine_range_vertical(MaxPeakScan& maximumPeak, int x) {
-  int height = getImage().height();
-
-  // improve the range so we can calculate a gradient on the first and last scan point
+  // check the range because we need access to a previous and next scan point to calculate the gradient
   int start = std::min(maximumPeak.prev_point, height-2);
-  int end = std::max(maximumPeak.next_point-1, 0);
+  int end = std::max(maximumPeak.next_point, 1);
 
   maximumPeak.reset();
 
-  int prev = std::min(start+2, height-1);
-  int prevLuma = getImage().getY(x, prev);
-
-  for(int y=start; y>=end; y-=2) {
-    DEBUG_REQUEST("Vision:ScanGridEdgelDetector:draw_refinement",
-      POINT_PX(ColorClasses::pink, x, y);
-    );
-
-    int luma = getImage().getY(x, y);
-    int gradient = luma - prevLuma;
+  for(int y=start; y>=end; --y) {
+    // gradient = next - previous
+    int gradient = getImage().getY(x, y-1) - getImage().getY(x, y+1);
     // HACK: -1, -1 cause interval isn't of interest here
-    if(maximumPeak.add(y+1, -1, -1, gradient)) {
+    if(maximumPeak.add(y, -1, -1, gradient)) {
       // we are just looking for one peak here
-      break;
+      if(!params.full_refinement) {
+        break;
+      }
     }
-    prevLuma = luma;
   }
-  if(maximumPeak.found) {
-    // we scanned the interval for every second pixel, so make another simple refinement
-    refine_vertical(maximumPeak, x);
-    return true;
-  }
-  return false;
+  return maximumPeak.found;
 } // end refine_range_vertical
+
 
 void ScanGridEdgelDetector::scan_horizontal(MaxPeakScan& maximumPeak,
                                             MinPeakScan& minimumPeak)
@@ -393,7 +434,7 @@ void ScanGridEdgelDetector::scan_horizontal(MaxPeakScan& maximumPeak,
     }
 
     // determine scanline intersections with the field poly line
-    if(y < polyLineLeft.begin().y) {
+    if(y <= polyLineLeft.begin().y) {
       // scanline is outside of field polygon
       continue;
     } else {
@@ -463,148 +504,161 @@ void ScanGridEdgelDetector::scan_horizontal(MaxPeakScan& maximumPeak,
       }
     }
 
+    bool begin_found = false;
+    minimumPeak.reset();
+    maximumPeak.reset();
+
+    // fix range
+    int start_x = std::max(x, scanline.skip);
+    end_x = std::min(end_x, static_cast<int>(getImage().width())-(scanline.skip + 1));
+
     DEBUG_REQUEST("Vision:ScanGridEdgelDetector:scanlines:horizontal",
       IMAGE_DRAWING_CONTEXT;
       CANVAS(((cameraID==CameraInfo::Top)? "ImageTop": "ImageBottom"));
       PEN("FFFFFF", 2);
 
-      LINE(x, scanline.y, end_x, scanline.y);
+      LINE(start_x, scanline.y, end_x, scanline.y);
 
       PEN("FF0000", 2);
-      for(int xx = x; xx <= end_x; xx += scanline.skip) {
+      for(int xx = start_x; xx <= end_x; xx += scanline.skip) {
         if(!getBodyContour().isOccupied(xx, scanline.y)) {
           FILLOVAL(xx, scanline.y, 1, 1);
         }
       }
     );
 
-    bool begin_found = false;
-    minimumPeak.reset();
-    maximumPeak.reset();
+    for(x = start_x; x <= end_x; x += scanline.skip)
+    {
+      if(scanline.skip > 1) {
+        // we are skipping pixels, do an interval scan
+        int prev_x = x - scanline.skip;
+        int check_x = (prev_x + x)/2;
 
-    int prev_x = x;
-    int prevLuma = getImage().getY(prev_x, y);
+        // gradient = next - prev
+        int gradient = getImage().getY(x, y) - getImage().getY(prev_x, y);
 
-    for(;x <= end_x; x += scanline.skip) {
-
-      int luma = getImage().getY(x, y);
-      int gradient = luma - prevLuma;
-
-      int check_x = (prev_x + x)/2;
-
-      // begin
-      if(maximumPeak.add(check_x, prev_x, x, gradient)) {
-        // found local maximum peak
-        DEBUG_REQUEST("Vision:ScanGridEdgelDetector:mark_jump_horizontal",
-          LINE_PX(ColorClasses::red, maximumPeak.prev_point, y, maximumPeak.next_point, y);
-        );
-        if(std::abs(prev_x - x) <= 2)
-        {
-          refine_horizontal(maximumPeak, y);
-          if(!getBodyContour().isOccupied(maximumPeak.point, y)) {
-
-            bool success = add_edgel(maximumPeak.point, y, Edgel::positive);
-            if(success) {
+        // begin
+        if(maximumPeak.add(check_x, prev_x, x, gradient)) {
+          // found local maximum peak
+          DEBUG_REQUEST("Vision:ScanGridEdgelDetector:mark_jump_horizontal",
+            IMAGE_DRAWING_CONTEXT;
+            CANVAS(((cameraID==CameraInfo::Top)? "ImageTop": "ImageBottom"));
+            PEN("FF0000", 2);
+            LINE(maximumPeak.prev_point, y, maximumPeak.next_point, y);
+          );
+          if(refine_horizontal(maximumPeak, y)) {
+            // don't add edgels that are found in the robots own body
+            if(!getBodyContour().isOccupied(maximumPeak.point, y)) {
+              // found an edgel
+              add_edgel(maximumPeak.point, y, Edgel::positive);
               begin_found = true;
             }
           }
-        } else if(refine_range_horizontal(maximumPeak, y) && !getBodyContour().isOccupied(maximumPeak.point,y)) {
-
-          bool success = add_edgel(maximumPeak.point, y, Edgel::positive);
-          if(success) {
-            begin_found = true;
-          }
+          maximumPeak.reset();
         }
-        maximumPeak.reset();
-      }
 
-      // end
-      if(minimumPeak.add(check_x, prev_x, x, gradient)) {
-        // found local minimum peak
-        DEBUG_REQUEST("Vision:ScanGridEdgelDetector:mark_jump_horizontal",
-          LINE_PX(ColorClasses::yellow, minimumPeak.prev_point, y, minimumPeak.next_point, y);
-        );
-        if(std::abs(prev_x - x) <= 2)
-        {
-          refine_horizontal(minimumPeak, y);
-          if(!getBodyContour().isOccupied(minimumPeak.point,y)) {
-
-            bool success = add_edgel(minimumPeak.point, y, Edgel::negative);
-
-            if(success) {
+        // end
+        if(minimumPeak.add(check_x, prev_x, x, gradient)) {
+          // found local minimum peak
+          DEBUG_REQUEST("Vision:ScanGridEdgelDetector:mark_jump_horizontal",
+            IMAGE_DRAWING_CONTEXT;
+            CANVAS(((cameraID==CameraInfo::Top)? "ImageTop": "ImageBottom"));
+            PEN("00FFFF", 2);
+            LINE(minimumPeak.prev_point, y, minimumPeak.next_point, y);
+          );
+          if(refine_horizontal(minimumPeak, y)) {
+            // don't add edgels that are found in the robots own body
+            if(!getBodyContour().isOccupied(minimumPeak.point, y))
+            {
+              // found an edgel
+              add_edgel(minimumPeak.point, y, Edgel::negative);
               // found a new double edgel
               if(begin_found) {
                 add_double_edgel(scan_id);
+                begin_found = false;
               }
+            }
+
+          }
+          minimumPeak.reset();
+        }
+      } else {
+        // scan every pixel
+        // gradient = next - prev
+        int gradient = getImage().getY(x+1, y) - getImage().getY(x-1, y);
+
+        // begin
+        if(maximumPeak.add(x, x-1, x+1, gradient)) {
+          // found local maximum peak
+          DEBUG_REQUEST("Vision:ScanGridEdgelDetector:mark_jump_horizontal",
+            IMAGE_DRAWING_CONTEXT;
+            CANVAS(((cameraID==CameraInfo::Top)? "ImageTop": "ImageBottom"));
+            PEN("FF0000", 2);
+            LINE(maximumPeak.prev_point, y, maximumPeak.next_point, y);
+          );
+          // don't add edgels that are found in the robots own body
+          if(!getBodyContour().isOccupied(maximumPeak.point,y))
+          {
+            // found an edgel
+            add_edgel(maximumPeak.point, y, Edgel::positive);
+            begin_found = true;
+          }
+          maximumPeak.reset();
+        }
+
+        // end
+        if(minimumPeak.add(x, x-1, x+1, gradient)) {
+          // found local minimum peak
+          DEBUG_REQUEST("Vision:ScanGridEdgelDetector:mark_jump_horizontal",
+            IMAGE_DRAWING_CONTEXT;
+            CANVAS(((cameraID==CameraInfo::Top)? "ImageTop": "ImageBottom"));
+            PEN("00FFFF", 2);
+            LINE(minimumPeak.prev_point, y, minimumPeak.next_point, y);
+          );
+          // don't add edgels that are found in the robots own body
+          if(!getBodyContour().isOccupied(minimumPeak.point, y))
+          {
+            // found an edgel
+            add_edgel(minimumPeak.point, y, Edgel::negative);
+            if(begin_found) {
+              // found a new double edgel
+              add_double_edgel(scan_id);
               begin_found = false;
             }
           }
-
-        } else if(refine_range_horizontal(minimumPeak, y) && !getBodyContour().isOccupied(minimumPeak.point,y)) {
-
-          bool success = add_edgel(minimumPeak.point, y, Edgel::negative);
-
-          if(success) {
-            // found a new double edgel
-            if(begin_found) {
-              add_double_edgel(scan_id);
-            }
-            begin_found = false;
-          }
-
+          minimumPeak.reset();
         }
-        minimumPeak.reset();
       }
-
-      prevLuma = luma;
-      prev_x = x;
     }
     ++scan_id;
   }
 } // end scan_horizontal
 
-inline void ScanGridEdgelDetector::refine_horizontal(MaxPeakScan& maximumPeak, int y) {
+
+inline bool ScanGridEdgelDetector::refine_horizontal(MaxPeakScan& maximumPeak, int y)
+{
   int width = getImage().width();
 
-  // refine the position of the peak
-  int f0 = getImage().getY(maximumPeak.point, y);
-  if(maximumPeak.point-2 >= 0) {
-    int f_2 = getImage().getY(maximumPeak.point-2, y);
-    maximumPeak.check(maximumPeak.point-1, f_2-f0);
-  }
-  if(maximumPeak.point+2 < width) {
-    int f2 = getImage().getY(maximumPeak.point+2, y);
-    maximumPeak.check(maximumPeak.point+1, f0-f2);
-  }
-}
-
-inline bool ScanGridEdgelDetector::refine_range_horizontal(MaxPeakScan& maximumPeak, int y) {
-  int width = getImage().width();
-
-  // improve the range so we can calculate a gradient on the first and last scan point
+  // check the range because we need access to a previous and next scan point to calculate the gradient
   int start = std::max(maximumPeak.prev_point, 1);
-  int end = std::min(maximumPeak.next_point+1, width-1);
+  int end = std::min(maximumPeak.next_point, width-2);
+
   maximumPeak.reset();
 
-  int prev = std::max(start-2, 0);
-  int prevLuma = getImage().getY(prev, y);
-
-  for(int x=start; x<=end; x+=2) {
-    int luma = getImage().getY(x, y);
-    int gradient = luma - prevLuma;
+  for(int x=start; x<=end; ++x) {
+    // gradient = next - prev
+    int gradient = getImage().getY(x+1, y) - getImage().getY(x-1, y);
     // HACK: -1, -1 cause interval isn't of interest here
-    if(maximumPeak.add(x-1, -1, -1, gradient)) {
-      break;
+    if(maximumPeak.add(x, -1, -1, gradient)) {
+      // we are just looking for one peak here
+      if(!params.full_refinement) {
+        break;
+      }
     }
-    prev = x;
-    prevLuma = luma;
   }
-  if(maximumPeak.found) {
-    refine_horizontal(maximumPeak, y);
-    return true;
-  }
-  return false;
-} // end refine_range_horizontal
+  return maximumPeak.found;
+} // end refine_horizontal
+
 
 Vector2d ScanGridEdgelDetector::calculateGradient(const Vector2i& point) const
 {

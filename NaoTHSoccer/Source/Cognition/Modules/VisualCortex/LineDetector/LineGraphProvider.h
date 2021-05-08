@@ -26,6 +26,7 @@
 
 #include "Representations/Modeling/ProbabilisticQuadCompas.h"
 #include "Representations/Perception/LineGraphPercept.h"
+#include "Representations/Perception/ScanGrid.h"
 
 #include "Tools/DoubleCamHelpers.h"
 #include <algorithm>
@@ -51,6 +52,8 @@ BEGIN_DECLARE_MODULE(LineGraphProvider)
   REQUIRE(ScanLineEdgelPerceptTop)
   REQUIRE(CameraInfo)
   REQUIRE(CameraInfoTop)
+  REQUIRE(ScanGrid)
+  REQUIRE(ScanGridTop)
 
   REQUIRE(OdometryData)
 
@@ -132,6 +135,9 @@ public:
       PARAMETER_REGISTER(minimalNumberOfPairs) = 0;
       PARAMETER_REGISTER(maximalProjectedLineWidth) = 30;
 
+      // pixels, pairs must be apart from each other, to avoid aliasing
+      PARAMETER_REGISTER(min_pair_pixel_distance) = 10;
+
       syncWithConfig();
     }
 
@@ -142,6 +148,8 @@ public:
     double quadCompasSmoothingFactor;
     int minimalNumberOfPairs;
     int maximalProjectedLineWidth;
+
+    int min_pair_pixel_distance;
   } params;
 
   struct Neighbors {
@@ -187,6 +195,7 @@ private: // method members
   DOUBLE_CAM_REQUIRE(LineGraphProvider, CameraInfo);
   DOUBLE_CAM_REQUIRE(LineGraphProvider, CameraMatrix);
   DOUBLE_CAM_REQUIRE(LineGraphProvider, ScanLineEdgelPercept);
+  DOUBLE_CAM_REQUIRE(LineGraphProvider, ScanGrid);
 };
 
 #endif  /* _LineGraphProvider_H_ */
