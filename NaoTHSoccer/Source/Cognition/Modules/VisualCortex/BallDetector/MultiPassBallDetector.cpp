@@ -17,7 +17,7 @@ MultiPassBallDetector::MultiPassBallDetector()
   DEBUG_REQUEST_REGISTER("Vision:MultiPassBallDetector:drawCandidatesResizes", "draw ball candidates (resized)", false);
   DEBUG_REQUEST_REGISTER("Vision:MultiPassBallDetector:drawPercepts", "draw ball percepts", false);
   DEBUG_REQUEST_REGISTER("Vision:MultiPassBallDetector:drawPatchContrast", "draw patch contrast (only when contrast-check is in use!", false);
-  DEBUG_REQUEST_REGISTER("Vision:MultiPassBallDetector:draw_projected_ball","", false);
+  DEBUG_REQUEST_REGISTER("Vision:MultiPassBallDetector:drawProjectedBall","", false);
 
   DEBUG_REQUEST_REGISTER("Vision:MultiPassBallDetector:drawPatchInImage", "draw the gray-scale patch like it is passed to the CNN in the image", false);
 
