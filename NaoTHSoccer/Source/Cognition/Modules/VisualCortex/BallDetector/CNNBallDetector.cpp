@@ -18,6 +18,7 @@ CNNBallDetector::CNNBallDetector()
   DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:refinePatches", "draw refined ball key points", false);
   DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:drawPercepts", "draw ball percepts", false);
   DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:drawPatchContrast", "draw patch contrast (only when contrast-check is in use!", false);
+  DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:draw_projected_ball","", false);
 
   DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:extractPatches", "generate YUVC patches", false);
 
