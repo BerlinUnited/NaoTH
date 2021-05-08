@@ -122,12 +122,6 @@ public:
   static Vector2d lookAtPoint(const Vector3d& point, double cameraHeight);
 
   /**
-  * Calculation of the angles from the head of the robot to a given point in 
-  * the egocentric coordination system of the robot.
-  */
-  static Vector2d lookAtPoint(const CameraMatrix& cameraMatrix, const Vector3d& point);
-
-  /**
   */
   static Pose3D calculateCameraMatrix(
     const KinematicChain& theKinematicChain,
