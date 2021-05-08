@@ -15,14 +15,11 @@ MultiPassBallDetector::MultiPassBallDetector()
   DEBUG_REQUEST_REGISTER("Vision:MultiPassBallDetector:keyPoints", "draw key points extracted from integral image", false);
   DEBUG_REQUEST_REGISTER("Vision:MultiPassBallDetector:drawCandidates", "draw ball candidates", false);
   DEBUG_REQUEST_REGISTER("Vision:MultiPassBallDetector:drawCandidatesResizes", "draw ball candidates (resized)", false);
-  DEBUG_REQUEST_REGISTER("Vision:MultiPassBallDetector:refinePatches", "draw refined ball key points", false);
   DEBUG_REQUEST_REGISTER("Vision:MultiPassBallDetector:drawPercepts", "draw ball percepts", false);
   DEBUG_REQUEST_REGISTER("Vision:MultiPassBallDetector:drawPatchContrast", "draw patch contrast (only when contrast-check is in use!", false);
   DEBUG_REQUEST_REGISTER("Vision:MultiPassBallDetector:draw_projected_ball","", false);
 
   DEBUG_REQUEST_REGISTER("Vision:MultiPassBallDetector:extractPatches", "generate YUVC patches", false);
-
-  DEBUG_REQUEST_REGISTER("Vision:MultiPassBallDetector:keyPointsBlack", "draw black key points extracted from integral image", false);
 
   DEBUG_REQUEST_REGISTER("Vision:MultiPassBallDetector:drawPatchInImage", "draw the gray-scale patch like it is passed to the CNN in the image", false);
 
@@ -50,22 +47,14 @@ void MultiPassBallDetector::execute(CameraInfo::CameraID id)
   BestPatchList lastBallPatches = getPatchesByLastBall();
   executeCNNOnPatches(lastBallPatches, params.maxNumberOfKeys);
 
+  // 2. pass: Check all keypoints
   BestPatchList keypointPatches;
   // update parameter
   theBallKeyPointExtractor->getModuleT()->setParameter(params.keyDetector);
   theBallKeyPointExtractor->getModuleT()->setCameraId(cameraID);
   theBallKeyPointExtractor->getModuleT()->calculateKeyPointsBetter(keypointPatches);
+  executeCNNOnPatches(keypointPatches, params.maxNumberOfKeys);
 
-  if(keypointPatches.size() > 0) {
-    executeCNNOnPatches(keypointPatches, params.maxNumberOfKeys);
-  }
-
-  DEBUG_REQUEST("Vision:MultiPassBallDetector:refinePatches",
-    for(BestPatchList::reverse_iterator i = keypointPatches.rbegin(); i != keypointPatches.rend(); ++i) {
-      //BestPatchList::Patch p = theBallKeyPointExtractor->getModuleT()->refineKeyPoint(*i);
-      RECT_PX(ColorClasses::red, (*i).min.x, (*i).min.y, (*i).max.x, (*i).max.y);
-    }
-  );
 
   DEBUG_REQUEST("Vision:MultiPassBallDetector:drawPercepts",
     for(MultiBallPercept::ConstABPIterator iter = getMultiBallPercept().begin(); iter != getMultiBallPercept().end(); iter++) {
@@ -87,21 +76,6 @@ void MultiPassBallDetector::execute(CameraInfo::CameraID id)
   {
     extractPatches(keypointPatches);
   }
-
-  DEBUG_REQUEST("Vision:MultiPassBallDetector:keyPointsBlack",  
-    BestPatchList bbest;
-    for(BestPatchList::reverse_iterator i = keypointPatches.rbegin(); i != keypointPatches.rend(); ++i) {
-      bbest.clear();
-      BlackSpotExtractor::calculateKeyPointsBlackBetter(getBallDetectorIntegralImage(), bbest, (*i).min.x, (*i).min.y, (*i).max.x, (*i).max.y);
-      int idx = 0;
-      for(BestPatchList::reverse_iterator j = bbest.rbegin(); j != bbest.rend(); ++j) {
-        RECT_PX(ColorClasses::red, (*j).min.x, (*j).min.y, (*j).max.x, (*j).max.y);
-        if(++idx > 3) {
-          break;
-        }
-      }
-    }
-  );
 }
 
 void MultiPassBallDetector::executeCNNOnPatches(const BestPatchList& best, int maxNumberOfKeys) {
