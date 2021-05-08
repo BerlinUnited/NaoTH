@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x
+
 echo "using $BACKUP_DIRECTORY and $DEPLOY_DIRECTORY"
 
 HEAD_ID=$(cat /sys/qi/head_id)
@@ -331,6 +333,10 @@ config_eth0="$NETWORK_ETH_IP netmask $NETWORK_ETH_MASK broadcast $NETWORK_ETH_BR
 wpa_supplicant_wlan0="-Dnl80211"
 EOF
 
+chown root:root /home/nao/.config/net
+chmod 644 /home/nao/.config/net
+
+
 # generate wpa_supplicant configuration
 cat << EOF > /home/nao/.config/wpa_supplicant.conf
 ctrl_interface=/var/run/wpa_supplicant
@@ -344,6 +350,9 @@ network={
   priority=5
 }
 EOF
+
+chown root:root /home/nao/.config/wpa_supplicant.conf
+chmod 644 /home/nao/.config/wpa_supplicant.conf
 
 echo "Restart network services";
 systemctl restart net.eth0
