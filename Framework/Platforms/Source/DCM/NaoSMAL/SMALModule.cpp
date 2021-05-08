@@ -346,7 +346,7 @@ void SMALModule::motionCallbackPost()
 
   static int drop_count = 10;
 
-  NaoSensorData* sensorData = naoSensorData.writing();
+  DCMSensorData* sensorData = naoSensorData.writing();
 
   // current system time (System time, not nao time (!))
   sensorData->timeStamp = NaoTime::getSystemTimeInMilliSeconds();
@@ -362,7 +362,7 @@ void SMALModule::motionCallbackPost()
   {
     shutdown_requested = true;
 
-    shutdownCallbackThread = std::thread([this]{this->shutdownCallback();});
+    shutdownCallbackThread = std::thread(&SMALModule::shutdownCallback, this);
   }
 
   // save the data for the emergency case

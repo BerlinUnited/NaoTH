@@ -18,10 +18,15 @@
 
 CameraInfoSetter::CameraInfoSetter()
 {
+  getDebugParameterList().add(&getCameraInfo().getCameraInfoParameter());
+  getDebugParameterList().add(&getCameraInfoTop().getCameraInfoParameter());
+  
 }
 
 CameraInfoSetter::~CameraInfoSetter()
 {
+  getDebugParameterList().remove(&getCameraInfo().getCameraInfoParameter());
+  getDebugParameterList().remove(&getCameraInfoTop().getCameraInfoParameter());
 }
 
 void CameraInfoSetter::execute()

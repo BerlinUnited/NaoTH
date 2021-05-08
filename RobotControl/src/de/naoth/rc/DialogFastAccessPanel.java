@@ -264,6 +264,10 @@ public class DialogFastAccessPanel extends javax.swing.JPanel {
     KeyEventPostProcessor charCapture = new KeyEventPostProcessor() {
         @Override
         public boolean postProcessKeyEvent(KeyEvent e) {
+            if(!DialogFastAccessPanel.this.isShowing()) {
+                return false;
+            }
+            
             if(e.getID() == KeyEvent.KEY_PRESSED && 
                Character.isAlphabetic(e.getKeyChar())) 
             {

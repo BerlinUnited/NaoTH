@@ -154,20 +154,19 @@ ActionSimulator::BallPositionCategory ActionSimulator::classifyBallPosition( con
   {
     category = INFIELD;
   }
-  // HÄHHHHHH FIXME
-  //Opponent Groundline Out - Ball einen Meter hinter Roboter mind ansto hhe. jeweils seite wo ins ausgeht
+  //Opponent Groundline Out
   else if(globalBallPosition.x > getFieldInfo().xPosOpponentGroundline) {
     category = OPPOUT;
   }
-  //Own Groundline out -  an der seite wo raus geht
+  //Own Groundline out
   else if(globalBallPosition.x < getFieldInfo().xPosOwnGroundline) {
     category = OWNOUT;
   }
-  //an der linken Seite raus -> ein meter hinter roboter oder wo ins ausgeht ein meter hinter
+  //an der linken Seite raus
   else if(globalBallPosition.y > getFieldInfo().yPosLeftSideline ) {  
     category = LEFTOUT;
   }
-  //an der rechten Seite raus -> ein meter hinter roboter oder wo ins ausgeht ein meter hinter
+  //an der rechten Seite raus
   else if(globalBallPosition.y < getFieldInfo().yPosRightSideline) { 
     category = RIGHTOUT;
   }

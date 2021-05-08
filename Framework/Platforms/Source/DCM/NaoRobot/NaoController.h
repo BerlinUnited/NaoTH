@@ -44,7 +44,7 @@
 #include "Representations/Infrastructure/AudioData.h"
 
 // local tools
-#include "Tools/IPCData.h"
+#include "Tools/DCMData.h"
 #include "Tools/NaoTime.h"
 #include "Tools/SharedMemoryIO.h"
 
@@ -54,16 +54,17 @@ namespace naoth
 class NaoController : public PlatformInterface
 {
 public:
-  NaoController();
+  NaoController(bool nao6);
   virtual ~NaoController();
 
   // platform info
+  const bool nao6;
   virtual std::string getBodyID() const { return theBodyID; }
   virtual std::string getBodyNickName() const { return theBodyNickName; }
   virtual std::string getHeadNickName() const { return theHeadNickName; }
   virtual std::string getRobotName() const { return theRobotName; }
-  virtual std::string getPlatformName() const { return "Nao"; }
-  virtual unsigned int getBasicTimeStep() const { return lolaAvailable?12:10; }
+  virtual std::string getPlatformName() const { return nao6 ? "Nao6" : "Nao"; }
+  virtual unsigned int getBasicTimeStep() const { return nao6 ? 12 : 10; }
   
   // camera stuff
   void get(Image& data){ 
@@ -176,11 +177,6 @@ protected:
     return new MessageQueue4Threads();
   }
 
-  inline bool fileExists (const std::string& filename) {
-    struct stat buffer;   
-    return (stat (filename.c_str(), &buffer) == 0); 
-  }
-
 protected:
   std::string theBodyID;
   std::string theBodyNickName;
@@ -191,7 +187,7 @@ protected:
 
   // -- begin -- shared memory access --
   // DCM --> NaoController
-  SharedMemoryReader<NaoSensorData> naoSensorData;
+  SharedMemoryReader<DCMSensorData> naoSensorData;
 
   // NaoController --> DCM
   SharedMemoryWriter<Accessor<MotorJointData> > naoCommandMotorJointData;

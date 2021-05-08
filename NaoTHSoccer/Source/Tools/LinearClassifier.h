@@ -92,8 +92,8 @@ public:
      * @param positiveTrainSet: the positive train set
      * @param negativeTrainSet: the negative train set
      */
-    void LMSTrain(const std::vector<Vector_n<double,SIZE> >& positiveTrainSet, double positiveValue,
-            const std::vector<Vector_n<double,SIZE> >& negativeTrainSet, double negativeValue, double rate, int iterationNum){
+    void LMSTrain(const std::vector<Vector_n<double,SIZE> >& positiveTrainSet,
+            const std::vector<Vector_n<double,SIZE> >& negativeTrainSet, double rate, int iterationNum){
         double err = 1;
         
         double b1 = 1;

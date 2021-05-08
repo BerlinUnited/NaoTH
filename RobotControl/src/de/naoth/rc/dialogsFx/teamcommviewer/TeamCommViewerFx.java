@@ -163,6 +163,15 @@ public class TeamCommViewerFx extends AbstractJFXDialog
         return getClass().getResource("TeamCommViewerFx.fxml");
     }
 
+    /**
+     * Returns the global theme.
+     * @return path to the global theme stylesheet
+     */
+    @Override
+    protected String getTheme() {
+        return Plugin.parent.getTheme();
+    }
+    
     @Override
     public void afterInit() {
         initStatusTable();

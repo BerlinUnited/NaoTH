@@ -83,7 +83,7 @@ void DummySimulator::main()
       executeFrame();
     } else if (c == 'p') {
       doPlay = true;
-      playThread = std::thread([this] { play(); });
+      playThread = std::thread(&DummySimulator::play, this);
     } else if (c == 'q' || c == 'x') {
       break;
     }

@@ -172,19 +172,7 @@ private:
   // Used to synchronize stepIDs of WalkEngine to take control
   unsigned int lastStepRequestID;
 
-  void addStep(const StepBufferElement& new_step) {
-    stepBuffer.push_back(new_step);
-    //std::cout << new_step.debug_name << std::endl;
-  }
-
-  /*
-  NOTE: this feature is for future generations of advanced programmers who like to program like javascript peasants
-  const StepBufferElement& addStep(const std::string& name) {
-    stepBuffer.emplace_back(name);
-    return stepBuffer.back();
-  }
-  */
-
+  void addStep(const StepBufferElement& new_step);
   void updateSpecificStep(const unsigned int index, StepBufferElement& step);
   void manageStepBuffer();
   void executeStepBuffer();

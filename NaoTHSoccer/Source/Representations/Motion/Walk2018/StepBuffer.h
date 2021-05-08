@@ -121,15 +121,15 @@ public:
   }
 };
 
-//namespace naoth
-//{
-//  template<>
-//  class Serializer<StepBuffer>
-//  {
-//  public:
-//    static void serialize(const StepBuffer& representation, std::ostream& stream);
-//    static void deserialize(std::istream& stream, StepBuffer& representation);
-//  };
-//}
+namespace naoth
+{
+  template<>
+  class Serializer<StepBuffer>
+  {
+  public:
+    static void serialize(const StepBuffer& representation, std::ostream& stream);
+    static void deserialize(std::istream& stream, StepBuffer& representation);
+  };
+}
 
 #endif // __STEPBUFFER_H_

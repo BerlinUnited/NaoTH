@@ -19,8 +19,6 @@ using namespace naoth;
 
 DebugServer::DebugServer()
   : 
-  lastSendTime(0),
-  lastReceiveTime(0),
   abort(false)
 {
   answers = g_async_queue_new();
@@ -50,7 +48,7 @@ void DebugServer::start(unsigned short port)
 
   std::cout << "[INFO] Starting debug server thread" << std::endl;
    
-  connectionThread = std::thread([this] {this->run();});
+  connectionThread = std::thread(&DebugServer::run, this);
   ThreadUtil::setName(connectionThread, "DebugServer");
 }
 

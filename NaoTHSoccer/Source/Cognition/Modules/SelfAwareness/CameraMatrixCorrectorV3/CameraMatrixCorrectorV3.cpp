@@ -6,6 +6,7 @@
 
 #include "CameraMatrixCorrectorV3.h"
 #include <array>
+#include <algorithm>
 
 CameraMatrixCorrectorV3::CameraMatrixCorrectorV3():
     theCamMatErrorFunctionV3(getDebugRequest(), getDebugDrawings(), getDebugModify(), getFieldInfo(), getCameraInfo(), getCameraInfoTop()),
@@ -76,10 +77,13 @@ CameraMatrixCorrectorV3::CameraMatrixCorrectorV3():
       yaws.push_back(i);
   }
 
-  for(double pitch : pitchs){
-      for(double yaw : yaws){
+  for(double pitch : pitchs) 
+  {
+      for(double yaw : yaws) {
           target_points.push_back(Vector2d(yaw, pitch));
       }
+      // reverse the order for the next iteration
+      std::reverse(yaws.begin(), yaws.end());
   }
 
   current_target = target_points.begin();

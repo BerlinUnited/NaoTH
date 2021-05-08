@@ -1,35 +1,18 @@
 /*
  * File:   V4lCameraHandler.h
- * Author: thomas
+ * Author: Thomas Krause <krauseto@hu-berlin.de>
+ * Author: Heinrich Mellmann <mellmann@informatik.hu-berlin.de>
  *
  * Created on 22. April 2010, 17:24
  */
 
-#ifndef _V4LCAMERAHANDLER_H
-#define	_V4LCAMERAHANDLER_H
+#ifndef V4LCAMERAHANDLER_H
+#define	V4LCAMERAHANDLER_H
 
 #include <string>
-#include <list>
 #include <memory>
 
-extern "C"
-{
-#include <getopt.h>
-
-#include <fcntl.h>
-#include <unistd.h>
-//#include <errno.h>
-#include <malloc.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <sys/time.h>
-#include <sys/mman.h>
-#include <sys/ioctl.h>
-
-#include <asm/types.h>
-
 #include <linux/videodev2.h>
-}
 
 #include "Representations/Infrastructure/Image.h"
 #include "Representations/Infrastructure/CameraSettings.h"
@@ -68,7 +51,7 @@ public:
   V4lCameraHandler();
   ~V4lCameraHandler();
 
-  void init(std::string camDevice, CameraInfo::CameraID camID, bool isV6 = false);
+  void init(const std::string& camDevice, CameraInfo::CameraID camID, bool isV6 = false);
 
   void shutdown();
   bool isRunning();
@@ -82,7 +65,8 @@ private:
   void resetV6Camera() const;
 
   void openDevice();
-  void initDevice();
+  void initDevice(uint32_t width, uint32_t height);
+  void setFrameRate(int rate);
   
   void mapBuffers();
   void unmapBuffers();
@@ -93,7 +77,6 @@ private:
   
   int readFrame();
   
-  void setFPS(int fpsRate);
   void internalUpdateCameraSettings();
   
   // tools
@@ -141,5 +124,5 @@ private: // data members
 };
 
 } // namespace naoth
-#endif	/* _V4LCAMERAHANDLER_H */
+#endif	/* V4LCAMERAHANDLER_H */
 
