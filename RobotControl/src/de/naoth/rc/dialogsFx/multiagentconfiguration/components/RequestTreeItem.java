@@ -1,4 +1,4 @@
-package de.naoth.rc.dialogsFx.debugrequests;
+package de.naoth.rc.dialogsFx.multiagentconfiguration.components;
 
 import de.naoth.rc.componentsFx.TreeNode;
 
