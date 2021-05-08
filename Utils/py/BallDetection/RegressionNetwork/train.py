@@ -82,7 +82,7 @@ def main(raw_args=None, model=None):
     # history = model.fit(x, y, batch_size=args.batch_size, epochs=args.epochs, verbose=1,
     # validation_data=(X_test, Y_test),callbacks=callbacks)
 
-    history = model.fit(x, y, batch_size=args.batch_size, epochs=1, verbose=1, validation_split=0.1,
+    history = model.fit(x, y, batch_size=args.batch_size, epochs=args.epochs, verbose=1, validation_split=0.1,
                         callbacks=callbacks)
     history_filename = "history_" + model.name + "_" + Path(args.imgdb_path).stem + ".pkl"
     return history, history_filename

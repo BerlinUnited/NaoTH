@@ -49,7 +49,7 @@ def fy_1500_new2():
     input_shape = (16, 16, 1)
 
     model = Sequential()
-    model._name = "fy_1500_new"
+    model._name = "fy_1500_new2"
 
     model.add(Convolution2D(4, (3, 3), input_shape=input_shape, padding='same', name="Conv2D_1"))
     model.add(LeakyReLU(alpha=0.0, name="activation_1"))  # alpha unknown, so default
