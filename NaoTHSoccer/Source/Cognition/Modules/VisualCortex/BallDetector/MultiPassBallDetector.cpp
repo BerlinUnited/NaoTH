@@ -41,53 +41,59 @@ void MultiPassBallDetector::execute(CameraInfo::CameraID id)
   cameraID = id;
   getBallCandidates().reset();
 
+  std::vector<MultiBallPercept::BallPercept> percepts;
+  std::vector<double> scores;
+
+  std::vector<BestPatchList::Patch> allPatches;
+
   // 1. pass: projection of the previous ball
   BestPatchList lastBallPatches = getPatchesByLastBall();
-  executeCNNOnPatches(lastBallPatches.asVector(), static_cast<int>(lastBallPatches.size()), false);
+  allPatches = lastBallPatches.asVector();
+  executeCNNOnPatches(allPatches, static_cast<int>(lastBallPatches.size()), false, percepts, scores);
+  addBallPercepts(percepts, scores);
 
   // 2. pass: keypoints
-  std::vector<double> scoresForKeyPoints;
-  std::vector<BestPatchList::Patch> keypointPatches;
   if(!getMultiBallPercept().wasSeen()) {
+    percepts.clear();
+    scores.clear();
+
     // update parameter
+    std::vector<BestPatchList::Patch> keypointPatches;
+
     theBallKeyPointExtractor->getModuleT()->setParameter(params.keyDetector);
     theBallKeyPointExtractor->getModuleT()->setCameraId(cameraID);
     BestPatchList keypointList;
     theBallKeyPointExtractor->getModuleT()->calculateKeyPointsBetter(keypointList);
     keypointPatches = keypointList.asVector();
-    scoresForKeyPoints = executeCNNOnPatches(keypointPatches, params.maxNumberOfKeys, params.checkContrast);
+    allPatches.insert(allPatches.end(), keypointPatches.begin(), keypointPatches.end());
 
-    // TODO: how to extract/provide all patches and not only the ones from the keypoint detection?
-    if(params.providePatches) 
-    {
-      providePatches(keypointList);
-    } 
-    else if(params.numberOfExportBestPatches > 0) 
-    {
-      extractPatches(keypointList);
-    }
+    executeCNNOnPatches(keypointPatches, params.maxNumberOfKeys, params.checkContrast, percepts, scores);
+    addBallPercepts(percepts, scores);
+
   }
 
   // 3. pass: patches around the most promising patch of the second pass
-  if(!getMultiBallPercept().wasSeen() && !scoresForKeyPoints.empty()) {
-    // Convert the keypoints to a vector
-
+  if(!getMultiBallPercept().wasSeen() && !scores.empty()) {
+   
     // Find the maximum score
     double maxScore = 0.0;
     size_t idxMaxScore = 0;
-    for(size_t i = 0; i < scoresForKeyPoints.size(); i++) {
-      if(scoresForKeyPoints[i] > maxScore) {
+    for(size_t i = 0; i < scores.size(); i++) {
+      if(scores[i] > maxScore) {
         idxMaxScore = i;
-        maxScore = scoresForKeyPoints[i];
+        maxScore = scores[i];
       }
     }
     // Add keypoints around the original patch
-    BestPatchList::Patch centerPatch = keypointPatches[idxMaxScore];
+    MultiBallPercept::BallPercept centerPercept = percepts[idxMaxScore];
     std::vector<BestPatchList::Patch> aroundPromisingKeyPoint;
-    int radius = centerPatch.max.x - centerPatch.min.x;
+    int radius = static_cast<int>(centerPercept.radiusInImage);
     int halfRadius = radius / 2;
-    for(int x=centerPatch.min.x; x <= centerPatch.max.x; x += halfRadius) {
-      for(int y=centerPatch.min.y; y <= centerPatch.max.y; y += halfRadius) {
+    int centerX = static_cast<int>(centerPercept.centerInImage.x);
+    int centerY = static_cast<int>(centerPercept.centerInImage.y);
+
+    for(int x=centerX - radius; x <= centerX + radius; x += halfRadius) {
+      for(int y=centerY - radius; y <= centerY + radius; y += halfRadius) {
         BestPatchList::Patch p(x-halfRadius, y-halfRadius, x+halfRadius, y+halfRadius, 0.0);
         DEBUG_REQUEST("Vision:MultiPassBallDetector:drawCandidates",
           // center of respawned patch
@@ -97,7 +103,11 @@ void MultiPassBallDetector::execute(CameraInfo::CameraID id)
       }
     }
 
-    executeCNNOnPatches(aroundPromisingKeyPoint, static_cast<int>(aroundPromisingKeyPoint.size()), false);
+    executeCNNOnPatches(aroundPromisingKeyPoint, static_cast<int>(aroundPromisingKeyPoint.size()), false, percepts, scores);
+    allPatches.insert(allPatches.end(), aroundPromisingKeyPoint.begin(), aroundPromisingKeyPoint.end());
+
+    addBallPercepts(percepts, scores);
+
   }
 
   DEBUG_REQUEST("Vision:MultiPassBallDetector:drawPercepts",
@@ -108,14 +118,23 @@ void MultiPassBallDetector::execute(CameraInfo::CameraID id)
     }
   );
 
+  if(params.providePatches) 
+    {
+      providePatches(allPatches);
+    } 
+    else if(params.numberOfExportBestPatches > 0) 
+    {
+      extractPatches(allPatches);
+    }
+
 }
 
-std::vector<double> MultiPassBallDetector::executeCNNOnPatches(const std::vector<BestPatchList::Patch>& best, int maxNumberOfKeys, bool checkContrast) {
+void MultiPassBallDetector::executeCNNOnPatches(const std::vector<BestPatchList::Patch>& best, 
+    int maxNumberOfKeys, bool checkContrast,
+    std::vector<MultiBallPercept::BallPercept>& ballPercepts,
+    std::vector<double>& scores) {
   // the used patch size
   const int patch_size = 16;
-
-  std::vector<double> scores;
-  scores.reserve(best.size());
 
   // NOTE: patches are sorted in the ascending order, so start from the end to get the best patches
   int index = 0;
@@ -138,11 +157,9 @@ std::vector<double> MultiPassBallDetector::executeCNNOnPatches(const std::vector
       //
       // add an additional border as post-processing
       int postBorder = (int)(patch.radius()*params.postBorderFactorFar);
-      double selectedCNNThreshold = params.cnn.threshold;
       if(patch.width() >= params.postMaxCloseSize) // HACK: use patch size as estimate if close or far away
       {
         postBorder = (int)(patch.radius()*params.postBorderFactorClose);
-        selectedCNNThreshold = params.cnn.thresholdClose;
       }
 
       // resize the patch if possible
@@ -216,21 +233,13 @@ std::vector<double> MultiPassBallDetector::executeCNNOnPatches(const std::vector
       bool found = false;
       double radius = cnn->getRadius();
       Vector2d pos = cnn->getCenter();
-      if(cnn->getBallConfidence() >= selectedCNNThreshold && pos.x >= 0.0 && pos.y >= 0.0) {
-        found = true;
-      }
-      
       stopwatch.stop();
       stopwatch_values.push_back(static_cast<double>(stopwatch.lastValue) * 0.001);
 
       scores.push_back(cnn->getBallConfidence());
-
-      if (found) {
-        // adjust the center and radius of the patch
-        Vector2d ballCenterInPatch(pos.x * patch.width(), pos.y*patch.width());
-       
-        addBallPercept(ballCenterInPatch + patch.min, radius*patch.width());
-      }
+      // adjust the center and radius of the patch
+      Vector2d ballCenterInPatch(pos.x * patch.width(), pos.y*patch.width());
+      ballPercepts.push_back(createBallPercept(ballCenterInPatch + patch.min, radius*patch.width()));
 
       DEBUG_REQUEST("Vision:MultiPassBallDetector:drawCandidates",
         // original patch
@@ -242,8 +251,6 @@ std::vector<double> MultiPassBallDetector::executeCNNOnPatches(const std::vector
       index++;
     } // end if in field
   } // end for
-
-  return scores;
 }
 
 BestPatchList MultiPassBallDetector::getPatchesByLastBall() {
@@ -324,17 +331,17 @@ std::map<string, std::shared_ptr<AbstractCNNFinder> > MultiPassBallDetector::cre
  *          (currently internal patches size is 16x16). 
  *          To reconstruct the original patch, remove the border again.
  */
-void MultiPassBallDetector::extractPatches(const BestPatchList& best)
+void MultiPassBallDetector::extractPatches(const std::vector<BestPatchList::Patch>& best)
 {
   int idx = 0;
-  for(BestPatchList::reverse_iterator i = best.rbegin(); i != best.rend(); ++i)
+  for(size_t i=0; i < best.size(); i++)
   {
     if(idx >= params.numberOfExportBestPatches) {
       break;
     }
-    int offset = ((*i).max.x - (*i).min.x)/4;
-    Vector2i min = (*i).min - offset;
-    Vector2i max = (*i).max + offset;
+    int offset = (best[i].max.x - best[i].min.x)/4;
+    Vector2i min = best[i].min - offset;
+    Vector2i max = best[i].max + offset;
 
     if(getFieldPercept().getValidField().isInside(min) && getFieldPercept().getValidField().isInside(max))
     {
@@ -350,35 +357,45 @@ void MultiPassBallDetector::extractPatches(const BestPatchList& best)
 }
 
 /** Provides all the internally generated patches in the representation */
-void MultiPassBallDetector::providePatches(const BestPatchList& best)
+void MultiPassBallDetector::providePatches(const std::vector<BestPatchList::Patch>& best)
 {
-  for(BestPatchList::reverse_iterator i = best.rbegin(); i != best.rend(); ++i)
+  for(size_t i=0; i < best.size(); i++)
   {
     BallCandidates::PatchYUVClassified& q = getBallCandidates().nextFreePatchYUVClassified();
-    q.min = (*i).min;
-    q.max = (*i).max;
+    q.min = best[i].min;
+    q.max = best[i].max;
     q.setSize(16);
   }
 }
 
-void MultiPassBallDetector::addBallPercept(const Vector2d& center, double radius) 
-{
+MultiBallPercept::BallPercept MultiPassBallDetector::createBallPercept(const Vector2d& center, double radius) {
   const double ballRadius = 50.0;
   MultiBallPercept::BallPercept ballPercept;
+  ballPercept.cameraId = cameraID;
+  ballPercept.centerInImage = center;
+  ballPercept.radiusInImage = radius;
+  return ballPercept;
+}
   
-  if(CameraGeometry::imagePixelToFieldCoord(
-		  getCameraMatrix(), 
-		  getImage().cameraInfo,
-		  center.x, 
-		  center.y, 
-		  ballRadius,
-		  ballPercept.positionOnField))
-  {
-    ballPercept.cameraId = cameraID;
-    ballPercept.centerInImage = center;
-    ballPercept.radiusInImage = radius;
 
-    getMultiBallPercept().add(ballPercept);
-    getMultiBallPercept().frameInfoWhenBallWasSeen = getFrameInfo();
-  }
+void MultiPassBallDetector::addBallPercepts(std::vector<MultiBallPercept::BallPercept>& percepts,
+    std::vector<double>& scores) {
+  const double ballRadius = 50.0;
+
+  for(size_t i=0; i < percepts.size(); i++) {
+    if(scores[i] >= params.cnn.threshold && percepts[i].centerInImage.x >= 0.0 && percepts[i].centerInImage.y >= 0.0) {
+        if(CameraGeometry::imagePixelToFieldCoord(
+            getCameraMatrix(), 
+            getImage().cameraInfo,
+            percepts[i].centerInImage.x, 
+            percepts[i].centerInImage.y, 
+            ballRadius,
+            percepts[i].positionOnField))
+        {
+            getMultiBallPercept().add(percepts[i]);
+            getMultiBallPercept().frameInfoWhenBallWasSeen = getFrameInfo();
+        }
+    }
+  }  
+
 }

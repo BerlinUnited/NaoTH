@@ -127,7 +127,6 @@ private:
       PARAMETER_REGISTER(keyDetector.maxInnerGreenDensitiy) = 0.5;
       
       PARAMETER_REGISTER(cnn.threshold) = 0.4;
-      PARAMETER_REGISTER(cnn.thresholdClose) = 0.45;
       // Constant offset added to the input of the CNN. < 0 darker, > 0 brighter. T
       PARAMETER_REGISTER(cnn.meanBrightnessOffset) = 0.0; 
       
@@ -197,11 +196,18 @@ private:
   ModuleCreator<BallKeyPointExtractor>* theBallKeyPointExtractor;
   
 private:
-  void addBallPercept(const Vector2d& center, double radius);
-  void extractPatches(const BestPatchList& best);
-  void providePatches(const BestPatchList& best);
+  MultiBallPercept::BallPercept createBallPercept(const Vector2d& center, double radius);
+  void extractPatches(const std::vector<BestPatchList::Patch>& best);
+  void providePatches(const std::vector<BestPatchList::Patch>& best);
 
-  std::vector<double> executeCNNOnPatches(const std::vector<BestPatchList::Patch>& best, int maxNumberOfKeys, bool checkContrast);
+
+  void addBallPercepts(std::vector<MultiBallPercept::BallPercept>& percepts,
+    std::vector<double>& scores);
+
+
+  void executeCNNOnPatches(const std::vector<BestPatchList::Patch>& best, int maxNumberOfKeys, bool checkContrast,
+    std::vector<MultiBallPercept::BallPercept>& ballPercepts,
+    std::vector<double>& scores);
 
 
   BestPatchList getPatchesByLastBall();
