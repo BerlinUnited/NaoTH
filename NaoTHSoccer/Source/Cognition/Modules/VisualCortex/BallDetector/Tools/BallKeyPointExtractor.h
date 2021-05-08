@@ -95,8 +95,6 @@ public:
   template<class ImageType>
   void calculateKeyPointsFull(const ImageType& integralImage, BestPatchList& best) const;
 
-  void calculateKeyPointsByLastBall(BestPatchList& best) const;
-
   BestPatchList::Patch refineKeyPoint(const BestPatchList::Patch& patch) const;
 
   void setParameter(const Parameter& params) {
