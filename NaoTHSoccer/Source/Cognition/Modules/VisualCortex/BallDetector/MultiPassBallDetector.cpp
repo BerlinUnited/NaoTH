@@ -41,18 +41,65 @@ void MultiPassBallDetector::execute(CameraInfo::CameraID id)
   cameraID = id;
   getBallCandidates().reset();
 
-  // 1. pass: Check the projection of the previous ball
+  // 1. pass: projection of the previous ball
   BestPatchList lastBallPatches = getPatchesByLastBall();
-  executeCNNOnPatches(lastBallPatches, params.maxNumberOfKeys);
+  executeCNNOnPatches(lastBallPatches, static_cast<int>(lastBallPatches.size()));
 
-  // 2. pass: Check all keypoints
+  // 2. pass: keypoints
+  std::vector<double> scoresForKeyPoints;
   BestPatchList keypointPatches;
-  // update parameter
-  theBallKeyPointExtractor->getModuleT()->setParameter(params.keyDetector);
-  theBallKeyPointExtractor->getModuleT()->setCameraId(cameraID);
-  theBallKeyPointExtractor->getModuleT()->calculateKeyPointsBetter(keypointPatches);
-  executeCNNOnPatches(keypointPatches, params.maxNumberOfKeys);
+  if(!getMultiBallPercept().wasSeen()) {
+    // update parameter
+    theBallKeyPointExtractor->getModuleT()->setParameter(params.keyDetector);
+    theBallKeyPointExtractor->getModuleT()->setCameraId(cameraID);
+    theBallKeyPointExtractor->getModuleT()->calculateKeyPointsBetter(keypointPatches);
+    scoresForKeyPoints = executeCNNOnPatches(keypointPatches, params.maxNumberOfKeys);
 
+    // TODO: how to extract/provide all patches and not only the ones from the keypoint detection?
+    if(params.providePatches) 
+    {
+      providePatches(keypointPatches);
+    } 
+    else if(params.numberOfExportBestPatches > 0) 
+    {
+      extractPatches(keypointPatches);
+    }
+  }
+
+  // 3. pass: patches around the most promising patch of the second pass
+  if(!getMultiBallPercept().wasSeen() && !scoresForKeyPoints.empty()) {
+    // Convert the keypoints to a vector
+    std::vector<BestPatchList::Patch> keypoints;
+    keypoints.reserve(keypointPatches.size());
+    for(BestPatchList::reverse_iterator i = keypointPatches.rbegin(); i != keypointPatches.rend(); ++i) {
+      keypoints.push_back(*i);
+    }
+    // Find the maximum score
+    double maxScore = 0.0;
+    size_t idxMaxScore = 0;
+    for(size_t i = 0; i < scoresForKeyPoints.size(); i++) {
+      if(scoresForKeyPoints[i] > maxScore) {
+        idxMaxScore = i;
+        maxScore = scoresForKeyPoints[i];
+      }
+    }
+    // Add keypoints around the original patch
+    BestPatchList aroundPromisingKeyPoint;
+    int radius = keypoints[idxMaxScore].max.x - keypoints[idxMaxScore].min.x;
+    int halfRadius = radius / 2;
+    for(int x=keypoints[idxMaxScore].min.x; x <= keypoints[idxMaxScore].max.x; x += halfRadius) {
+      for(int y=keypoints[idxMaxScore].min.y; y <= keypoints[idxMaxScore].max.y; y += halfRadius) {
+        BestPatchList::Patch p(x-halfRadius, y-halfRadius, x+halfRadius, y+halfRadius, 0.0);
+        DEBUG_REQUEST("Vision:CNNBallDetector:drawCandidates",
+          // center of respawned patch
+          CIRCLE_PX(ColorClasses::pink,x, y, 2);
+        );
+        aroundPromisingKeyPoint.add(p);
+      }
+    }
+
+    executeCNNOnPatches(aroundPromisingKeyPoint, static_cast<int>(aroundPromisingKeyPoint.size()));
+  }
 
   DEBUG_REQUEST("Vision:MultiPassBallDetector:drawPercepts",
     for(MultiBallPercept::ConstABPIterator iter = getMultiBallPercept().begin(); iter != getMultiBallPercept().end(); iter++) {
@@ -62,19 +109,14 @@ void MultiPassBallDetector::execute(CameraInfo::CameraID id)
     }
   );
 
-  if(params.providePatches) 
-  {
-    providePatches(keypointPatches);
-  } 
-  else if(params.numberOfExportBestPatches > 0) 
-  {
-    extractPatches(keypointPatches);
-  }
 }
 
-void MultiPassBallDetector::executeCNNOnPatches(const BestPatchList& best, int maxNumberOfKeys) {
+std::vector<double> MultiPassBallDetector::executeCNNOnPatches(const BestPatchList& best, int maxNumberOfKeys) {
   // the used patch size
   const int patch_size = 16;
+
+  std::vector<double> scores;
+  scores.reserve(best.size());
 
   // NOTE: patches are sorted in the ascending order, so start from the end to get the best patches
   int index = 0;
@@ -178,9 +220,11 @@ void MultiPassBallDetector::executeCNNOnPatches(const BestPatchList& best, int m
       if(cnn->getBallConfidence() >= selectedCNNThreshold && pos.x >= 0.0 && pos.y >= 0.0) {
         found = true;
       }
-
+      
       stopwatch.stop();
       stopwatch_values.push_back(static_cast<double>(stopwatch.lastValue) * 0.001);
+
+      scores.push_back(cnn->getBallConfidence());
 
       if (found) {
         // adjust the center and radius of the patch
@@ -199,6 +243,8 @@ void MultiPassBallDetector::executeCNNOnPatches(const BestPatchList& best, int m
       index++;
     } // end if in field
   } // end for
+
+  return scores;
 }
 
 BestPatchList MultiPassBallDetector::getPatchesByLastBall() {

@@ -201,7 +201,7 @@ private:
   void extractPatches(const BestPatchList& best);
   void providePatches(const BestPatchList& best);
 
-  void executeCNNOnPatches(const BestPatchList& best, int maxNumberOfKeys);
+  std::vector<double> executeCNNOnPatches(const BestPatchList& best, int maxNumberOfKeys);
 
 
   BestPatchList getPatchesByLastBall();
