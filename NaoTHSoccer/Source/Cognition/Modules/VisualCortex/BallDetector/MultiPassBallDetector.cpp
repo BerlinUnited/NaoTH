@@ -43,7 +43,7 @@ void MultiPassBallDetector::execute(CameraInfo::CameraID id)
 
   // 1. pass: projection of the previous ball
   BestPatchList lastBallPatches = getPatchesByLastBall();
-  executeCNNOnPatches(lastBallPatches, static_cast<int>(lastBallPatches.size()));
+  executeCNNOnPatches(lastBallPatches, static_cast<int>(lastBallPatches.size()), false);
 
   // 2. pass: keypoints
   std::vector<double> scoresForKeyPoints;
@@ -53,7 +53,7 @@ void MultiPassBallDetector::execute(CameraInfo::CameraID id)
     theBallKeyPointExtractor->getModuleT()->setParameter(params.keyDetector);
     theBallKeyPointExtractor->getModuleT()->setCameraId(cameraID);
     theBallKeyPointExtractor->getModuleT()->calculateKeyPointsBetter(keypointPatches);
-    scoresForKeyPoints = executeCNNOnPatches(keypointPatches, params.maxNumberOfKeys);
+    scoresForKeyPoints = executeCNNOnPatches(keypointPatches, params.maxNumberOfKeys, params.checkContrast);
 
     // TODO: how to extract/provide all patches and not only the ones from the keypoint detection?
     if(params.providePatches) 
@@ -69,11 +69,8 @@ void MultiPassBallDetector::execute(CameraInfo::CameraID id)
   // 3. pass: patches around the most promising patch of the second pass
   if(!getMultiBallPercept().wasSeen() && !scoresForKeyPoints.empty()) {
     // Convert the keypoints to a vector
-    std::vector<BestPatchList::Patch> keypoints;
-    keypoints.reserve(keypointPatches.size());
-    for(BestPatchList::reverse_iterator i = keypointPatches.rbegin(); i != keypointPatches.rend(); ++i) {
-      keypoints.push_back(*i);
-    }
+    std::vector<BestPatchList::Patch> keypoints = keypointPatches.asVector();
+
     // Find the maximum score
     double maxScore = 0.0;
     size_t idxMaxScore = 0;
@@ -90,7 +87,7 @@ void MultiPassBallDetector::execute(CameraInfo::CameraID id)
     for(int x=keypoints[idxMaxScore].min.x; x <= keypoints[idxMaxScore].max.x; x += halfRadius) {
       for(int y=keypoints[idxMaxScore].min.y; y <= keypoints[idxMaxScore].max.y; y += halfRadius) {
         BestPatchList::Patch p(x-halfRadius, y-halfRadius, x+halfRadius, y+halfRadius, 0.0);
-        DEBUG_REQUEST("Vision:CNNBallDetector:drawCandidates",
+        DEBUG_REQUEST("Vision:MultiPassBallDetector:drawCandidates",
           // center of respawned patch
           CIRCLE_PX(ColorClasses::pink,x, y, 2);
         );
@@ -98,7 +95,7 @@ void MultiPassBallDetector::execute(CameraInfo::CameraID id)
       }
     }
 
-    executeCNNOnPatches(aroundPromisingKeyPoint, static_cast<int>(aroundPromisingKeyPoint.size()));
+    executeCNNOnPatches(aroundPromisingKeyPoint, static_cast<int>(aroundPromisingKeyPoint.size()), false);
   }
 
   DEBUG_REQUEST("Vision:MultiPassBallDetector:drawPercepts",
@@ -111,7 +108,7 @@ void MultiPassBallDetector::execute(CameraInfo::CameraID id)
 
 }
 
-std::vector<double> MultiPassBallDetector::executeCNNOnPatches(const BestPatchList& best, int maxNumberOfKeys) {
+std::vector<double> MultiPassBallDetector::executeCNNOnPatches(const BestPatchList& best, int maxNumberOfKeys, bool checkContrast) {
   // the used patch size
   const int patch_size = 16;
 
@@ -156,7 +153,7 @@ std::vector<double> MultiPassBallDetector::executeCNNOnPatches(const BestPatchLi
       PatchWork::subsampling(getImage(), getFieldColorPercept(), patch);
 
       // (5) check contrast
-      if(params.checkContrast) 
+      if(checkContrast) 
       {
         //double stddev = PatchWork::calculateContrastIterative2nd(getImage(),getFieldColorPercept(),min.x,min.y,max.x,max.y,patch_size);
         double stddev = PatchWork::calculateContrastIterative2nd(patch);
