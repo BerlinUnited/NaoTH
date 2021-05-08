@@ -5,7 +5,6 @@
 
 GameController::GameController()
   : 
-  lastGameState(GameData::GameState::unknown_game_state),
   debug_whistle_heard(false),
   play_by_whistle(false)
 {
@@ -26,7 +25,8 @@ GameController::GameController()
   DEBUG_REQUEST_REGISTER("gamecontroller:gamephase:overtime", "force the gamephase", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:gamephase:timeout", "force the gamephase", false);
 
-  DEBUG_REQUEST_REGISTER("gamecontroller:kickoff", "forces the kickoff to be ours", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:kickoff:own", "forces the kickoff to be ours", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:kickoff:opp", "forces the kickoff to be opponents", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:secondaryTime:30", "sets the secondary time of the gamecontroller to 30s", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:secondaryTime:20", "sets the secondary time of the gamecontroller to 20s", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:secondaryTime:10", "sets the secondary time of the gamecontroller to 10s", false);
@@ -108,7 +108,10 @@ void GameController::execute()
       getPlayerInfo().playerNumber = getGameData().newPlayerNumber;
     }
 
-    getPlayerInfo().update(getGameData());
+    // ignore information from game controller when unstiff
+    if (getPlayerInfo().robotState != PlayerInfo::unstiff) {
+      getPlayerInfo().update(getGameData());
+    }
 
     // take the ownership of the play state
     if(getPlayerInfo().robotState == PlayerInfo::playing) {
@@ -130,19 +133,16 @@ void GameController::execute()
     }
   }
 
-
   if(  oldRobotState != getPlayerInfo().robotState
     || oldTeamColor  != getPlayerInfo().teamColor
-    || getPlayerInfo().robotState == PlayerInfo::initial)
+    || getPlayerInfo().robotState == PlayerInfo::initial
+    || getPlayerInfo().robotState == PlayerInfo::unstiff)
   {
     updateLEDs();
   }
 
-  // remember last game state (from gamecontroller)
-  lastGameState = getGameData().gameState;
   // set teamcomm: whistle detected!
   getTeamMessageData().custom.whistleDetected = getWhistlePercept().whistleDetected;
-  getTeamMessageData().custom.whistleCount = getWhistlePercept().counter;
 
   // provide the return message
   getGameReturnData().team = getPlayerInfo().teamNumber;
@@ -208,7 +208,10 @@ void GameController::handleDebugRequest()
   );
 
   // DebugRequests for the kickoff state
-  DEBUG_REQUEST("gamecontroller:kickoff",
+  DEBUG_REQUEST("gamecontroller:kickoff:opp",
+    getPlayerInfo().kickoff = false;
+  );
+  DEBUG_REQUEST("gamecontroller:kickoff:own",
     getPlayerInfo().kickoff = true;
   );
 
@@ -254,6 +257,11 @@ void GameController::handleButtons()
       getPlayerInfo().robotState = PlayerInfo::playing;
       // take the ownership of the play state
       play_by_whistle = false;
+      break;
+    }
+    case PlayerInfo::unstiff:
+    {
+      getPlayerInfo().robotState = PlayerInfo::initial;
       break;
     }
     default:
@@ -302,7 +310,6 @@ void GameController::handleButtons()
   {
     getPlayerInfo().robotState = PlayerInfo::initial;
   }
-
 } // end handleButtons
 
 
@@ -320,6 +327,14 @@ void GameController::handleHeadButtons()
       getSoundPlayData().mute = false;
       getSoundPlayData().soundFile = ssWav.str();
     }
+  }
+
+
+  if((getButtonState().buttons[ButtonState::HeadFront].isPressed && getButtonState()[ButtonState::HeadFront].timeSinceEvent() > 1000) &&
+    (getButtonState()[ButtonState::HeadMiddle].isPressed && getButtonState()[ButtonState::HeadMiddle].timeSinceEvent() > 1000) &&
+    (getButtonState()[ButtonState::HeadRear].isPressed && getButtonState()[ButtonState::HeadRear].timeSinceEvent() > 1000)) {
+
+    getPlayerInfo().robotState = PlayerInfo::unstiff;
   }
 }
 
@@ -358,6 +373,15 @@ void GameController::updateLEDs()
       break;
     case PlayerInfo::penalized:
         getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::RED] = 1.0;
+      break;
+    case PlayerInfo::unstiff:
+      // handle blinking chest button for unstiff state
+      if (getFrameInfo().getFrameNumber() % 8 < 4) {
+        getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::BLUE] = 1.0;
+      }
+      else {
+        getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::BLUE] = 0.0;
+      }
       break;
     default:
       break;

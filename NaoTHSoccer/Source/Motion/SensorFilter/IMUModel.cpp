@@ -149,7 +149,7 @@ void IMUModel::writeIMUData()
      * Inverting the angle is sufficient because it's basically only a 2D rotation in the XZ or YZ plane
      * Note: using bodyIntoGlobalMapping would be wrong because the global frame can be rotated around z regarding the body
      * this would result in a redistribution of the inclination on the x,y axis.
-     * (e.g. z rotation about 90° -> a rotation about the body's y axis becomes a rotation about the global x axis)
+     * (e.g. z rotation about 90 degrees -> a rotation about the body's y axis becomes a rotation about the global x axis)
      * Note: don't use the y axis to determine the inclination in YZ plane because it might be mapped onto the x axis (a rotation about 90° around z)
      * this results in huge devation of the angles determined by atan2 because the projected y axis might end up in the second or third quadrant of the YZ plane
      */

@@ -1,15 +1,14 @@
 /**
- * @file CameraMatrix.cpp
- * 
- * Definition of class CameraMatrix
- */ 
+* @file CameraMatrix.cpp
+* 
+* Definition of class CameraMatrix
+*/ 
 
 #include "CameraMatrix.h"
 
 #include "Messages/Representations.pb.h"
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 
-#include <Tools/CameraGeometry.h>
 #include <Tools/DataConversion.h>
 
 using namespace naoth;
@@ -24,7 +23,7 @@ void CameraMatrix::print(std::ostream& stream) const
   stream << "z-translation [mm] = " << translation.z << std::endl;
   stream << "valid = " << valid << std::endl;
   stream << "timestamp = " << timestamp << std::endl;
-}//end print
+}
 
 void Serializer<CameraMatrix>::serialize(const CameraMatrix& representation, std::ostream& stream)
 {
@@ -32,11 +31,13 @@ void Serializer<CameraMatrix>::serialize(const CameraMatrix& representation, std
 
   msg.set_valid(representation.valid);
   msg.set_timestamp(representation.timestamp);
+
+  // serialize the CameraMatrix as Pose3D
   naoth::DataConversion::toMessage(representation, *(msg.mutable_pose()));
 
   google::protobuf::io::OstreamOutputStream buf(&stream);
   msg.SerializeToZeroCopyStream(&buf);
-}//end serialize
+}
 
 void Serializer<CameraMatrix>::deserialize(std::istream& stream, CameraMatrix& representation)
 {
@@ -50,5 +51,7 @@ void Serializer<CameraMatrix>::deserialize(std::istream& stream, CameraMatrix& r
   if(msg.has_valid()) {
     representation.valid = msg.valid();
   }
+
+  // deserialize the CameraMatrix as Pose3D
   naoth::DataConversion::fromMessage(msg.pose(), representation);
-}//end deserialize
+}

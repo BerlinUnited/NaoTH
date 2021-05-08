@@ -136,25 +136,34 @@ bool SocketStream::isFixedLengthDataAvailable(unsigned int len) throw(std::runti
   for (;;) {
     /* See if we have enough data to satisfy request */
     if (mRecvdLen >= len) return true;
-
     /* there was not enough data in the read buffer, so let's try to get some more */
-    int res = static_cast<int> (g_socket_receive(socket, mRecvBuf + mRecvdLen, mRecvBufSize - mRecvdLen, NULL, NULL));
-    
+    GError* err = NULL;
+    int res = static_cast<int> (g_socket_receive(socket, mRecvBuf + mRecvdLen, mRecvBufSize - mRecvdLen, NULL, &err));
+       
     if (res <= 0)
     {
+      // is there an error?
+      if(err) {
+        std::cout << err->message << std::endl;
+      } 
+
+      // check if still connected
       int lostConnection = g_socket_condition_check(socket, G_IO_IN) & (G_IO_HUP|G_IO_ERR);
       if ( lostConnection )
       {
         throw std::runtime_error("lost connection");
+      } else if(!err) {
+        std::cout << "Weird: still connected, but received 0 bytes ad no error." << std::endl;
       }
+
       return false;
     }
     /* res is > 0 */
-    mRecvdLen += res;
+    mRecvdLen += static_cast<unsigned int>(res);
   }
 }
 
-int SocketStream::prefixedRecv(std::string& msg)
+unsigned int SocketStream::prefixedRecv(std::string& msg)
 {
   msg = "";
   unsigned int messLen;

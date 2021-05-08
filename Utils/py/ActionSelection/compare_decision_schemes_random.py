@@ -5,7 +5,7 @@ from tools import field_info as field
 from state import State
 from tools import action as a
 import numpy as np
-from naoth import math2d as m2d
+import naoth.math as naoth_magic
 import play_striker as striker
 
 import multiprocessing as mp

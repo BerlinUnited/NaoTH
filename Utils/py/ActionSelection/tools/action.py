@@ -1,7 +1,7 @@
 from __future__ import division
 import numpy as np
 import math
-from naoth import math2d as m2d
+from naoth.math import *
 
 # num_particles = 30
 friction = 0.0275
@@ -41,7 +41,7 @@ class Action:
             distance = self.speed * self.speed / friction / gforce / 2.0
             angle = math.radians(self.angle)
 
-        noisy_action = m2d.Vector2(distance, 0.0)
+        noisy_action = Vector2(distance, 0.0)
         noisy_action = noisy_action.rotate(angle)
 
         return ball + noisy_action
@@ -86,8 +86,8 @@ class ActionResults:
         self.ball_positions = categorized_ball_position_list  # type is list of CategorizedBallPosition
         self.cat_histogram = {n: 0.0 for n in Category}
         # self.cat_histogram = [0]*Category.NUMBER_OF_BallPositionCategory.value #len(Categories)  # type is list
-        self.expected_ball_pos_mean = m2d.Vector2()  # mean - should be in local coordinates
-        self.expected_ball_pos_median = m2d.Vector2()  # median - should be in local coordinates
+        self.expected_ball_pos_mean = Vector2()  # mean - should be in local coordinates
+        self.expected_ball_pos_median = Vector2()  # median - should be in local coordinates
 
     def positions(self):
         # returns a list of CategorizedBallPosition

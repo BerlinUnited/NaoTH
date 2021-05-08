@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from env_0.state import State
 from env_0.env import Env
 
-from naoth.math2d import Vector2 as Vec
+from naoth.math import Vector2 as Vec
 
 
 def run_field_creation(model, env, seg_x, seg_y):
@@ -131,7 +131,7 @@ def plot_field_by_model(model, env, seg_x=250, seg_y=250):
 
 
 if __name__ == "__main__":
-    ### _-- load model --_
+    # _-- load model --_
     from keras.models import Sequential
     from keras.layers import Dense, Activation, Flatten
     from keras.optimizers import RMSprop

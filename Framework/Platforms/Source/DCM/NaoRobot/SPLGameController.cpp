@@ -35,7 +35,7 @@ SPLGameController::SPLGameController()
     dataOut.message = GAMECONTROLLER_RETURN_MSG_ALIVE;
 
     std::cout << "[INFO] SPLGameController start socket thread" << std::endl;
-    socketThread = std::thread([this] {this->socketLoop();});
+    socketThread = std::thread(&SPLGameController::socketLoop, this);
     ThreadUtil::setPriority(socketThread, ThreadUtil::Priority::lowest);
     ThreadUtil::setName(socketThread, "GameController");
   }

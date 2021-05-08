@@ -1,15 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf8 -*-
 
+import socket
 import sys
 import threading
-import socket
 import time
 from threading import Event
-import os
 
-from naoth import TeamMessage_pb2
-from naoth.SPLMessage import SPLMessage
+from naoth.spl import SPLMessage
 
 
 class TeamCommSender(threading.Thread):

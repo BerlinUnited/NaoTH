@@ -1,6 +1,6 @@
 import math
 
-from naoth import math2d as m2d
+from naoth.math import *
 
 from . import field_info as field
 
@@ -19,7 +19,7 @@ def compact_exponential_repeller(target_point, point):
     v = target_point - point
     t = v.abs()  # should be double precision
     if t >= d - 100:
-        return m2d.Vector2(0, 0)
+        return Vector2(0, 0)
 
     return v.normalize() * math.exp(a / d - a / (d - t))
 
@@ -38,12 +38,12 @@ def calculate_potential_field(point, target_point):
 
     field_f = global_exponential_attractor(target_point, point)
     # we are repelled by the opponents
-    player_f = m2d.Vector2(0, 0)
+    player_f = Vector2(0, 0)
     player_f.abs()
     # NOT Implemented yet
 
     # my self - NOTE this differs from the cpp Implementation in order to factor in the robots own position
-    player_f -= compact_exponential_repeller(m2d.Vector2(0, 0), point)
+    player_f -= compact_exponential_repeller(Vector2(0, 0), point)
 
     # field_f is of type Vector2
     ff = field_f.abs() * 0.8
@@ -72,7 +72,7 @@ def get_goal_target(state, point):
                                  state.pose / field.opponent_goalpost_right) - left_to_right * goal_post_offset
 
     # this is the goal line we are shooting for
-    goal_line = m2d.LineSegment(left_endpoint, right_endpoint)
+    goal_line = LineSegment(left_endpoint, right_endpoint)
 
     # project the point on the goal line
     target = goal_line.projection(point)

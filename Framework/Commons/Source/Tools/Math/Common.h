@@ -3,8 +3,8 @@
 #ifndef _Math_Common_h_
 #define _Math_Common_h_
 
-#include <assert.h>
-#include <math.h>
+#include <cassert>
+#include <cmath>
 #include <ctime>
 #include <cstdint>
 

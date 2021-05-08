@@ -25,7 +25,7 @@ public:
 
     virtual ~AbstractCNNFinder(){}
 
-    virtual void find(const BallCandidates::PatchYUVClassified& p, double meanBrightness) = 0;
+    virtual void predict(const BallCandidates::PatchYUVClassified& p, double meanBrightness) = 0;
 
     virtual double getRadius() = 0;
     virtual Vector2d getCenter() = 0;

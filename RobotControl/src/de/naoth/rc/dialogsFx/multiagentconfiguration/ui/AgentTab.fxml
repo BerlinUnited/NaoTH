@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+
+<TabPane fx:id="tabs" side="LEFT" xmlns="http://javafx.com/javafx/8.0.162-ea" xmlns:fx="http://javafx.com/fxml/1">
+   <tabs>
+      <Tab fx:id="configurationsTab" closable="false" text="Configuration">
+        <content>
+          <fx:include fx:id="configurationsTabView" source="ConfigurationsTab.fxml" />
+        </content>
+      </Tab>
+      <Tab fx:id="representationsTab" closable="false" onSelectionChanged="#representationsTabSelect" text="Representations">
+        <content>
+          <fx:include fx:id="representationsTabView" source="RepresentationsTab.fxml" />
+        </content>
+      </Tab>
+   </tabs>
+</TabPane>

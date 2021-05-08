@@ -5,7 +5,7 @@ from . import potential_field as pf
 from .action import Category
 from .action import ActionResults
 
-from naoth import math2d as m2d
+from naoth.math import *
 
 good_threshold_percentage = 0.85
 minGoalLikelihood = 0.3
@@ -18,32 +18,32 @@ def simulate_consequences(action, categorized_ball_positions, state, num_particl
     own_goal_dir = (field.own_goalpost_right - field.own_goalpost_left).normalize()
 
     own_left_endpoint = field.own_goalpost_left + own_goal_dir * (
-                field.goalpost_radius + field.ball_radius)
+            field.goalpost_radius + field.ball_radius)
     own_right_endpoint = field.own_goalpost_right - own_goal_dir * (
-                field.goalpost_radius + field.ball_radius)
+            field.goalpost_radius + field.ball_radius)
 
-    own_goal_line_global = m2d.LineSegment(own_left_endpoint, own_right_endpoint)
+    own_goal_line_global = LineSegment(own_left_endpoint, own_right_endpoint)
 
     # calculate opponent goal lines and box
-    opp_goal_back_left = m2d.Vector2(field.opponent_goalpost_left.x + field.goal_depth,
-                                     field.opponent_goalpost_left.y)
-    opp_goal_back_right = m2d.Vector2(field.opponent_goalpost_right.x + field.goal_depth,
-                                      field.opponent_goalpost_right.y)
+    opp_goal_back_left = Vector2(field.opponent_goalpost_left.x + field.goal_depth,
+                                 field.opponent_goalpost_left.y)
+    opp_goal_back_right = Vector2(field.opponent_goalpost_right.x + field.goal_depth,
+                                  field.opponent_goalpost_right.y)
 
     # Maybe add list of goal backsides here
     goal_backsides = ([])
-    goal_backsides.append(m2d.LineSegment(opp_goal_back_left, opp_goal_back_right))
-    goal_backsides.append(m2d.LineSegment(field.opponent_goalpost_left, opp_goal_back_left))
-    goal_backsides.append(m2d.LineSegment(field.opponent_goalpost_right, opp_goal_back_right))
+    goal_backsides.append(LineSegment(opp_goal_back_left, opp_goal_back_right))
+    goal_backsides.append(LineSegment(field.opponent_goalpost_left, opp_goal_back_left))
+    goal_backsides.append(LineSegment(field.opponent_goalpost_right, opp_goal_back_right))
 
-    opp_goal_box = m2d.Rect2d(opp_goal_back_right, field.opponent_goalpost_left)
+    opp_goal_box = Rect2d(opp_goal_back_right, field.opponent_goalpost_left)
 
     # current ball position
     global_ball_start_position = state.pose * state.ball_position
 
     # virtual ultrasound obstacle line
-    obstacle_line = m2d.LineSegment(state.pose * m2d.Vector2(400, 200),
-                                    state.pose * m2d.Vector2(400, -200))
+    obstacle_line = LineSegment(state.pose * Vector2(400, 200),
+                                state.pose * Vector2(400, -200))
 
     mean_test_list_x = []
     mean_test_list_y = []
@@ -53,7 +53,7 @@ def simulate_consequences(action, categorized_ball_positions, state, num_particl
         # predict and calculate shoot line
         global_ball_end_position = state.pose * action.predict(state.ball_position, True)
 
-        shootline = m2d.LineSegment(global_ball_start_position, global_ball_end_position)
+        shootline = LineSegment(global_ball_start_position, global_ball_end_position)
 
         # check if collision detection with goal has to be performed
         # if the ball start and end positions are inside of the field, you don't need to check
@@ -71,7 +71,7 @@ def simulate_consequences(action, categorized_ball_positions, state, num_particl
         # if there are collisions with the back goal lines, calculate where the ball will stop
         if collision_with_goal:
             global_ball_end_position = shootline.point(t_min - field.ball_radius)
-            shootline = m2d.LineSegment(global_ball_start_position, global_ball_end_position)
+            shootline = LineSegment(global_ball_start_position, global_ball_end_position)
 
         # Obstacle Detection
         obstacle_collision = False
@@ -114,10 +114,10 @@ def simulate_consequences(action, categorized_ball_positions, state, num_particl
         categorized_ball_positions.add(state.pose / global_ball_end_position, category)
 
     # calculate the most likely ball position in a separate simulation run
-    categorized_ball_positions.expected_ball_pos_mean = m2d.Vector2(np.mean(mean_test_list_x),
-                                                                    np.mean(mean_test_list_y))
-    categorized_ball_positions.expected_ball_pos_median = m2d.Vector2(np.median(mean_test_list_x),
-                                                                      np.median(mean_test_list_y))
+    categorized_ball_positions.expected_ball_pos_mean = Vector2(np.mean(mean_test_list_x),
+                                                                np.mean(mean_test_list_y))
+    categorized_ball_positions.expected_ball_pos_median = Vector2(np.median(mean_test_list_x),
+                                                                  np.median(mean_test_list_y))
     return categorized_ball_positions
 
 
@@ -128,15 +128,15 @@ def simulateAction(action, state, num_particles):
     global_ball_start = state.pose * state.ball_position
 
     opp_goal_backsides = [
-        m2d.LineSegment(field.opp_goal_back_left, field.opp_goal_back_right),
-        m2d.LineSegment(field.opponent_goalpost_left, field.opp_goal_back_left),
-        m2d.LineSegment(field.opponent_goalpost_right, field.opp_goal_back_right)
+        LineSegment(field.opp_goal_back_left, field.opp_goal_back_right),
+        LineSegment(field.opponent_goalpost_left, field.opp_goal_back_left),
+        LineSegment(field.opponent_goalpost_right, field.opp_goal_back_right)
     ]
 
     own_goal_backsides = [
-        m2d.LineSegment(field.own_goal_back_left, field.own_goal_back_right),
-        m2d.LineSegment(field.own_goalpost_left, field.own_goal_back_left),
-        m2d.LineSegment(field.own_goalpost_right, field.own_goal_back_right)
+        LineSegment(field.own_goal_back_left, field.own_goal_back_right),
+        LineSegment(field.own_goalpost_left, field.own_goal_back_left),
+        LineSegment(field.own_goalpost_right, field.own_goal_back_right)
     ]
 
     # now generate predictions and categorize
@@ -161,14 +161,14 @@ def simulateAction(action, state, num_particles):
     ball_pos_array = [[p.pos().x, p.pos().y] for p in result.positions()]
     mean = np.mean(ball_pos_array, axis=0)
     median = np.median(ball_pos_array, axis=0)
-    result.expected_ball_pos_mean = m2d.Vector2(mean[0], mean[1])
-    result.expected_ball_pos_median = m2d.Vector2(median[0], median[1])
+    result.expected_ball_pos_mean = Vector2(mean[0], mean[1])
+    result.expected_ball_pos_median = Vector2(median[0], median[1])
 
     return result
 
 
 def calculateCollision(lines, start, end):
-    motionLine = m2d.LineSegment(start, end)
+    motionLine = LineSegment(start, end)
     t_min = motionLine.length
 
     collision = False

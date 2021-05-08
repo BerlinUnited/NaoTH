@@ -41,8 +41,8 @@
 
 import math
 
-from naoth.math2d import Vector2 as Vec
-from naoth.math2d import LineSegment
+from naoth.math import Vector2 as Vec
+from naoth.math import LineSegment
 
 from actions import Actions
 from state import State

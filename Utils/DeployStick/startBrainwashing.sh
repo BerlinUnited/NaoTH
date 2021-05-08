@@ -15,6 +15,11 @@ su nao -c "/usr/bin/amixer sset 'Capture',0 90%"
 su nao -c "/usr/bin/pactl set-source-mute 1 false"
 su nao -c "/usr/bin/pactl set-source-volume 1 90%"
 
+# NAO 6 needs a higher volume to hear
+if [[ -f "/usr/bin/lola" || "/opt/aldebaran/bin/lola" ]]; then
+  su nao -c "/usr/bin/pactl set-source-volume 1 235%"
+fi
+
 
 # play initial sound
 su nao -c "/usr/bin/paplay /home/nao/naoqi/Media/usb_start.wav"
@@ -71,6 +76,7 @@ else
   # copy binaries and start naoqi/naoth again
   if [ -f "./deploy/home/nao/bin/lola_adaptor" ]; then
     echo "[deploy] replace lola_adaptor"
+    lola_adaptor stop
     rm -f /home/nao/bin/lola_adaptor
     su nao -c "cp ./deploy/home/nao/bin/lola_adaptor /home/nao/bin/lola_adaptor"
     chmod 755 /home/nao/bin/lola_adaptor

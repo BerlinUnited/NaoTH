@@ -182,7 +182,7 @@ void Engine::createOptionGraph(InputSource& input)
   {
     input.readString(buf1,99);
     input.readString(buf2,99);
-    agents.append(buf1,new Agent(buf1,options[buf2],errorHandler, i));
+    agents.append(buf1,new Agent(buf1,options[buf2]));
   }
 
   // check for loops in the option graph

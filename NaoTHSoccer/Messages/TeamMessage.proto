@@ -1,6 +1,6 @@
 syntax = "proto2";
 package naothmessages;
-option java_package= "de.naoth.rc.messages";
+option java_package= "de.naoth.rc.core.messages";
 
 import "CommonTypes.proto";
 import "Framework-Representations.proto";
@@ -30,6 +30,7 @@ enum RobotState
   playing  = 3;
   finished = 4;
   penalized = 5;
+  unstiff = 6;
 };
 
 enum RobotRoleStatic

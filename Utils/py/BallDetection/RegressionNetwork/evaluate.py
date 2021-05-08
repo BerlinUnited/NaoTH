@@ -4,45 +4,63 @@ import argparse
 import pickle
 import tensorflow.keras as keras
 import numpy as np
-import sys
 import cv2
+from pathlib import Path
 
-parser = argparse.ArgumentParser(description='Train the network given ')
+DATA_DIR = Path(Path(__file__).parent.absolute() / "data").resolve()
+MODEL_DIR = Path(Path(__file__).parent.absolute() / "data/best_models").resolve()
 
-parser.add_argument('-b', '--database-path', dest='imgdb_path',
-                    help='Path to the image database containing test data.'
-                         'Default is img.db in current folder.')
-parser.add_argument('-m', '--model-path', dest='model_path',
-                    help='Store the trained model using this path. Default is model.h5.')
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Evaluate the network given ')
 
-args = parser.parse_args()
+    parser.add_argument('-b', '--database-path', dest='imgdb_path', default=str(DATA_DIR / 'imgdb.pkl'),
+                        help='Path to the image database containing test data.'
+                             'Default is imgdb.pkl in the data folder.')
+    parser.add_argument('-m', '--model-path', dest='model_path', default=str(MODEL_DIR / 'fy1500_conf.h5'),
+                        help='Store the trained model using this path. Default is fy1500_conf.h5.')
 
-imgdb_path = "img.db"
-model_path = "model.h5"
-res = {"x": 16, "y": 16}
+    args = parser.parse_args()
 
-if args.model_path is not None:
-    model_path = args.model_path
+    with open(args.imgdb_path, "rb") as f:
+        mean = pickle.load(f)
+        print("mean=" + str(mean))
+        x = pickle.load(f)
+        y = pickle.load(f)
 
-if args.imgdb_path is not None:
-    imgdb_path = args.imgdb_path
+    model = keras.models.load_model(args.model_path)
 
-with open(imgdb_path, "rb") as f:
-    mean = pickle.load(f)
-    print("mean=" + str(mean))
-    x = pickle.load(f)
-    y = pickle.load(f)
+    model.summary()
 
-model = keras.models.load_model(model_path)
+    # compare image size to network size and resize if necessary
+    target_input_shape = model.layers[0].input_shape[1:]
+    input_shape = x.shape[1:]
 
-print(model.summary())
+    if target_input_shape != input_shape:
+        print("will resize input images to match the required input shape")
 
-x = np.array(x)
-y = np.array(y)
+        resized_images = list()
+        for image in x:
+            temp = cv2.resize(image, dsize=(target_input_shape[0], target_input_shape[1]),
+                              interpolation=cv2.INTER_CUBIC)
+            temp = temp.reshape(*temp.shape, 1)
+            resized_images.append(temp)
 
-result = model.evaluate(x,y)
+        x = np.array(resized_images)
 
-print("Evaluation result")
-print("=================")
+        # TODO resize radius
+        for i in range(len(y)):
+            if y[i][0] is not 0:
+                y[i][0] = y[i][0] / 2
+                y[i][1] = y[i][1] / 2
+                y[i][2] = y[i][2] / 2
 
-print("loss: {} precision: {}".format(result[0], result[1]))
+    x = np.array(x)
+    y = np.array(y)
+
+    result = model.evaluate(x, y)
+
+    print("Evaluation result")
+    print("=================")
+
+    for idx in range(0, len(result)):
+        print(model.metrics_names[idx] + ":", result[idx])

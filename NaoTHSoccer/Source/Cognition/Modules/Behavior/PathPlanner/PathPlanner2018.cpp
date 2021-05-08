@@ -325,8 +325,8 @@ bool PathPlanner2018::nearApproach_forwardKick(const double offsetX, const doubl
         // generate a correction step
       double translation_xy = params.stepLength;  //TODO kann man nicht die steplength aus den motion nehmen?
 
-      //std::abs(targetPos.y) => das heiﬂt doch wenn der ball in der y richtung springt wird ein schritt zur¸ck geplant und ausgef¸hrt
-      // das ist daf¸r das das er an den ball anlaufen kann ohne zu rotieren. Wenn man nah am ball ist wird angenommen das die Rotation
+      //std::abs(targetPos.y) => das heisst doch wenn der ball in der y richtung springt wird ein schritt zur√ºck geplant und ausgef√ºhrt
+      // das ist daf√ºr das das er an den ball anlaufen kann ohne zu rotieren. Wenn man nah am ball ist wird angenommen das die Rotation
       //stimmt und dann soll diese auch nicht korrigiert werden
       double translation_x = std::min(translation_xy, targetPos.x - std::abs(targetPos.y));
       double translation_y = std::min(translation_xy, std::abs(targetPos.y)) * (targetPos.y < 0 ? -1 : 1);
@@ -632,6 +632,10 @@ void PathPlanner2018::sideKick(const Foot& foot) // Foot == RIGHT means that we 
   }
 }
 
+
+void PathPlanner2018::addStep(const StepBufferElement& new_step) {
+  stepBuffer.push_back(new_step);
+}
 
 void PathPlanner2018::updateSpecificStep(const unsigned int index, StepBufferElement& step)
 {

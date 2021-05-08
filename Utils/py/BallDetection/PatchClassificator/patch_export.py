@@ -4,7 +4,6 @@ import sys
 import getopt
 import numpy as np
 import json
-import naoth
 import cv2
 import patchReader as patchReader
 
