@@ -5996,13 +5996,6 @@ class BallCandidates_Patch : public ::google::protobuf::Message /* @@protoc_inse
   ::naothmessages::IntVector2* release_max();
   void set_allocated_max(::naothmessages::IntVector2* max);
 
-  // optional double value = 6;
-  bool has_value() const;
-  void clear_value();
-  static const int kValueFieldNumber = 6;
-  double value() const;
-  void set_value(double value);
-
   // optional .naothmessages.BallCandidates.Patch.Type type = 3 [default = Y];
   bool has_type() const;
   void clear_type();
@@ -6020,8 +6013,6 @@ class BallCandidates_Patch : public ::google::protobuf::Message /* @@protoc_inse
   void clear_has_type();
   void set_has_data();
   void clear_has_data();
-  void set_has_value();
-  void clear_has_value();
 
   // helper for ByteSizeLong()
   size_t RequiredFieldsByteSizeFallback() const;
@@ -6032,7 +6023,6 @@ class BallCandidates_Patch : public ::google::protobuf::Message /* @@protoc_inse
   ::google::protobuf::internal::ArenaStringPtr data_;
   ::naothmessages::IntVector2* min_;
   ::naothmessages::IntVector2* max_;
-  double value_;
   int type_;
   friend struct protobuf_Representations_2eproto::TableStruct;
 };
@@ -13740,13 +13730,13 @@ inline void BallCandidates_Patch::set_allocated_max(::naothmessages::IntVector2*
 
 // optional .naothmessages.BallCandidates.Patch.Type type = 3 [default = Y];
 inline bool BallCandidates_Patch::has_type() const {
-  return (_has_bits_[0] & 0x00000010u) != 0;
+  return (_has_bits_[0] & 0x00000008u) != 0;
 }
 inline void BallCandidates_Patch::set_has_type() {
-  _has_bits_[0] |= 0x00000010u;
+  _has_bits_[0] |= 0x00000008u;
 }
 inline void BallCandidates_Patch::clear_has_type() {
-  _has_bits_[0] &= ~0x00000010u;
+  _has_bits_[0] &= ~0x00000008u;
 }
 inline void BallCandidates_Patch::clear_type() {
   type_ = 0;
@@ -13824,30 +13814,6 @@ inline void BallCandidates_Patch::set_allocated_data(::std::string* data) {
   }
   data_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), data);
   // @@protoc_insertion_point(field_set_allocated:naothmessages.BallCandidates.Patch.data)
-}
-
-// optional double value = 6;
-inline bool BallCandidates_Patch::has_value() const {
-  return (_has_bits_[0] & 0x00000008u) != 0;
-}
-inline void BallCandidates_Patch::set_has_value() {
-  _has_bits_[0] |= 0x00000008u;
-}
-inline void BallCandidates_Patch::clear_has_value() {
-  _has_bits_[0] &= ~0x00000008u;
-}
-inline void BallCandidates_Patch::clear_value() {
-  value_ = 0;
-  clear_has_value();
-}
-inline double BallCandidates_Patch::value() const {
-  // @@protoc_insertion_point(field_get:naothmessages.BallCandidates.Patch.value)
-  return value_;
-}
-inline void BallCandidates_Patch::set_value(double value) {
-  set_has_value();
-  value_ = value;
-  // @@protoc_insertion_point(field_set:naothmessages.BallCandidates.Patch.value)
 }
 
 // -------------------------------------------------------------------

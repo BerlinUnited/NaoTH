@@ -41497,23 +41497,6 @@ public final class Representations {
        * <code>required bytes data = 5;</code>
        */
       com.google.protobuf.ByteString getData();
-
-      /**
-       * <pre>
-       * Same meaning as the value of the patch, e.g. the average luminance
-       * </pre>
-       *
-       * <code>optional double value = 6;</code>
-       */
-      boolean hasValue();
-      /**
-       * <pre>
-       * Same meaning as the value of the patch, e.g. the average luminance
-       * </pre>
-       *
-       * <code>optional double value = 6;</code>
-       */
-      double getValue();
     }
     /**
      * Protobuf type {@code naothmessages.BallCandidates.Patch}
@@ -41530,7 +41513,6 @@ public final class Representations {
       private Patch() {
         type_ = 0;
         data_ = com.google.protobuf.ByteString.EMPTY;
-        value_ = 0D;
       }
 
       @java.lang.Override
@@ -41601,11 +41583,6 @@ public final class Representations {
               case 42: {
                 bitField0_ |= 0x00000008;
                 data_ = input.readBytes();
-                break;
-              }
-              case 49: {
-                bitField0_ |= 0x00000010;
-                value_ = input.readDouble();
                 break;
               }
             }
@@ -41805,29 +41782,6 @@ public final class Representations {
         return data_;
       }
 
-      public static final int VALUE_FIELD_NUMBER = 6;
-      private double value_;
-      /**
-       * <pre>
-       * Same meaning as the value of the patch, e.g. the average luminance
-       * </pre>
-       *
-       * <code>optional double value = 6;</code>
-       */
-      public boolean hasValue() {
-        return ((bitField0_ & 0x00000010) == 0x00000010);
-      }
-      /**
-       * <pre>
-       * Same meaning as the value of the patch, e.g. the average luminance
-       * </pre>
-       *
-       * <code>optional double value = 6;</code>
-       */
-      public double getValue() {
-        return value_;
-      }
-
       private byte memoizedIsInitialized = -1;
       public final boolean isInitialized() {
         byte isInitialized = memoizedIsInitialized;
@@ -41872,9 +41826,6 @@ public final class Representations {
         if (((bitField0_ & 0x00000008) == 0x00000008)) {
           output.writeBytes(5, data_);
         }
-        if (((bitField0_ & 0x00000010) == 0x00000010)) {
-          output.writeDouble(6, value_);
-        }
         unknownFields.writeTo(output);
       }
 
@@ -41898,10 +41849,6 @@ public final class Representations {
         if (((bitField0_ & 0x00000008) == 0x00000008)) {
           size += com.google.protobuf.CodedOutputStream
             .computeBytesSize(5, data_);
-        }
-        if (((bitField0_ & 0x00000010) == 0x00000010)) {
-          size += com.google.protobuf.CodedOutputStream
-            .computeDoubleSize(6, value_);
         }
         size += unknownFields.getSerializedSize();
         memoizedSize = size;
@@ -41938,13 +41885,6 @@ public final class Representations {
           result = result && getData()
               .equals(other.getData());
         }
-        result = result && (hasValue() == other.hasValue());
-        if (hasValue()) {
-          result = result && (
-              java.lang.Double.doubleToLongBits(getValue())
-              == java.lang.Double.doubleToLongBits(
-                  other.getValue()));
-        }
         result = result && unknownFields.equals(other.unknownFields);
         return result;
       }
@@ -41971,11 +41911,6 @@ public final class Representations {
         if (hasData()) {
           hash = (37 * hash) + DATA_FIELD_NUMBER;
           hash = (53 * hash) + getData().hashCode();
-        }
-        if (hasValue()) {
-          hash = (37 * hash) + VALUE_FIELD_NUMBER;
-          hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
-              java.lang.Double.doubleToLongBits(getValue()));
         }
         hash = (29 * hash) + unknownFields.hashCode();
         memoizedHashCode = hash;
@@ -42124,8 +42059,6 @@ public final class Representations {
           bitField0_ = (bitField0_ & ~0x00000004);
           data_ = com.google.protobuf.ByteString.EMPTY;
           bitField0_ = (bitField0_ & ~0x00000008);
-          value_ = 0D;
-          bitField0_ = (bitField0_ & ~0x00000010);
           return this;
         }
 
@@ -42174,10 +42107,6 @@ public final class Representations {
             to_bitField0_ |= 0x00000008;
           }
           result.data_ = data_;
-          if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
-            to_bitField0_ |= 0x00000010;
-          }
-          result.value_ = value_;
           result.bitField0_ = to_bitField0_;
           onBuilt();
           return result;
@@ -42231,9 +42160,6 @@ public final class Representations {
           }
           if (other.hasData()) {
             setData(other.getData());
-          }
-          if (other.hasValue()) {
-            setValue(other.getValue());
           }
           this.mergeUnknownFields(other.unknownFields);
           onChanged();
@@ -42581,54 +42507,6 @@ public final class Representations {
         public Builder clearData() {
           bitField0_ = (bitField0_ & ~0x00000008);
           data_ = getDefaultInstance().getData();
-          onChanged();
-          return this;
-        }
-
-        private double value_ ;
-        /**
-         * <pre>
-         * Same meaning as the value of the patch, e.g. the average luminance
-         * </pre>
-         *
-         * <code>optional double value = 6;</code>
-         */
-        public boolean hasValue() {
-          return ((bitField0_ & 0x00000010) == 0x00000010);
-        }
-        /**
-         * <pre>
-         * Same meaning as the value of the patch, e.g. the average luminance
-         * </pre>
-         *
-         * <code>optional double value = 6;</code>
-         */
-        public double getValue() {
-          return value_;
-        }
-        /**
-         * <pre>
-         * Same meaning as the value of the patch, e.g. the average luminance
-         * </pre>
-         *
-         * <code>optional double value = 6;</code>
-         */
-        public Builder setValue(double value) {
-          bitField0_ |= 0x00000010;
-          value_ = value;
-          onChanged();
-          return this;
-        }
-        /**
-         * <pre>
-         * Same meaning as the value of the patch, e.g. the average luminance
-         * </pre>
-         *
-         * <code>optional double value = 6;</code>
-         */
-        public Builder clearValue() {
-          bitField0_ = (bitField0_ & ~0x00000010);
-          value_ = 0D;
           onChanged();
           return this;
         }
@@ -58110,86 +57988,86 @@ public final class Representations {
       "othmessages.DoubleVector2\022:\n\024correctionO" +
       "ffsetHead\030\003 \001(\0132\034.naothmessages.DoubleVe" +
       "ctor3\0229\n\023correctionOffsetCam\030\004 \003(\0132\034.nao" +
-      "thmessages.DoubleVector3\"\232\002\n\016BallCandida" +
+      "thmessages.DoubleVector3\"\213\002\n\016BallCandida" +
       "tes\0224\n\007patches\030\001 \003(\0132#.naothmessages.Bal" +
-      "lCandidates.Patch\032\321\001\n\005Patch\022&\n\003min\030\001 \002(\013" +
+      "lCandidates.Patch\032\302\001\n\005Patch\022&\n\003min\030\001 \002(\013" +
       "2\031.naothmessages.IntVector2\022&\n\003max\030\002 \002(\013",
       "2\031.naothmessages.IntVector2\0229\n\004type\030\003 \001(" +
       "\0162(.naothmessages.BallCandidates.Patch.T" +
-      "ype:\001Y\022\014\n\004data\030\005 \002(\014\022\r\n\005value\030\006 \001(\001\" \n\004T" +
-      "ype\022\005\n\001Y\020\000\022\007\n\003YUV\020\001\022\010\n\004YUVC\020\002\"\371\003\n\024Remote" +
-      "ControlCommand\022D\n\013controlMode\030\001 \001(\0162/.na" +
-      "othmessages.RemoteControlCommand.Control" +
-      "Mode\022>\n\006action\030\002 \001(\0162..naothmessages.Rem" +
-      "oteControlCommand.ActionType\022K\n\rsecond_a" +
-      "ction\030\003 \001(\01624.naothmessages.RemoteContro" +
-      "lCommand.SecondActionType\022%\n\006target\030\004 \001(",
-      "\0132\025.naothmessages.Pose2D\"3\n\013ControlMode\022" +
-      "\022\n\016DIRECT_CONTROL\020\000\022\020\n\014LOCK_CONTROL\020\001\"y\n" +
-      "\nActionType\022\010\n\004NONE\020\000\022\t\n\005STAND\020\001\022\010\n\004WALK" +
-      "\020\002\022\016\n\nKICK_RIGHT\020\003\022\r\n\tKICK_LEFT\020\004\022\025\n\021KIC" +
-      "K_FORWARD_LEFT\020\005\022\026\n\022KICK_FORWARD_RIGHT\020\006" +
-      "\"7\n\020SecondActionType\022\017\n\013SECOND_NONE\020\000\022\t\n" +
-      "\005BLINK\020\001\022\007\n\003SAY\020\002\"\257\001\n\022GroundContactModel" +
-      "\022\031\n\021leftGroundContact\030\001 \002(\010\022\032\n\022rightGrou" +
-      "ndContact\030\002 \002(\010\022;\n\013supportFoot\030\003 \002(\0162&.n" +
-      "aothmessages.GroundContactModel.Foot\"%\n\004",
-      "Foot\022\010\n\004LEFT\020\000\022\t\n\005RIGHT\020\001\022\010\n\004NONE\020\002\"\325\001\n\020" +
-      "CollisionPercept\022\034\n\024timeCollisionArmLeft" +
-      "\030\001 \002(\r\022\035\n\025timeCollisionArmRight\030\002 \002(\r\022\035\n" +
-      "\025isCollisionLeftBumper\030\003 \002(\010\022\036\n\026isCollis" +
-      "ionRightBumper\030\004 \002(\010\022!\n\031lastComputedColl" +
-      "isionLeft\030\005 \002(\001\022\"\n\032lastComputedCollision" +
-      "Right\030\006 \002(\001\"\362\003\n\007IMUData\022.\n\010location\030\001 \002(" +
-      "\0132\034.naothmessages.DoubleVector3\022.\n\010veloc" +
-      "ity\030\002 \002(\0132\034.naothmessages.DoubleVector3\022" +
-      "2\n\014acceleration\030\003 \002(\0132\034.naothmessages.Do",
-      "ubleVector3\0229\n\023acceleration_sensor\030\004 \001(\013" +
-      "2\034.naothmessages.DoubleVector3\022.\n\010rotati" +
-      "on\030\005 \002(\0132\034.naothmessages.DoubleVector3\0229" +
-      "\n\023rotational_velocity\030\006 \002(\0132\034.naothmessa" +
-      "ges.DoubleVector3\022@\n\032rotational_velocity" +
-      "_sensor\030\007 \001(\0132\034.naothmessages.DoubleVect" +
-      "or3\0221\n\013orientation\030\010 \002(\0132\034.naothmessages" +
-      ".DoubleVector2\0228\n\022orientation_rotvec\030\t \002" +
-      "(\0132\034.naothmessages.DoubleVector3\"\316\003\n\020Cen" +
-      "treOfPressure\022?\n\031in_and_only_left_foot_c",
-      "op\030\001 \002(\0132\034.naothmessages.DoubleVector3\022\'" +
-      "\n\037in_and_only_left_foot_magnitude\030\002 \002(\001\022" +
-      "#\n\033in_and_only_left_foot_valid\030\003 \002(\010\022@\n\032" +
-      "in_and_only_right_foot_cop\030\004 \002(\0132\034.naoth" +
-      "messages.DoubleVector3\022(\n in_and_only_ri" +
-      "ght_foot_magnitude\030\005 \002(\001\022$\n\034in_and_only_" +
-      "right_foot_valid\030\006 \002(\010\022C\n\035in_kinematic_c" +
-      "hain_origin_cop\030\007 \002(\0132\034.naothmessages.Do" +
-      "ubleVector3\022+\n#in_kinematic_chain_origin" +
-      "_magnitude\030\010 \002(\001\022\'\n\037in_kinematic_chain_o",
-      "rigin_valid\030\t \002(\010\"\215\003\n\022CalibrationDataCMC" +
-      "\022R\n\017calibrationData\030\001 \003(\01329.naothmessage" +
-      "s.CalibrationDataCMC.CalibrationDataSamp" +
-      "leV3\022\031\n\021numberOfResudials\030\002 \001(\r\032\207\002\n\027Cali" +
-      "brationDataSampleV3\022(\n\tchestPose\030\001 \001(\0132\025" +
-      ".naothmessages.Pose3D\0223\n\redgelsInImage\030\002" +
-      " \003(\0132\034.naothmessages.DoubleVector2\0226\n\020ed" +
-      "gelsInImageTop\030\003 \003(\0132\034.naothmessages.Dou" +
-      "bleVector2\0221\n\013orientation\030\004 \001(\0132\034.naothm" +
-      "essages.DoubleVector2\022\017\n\007headYaw\030\005 \001(\001\022\021",
-      "\n\theadPitch\030\006 \001(\001\"\356\001\n\016WhistlePercept\022 \n\030" +
-      "frameWhenWhistleDetected\030\001 \001(\r\022\023\n\013captur" +
-      "eFile\030\002 \001(\t\022A\n\022recognizedWhistles\030\003 \003(\0132" +
-      "%.naothmessages.WhistlePercept.Whistle\022\027" +
-      "\n\017whistleDetected\030\004 \001(\010\032I\n\007Whistle\022\014\n\004na" +
-      "me\030\001 \002(\t\022\031\n\021positionInCapture\030\002 \002(\003\022\025\n\rr" +
-      "esponseValue\030\003 \002(\001\"\203\001\n\013DebugModify\0228\n\010va" +
-      "lueMap\030\001 \003(\0132&.naothmessages.DebugModify" +
-      ".ModifyValue\032:\n\013ModifyValue\022\014\n\004name\030\001 \002(" +
-      "\t\022\016\n\006modify\030\002 \001(\010\022\r\n\005value\030\003 \001(\001\"9\n\nStep",
-      "Buffer\022+\n\014support_foot\030\001 \001(\0132\025.naothmess" +
-      "ages.Pose3D\"\215\001\n\rbodyAwareness\022\020\n\010isLifte" +
-      "d\030\001 \001(\010\0223\n\rcalculatedCoM\030\002 \001(\0132\034.naothme" +
-      "ssages.DoubleVector3\0225\n\017currentCoMError\030" +
-      "\003 \001(\0132\034.naothmessages.DoubleVector3B\033\n\031d" +
-      "e.naoth.rc.core.messages"
+      "ype:\001Y\022\014\n\004data\030\005 \002(\014\" \n\004Type\022\005\n\001Y\020\000\022\007\n\003Y" +
+      "UV\020\001\022\010\n\004YUVC\020\002\"\371\003\n\024RemoteControlCommand\022" +
+      "D\n\013controlMode\030\001 \001(\0162/.naothmessages.Rem" +
+      "oteControlCommand.ControlMode\022>\n\006action\030" +
+      "\002 \001(\0162..naothmessages.RemoteControlComma" +
+      "nd.ActionType\022K\n\rsecond_action\030\003 \001(\01624.n" +
+      "aothmessages.RemoteControlCommand.Second" +
+      "ActionType\022%\n\006target\030\004 \001(\0132\025.naothmessag",
+      "es.Pose2D\"3\n\013ControlMode\022\022\n\016DIRECT_CONTR" +
+      "OL\020\000\022\020\n\014LOCK_CONTROL\020\001\"y\n\nActionType\022\010\n\004" +
+      "NONE\020\000\022\t\n\005STAND\020\001\022\010\n\004WALK\020\002\022\016\n\nKICK_RIGH" +
+      "T\020\003\022\r\n\tKICK_LEFT\020\004\022\025\n\021KICK_FORWARD_LEFT\020" +
+      "\005\022\026\n\022KICK_FORWARD_RIGHT\020\006\"7\n\020SecondActio" +
+      "nType\022\017\n\013SECOND_NONE\020\000\022\t\n\005BLINK\020\001\022\007\n\003SAY" +
+      "\020\002\"\257\001\n\022GroundContactModel\022\031\n\021leftGroundC" +
+      "ontact\030\001 \002(\010\022\032\n\022rightGroundContact\030\002 \002(\010" +
+      "\022;\n\013supportFoot\030\003 \002(\0162&.naothmessages.Gr" +
+      "oundContactModel.Foot\"%\n\004Foot\022\010\n\004LEFT\020\000\022",
+      "\t\n\005RIGHT\020\001\022\010\n\004NONE\020\002\"\325\001\n\020CollisionPercep" +
+      "t\022\034\n\024timeCollisionArmLeft\030\001 \002(\r\022\035\n\025timeC" +
+      "ollisionArmRight\030\002 \002(\r\022\035\n\025isCollisionLef" +
+      "tBumper\030\003 \002(\010\022\036\n\026isCollisionRightBumper\030" +
+      "\004 \002(\010\022!\n\031lastComputedCollisionLeft\030\005 \002(\001" +
+      "\022\"\n\032lastComputedCollisionRight\030\006 \002(\001\"\362\003\n" +
+      "\007IMUData\022.\n\010location\030\001 \002(\0132\034.naothmessag" +
+      "es.DoubleVector3\022.\n\010velocity\030\002 \002(\0132\034.nao" +
+      "thmessages.DoubleVector3\0222\n\014acceleration" +
+      "\030\003 \002(\0132\034.naothmessages.DoubleVector3\0229\n\023",
+      "acceleration_sensor\030\004 \001(\0132\034.naothmessage" +
+      "s.DoubleVector3\022.\n\010rotation\030\005 \002(\0132\034.naot" +
+      "hmessages.DoubleVector3\0229\n\023rotational_ve" +
+      "locity\030\006 \002(\0132\034.naothmessages.DoubleVecto" +
+      "r3\022@\n\032rotational_velocity_sensor\030\007 \001(\0132\034" +
+      ".naothmessages.DoubleVector3\0221\n\013orientat" +
+      "ion\030\010 \002(\0132\034.naothmessages.DoubleVector2\022" +
+      "8\n\022orientation_rotvec\030\t \002(\0132\034.naothmessa" +
+      "ges.DoubleVector3\"\316\003\n\020CentreOfPressure\022?" +
+      "\n\031in_and_only_left_foot_cop\030\001 \002(\0132\034.naot",
+      "hmessages.DoubleVector3\022\'\n\037in_and_only_l" +
+      "eft_foot_magnitude\030\002 \002(\001\022#\n\033in_and_only_" +
+      "left_foot_valid\030\003 \002(\010\022@\n\032in_and_only_rig" +
+      "ht_foot_cop\030\004 \002(\0132\034.naothmessages.Double" +
+      "Vector3\022(\n in_and_only_right_foot_magnit" +
+      "ude\030\005 \002(\001\022$\n\034in_and_only_right_foot_vali" +
+      "d\030\006 \002(\010\022C\n\035in_kinematic_chain_origin_cop" +
+      "\030\007 \002(\0132\034.naothmessages.DoubleVector3\022+\n#" +
+      "in_kinematic_chain_origin_magnitude\030\010 \002(" +
+      "\001\022\'\n\037in_kinematic_chain_origin_valid\030\t \002",
+      "(\010\"\215\003\n\022CalibrationDataCMC\022R\n\017calibration" +
+      "Data\030\001 \003(\01329.naothmessages.CalibrationDa" +
+      "taCMC.CalibrationDataSampleV3\022\031\n\021numberO" +
+      "fResudials\030\002 \001(\r\032\207\002\n\027CalibrationDataSamp" +
+      "leV3\022(\n\tchestPose\030\001 \001(\0132\025.naothmessages." +
+      "Pose3D\0223\n\redgelsInImage\030\002 \003(\0132\034.naothmes" +
+      "sages.DoubleVector2\0226\n\020edgelsInImageTop\030" +
+      "\003 \003(\0132\034.naothmessages.DoubleVector2\0221\n\013o" +
+      "rientation\030\004 \001(\0132\034.naothmessages.DoubleV" +
+      "ector2\022\017\n\007headYaw\030\005 \001(\001\022\021\n\theadPitch\030\006 \001",
+      "(\001\"\356\001\n\016WhistlePercept\022 \n\030frameWhenWhistl" +
+      "eDetected\030\001 \001(\r\022\023\n\013captureFile\030\002 \001(\t\022A\n\022" +
+      "recognizedWhistles\030\003 \003(\0132%.naothmessages" +
+      ".WhistlePercept.Whistle\022\027\n\017whistleDetect" +
+      "ed\030\004 \001(\010\032I\n\007Whistle\022\014\n\004name\030\001 \002(\t\022\031\n\021pos" +
+      "itionInCapture\030\002 \002(\003\022\025\n\rresponseValue\030\003 " +
+      "\002(\001\"\203\001\n\013DebugModify\0228\n\010valueMap\030\001 \003(\0132&." +
+      "naothmessages.DebugModify.ModifyValue\032:\n" +
+      "\013ModifyValue\022\014\n\004name\030\001 \002(\t\022\016\n\006modify\030\002 \001" +
+      "(\010\022\r\n\005value\030\003 \001(\001\"9\n\nStepBuffer\022+\n\014suppo",
+      "rt_foot\030\001 \001(\0132\025.naothmessages.Pose3D\"\215\001\n" +
+      "\rbodyAwareness\022\020\n\010isLifted\030\001 \001(\010\0223\n\rcalc" +
+      "ulatedCoM\030\002 \001(\0132\034.naothmessages.DoubleVe" +
+      "ctor3\0225\n\017currentCoMError\030\003 \001(\0132\034.naothme" +
+      "ssages.DoubleVector3B\033\n\031de.naoth.rc.core" +
+      ".messages"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -58432,7 +58310,7 @@ public final class Representations {
     internal_static_naothmessages_BallCandidates_Patch_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_naothmessages_BallCandidates_Patch_descriptor,
-        new java.lang.String[] { "Min", "Max", "Type", "Data", "Value", });
+        new java.lang.String[] { "Min", "Max", "Type", "Data", });
     internal_static_naothmessages_RemoteControlCommand_descriptor =
       getDescriptor().getMessageTypes().get(33);
     internal_static_naothmessages_RemoteControlCommand_fieldAccessorTable = new

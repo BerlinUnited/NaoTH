@@ -341,8 +341,6 @@ message BallCandidates
     required IntVector2 max = 2;
     optional Type type = 3 [default=Y];
     required bytes data = 5;
-    // Same meaning as the value of the patch, e.g. the average luminance
-    optional double value = 6;
   }
 
   repeated Patch patches = 1;

@@ -22,7 +22,6 @@ void Serializer<BallCandidates>::serialize(const BallCandidates& r, std::ostream
     DataConversion::toMessage((*i).min, *(patch->mutable_min()));
     DataConversion::toMessage((*i).max, *(patch->mutable_max()));
     patch->set_data((*i).data.data(), (*i).data.size());
-    patch->set_value((*i).value);
   }
 
   for(BallCandidates::PatchesYUVList::const_iterator i = r.patchesYUV.begin(); i != r.patchesYUV.end(); ++i) {
@@ -32,7 +31,6 @@ void Serializer<BallCandidates>::serialize(const BallCandidates& r, std::ostream
     DataConversion::toMessage((*i).max, *(patch->mutable_max()));
     // 
     patch->set_data((*i).data.data(), (*i).data.size()*sizeof(Pixel));
-    patch->set_value((*i).value);
   }
 
   for(BallCandidates::PatchYUVClassifiedList::const_iterator i = r.patchesYUVClassified.begin(); i != r.patchesYUVClassified.end(); ++i) {
@@ -42,7 +40,6 @@ void Serializer<BallCandidates>::serialize(const BallCandidates& r, std::ostream
     DataConversion::toMessage((*i).max, *(patch->mutable_max()));
     // 
     patch->set_data((*i).data.data(), (*i).data.size()*sizeof(BallCandidates::ClassifiedPixel));
-    patch->set_value((*i).value);
   }
 
   google::protobuf::io::OstreamOutputStream buf(&stream);
@@ -64,7 +61,6 @@ void Serializer<BallCandidates>::deserialize(std::istream& stream, BallCandidate
       DataConversion::fromMessage(p.patches(i).min(), patch.min);
       DataConversion::fromMessage(p.patches(i).max(), patch.max);
       patch.data.resize(p.patches(i).data().size());
-      patch.value = p.patches(i).value();
       memcpy(patch.data.data(), p.patches(i).data().data(), p.patches(i).data().size());
     } 
     else if(p.patches(i).type() == naothmessages::BallCandidates_Patch_Type_YUV) 
@@ -74,7 +70,6 @@ void Serializer<BallCandidates>::deserialize(std::istream& stream, BallCandidate
       DataConversion::fromMessage(p.patches(i).max(), patch.max);
 //      ASSERT(p.patches(i).data().size() == patch.SIZE*patch.SIZE*sizeof(Pixel));
       patch.data.resize(p.patches(i).data().size()/sizeof(Pixel));
-      patch.value = p.patches(i).value();
       memcpy(patch.data.data(), p.patches(i).data().data(), p.patches(i).data().size());
     } 
     else if(p.patches(i).type() == naothmessages::BallCandidates_Patch_Type_YUVC) 
@@ -84,7 +79,6 @@ void Serializer<BallCandidates>::deserialize(std::istream& stream, BallCandidate
       DataConversion::fromMessage(p.patches(i).max(), patch.max);
 //      ASSERT(p.patches(i).data().size() == patch.SIZE*patch.SIZE*sizeof(BallCandidates::ClassifiedPixel));
       patch.data.resize(p.patches(i).data().size()/sizeof(BallCandidates::ClassifiedPixel));
-      patch.value = p.patches(i).value();
       memcpy(patch.data.data(), p.patches(i).data().data(), p.patches(i).data().size());
     } else {
       ASSERT(false);

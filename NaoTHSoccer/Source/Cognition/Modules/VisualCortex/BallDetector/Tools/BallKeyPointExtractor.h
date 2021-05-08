@@ -10,12 +10,10 @@
 #include <ModuleFramework/Module.h>
 
 #include "Representations/Infrastructure/FieldInfo.h"
-#include "Representations/Infrastructure/CameraInfo.h"
 #include "Representations/Perception/MultiChannelIntegralImage.h"
 #include "Representations/Perception/FieldPercept.h"
 #include "Representations/Perception/CameraMatrix.h"
 #include "Representations/Perception/BodyContour.h"
-#include "Representations/Modeling/BallModel.h"
 // tools
 #include "BestPatchList.h"
 #include "Tools/DoubleCamHelpers.h"
@@ -56,7 +54,6 @@ BEGIN_DECLARE_MODULE(BallKeyPointExtractor)
 
   REQUIRE(FieldPercept)
   REQUIRE(FieldPerceptTop)
-
 END_DECLARE_MODULE(BallKeyPointExtractor)
 
 class BallKeyPointExtractor : public BallKeyPointExtractorBase
@@ -79,6 +76,10 @@ public:
 public:
 
   void calculateKeyPoints(BestPatchList& best) const {
+    calculateKeyPoints(getGameColorIntegralImage(), best);
+  }
+
+  void calculateKeyPointsBetter(BestPatchList& best) const {
     //calculateKeyPoints(getBallDetectorIntegralImage(), best);
     calculateKeyPointsFast(getBallDetectorIntegralImage(), best);
     //calculateKeyPointsFull(getBallDetectorIntegralImage(), best);
@@ -176,7 +177,6 @@ private:
   mutable double values[640/4][480/4][2];
 
   // double cam stuff
-  DOUBLE_CAM_PROVIDE(BallKeyPointExtractor, DebugImageDrawings);
   DOUBLE_CAM_REQUIRE(BallKeyPointExtractor, Image);
   DOUBLE_CAM_REQUIRE(BallKeyPointExtractor, CameraMatrix);
   DOUBLE_CAM_REQUIRE(BallKeyPointExtractor, FieldPercept);
@@ -448,4 +448,4 @@ void BallKeyPointExtractor::calculateKeyPointsFull(const ImageType& integralImag
   }
 }
 
-#endif // _BallKeyPointExtractor_H_
+#endif // _BallKeyPointExtractor_H_-

@@ -856,12 +856,10 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_ATTRIBUTE_SECTION
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BallCandidates_Patch, max_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BallCandidates_Patch, type_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BallCandidates_Patch, data_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BallCandidates_Patch, value_),
   1,
   2,
-  4,
-  0,
   3,
+  0,
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BallCandidates, _has_bits_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BallCandidates, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -1080,21 +1078,21 @@ static const ::google::protobuf::internal::MigrationSchema schemas[] GOOGLE_ATTR
   { 465, 474, sizeof(CalibrationData)},
   { 478, 484, sizeof(InertialModel)},
   { 485, 494, sizeof(CameraMatrixCalibration)},
-  { 498, 508, sizeof(BallCandidates_Patch)},
-  { 513, 519, sizeof(BallCandidates)},
-  { 520, 529, sizeof(RemoteControlCommand)},
-  { 533, 541, sizeof(GroundContactModel)},
-  { 544, 555, sizeof(CollisionPercept)},
-  { 561, 575, sizeof(IMUData)},
-  { 584, 598, sizeof(CentreOfPressure)},
-  { 607, 618, sizeof(CalibrationDataCMC_CalibrationDataSampleV3)},
-  { 624, 631, sizeof(CalibrationDataCMC)},
-  { 633, 641, sizeof(WhistlePercept_Whistle)},
-  { 644, 653, sizeof(WhistlePercept)},
-  { 657, 665, sizeof(DebugModify_ModifyValue)},
-  { 668, 674, sizeof(DebugModify)},
-  { 675, 681, sizeof(StepBuffer)},
-  { 682, 690, sizeof(bodyAwareness)},
+  { 498, 507, sizeof(BallCandidates_Patch)},
+  { 511, 517, sizeof(BallCandidates)},
+  { 518, 527, sizeof(RemoteControlCommand)},
+  { 531, 539, sizeof(GroundContactModel)},
+  { 542, 553, sizeof(CollisionPercept)},
+  { 559, 573, sizeof(IMUData)},
+  { 582, 596, sizeof(CentreOfPressure)},
+  { 605, 616, sizeof(CalibrationDataCMC_CalibrationDataSampleV3)},
+  { 622, 629, sizeof(CalibrationDataCMC)},
+  { 631, 639, sizeof(WhistlePercept_Whistle)},
+  { 642, 651, sizeof(WhistlePercept)},
+  { 655, 663, sizeof(DebugModify_ModifyValue)},
+  { 666, 672, sizeof(DebugModify)},
+  { 673, 679, sizeof(StepBuffer)},
+  { 680, 688, sizeof(bodyAwareness)},
 };
 
 static ::google::protobuf::Message const * const file_default_instances[] = {
@@ -1633,89 +1631,89 @@ void AddDescriptorsImpl() {
       "othmessages.DoubleVector2\022:\n\024correctionO"
       "ffsetHead\030\003 \001(\0132\034.naothmessages.DoubleVe"
       "ctor3\0229\n\023correctionOffsetCam\030\004 \003(\0132\034.nao"
-      "thmessages.DoubleVector3\"\232\002\n\016BallCandida"
+      "thmessages.DoubleVector3\"\213\002\n\016BallCandida"
       "tes\0224\n\007patches\030\001 \003(\0132#.naothmessages.Bal"
-      "lCandidates.Patch\032\321\001\n\005Patch\022&\n\003min\030\001 \002(\013"
+      "lCandidates.Patch\032\302\001\n\005Patch\022&\n\003min\030\001 \002(\013"
       "2\031.naothmessages.IntVector2\022&\n\003max\030\002 \002(\013"
       "2\031.naothmessages.IntVector2\0229\n\004type\030\003 \001("
       "\0162(.naothmessages.BallCandidates.Patch.T"
-      "ype:\001Y\022\014\n\004data\030\005 \002(\014\022\r\n\005value\030\006 \001(\001\" \n\004T"
-      "ype\022\005\n\001Y\020\000\022\007\n\003YUV\020\001\022\010\n\004YUVC\020\002\"\371\003\n\024Remote"
-      "ControlCommand\022D\n\013controlMode\030\001 \001(\0162/.na"
-      "othmessages.RemoteControlCommand.Control"
-      "Mode\022>\n\006action\030\002 \001(\0162..naothmessages.Rem"
-      "oteControlCommand.ActionType\022K\n\rsecond_a"
-      "ction\030\003 \001(\01624.naothmessages.RemoteContro"
-      "lCommand.SecondActionType\022%\n\006target\030\004 \001("
-      "\0132\025.naothmessages.Pose2D\"3\n\013ControlMode\022"
-      "\022\n\016DIRECT_CONTROL\020\000\022\020\n\014LOCK_CONTROL\020\001\"y\n"
-      "\nActionType\022\010\n\004NONE\020\000\022\t\n\005STAND\020\001\022\010\n\004WALK"
-      "\020\002\022\016\n\nKICK_RIGHT\020\003\022\r\n\tKICK_LEFT\020\004\022\025\n\021KIC"
-      "K_FORWARD_LEFT\020\005\022\026\n\022KICK_FORWARD_RIGHT\020\006"
-      "\"7\n\020SecondActionType\022\017\n\013SECOND_NONE\020\000\022\t\n"
-      "\005BLINK\020\001\022\007\n\003SAY\020\002\"\257\001\n\022GroundContactModel"
-      "\022\031\n\021leftGroundContact\030\001 \002(\010\022\032\n\022rightGrou"
-      "ndContact\030\002 \002(\010\022;\n\013supportFoot\030\003 \002(\0162&.n"
-      "aothmessages.GroundContactModel.Foot\"%\n\004"
-      "Foot\022\010\n\004LEFT\020\000\022\t\n\005RIGHT\020\001\022\010\n\004NONE\020\002\"\325\001\n\020"
-      "CollisionPercept\022\034\n\024timeCollisionArmLeft"
-      "\030\001 \002(\r\022\035\n\025timeCollisionArmRight\030\002 \002(\r\022\035\n"
-      "\025isCollisionLeftBumper\030\003 \002(\010\022\036\n\026isCollis"
-      "ionRightBumper\030\004 \002(\010\022!\n\031lastComputedColl"
-      "isionLeft\030\005 \002(\001\022\"\n\032lastComputedCollision"
-      "Right\030\006 \002(\001\"\362\003\n\007IMUData\022.\n\010location\030\001 \002("
-      "\0132\034.naothmessages.DoubleVector3\022.\n\010veloc"
-      "ity\030\002 \002(\0132\034.naothmessages.DoubleVector3\022"
-      "2\n\014acceleration\030\003 \002(\0132\034.naothmessages.Do"
-      "ubleVector3\0229\n\023acceleration_sensor\030\004 \001(\013"
-      "2\034.naothmessages.DoubleVector3\022.\n\010rotati"
-      "on\030\005 \002(\0132\034.naothmessages.DoubleVector3\0229"
-      "\n\023rotational_velocity\030\006 \002(\0132\034.naothmessa"
-      "ges.DoubleVector3\022@\n\032rotational_velocity"
-      "_sensor\030\007 \001(\0132\034.naothmessages.DoubleVect"
-      "or3\0221\n\013orientation\030\010 \002(\0132\034.naothmessages"
-      ".DoubleVector2\0228\n\022orientation_rotvec\030\t \002"
-      "(\0132\034.naothmessages.DoubleVector3\"\316\003\n\020Cen"
-      "treOfPressure\022\?\n\031in_and_only_left_foot_c"
-      "op\030\001 \002(\0132\034.naothmessages.DoubleVector3\022\'"
-      "\n\037in_and_only_left_foot_magnitude\030\002 \002(\001\022"
-      "#\n\033in_and_only_left_foot_valid\030\003 \002(\010\022@\n\032"
-      "in_and_only_right_foot_cop\030\004 \002(\0132\034.naoth"
-      "messages.DoubleVector3\022(\n in_and_only_ri"
-      "ght_foot_magnitude\030\005 \002(\001\022$\n\034in_and_only_"
-      "right_foot_valid\030\006 \002(\010\022C\n\035in_kinematic_c"
-      "hain_origin_cop\030\007 \002(\0132\034.naothmessages.Do"
-      "ubleVector3\022+\n#in_kinematic_chain_origin"
-      "_magnitude\030\010 \002(\001\022\'\n\037in_kinematic_chain_o"
-      "rigin_valid\030\t \002(\010\"\215\003\n\022CalibrationDataCMC"
-      "\022R\n\017calibrationData\030\001 \003(\01329.naothmessage"
-      "s.CalibrationDataCMC.CalibrationDataSamp"
-      "leV3\022\031\n\021numberOfResudials\030\002 \001(\r\032\207\002\n\027Cali"
-      "brationDataSampleV3\022(\n\tchestPose\030\001 \001(\0132\025"
-      ".naothmessages.Pose3D\0223\n\redgelsInImage\030\002"
-      " \003(\0132\034.naothmessages.DoubleVector2\0226\n\020ed"
-      "gelsInImageTop\030\003 \003(\0132\034.naothmessages.Dou"
-      "bleVector2\0221\n\013orientation\030\004 \001(\0132\034.naothm"
-      "essages.DoubleVector2\022\017\n\007headYaw\030\005 \001(\001\022\021"
-      "\n\theadPitch\030\006 \001(\001\"\356\001\n\016WhistlePercept\022 \n\030"
-      "frameWhenWhistleDetected\030\001 \001(\r\022\023\n\013captur"
-      "eFile\030\002 \001(\t\022A\n\022recognizedWhistles\030\003 \003(\0132"
-      "%.naothmessages.WhistlePercept.Whistle\022\027"
-      "\n\017whistleDetected\030\004 \001(\010\032I\n\007Whistle\022\014\n\004na"
-      "me\030\001 \002(\t\022\031\n\021positionInCapture\030\002 \002(\003\022\025\n\rr"
-      "esponseValue\030\003 \002(\001\"\203\001\n\013DebugModify\0228\n\010va"
-      "lueMap\030\001 \003(\0132&.naothmessages.DebugModify"
-      ".ModifyValue\032:\n\013ModifyValue\022\014\n\004name\030\001 \002("
-      "\t\022\016\n\006modify\030\002 \001(\010\022\r\n\005value\030\003 \001(\001\"9\n\nStep"
-      "Buffer\022+\n\014support_foot\030\001 \001(\0132\025.naothmess"
-      "ages.Pose3D\"\215\001\n\rbodyAwareness\022\020\n\010isLifte"
-      "d\030\001 \001(\010\0223\n\rcalculatedCoM\030\002 \001(\0132\034.naothme"
-      "ssages.DoubleVector3\0225\n\017currentCoMError\030"
-      "\003 \001(\0132\034.naothmessages.DoubleVector3B\033\n\031d"
-      "e.naoth.rc.core.messages"
+      "ype:\001Y\022\014\n\004data\030\005 \002(\014\" \n\004Type\022\005\n\001Y\020\000\022\007\n\003Y"
+      "UV\020\001\022\010\n\004YUVC\020\002\"\371\003\n\024RemoteControlCommand\022"
+      "D\n\013controlMode\030\001 \001(\0162/.naothmessages.Rem"
+      "oteControlCommand.ControlMode\022>\n\006action\030"
+      "\002 \001(\0162..naothmessages.RemoteControlComma"
+      "nd.ActionType\022K\n\rsecond_action\030\003 \001(\01624.n"
+      "aothmessages.RemoteControlCommand.Second"
+      "ActionType\022%\n\006target\030\004 \001(\0132\025.naothmessag"
+      "es.Pose2D\"3\n\013ControlMode\022\022\n\016DIRECT_CONTR"
+      "OL\020\000\022\020\n\014LOCK_CONTROL\020\001\"y\n\nActionType\022\010\n\004"
+      "NONE\020\000\022\t\n\005STAND\020\001\022\010\n\004WALK\020\002\022\016\n\nKICK_RIGH"
+      "T\020\003\022\r\n\tKICK_LEFT\020\004\022\025\n\021KICK_FORWARD_LEFT\020"
+      "\005\022\026\n\022KICK_FORWARD_RIGHT\020\006\"7\n\020SecondActio"
+      "nType\022\017\n\013SECOND_NONE\020\000\022\t\n\005BLINK\020\001\022\007\n\003SAY"
+      "\020\002\"\257\001\n\022GroundContactModel\022\031\n\021leftGroundC"
+      "ontact\030\001 \002(\010\022\032\n\022rightGroundContact\030\002 \002(\010"
+      "\022;\n\013supportFoot\030\003 \002(\0162&.naothmessages.Gr"
+      "oundContactModel.Foot\"%\n\004Foot\022\010\n\004LEFT\020\000\022"
+      "\t\n\005RIGHT\020\001\022\010\n\004NONE\020\002\"\325\001\n\020CollisionPercep"
+      "t\022\034\n\024timeCollisionArmLeft\030\001 \002(\r\022\035\n\025timeC"
+      "ollisionArmRight\030\002 \002(\r\022\035\n\025isCollisionLef"
+      "tBumper\030\003 \002(\010\022\036\n\026isCollisionRightBumper\030"
+      "\004 \002(\010\022!\n\031lastComputedCollisionLeft\030\005 \002(\001"
+      "\022\"\n\032lastComputedCollisionRight\030\006 \002(\001\"\362\003\n"
+      "\007IMUData\022.\n\010location\030\001 \002(\0132\034.naothmessag"
+      "es.DoubleVector3\022.\n\010velocity\030\002 \002(\0132\034.nao"
+      "thmessages.DoubleVector3\0222\n\014acceleration"
+      "\030\003 \002(\0132\034.naothmessages.DoubleVector3\0229\n\023"
+      "acceleration_sensor\030\004 \001(\0132\034.naothmessage"
+      "s.DoubleVector3\022.\n\010rotation\030\005 \002(\0132\034.naot"
+      "hmessages.DoubleVector3\0229\n\023rotational_ve"
+      "locity\030\006 \002(\0132\034.naothmessages.DoubleVecto"
+      "r3\022@\n\032rotational_velocity_sensor\030\007 \001(\0132\034"
+      ".naothmessages.DoubleVector3\0221\n\013orientat"
+      "ion\030\010 \002(\0132\034.naothmessages.DoubleVector2\022"
+      "8\n\022orientation_rotvec\030\t \002(\0132\034.naothmessa"
+      "ges.DoubleVector3\"\316\003\n\020CentreOfPressure\022\?"
+      "\n\031in_and_only_left_foot_cop\030\001 \002(\0132\034.naot"
+      "hmessages.DoubleVector3\022\'\n\037in_and_only_l"
+      "eft_foot_magnitude\030\002 \002(\001\022#\n\033in_and_only_"
+      "left_foot_valid\030\003 \002(\010\022@\n\032in_and_only_rig"
+      "ht_foot_cop\030\004 \002(\0132\034.naothmessages.Double"
+      "Vector3\022(\n in_and_only_right_foot_magnit"
+      "ude\030\005 \002(\001\022$\n\034in_and_only_right_foot_vali"
+      "d\030\006 \002(\010\022C\n\035in_kinematic_chain_origin_cop"
+      "\030\007 \002(\0132\034.naothmessages.DoubleVector3\022+\n#"
+      "in_kinematic_chain_origin_magnitude\030\010 \002("
+      "\001\022\'\n\037in_kinematic_chain_origin_valid\030\t \002"
+      "(\010\"\215\003\n\022CalibrationDataCMC\022R\n\017calibration"
+      "Data\030\001 \003(\01329.naothmessages.CalibrationDa"
+      "taCMC.CalibrationDataSampleV3\022\031\n\021numberO"
+      "fResudials\030\002 \001(\r\032\207\002\n\027CalibrationDataSamp"
+      "leV3\022(\n\tchestPose\030\001 \001(\0132\025.naothmessages."
+      "Pose3D\0223\n\redgelsInImage\030\002 \003(\0132\034.naothmes"
+      "sages.DoubleVector2\0226\n\020edgelsInImageTop\030"
+      "\003 \003(\0132\034.naothmessages.DoubleVector2\0221\n\013o"
+      "rientation\030\004 \001(\0132\034.naothmessages.DoubleV"
+      "ector2\022\017\n\007headYaw\030\005 \001(\001\022\021\n\theadPitch\030\006 \001"
+      "(\001\"\356\001\n\016WhistlePercept\022 \n\030frameWhenWhistl"
+      "eDetected\030\001 \001(\r\022\023\n\013captureFile\030\002 \001(\t\022A\n\022"
+      "recognizedWhistles\030\003 \003(\0132%.naothmessages"
+      ".WhistlePercept.Whistle\022\027\n\017whistleDetect"
+      "ed\030\004 \001(\010\032I\n\007Whistle\022\014\n\004name\030\001 \002(\t\022\031\n\021pos"
+      "itionInCapture\030\002 \002(\003\022\025\n\rresponseValue\030\003 "
+      "\002(\001\"\203\001\n\013DebugModify\0228\n\010valueMap\030\001 \003(\0132&."
+      "naothmessages.DebugModify.ModifyValue\032:\n"
+      "\013ModifyValue\022\014\n\004name\030\001 \002(\t\022\016\n\006modify\030\002 \001"
+      "(\010\022\r\n\005value\030\003 \001(\001\"9\n\nStepBuffer\022+\n\014suppo"
+      "rt_foot\030\001 \001(\0132\025.naothmessages.Pose3D\"\215\001\n"
+      "\rbodyAwareness\022\020\n\010isLifted\030\001 \001(\010\0223\n\rcalc"
+      "ulatedCoM\030\002 \001(\0132\034.naothmessages.DoubleVe"
+      "ctor3\0225\n\017currentCoMError\030\003 \001(\0132\034.naothme"
+      "ssages.DoubleVector3B\033\n\031de.naoth.rc.core"
+      ".messages"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 10224);
+      descriptor, 10209);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Representations.proto", &protobuf_RegisterTypes);
   ::naothmessages::protobuf_CommonTypes_2eproto::AddDescriptors();
@@ -22218,7 +22216,6 @@ const int BallCandidates_Patch::kMinFieldNumber;
 const int BallCandidates_Patch::kMaxFieldNumber;
 const int BallCandidates_Patch::kTypeFieldNumber;
 const int BallCandidates_Patch::kDataFieldNumber;
-const int BallCandidates_Patch::kValueFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 BallCandidates_Patch::BallCandidates_Patch()
@@ -22249,9 +22246,7 @@ BallCandidates_Patch::BallCandidates_Patch(const BallCandidates_Patch& from)
   } else {
     max_ = NULL;
   }
-  ::memcpy(&value_, &from.value_,
-    static_cast<size_t>(reinterpret_cast<char*>(&type_) -
-    reinterpret_cast<char*>(&value_)) + sizeof(type_));
+  type_ = from.type_;
   // @@protoc_insertion_point(copy_constructor:naothmessages.BallCandidates.Patch)
 }
 
@@ -22318,11 +22313,7 @@ void BallCandidates_Patch::Clear() {
       max_->::naothmessages::IntVector2::Clear();
     }
   }
-  if (cached_has_bits & 24u) {
-    ::memset(&value_, 0, static_cast<size_t>(
-        reinterpret_cast<char*>(&type_) -
-        reinterpret_cast<char*>(&value_)) + sizeof(type_));
-  }
+  type_ = 0;
   _has_bits_.Clear();
   _internal_metadata_.Clear();
 }
@@ -22393,20 +22384,6 @@ bool BallCandidates_Patch::MergePartialFromCodedStream(
         break;
       }
 
-      // optional double value = 6;
-      case 6: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(49u /* 49 & 0xFF */)) {
-          set_has_value();
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
-                 input, &value_)));
-        } else {
-          goto handle_unusual;
-        }
-        break;
-      }
-
       default: {
       handle_unusual:
         if (tag == 0) {
@@ -22447,7 +22424,7 @@ void BallCandidates_Patch::SerializeWithCachedSizes(
   }
 
   // optional .naothmessages.BallCandidates.Patch.Type type = 3 [default = Y];
-  if (cached_has_bits & 0x00000010u) {
+  if (cached_has_bits & 0x00000008u) {
     ::google::protobuf::internal::WireFormatLite::WriteEnum(
       3, this->type(), output);
   }
@@ -22456,11 +22433,6 @@ void BallCandidates_Patch::SerializeWithCachedSizes(
   if (cached_has_bits & 0x00000001u) {
     ::google::protobuf::internal::WireFormatLite::WriteBytesMaybeAliased(
       5, this->data(), output);
-  }
-
-  // optional double value = 6;
-  if (cached_has_bits & 0x00000008u) {
-    ::google::protobuf::internal::WireFormatLite::WriteDouble(6, this->value(), output);
   }
 
   if (_internal_metadata_.have_unknown_fields()) {
@@ -22493,7 +22465,7 @@ void BallCandidates_Patch::SerializeWithCachedSizes(
   }
 
   // optional .naothmessages.BallCandidates.Patch.Type type = 3 [default = Y];
-  if (cached_has_bits & 0x00000010u) {
+  if (cached_has_bits & 0x00000008u) {
     target = ::google::protobuf::internal::WireFormatLite::WriteEnumToArray(
       3, this->type(), target);
   }
@@ -22503,11 +22475,6 @@ void BallCandidates_Patch::SerializeWithCachedSizes(
     target =
       ::google::protobuf::internal::WireFormatLite::WriteBytesToArray(
         5, this->data(), target);
-  }
-
-  // optional double value = 6;
-  if (cached_has_bits & 0x00000008u) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(6, this->value(), target);
   }
 
   if (_internal_metadata_.have_unknown_fields()) {
@@ -22573,19 +22540,12 @@ size_t BallCandidates_Patch::ByteSizeLong() const {
   } else {
     total_size += RequiredFieldsByteSizeFallback();
   }
-  if (_has_bits_[0 / 32] & 24u) {
-    // optional double value = 6;
-    if (has_value()) {
-      total_size += 1 + 8;
-    }
-
-    // optional .naothmessages.BallCandidates.Patch.Type type = 3 [default = Y];
-    if (has_type()) {
-      total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::EnumSize(this->type());
-    }
-
+  // optional .naothmessages.BallCandidates.Patch.Type type = 3 [default = Y];
+  if (has_type()) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::EnumSize(this->type());
   }
+
   int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
   GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
   _cached_size_ = cached_size;
@@ -22616,7 +22576,7 @@ void BallCandidates_Patch::MergeFrom(const BallCandidates_Patch& from) {
   (void) cached_has_bits;
 
   cached_has_bits = from._has_bits_[0];
-  if (cached_has_bits & 31u) {
+  if (cached_has_bits & 15u) {
     if (cached_has_bits & 0x00000001u) {
       set_has_data();
       data_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.data_);
@@ -22628,9 +22588,6 @@ void BallCandidates_Patch::MergeFrom(const BallCandidates_Patch& from) {
       mutable_max()->::naothmessages::IntVector2::MergeFrom(from.max());
     }
     if (cached_has_bits & 0x00000008u) {
-      value_ = from.value_;
-    }
-    if (cached_has_bits & 0x00000010u) {
       type_ = from.type_;
     }
     _has_bits_[0] |= cached_has_bits;
@@ -22671,7 +22628,6 @@ void BallCandidates_Patch::InternalSwap(BallCandidates_Patch* other) {
   data_.Swap(&other->data_);
   swap(min_, other->min_);
   swap(max_, other->max_);
-  swap(value_, other->value_);
   swap(type_, other->type_);
   swap(_has_bits_[0], other->_has_bits_[0]);
   _internal_metadata_.Swap(&other->_internal_metadata_);
@@ -22780,13 +22736,13 @@ void BallCandidates_Patch::set_allocated_max(::naothmessages::IntVector2* max) {
 
 // optional .naothmessages.BallCandidates.Patch.Type type = 3 [default = Y];
 bool BallCandidates_Patch::has_type() const {
-  return (_has_bits_[0] & 0x00000010u) != 0;
+  return (_has_bits_[0] & 0x00000008u) != 0;
 }
 void BallCandidates_Patch::set_has_type() {
-  _has_bits_[0] |= 0x00000010u;
+  _has_bits_[0] |= 0x00000008u;
 }
 void BallCandidates_Patch::clear_has_type() {
-  _has_bits_[0] &= ~0x00000010u;
+  _has_bits_[0] &= ~0x00000008u;
 }
 void BallCandidates_Patch::clear_type() {
   type_ = 0;
@@ -22864,30 +22820,6 @@ void BallCandidates_Patch::set_allocated_data(::std::string* data) {
   }
   data_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), data);
   // @@protoc_insertion_point(field_set_allocated:naothmessages.BallCandidates.Patch.data)
-}
-
-// optional double value = 6;
-bool BallCandidates_Patch::has_value() const {
-  return (_has_bits_[0] & 0x00000008u) != 0;
-}
-void BallCandidates_Patch::set_has_value() {
-  _has_bits_[0] |= 0x00000008u;
-}
-void BallCandidates_Patch::clear_has_value() {
-  _has_bits_[0] &= ~0x00000008u;
-}
-void BallCandidates_Patch::clear_value() {
-  value_ = 0;
-  clear_has_value();
-}
-double BallCandidates_Patch::value() const {
-  // @@protoc_insertion_point(field_get:naothmessages.BallCandidates.Patch.value)
-  return value_;
-}
-void BallCandidates_Patch::set_value(double value) {
-  set_has_value();
-  value_ = value;
-  // @@protoc_insertion_point(field_set:naothmessages.BallCandidates.Patch.value)
 }
 
 #endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
