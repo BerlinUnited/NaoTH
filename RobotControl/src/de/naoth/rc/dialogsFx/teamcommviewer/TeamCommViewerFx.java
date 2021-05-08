@@ -90,6 +90,9 @@ public class TeamCommViewerFx extends AbstractJFXDialog
         public static TeamCommManager teamcommManager;
         @InjectPlugin
         public static GameControllerManager gamecontroller;
+        
+        @Override
+        public String getDisplayName() { return "TeamCommViewer (FX)"; }
     }
 
     private Timer timerDrawRobots;

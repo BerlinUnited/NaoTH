@@ -54,6 +54,9 @@ public class MultiAgentConfigurationFx extends AbstractJFXDialog
     public static class Plugin extends DialogPlugin<MultiAgentConfigurationFx> {
         @InjectPlugin
         public static RobotControl parent;
+
+        @Override
+        public String getDisplayName() { return "MultiAgentConfiguration (FX)"; }
     }
 
     @FXML private TabPane tabpane;
