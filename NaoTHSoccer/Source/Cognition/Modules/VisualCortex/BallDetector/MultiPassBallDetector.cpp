@@ -87,21 +87,31 @@ void MultiPassBallDetector::execute(CameraInfo::CameraID id)
     // Add keypoints around the original patch
     MultiBallPercept::BallPercept centerPercept = percepts[idxMaxScore];
     std::vector<BestPatchList::Patch> aroundPromisingKeyPoint;
-    int radius = static_cast<int>(centerPercept.radiusInImage);
-    int halfRadius = radius / 2;
-    int centerX = static_cast<int>(centerPercept.centerInImage.x);
-    int centerY = static_cast<int>(centerPercept.centerInImage.y);
+    int radius = 30; //static_cast<int>(centerPercept.radiusInImage+0.5);
+    int centerX = static_cast<int>(centerPercept.centerInImage.x+0.5);
+    int centerY = static_cast<int>(centerPercept.centerInImage.y+0.5);
 
-    for(int x=centerX - radius; x <= centerX + radius; x += halfRadius) {
-      for(int y=centerY - radius; y <= centerY + radius; y += halfRadius) {
-        BestPatchList::Patch p(x-halfRadius, y-halfRadius, x+halfRadius, y+halfRadius, 0.0);
-        DEBUG_REQUEST("Vision:MultiPassBallDetector:drawCandidates",
-          // center of respawned patch
-          CIRCLE_PX(ColorClasses::pink,x, y, 2);
-        );
-        aroundPromisingKeyPoint.push_back(p);
+    BestPatchList::Patch p1(centerX - radius, centerY-radius, centerX, centerY, 0.0);
+    aroundPromisingKeyPoint.push_back(p1);
+
+    BestPatchList::Patch p2(centerX, centerY-radius, centerX+radius, centerY, 0.0);
+    aroundPromisingKeyPoint.push_back(p2);
+
+    BestPatchList::Patch p3(centerX, centerY, centerX + radius, centerY+radius, 0.0);
+    aroundPromisingKeyPoint.push_back(p3);
+
+
+    BestPatchList::Patch p4(centerX-radius, centerY, centerX, centerY+radius, 0.0);
+    aroundPromisingKeyPoint.push_back(p4);
+
+    DEBUG_REQUEST("Vision:MultiPassBallDetector:drawCandidates",
+      for(size_t i =0; i < aroundPromisingKeyPoint.size(); i++) {
+        RECT_PX(ColorClasses::pink, aroundPromisingKeyPoint[i].min.x, aroundPromisingKeyPoint[i].min.y, aroundPromisingKeyPoint[i].max.x,aroundPromisingKeyPoint[i].max.y);
       }
-    }
+     );
+
+    percepts.clear();
+    scores.clear();
 
     executeCNNOnPatches(aroundPromisingKeyPoint, static_cast<int>(aroundPromisingKeyPoint.size()), false, percepts, scores);
     allPatches.insert(allPatches.end(), aroundPromisingKeyPoint.begin(), aroundPromisingKeyPoint.end());
