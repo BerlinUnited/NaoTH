@@ -1,5 +1,6 @@
-#!/usr/bin/env python3
-
+"""
+    write evaluation functions here which differentiate between classification and detection
+"""
 import argparse
 import pickle
 import tensorflow.keras as keras
@@ -27,7 +28,6 @@ if __name__ == '__main__':
         x = pickle.load(f)
         y = pickle.load(f)
 
-    print(args.model_path)
     model = keras.models.load_model(args.model_path)
     model.summary()
 
