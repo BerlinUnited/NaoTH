@@ -195,14 +195,16 @@ private:
   std::map<std::string, std::shared_ptr<AbstractCNNFinder> > cnnMap;
 
   ModuleCreator<BallKeyPointExtractor>* theBallKeyPointExtractor;
-  BestPatchList best;
-
+  
 private:
-  void calculateCandidates();
   void addBallPercept(const Vector2d& center, double radius);
-  void extractPatches();
-  void providePatches();
-  void addPatchByLastBall();
+  void extractPatches(const BestPatchList& best);
+  void providePatches(const BestPatchList& best);
+
+  void executeCNNOnPatches(const BestPatchList& best, int maxNumberOfKeys);
+
+
+  BestPatchList getPatchesByLastBall();
 
   void setClassifier(const std::string& name, const std::string& nameClose);
   std::map<std::string, std::shared_ptr<AbstractCNNFinder> > createCNNMap();

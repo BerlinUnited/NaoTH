@@ -46,21 +46,22 @@ void MultiPassBallDetector::execute(CameraInfo::CameraID id)
   cameraID = id;
   getBallCandidates().reset();
 
-  best.clear();
+  // 1. pass: Check the projection of the previous ball
+  BestPatchList lastBallPatches = getPatchesByLastBall();
+  executeCNNOnPatches(lastBallPatches, params.maxNumberOfKeys);
+
+  BestPatchList keypointPatches;
   // update parameter
   theBallKeyPointExtractor->getModuleT()->setParameter(params.keyDetector);
   theBallKeyPointExtractor->getModuleT()->setCameraId(cameraID);
-  //theBallKeyPointExtractor->getModuleT()->calculateKeyPoints(best);
-  theBallKeyPointExtractor->getModuleT()->calculateKeyPointsBetter(best);
+  theBallKeyPointExtractor->getModuleT()->calculateKeyPointsBetter(keypointPatches);
 
-  addPatchByLastBall();
-
-  if(best.size() > 0) {
-    calculateCandidates();
+  if(keypointPatches.size() > 0) {
+    executeCNNOnPatches(keypointPatches, params.maxNumberOfKeys);
   }
 
   DEBUG_REQUEST("Vision:MultiPassBallDetector:refinePatches",
-    for(BestPatchList::reverse_iterator i = best.rbegin(); i != best.rend(); ++i) {
+    for(BestPatchList::reverse_iterator i = keypointPatches.rbegin(); i != keypointPatches.rend(); ++i) {
       //BestPatchList::Patch p = theBallKeyPointExtractor->getModuleT()->refineKeyPoint(*i);
       RECT_PX(ColorClasses::red, (*i).min.x, (*i).min.y, (*i).max.x, (*i).max.y);
     }
@@ -75,21 +76,21 @@ void MultiPassBallDetector::execute(CameraInfo::CameraID id)
   );
 
   DEBUG_REQUEST("Vision:MultiPassBallDetector:extractPatches",
-    extractPatches();
+    extractPatches(keypointPatches);
   );
 
   if(params.providePatches) 
   {
-    providePatches();
+    providePatches(keypointPatches);
   } 
   else if(params.numberOfExportBestPatches > 0) 
   {
-    extractPatches();
+    extractPatches(keypointPatches);
   }
 
   DEBUG_REQUEST("Vision:MultiPassBallDetector:keyPointsBlack",  
     BestPatchList bbest;
-    for(BestPatchList::reverse_iterator i = best.rbegin(); i != best.rend(); ++i) {
+    for(BestPatchList::reverse_iterator i = keypointPatches.rbegin(); i != keypointPatches.rend(); ++i) {
       bbest.clear();
       BlackSpotExtractor::calculateKeyPointsBlackBetter(getBallDetectorIntegralImage(), bbest, (*i).min.x, (*i).min.y, (*i).max.x, (*i).max.y);
       int idx = 0;
@@ -103,39 +104,7 @@ void MultiPassBallDetector::execute(CameraInfo::CameraID id)
   );
 }
 
-std::map<string, std::shared_ptr<AbstractCNNFinder> > MultiPassBallDetector::createCNNMap()
-{
-  std::map<string, std::shared_ptr<AbstractCNNFinder> > result;
-
-  // register classifiers
-  result.insert({ "fy1500_conf", std::make_shared<Fy1500_Conf>() });
-  result.insert({ "model1", std::make_shared<Model1>() });
-
-#ifndef WIN32
-  result.insert({ "fdeep_fy1300", std::make_shared<FrugallyDeep>("fy1300.json")});
-  result.insert({ "fdeep_fy1500", std::make_shared<FrugallyDeep>("fy1500.json")});
-#endif
-
-  return result;
-}
-
-
- void MultiPassBallDetector::setClassifier(const std::string& name, const std::string& nameClose) 
- {
-   auto location = cnnMap.find(name);
-   if(location != cnnMap.end()){
-     currentCNN = location->second;
-   }
-
-   location = cnnMap.find(nameClose);
-   if(location != cnnMap.end()){
-     currentCNNClose = location->second;
-   }
- }
-
-
-void MultiPassBallDetector::calculateCandidates()
-{
+void MultiPassBallDetector::executeCNNOnPatches(const BestPatchList& best, int maxNumberOfKeys) {
   // the used patch size
   const int patch_size = 16;
 
@@ -146,7 +115,7 @@ void MultiPassBallDetector::calculateCandidates()
     if(getFieldPercept().getValidField().isInside((*i).min) && getFieldPercept().getValidField().isInside((*i).max))
     {
       // limit the max amount of evaluated keys
-      if(index > params.maxNumberOfKeys) {
+      if(index > maxNumberOfKeys) {
         break;
       }
 
@@ -262,8 +231,77 @@ void MultiPassBallDetector::calculateCandidates()
       index++;
     } // end if in field
   } // end for
+}
 
-} // end calculateCandidates
+BestPatchList MultiPassBallDetector::getPatchesByLastBall() {
+  BestPatchList best;
+  if (getBallModel().valid)
+  {
+    Vector3d ballInField;
+    ballInField.x = getBallModel().position.x;
+    ballInField.y = getBallModel().position.y;
+    ballInField.z = getFieldInfo().ballRadius;
+
+    Vector2i ballInImage;
+    if (CameraGeometry::relativePointToImage(getCameraMatrix(), getImage().cameraInfo, ballInField, ballInImage))
+    {
+
+      double estimatedRadius = CameraGeometry::estimatedBallRadius(
+          getCameraMatrix(), getImage().cameraInfo, getFieldInfo().ballRadius,
+          ballInImage.x, ballInImage.y);
+
+      int border = static_cast<int>((estimatedRadius * 1.1) + 0.5);
+
+      Vector2i start = ballInImage - border;
+      Vector2i end = ballInImage + border;
+
+      if (start.y >= 0 && end.y < static_cast<int>(getImage().height()) && start.x >= 0 && end.x < static_cast<int>(getImage().width()))
+      {
+        DEBUG_REQUEST("Vision:MultiPassBallDetector:drawProjectedBall",
+                      RECT_PX(ColorClasses::pink, start.x, start.y, end.x, end.y);
+                      CIRCLE_PX(ColorClasses::pink, ballInImage.x, ballInImage.y, static_cast<int>(estimatedRadius));
+                      );
+        best.add(
+            start.x,
+            start.y,
+            end.x,
+            end.y,
+            -1.0);
+      }
+    }
+  }
+  return best;
+}
+
+std::map<string, std::shared_ptr<AbstractCNNFinder> > MultiPassBallDetector::createCNNMap()
+{
+  std::map<string, std::shared_ptr<AbstractCNNFinder> > result;
+
+  // register classifiers
+  result.insert({ "fy1500_conf", std::make_shared<Fy1500_Conf>() });
+  result.insert({ "model1", std::make_shared<Model1>() });
+
+#ifndef WIN32
+  result.insert({ "fdeep_fy1300", std::make_shared<FrugallyDeep>("fy1300.json")});
+  result.insert({ "fdeep_fy1500", std::make_shared<FrugallyDeep>("fy1500.json")});
+#endif
+
+  return result;
+}
+
+
+ void MultiPassBallDetector::setClassifier(const std::string& name, const std::string& nameClose) 
+ {
+   auto location = cnnMap.find(name);
+   if(location != cnnMap.end()){
+     currentCNN = location->second;
+   }
+
+   location = cnnMap.find(nameClose);
+   if(location != cnnMap.end()){
+     currentCNNClose = location->second;
+   }
+ }
 
 
 /** 
@@ -273,7 +311,7 @@ void MultiPassBallDetector::calculateCandidates()
  *          (currently internal patches size is 16x16). 
  *          To reconstruct the original patch, remove the border again.
  */
-void MultiPassBallDetector::extractPatches()
+void MultiPassBallDetector::extractPatches(const BestPatchList& best)
 {
   int idx = 0;
   for(BestPatchList::reverse_iterator i = best.rbegin(); i != best.rend(); ++i)
@@ -299,7 +337,7 @@ void MultiPassBallDetector::extractPatches()
 }
 
 /** Provides all the internally generated patches in the representation */
-void MultiPassBallDetector::providePatches()
+void MultiPassBallDetector::providePatches(const BestPatchList& best)
 {
   for(BestPatchList::reverse_iterator i = best.rbegin(); i != best.rend(); ++i)
   {
@@ -329,44 +367,5 @@ void MultiPassBallDetector::addBallPercept(const Vector2d& center, double radius
 
     getMultiBallPercept().add(ballPercept);
     getMultiBallPercept().frameInfoWhenBallWasSeen = getFrameInfo();
-  }
-}
-
-void MultiPassBallDetector::addPatchByLastBall()
-{
-  if (getBallModel().valid)
-  {
-    Vector3d ballInField;
-    ballInField.x = getBallModel().position.x;
-    ballInField.y = getBallModel().position.y;
-    ballInField.z = getFieldInfo().ballRadius;
-
-    Vector2i ballInImage;
-    if (CameraGeometry::relativePointToImage(getCameraMatrix(), getImage().cameraInfo, ballInField, ballInImage))
-    {
-
-      double estimatedRadius = CameraGeometry::estimatedBallRadius(
-          getCameraMatrix(), getImage().cameraInfo, getFieldInfo().ballRadius,
-          ballInImage.x, ballInImage.y);
-
-      int border = static_cast<int>((estimatedRadius * 1.1) + 0.5);
-
-      Vector2i start = ballInImage - border;
-      Vector2i end = ballInImage + border;
-
-      if (start.y >= 0 && end.y < static_cast<int>(getImage().height()) && start.x >= 0 && end.x < static_cast<int>(getImage().width()))
-      {
-        DEBUG_REQUEST("Vision:MultiPassBallDetector:draw_projected_ball",
-                      RECT_PX(ColorClasses::pink, start.x, start.y, end.x, end.y);
-                      CIRCLE_PX(ColorClasses::pink, ballInImage.x, ballInImage.y, static_cast<int>(estimatedRadius));
-                      );
-        best.add(
-            start.x,
-            start.y,
-            end.x,
-            end.y,
-            -1.0);
-      }
-    }
   }
 }
