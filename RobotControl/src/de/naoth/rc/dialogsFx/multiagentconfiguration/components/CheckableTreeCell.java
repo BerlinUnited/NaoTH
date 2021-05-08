@@ -1,4 +1,4 @@
-package de.naoth.rc.componentsFx;
+package de.naoth.rc.dialogsFx.multiagentconfiguration.components;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;

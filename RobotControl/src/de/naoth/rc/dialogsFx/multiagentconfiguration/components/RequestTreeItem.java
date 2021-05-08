@@ -1,7 +1,5 @@
 package de.naoth.rc.dialogsFx.multiagentconfiguration.components;
 
-import de.naoth.rc.componentsFx.TreeNode;
-
 /**
  * @author Philipp Strobel <philippstrobel@posteo.de>
  */

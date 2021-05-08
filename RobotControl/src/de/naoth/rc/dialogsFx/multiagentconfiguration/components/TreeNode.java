@@ -1,4 +1,4 @@
-package de.naoth.rc.componentsFx;
+package de.naoth.rc.dialogsFx.multiagentconfiguration.components;
 
 import java.util.ArrayList;
 import java.util.HashMap;

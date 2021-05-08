@@ -1,7 +1,7 @@
 package de.naoth.rc.dialogsFx.multiagentconfiguration.ui;
 
-import de.naoth.rc.componentsFx.TreeNode;
-import de.naoth.rc.componentsFx.CheckableTreeCell;
+import de.naoth.rc.dialogsFx.multiagentconfiguration.components.TreeNode;
+import de.naoth.rc.dialogsFx.multiagentconfiguration.components.CheckableTreeCell;
 import de.naoth.rc.dialogsFx.multiagentconfiguration.Parameter;
 import de.naoth.rc.dialogsFx.multiagentconfiguration.Utils;
 import java.io.File;
