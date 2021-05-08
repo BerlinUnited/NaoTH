@@ -9,6 +9,7 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Convolution2D, LeakyReLU, MaxPooling2D, Flatten, Dense, ReLU, Input, \
     Softmax, concatenate, Dropout, UpSampling2D
 from tensorflow.keras import Model
+import inspect
 
 
 # TODO maybe rewrite every model with functional api for more flexibility -> NN Compilers dont support that
@@ -20,7 +21,7 @@ def fy_1500_new():
     input_shape = (16, 16, 1)
 
     model = Sequential()
-    model._name = "fy_1500_new"
+    model._name = inspect.currentframe().f_code.co_name  # get the name of the function
 
     model.add(Convolution2D(4, (3, 3), input_shape=input_shape, padding='same', name="Conv2D_1", activation='relu'))
     model.add(Convolution2D(4, (3, 3), padding='same', name="Conv2D_2", activation='relu'))
@@ -49,7 +50,7 @@ def fy_1500_new2():
     input_shape = (16, 16, 1)
 
     model = Sequential()
-    model._name = "fy_1500_new2"
+    model._name = inspect.currentframe().f_code.co_name  # get the name of the function
 
     model.add(Convolution2D(4, (3, 3), input_shape=input_shape, padding='same', name="Conv2D_1"))
     model.add(LeakyReLU(alpha=0.0, name="activation_1"))  # alpha unknown, so default
@@ -82,7 +83,7 @@ def fy_1500_old():
     input_shape = (16, 16, 1)
 
     model = Sequential()
-    model._name = "fy_1500_old"
+    model._name = inspect.currentframe().f_code.co_name  # get the name of the function
 
     model.add(Convolution2D(4, (3, 3), input_shape=input_shape, padding='same', name="Conv2D_1"))
     model.add(LeakyReLU(alpha=0.0, name="activation_1"))  # alpha unknown, so default
@@ -115,7 +116,7 @@ def model1():
     input_shape = (16, 16, 1)
 
     model = Sequential()
-    model._name = "model1"
+    model._name = inspect.currentframe().f_code.co_name  # get the name of the function
 
     model.add(Convolution2D(4, (3, 3), input_shape=input_shape, padding='same', name="Conv2D_1"))
     model.add(ReLU(name="activation_1"))
@@ -277,7 +278,7 @@ def naodevils():
     input_shape = (16, 16, 1)
 
     model = Sequential()
-    model._name = "naodevils"
+    model._name = inspect.currentframe().f_code.co_name  # get the name of the function
 
     model.add(Convolution2D(8, (5, 5), input_shape=input_shape,
                             strides=(2, 2), padding='same', name="Conv2D_1"))
