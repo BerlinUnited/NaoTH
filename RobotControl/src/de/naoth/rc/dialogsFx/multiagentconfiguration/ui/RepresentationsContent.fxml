@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane xmlns="http://javafx.com/javafx/8.0.162-ea" xmlns:fx="http://javafx.com/fxml/1">
+   <top>
+      <Label fx:id="name" text="Label" BorderPane.alignment="TOP_LEFT" />
+   </top>
+   <center>
+      <TextArea fx:id="content" BorderPane.alignment="CENTER">
+         <font>
+            <Font name="Monospaced Regular" size="12.0" />
+         </font></TextArea>
+   </center>
+</BorderPane>
