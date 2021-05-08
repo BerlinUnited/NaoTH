@@ -1,15 +1,17 @@
 #!/bin/bash
 
+# print all commands just in case
+set -x #echo on
+
+# redirect all the output to the logger
+exec 1> >(logger -s -t mount_logstick) 2>&1
+
 mkdir -p /home/logstick
 mount /dev/logstick /home/logstick
 
-destination="/home/logstick/log"
-echo "cd into $destination"
-cd "${destination}" || exit 1
+mkdir -p /home/logstick/logs
+cd /home/logstick/logs
 
-echo "Making startBrainwashing.sh executable ..."
-echo "Running startBrainwashing.sh ..."
-chmod +x startBrainwashing.sh
-./startBrainwashing.sh
+bash ./startBrainwashing.sh
 
 #umount /home/logstick
