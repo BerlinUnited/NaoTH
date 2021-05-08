@@ -19,8 +19,6 @@ MultiPassBallDetector::MultiPassBallDetector()
   DEBUG_REQUEST_REGISTER("Vision:MultiPassBallDetector:drawPatchContrast", "draw patch contrast (only when contrast-check is in use!", false);
   DEBUG_REQUEST_REGISTER("Vision:MultiPassBallDetector:draw_projected_ball","", false);
 
-  DEBUG_REQUEST_REGISTER("Vision:MultiPassBallDetector:extractPatches", "generate YUVC patches", false);
-
   DEBUG_REQUEST_REGISTER("Vision:MultiPassBallDetector:drawPatchInImage", "draw the gray-scale patch like it is passed to the CNN in the image", false);
 
   theBallKeyPointExtractor = registerModule<BallKeyPointExtractor>("BallKeyPointExtractor", true);
@@ -62,10 +60,6 @@ void MultiPassBallDetector::execute(CameraInfo::CameraID id)
         CIRCLE_PX(ColorClasses::orange, (int)((*iter).centerInImage.x+0.5), (int)((*iter).centerInImage.y+0.5), (int)((*iter).radiusInImage+0.5));
       }
     }
-  );
-
-  DEBUG_REQUEST("Vision:MultiPassBallDetector:extractPatches",
-    extractPatches(keypointPatches);
   );
 
   if(params.providePatches) 
