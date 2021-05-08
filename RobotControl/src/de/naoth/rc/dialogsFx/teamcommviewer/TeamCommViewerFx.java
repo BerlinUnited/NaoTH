@@ -1,4 +1,4 @@
-package de.naoth.rc.dialogs.teamcommviewer;
+package de.naoth.rc.dialogsFx.teamcommviewer;
 
 import de.naoth.rc.Helper;
 import de.naoth.rc.RobotControl;
@@ -79,7 +79,7 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  */
 public class TeamCommViewerFx extends AbstractJFXDialog
 {
-    @RCDialog(category = RCDialog.Category.Team, name = "TeamCommViewerFx")
+    @RCDialog(category = RCDialog.Category.Team, name = "TeamCommViewer (FX)")
     @PluginImplementation
     public static class Plugin extends DialogPlugin<TeamCommViewerFx> {
         @InjectPlugin
@@ -90,6 +90,9 @@ public class TeamCommViewerFx extends AbstractJFXDialog
         public static TeamCommManager teamcommManager;
         @InjectPlugin
         public static GameControllerManager gamecontroller;
+        
+        @Override
+        public String getDisplayName() { return "TeamCommViewer (FX)"; }
     }
 
     private Timer timerDrawRobots;

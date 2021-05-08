@@ -15,6 +15,8 @@
 #include "Representations/Perception/FieldPercept.h"
 #include "Representations/Perception/BodyContour.h"
 #include "Representations/Perception/FieldColorPercept.h"
+#include "Representations/Infrastructure/FieldInfo.h"
+#include "Representations/Modeling/BallModel.h"
 
 #include "Representations/Perception/MultiChannelIntegralImage.h"
 #include "Representations/Perception/BallCandidates.h"
@@ -65,6 +67,8 @@ BEGIN_DECLARE_MODULE(CNNBallDetector)
 
   REQUIRE(CameraMatrix)
   REQUIRE(CameraMatrixTop)
+  REQUIRE(FieldInfo)
+  REQUIRE(BallModel)
 
   REQUIRE(FieldPercept)
   REQUIRE(FieldPerceptTop)
@@ -198,6 +202,7 @@ private:
   void addBallPercept(const Vector2d& center, double radius);
   void extractPatches();
   void providePatches();
+  void addPatchByLastBall();
 
   void setClassifier(const std::string& name, const std::string& nameClose);
   std::map<std::string, std::shared_ptr<AbstractCNNFinder> > createCNNMap();

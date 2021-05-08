@@ -246,6 +246,7 @@ message EdgelPair {
   required int32 begin = 1;
   required int32 end = 2;
   required int32 id = 3;
+  optional bool adaptive = 4;
 }
 
 message ScanLineEdgelPercept {
