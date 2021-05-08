@@ -79,7 +79,7 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  */
 public class TeamCommViewerFx extends AbstractJFXDialog
 {
-    @RCDialog(category = RCDialog.Category.Team, name = "TeamCommViewer (FX)")
+    @RCDialog(category = RCDialog.Category.Team, name = "TeamCommViewerFx")
     @PluginImplementation
     public static class Plugin extends DialogPlugin<TeamCommViewerFx> {
         @InjectPlugin
