@@ -32,7 +32,7 @@ NETWORK_ETH_MASK="255.255.255.0"
 NETWORK_ETH_BROADCAST="192.168.13.255"
 
 
-N=$(cat /etc/hostname | grep -Eo "[0-9]{2}")
+N=$(cat /etc/hostname | grep -Eo "[0-9]{2}" | head -n 1 )
 NETWORK_WLAN_MAC=$(cat /sys/class/net/wlan0/address | sed -e 's/://g')
 NETWORK_WLAN_MAC_FULL=$(cat /sys/class/net/wlan0/address | tr a-z A-Z)
 NETWORK_ETH_MAC=$(cat /sys/class/net/eth0/address | sed -e 's/://g')
