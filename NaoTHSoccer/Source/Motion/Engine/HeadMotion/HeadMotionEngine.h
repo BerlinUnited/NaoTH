@@ -79,9 +79,10 @@ private:
   {
     Parameters() : ParameterList("HeadMotionEngine")
     {
-      PARAMETER_REGISTER(max_velocity_deg_in_second_fast) = 60;
-      PARAMETER_REGISTER(max_velocity_deg_in_second_slow) = 90;
-      PARAMETER_REGISTER(cutting_velocity) = 40;
+      PARAMETER_ANGLE_REGISTER(max_head_velocity_stand) = 120; //  deg/s
+      PARAMETER_ANGLE_REGISTER(max_head_velocity_walk_fast) = 90; // deg/s velocity when walking fast
+      PARAMETER_ANGLE_REGISTER(max_head_velocity_walk_slow) = 120; // deg/s velocity when walking slow
+      PARAMETER_REGISTER(walk_fast_speed_threshold) = 40; // ~mm/s walking speed of the robot. Faster than this is considered fast walking
 
       PARAMETER_ANGLE_REGISTER(at_rest_threshold) = 0.3;
       PARAMETER_ANGLE_REGISTER(at_rest_threshold_walking) = 10;
@@ -92,9 +93,10 @@ private:
       syncWithConfig();
     }
 
-    double max_velocity_deg_in_second_fast;
-    double max_velocity_deg_in_second_slow;
-    double cutting_velocity;
+    double max_head_velocity_stand;
+    double max_head_velocity_walk_fast;
+    double max_head_velocity_walk_slow;
+    double walk_fast_speed_threshold;
 
     double at_rest_threshold;
     double at_rest_threshold_walking;

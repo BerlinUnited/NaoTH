@@ -149,33 +149,28 @@ void HeadMotionEngine::gotoAngle(const Vector2d& target)
 void HeadMotionEngine::moveByAngle(const Vector2d& target)
 {
   // Base maximal head velocity for the case if the robot is stationary.
-  double max_velocity_deg_in_second = params.max_velocity_deg_in_second_fast;
+  double max_head_velocity = params.max_head_velocity_stand;
   
   // Restrict the head velocity when walking. Calculate depending on the walking speed.
   if(getMotionStatus().currentMotion == motion::walk)
   {
     double walking_speed = getMotionStatus().plannedMotion.hip.translation.abs();
 
-    // we are walking to fast => move the head slowly
-    if(walking_speed > params.cutting_velocity) {
-      max_velocity_deg_in_second = params.max_velocity_deg_in_second_slow;
+    if(walking_speed > params.walk_fast_speed_threshold) {
+      // we are walking fast!
+      max_head_velocity = params.max_head_velocity_walk_fast;
     } else {
-      // reduce the speed of the head linearly the faste we walk
-      //  t = 1 => params.max_velocity_deg_in_second_slow
-      //  t = 0 => params.max_velocity_deg_in_second_fast
-      double t = walking_speed/params.cutting_velocity;
-      max_velocity_deg_in_second = t*params.max_velocity_deg_in_second_slow + (1.0 - t)*params.max_velocity_deg_in_second_fast;
+      double t = walking_speed/params.walk_fast_speed_threshold; // in [0, 1]
+      // t = 0 => walking slow => max_velocity_deg_in_second_walk_slow
+      // t = 1 => walking fast => max_velocity_deg_in_second_walk_fast
+      max_head_velocity = (1.0 - t)*params.max_head_velocity_walk_slow + t*params.max_head_velocity_walk_fast;
     }
   }
 
-  PLOT("HeadMotionEngine:max_velocity_deg_in_second", max_velocity_deg_in_second);
+  max_head_velocity = min(getHeadMotionRequest().velocity, max_head_velocity);
+  MODIFY("HeadMotionEngine:gotoAngle:max_velocity_deg_in_second", max_head_velocity);
 
-  max_velocity_deg_in_second = min(getHeadMotionRequest().velocity, max_velocity_deg_in_second);
-
-  MODIFY("HeadMotionEngine:gotoAngle:max_velocity_deg_in_second", max_velocity_deg_in_second);
-  double max_velocity = Math::fromDegrees(max_velocity_deg_in_second)*getRobotInfo().getBasicTimeStepInSecond();
-
-
+  
   // current position
   Vector2d headPos( getMotorJointData().position[JointData::HeadYaw],
                     getMotorJointData().position[JointData::HeadPitch]);
@@ -184,6 +179,7 @@ void HeadMotionEngine::moveByAngle(const Vector2d& target)
   motion_target = headPos + target;
 
   // calculate the update step (normalize with speed if needed)
+  // FIXME: this is not quite correct
   Vector2d update( Math::normalize(target.x), Math::normalize(target.y) );
 
   // TODO: verify. This might be made more elegant with the limits of the joints
@@ -199,9 +195,10 @@ void HeadMotionEngine::moveByAngle(const Vector2d& target)
     update.x = update.x - Math::pi2;
   }
 
-  // restrict to maximal velocity
-  if (update.abs() > max_velocity) {
-    update = update.normalize(max_velocity);
+  // restrict to maximal moving distance for this step
+  double max_head_angle_distance = max_head_velocity*getRobotInfo().getBasicTimeStepInSecond();
+  if (update.abs() > max_head_angle_distance) {
+    update = update.normalize(max_head_angle_distance);
   }
 
   // limit the acceleration
