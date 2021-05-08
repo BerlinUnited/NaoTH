@@ -25,10 +25,10 @@ using namespace std;
 HeadMotionEngine::HeadMotionEngine():
     last_id(HeadMotionRequest::numOfHeadMotion)
 {
-  theKinematicChain.init(theJointData);
-
   DEBUG_REQUEST_REGISTER("HeadMotionEngine:export_g", "exports g for plotting the function", false);
   DEBUG_REQUEST_REGISTER("HeadMotionEngine:draw_search_points_on_field", "draw the projected search points on the field", false);
+
+  theKinematicChain.init(theJointData);
 
   headLimitFunctionMin.set_boundary(tk::spline::second_deriv, 0.0, tk::spline::second_deriv, 0.0, false);
   headLimitFunctionMin.set_points(headLimitsHeadYaw, headLimitsHeadPitchMin);
@@ -46,7 +46,7 @@ HeadMotionEngine::~HeadMotionEngine()
 
 void HeadMotionEngine::execute()
 {
-  // HACK: update torso
+  // HACK: update torso rotation
   theKinematicChain.theLinks[KinematicChain::Torso].M = getKinematicChainSensor().theLinks[KinematicChain::Torso].M;
 
   switch(getHeadMotionRequest().id)
@@ -58,8 +58,8 @@ void HeadMotionEngine::execute()
     case HeadMotionRequest::look_at_world_point:
       //lookAtWorldPoint(getHeadMotionRequest().targetPointInTheWorld); break;
       lookAtWorldPointCool(getHeadMotionRequest().targetPointInTheWorld); break;
-    case HeadMotionRequest::look_at_point_on_the_ground:
-      gotoPointOnTheGround(getHeadMotionRequest().targetPointOnTheGround); break;
+    //case HeadMotionRequest::look_at_point_on_the_ground:
+    //  gotoPointOnTheGround(getHeadMotionRequest().targetPointOnTheGround); break;
     case HeadMotionRequest::goto_angle:
       gotoAngle(getHeadMotionRequest().targetJointPosition);  break;
     case HeadMotionRequest::hold:
@@ -114,6 +114,7 @@ void HeadMotionEngine::hold()
   getMotorJointData().position[JointData::HeadPitch] = getSensorJointData().position[JointData::HeadPitch];
 }
 
+/*
 void HeadMotionEngine::gotoPointOnTheGround(const Vector2d& target)
 {
   Vector3d pointOnTheGround(target.x,target.y,0.0);
@@ -134,6 +135,7 @@ void HeadMotionEngine::gotoPointOnTheGround(const Vector2d& target)
 
   trajectoryHeadMove(points);
 }
+*/
 
 // move the head to the position target = (yaw, pitch)
 void HeadMotionEngine::gotoAngle(const Vector2d& target)
@@ -276,6 +278,7 @@ void HeadMotionEngine::lookAtWorldPointCool(const Vector3d& origTarget)
     target = rFoot*target;
   }
 
+  /*
   CameraMatrix cameraMatrix = CameraGeometry::calculateCameraMatrixFromChestPose(
     getKinematicChainMotor().theLinks[KinematicChain::Torso].M,
     NaoInfo::robotDimensions.cameraTransform[naoth::CameraInfo::Bottom].offset,
@@ -287,14 +290,18 @@ void HeadMotionEngine::lookAtWorldPointCool(const Vector3d& origTarget)
     getSensorJointData().position[JointData::HeadPitch],
     getInertialModel().orientation);
 
+  Vector2d x = CameraGeometry::lookAtPoint(target, cameraMatrix.translation.z);
+  */
+
   Vector2d x;
   if(getHeadMotionRequest().cameraID == naoth::CameraInfo::Top) {
-    x = CameraGeometry::lookAtPoint(cameraMatrix, target);
+    x = CameraGeometry::lookAtPoint(target, getCameraMatrixTop().translation.z);
   } else {
-    x = CameraGeometry::lookAtPoint(cameraMatrix, target);
+    x = CameraGeometry::lookAtPoint(target, getCameraMatrix().translation.z);
   }
 
-  moveByAngle(x);
+  //moveByAngle(x);
+  gotoAngle(x);
 }//end lookAtWorldPointCool
 
 // needed by lookAtWorldPoint
@@ -338,16 +345,14 @@ Vector3d HeadMotionEngine::g(double yaw, double pitch, const Vector3d& pointInWo
 void HeadMotionEngine::lookAtWorldPoint(const Vector3d& origTarget)
 {
   // HACK: transform the head motion request to hip from the support foot coordinates
-  const Pose3D& lFoot = getKinematicChainSensor().theLinks[KinematicChain::LFoot].M;
-  const Pose3D& rFoot = getKinematicChainSensor().theLinks[KinematicChain::RFoot].M;
+  const Pose3D& lFoot = getKinematicChainMotor().theLinks[KinematicChain::LFoot].M;
+  const Pose3D& rFoot = getKinematicChainMotor().theLinks[KinematicChain::RFoot].M;
   Vector3d target(origTarget);
 
-  // left foot is the support foot
+  // transform the requested target to hip coordinates
   if(getHeadMotionRequest().coordinate == HeadMotionRequest::LFoot) {
     target = lFoot*target;
-  }
-
-  if(getHeadMotionRequest().coordinate == HeadMotionRequest::RFoot) {
+  } else if(getHeadMotionRequest().coordinate == HeadMotionRequest::RFoot) {
     target = rFoot*target;
   }
 

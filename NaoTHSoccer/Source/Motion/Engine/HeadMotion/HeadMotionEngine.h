@@ -169,7 +169,7 @@ private:
   KinematicChain theKinematicChain;
 
   bool trajectoryHeadMove(const std::vector<Vector3d>& points);
-  void gotoPointOnTheGround(const Vector2d& target);
+  //void gotoPointOnTheGround(const Vector2d& target);
 
   void lookStraightAhead();
   void lookStraightAheadWithStabilization();
