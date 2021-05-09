@@ -40,7 +40,7 @@ public:
     stabilize,
     look_straight_ahead,
     look_at_world_point,
-    look_at_point_on_the_ground,
+    //look_at_point_on_the_ground,
 
     goto_angle,
     look_at_point,
@@ -87,16 +87,16 @@ public:
   naoth::CameraInfo::CameraID cameraID;
 
   // describes the target angle-position: x=yaw, y=pitch
-  Vector2<double> targetJointPosition;
+  Vector2d targetJointPosition;
 
   /** target point in image which the camera should point to with the center*/
-  Vector2<double> targetPointInImage;
+  Vector2d targetPointInImage;
 
   /** see coordinate */
-  Vector3<double> targetPointInTheWorld;
+  Vector3d targetPointInTheWorld;
 
   /** see coordinate */
-  Vector2<double> targetPointOnTheGround;
+  Vector2d targetPointOnTheGround;
 
   /** the coordinate system for the targetPointInTheWorld and targetPointOnTheGround */
   Coordinate coordinate;
@@ -104,8 +104,8 @@ public:
   double velocity;
 
   // parameters for head search motion
-  Vector3<double> searchCenter;
-  Vector3<double> searchSize;
+  Vector3d searchCenter;
+  Vector3d searchSize;
   bool searchDirection;
 
   /** return the name of the motion id */
