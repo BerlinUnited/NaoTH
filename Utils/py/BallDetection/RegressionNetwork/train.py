@@ -89,7 +89,7 @@ def main(raw_args=None, model=None):
 
 
 if __name__ == '__main__':
-    test_model = model_zoo.fy_1500_new()
+    test_model = model_zoo.naoth_classification1()
     output_dir = "models"
     # forward commandline arguments to the argparser in the main function
     train_history, history_filename = main(sys.argv[1:] + ['--output', output_dir], model=test_model)

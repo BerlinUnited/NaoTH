@@ -10,9 +10,51 @@ from tensorflow.keras.layers import Convolution2D, LeakyReLU, MaxPooling2D, Flat
     Softmax, concatenate, Dropout, UpSampling2D
 from tensorflow.keras import Model
 import inspect
-from utility_functions.metrics import ClassificationMetric
+from utility_functions.metrics import ClassificationMetric, IoU
 
 # TODO maybe rewrite every model with functional api for more flexibility -> NN Compilers dont support that
+"""
+    NaoTH Classification Models
+"""
+def naoth_classification1():
+    """
+    """
+    input_shape = (16, 16, 1)
+    model = Sequential()
+    model._name = "naoth_classification1"
+
+    # we don't know the kernel size b-human used
+    model.add(Convolution2D(16, (3, 3), padding='same', name="Conv2D_2"))
+    # Batch Norm
+    model.add(ReLU(name="activation_2"))
+    model.add(MaxPooling2D(pool_size=(2, 2), name="pooling_2"))
+
+    # we don't know the kernel size b-human used
+    model.add(Convolution2D(16, (3, 3), padding='same', name="Conv2D_3"))
+    # Batch Norm
+    model.add(ReLU(name="activation_3"))
+    model.add(MaxPooling2D(pool_size=(2, 2), name="pooling_3"))
+
+    # we don't know the kernel size b-human used
+    model.add(Convolution2D(32, (3, 3), padding='same', name="Conv2D_4"))
+    # Batch Norm
+    model.add(ReLU(name="activation_4"))
+    model.add(MaxPooling2D(pool_size=(2, 2), name="pooling_4"))
+    model.add(Flatten(name="flatten_1"))
+    model.add(Dense(32, activation="relu", name="dense_1"))
+    model.add(Dense(64, activation="relu", name="dense_2"))
+    model.add(Dense(16, activation="relu", name="dense_3"))
+    model.add(Dense(1, activation="relu", name="dense_4"))
+
+    # For using custom loss import your loss function and use the name of the function as loss argument.
+    model.compile(loss='mean_squared_error', optimizer='adam', metrics=['accuracy'])
+
+    return model
+
+
+"""
+    NaoTH Detection Models
+"""
 def fy_1500_new():
     """
     The idea here is to remove the relu in the last layer. That makes sure that the x and y values can be negative
@@ -37,7 +79,7 @@ def fy_1500_new():
     model.add(Dense(4, name="dense_1"))
 
     # For using custom loss import your loss function and use the name of the function as loss argument.
-    model.compile(loss='mean_squared_error', optimizer='adam', metrics=['accuracy', ClassificationMetric()])
+    model.compile(loss='mean_squared_error', optimizer='adam', metrics=['accuracy', ClassificationMetric(), IoU])
 
     return model
 
@@ -294,3 +336,6 @@ def naodevils():
     model.add(Dense(4, name="dense_1"))
 
     return model
+
+a = bhuman_base()
+a.summary()
