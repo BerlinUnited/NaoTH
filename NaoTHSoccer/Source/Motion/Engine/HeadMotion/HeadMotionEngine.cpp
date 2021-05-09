@@ -56,8 +56,12 @@ void HeadMotionEngine::execute()
     case HeadMotionRequest::look_at_point:
       lookAtPoint(); break;
     case HeadMotionRequest::look_at_world_point:
-      //lookAtWorldPoint(getHeadMotionRequest().targetPointInTheWorld); break;
-      lookAtWorldPointCool(getHeadMotionRequest().targetPointInTheWorld); break;
+      if (params.use_lookAtWorldPointCool) {
+        lookAtWorldPointCool(getHeadMotionRequest().targetPointInTheWorld); 
+      } else {
+        lookAtWorldPoint(getHeadMotionRequest().targetPointInTheWorld);
+      }
+      break;
     //case HeadMotionRequest::look_at_point_on_the_ground:
     //  gotoPointOnTheGround(getHeadMotionRequest().targetPointOnTheGround); break;
     case HeadMotionRequest::goto_angle:

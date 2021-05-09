@@ -90,6 +90,8 @@ private:
 
       PARAMETER_REGISTER(stiffness) = 0.7;
 
+      PARAMETER_REGISTER(use_lookAtWorldPointCool) = true;
+
       syncWithConfig();
     }
 
@@ -103,6 +105,8 @@ private:
     double at_target_threshold;
 
     double stiffness;
+
+    bool use_lookAtWorldPointCool;
   } params;
 
 private:
