@@ -10,7 +10,7 @@ from tensorflow.keras.layers import Convolution2D, LeakyReLU, MaxPooling2D, Flat
     Softmax, concatenate, Dropout, UpSampling2D
 from tensorflow.keras import Model
 import inspect
-
+from utility_functions.metrics import ClassificationMetric
 
 # TODO maybe rewrite every model with functional api for more flexibility -> NN Compilers dont support that
 def fy_1500_new():
@@ -37,7 +37,7 @@ def fy_1500_new():
     model.add(Dense(4, name="dense_1"))
 
     # For using custom loss import your loss function and use the name of the function as loss argument.
-    model.compile(loss='mean_squared_error', optimizer='adam', metrics=['accuracy'])
+    model.compile(loss='mean_squared_error', optimizer='adam', metrics=['accuracy', ClassificationMetric()])
 
     return model
 
