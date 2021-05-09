@@ -58,7 +58,7 @@ def create_blender_classification_dataset(path, res):
     x, y = list(map(np.array, list(zip(*db))))
 
     x = x.reshape(*x.shape, 1)
-    y = y.reshape(*y.shape, 1)
+    y = y.reshape(*y.shape)
 
     print("Loading finished")
     print("Number of images: " + str(len(x)))

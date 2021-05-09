@@ -16,6 +16,8 @@ from utility_functions.metrics import ClassificationMetric, IoU
 """
     NaoTH Classification Models
 """
+
+
 def naoth_classification1():
     """
     """
@@ -24,7 +26,7 @@ def naoth_classification1():
     model._name = "naoth_classification1"
 
     # we don't know the kernel size b-human used
-    model.add(Convolution2D(16, (3, 3), padding='same', name="Conv2D_2"))
+    model.add(Convolution2D(16, (3, 3), input_shape=input_shape, padding='same', name="Conv2D_2"))
     # Batch Norm
     model.add(ReLU(name="activation_2"))
     model.add(MaxPooling2D(pool_size=(2, 2), name="pooling_2"))
@@ -55,6 +57,8 @@ def naoth_classification1():
 """
     NaoTH Detection Models
 """
+
+
 def fy_1500_new():
     """
     The idea here is to remove the relu in the last layer. That makes sure that the x and y values can be negative
@@ -336,6 +340,3 @@ def naodevils():
     model.add(Dense(4, name="dense_1"))
 
     return model
-
-a = bhuman_base()
-a.summary()
