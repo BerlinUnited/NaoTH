@@ -149,7 +149,8 @@ private:
 
       PARAMETER_REGISTER(brightnessMultiplierBottom) = 1.0;
       PARAMETER_REGISTER(brightnessMultiplierTop) = 1.0;
-      
+
+      PARAMETER_REGISTER(respawnConfidenceThreshold) = 0.01;
       
       syncWithConfig();
     }
@@ -180,6 +181,8 @@ private:
 
     double brightnessMultiplierBottom;
     double brightnessMultiplierTop;
+
+    double respawnConfidenceThreshold;
 
   } params;
 
