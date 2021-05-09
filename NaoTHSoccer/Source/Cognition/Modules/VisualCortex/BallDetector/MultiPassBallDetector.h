@@ -205,7 +205,7 @@ private:
 
 
   void addBallPercepts(std::vector<MultiBallPercept::BallPercept>& percepts,
-    std::vector<double>& scores);
+    std::vector<double>& scores, double scoreThreshold);
 
 
   void executeCNNOnPatches(const std::vector<BestPatchList::Patch>& best, int maxNumberOfKeys, bool checkContrast,

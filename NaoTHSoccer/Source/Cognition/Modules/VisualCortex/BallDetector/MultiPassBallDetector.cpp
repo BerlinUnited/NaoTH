@@ -50,16 +50,15 @@ void MultiPassBallDetector::execute(CameraInfo::CameraID id)
   BestPatchList lastBallPatches = getPatchesByLastBall();
   allPatches = lastBallPatches.asVector();
   executeCNNOnPatches(allPatches, static_cast<int>(lastBallPatches.size()), false, percepts, scores);
-  addBallPercepts(percepts, scores);
+  addBallPercepts(percepts, scores, params.cnn.threshold);
 
-  // 2. pass: keypoints
+  // 2. pass: keypoints  
+  std::vector<BestPatchList::Patch> keypointPatches;
   if(!getMultiBallPercept().wasSeen()) {
     percepts.clear();
     scores.clear();
 
     // update parameter
-    std::vector<BestPatchList::Patch> keypointPatches;
-
     theBallKeyPointExtractor->getModuleT()->setParameter(params.keyDetector);
     theBallKeyPointExtractor->getModuleT()->setCameraId(cameraID);
     BestPatchList keypointList;
@@ -68,7 +67,7 @@ void MultiPassBallDetector::execute(CameraInfo::CameraID id)
     allPatches.insert(allPatches.end(), keypointPatches.begin(), keypointPatches.end());
 
     executeCNNOnPatches(keypointPatches, params.maxNumberOfKeys, params.checkContrast, percepts, scores);
-    addBallPercepts(percepts, scores);
+    addBallPercepts(percepts, scores, params.cnn.threshold);
 
   }
 
@@ -87,42 +86,44 @@ void MultiPassBallDetector::execute(CameraInfo::CameraID id)
 
     if(maxScore > params.respawnConfidenceThreshold) {
       // Add keypoints around the original patch
-      MultiBallPercept::BallPercept centerPercept = percepts[idxMaxScore];
+      BestPatchList::Patch centerPatch = keypointPatches[idxMaxScore];
       std::vector<BestPatchList::Patch> aroundPromisingKeyPoint;
-      int radius = static_cast<int>(centerPercept.radiusInImage+0.5);
-      int centerX = static_cast<int>(centerPercept.centerInImage.x+0.5);
-      int centerY = static_cast<int>(centerPercept.centerInImage.y+0.5);
+      int radius = centerPatch.max.x - centerPatch.min.x;
+      if(radius > 1) { 
+        int halfRadius = radius/2;
 
-      BestPatchList::Patch p1(centerX - radius, centerY-radius, centerX, centerY, 0.0);
-      aroundPromisingKeyPoint.push_back(p1);
+         for(int x=centerPatch.min.x; x <= centerPatch.max.x; x += halfRadius) {
+          for(int y=centerPatch.min.y; y <= centerPatch.max.y; y += halfRadius) {
+              DEBUG_REQUEST("Vision:MultiPassBallDetector:drawCandidates",
+                // draw center of respawned patch, which also marks it as respawned
+                CIRCLE_PX(ColorClasses::pink,x, y, 2);
+              );
 
-      BestPatchList::Patch p2(centerX, centerY-radius, centerX+radius, centerY, 0.0);
-      aroundPromisingKeyPoint.push_back(p2);
-
-      BestPatchList::Patch p3(centerX, centerY, centerX + radius, centerY+radius, 0.0);
-      aroundPromisingKeyPoint.push_back(p3);
-
-
-      BestPatchList::Patch p4(centerX-radius, centerY, centerX, centerY+radius, 0.0);
-      aroundPromisingKeyPoint.push_back(p4);
-
-      DEBUG_REQUEST("Vision:MultiPassBallDetector:drawCandidates",
-        for(size_t i =0; i < aroundPromisingKeyPoint.size(); i++) {
-          RECT_PX(ColorClasses::pink, aroundPromisingKeyPoint[i].min.x, aroundPromisingKeyPoint[i].min.y, aroundPromisingKeyPoint[i].max.x,aroundPromisingKeyPoint[i].max.y);
+              BestPatchList::Patch p(x-halfRadius, y-halfRadius, x+halfRadius, y+halfRadius, 0.0);
+              aroundPromisingKeyPoint.push_back(p);
+            }
         }
-      );
 
-      percepts.clear();
-      scores.clear();
+        percepts.clear();
+        scores.clear();
 
-      executeCNNOnPatches(aroundPromisingKeyPoint, static_cast<int>(aroundPromisingKeyPoint.size()), false, percepts, scores);
-      allPatches.insert(allPatches.end(), aroundPromisingKeyPoint.begin(), aroundPromisingKeyPoint.end());
+        executeCNNOnPatches(aroundPromisingKeyPoint, static_cast<int>(aroundPromisingKeyPoint.size()), false, percepts, scores);
+        allPatches.insert(allPatches.end(), aroundPromisingKeyPoint.begin(), aroundPromisingKeyPoint.end());
 
-      addBallPercepts(percepts, scores);
-
+        // Only add the most largest ball with the largest score since we are producing possibly overlapping patches
+        // and dont' want to add the same ball twice
+        double bestScore = 0.0;
+        // Get the maximum score
+        for(size_t i=0; i < scores.size(); i++) {
+          if(scores[i] > bestScore) {
+            bestScore = scores[i];
+          }
+        }
+        if(bestScore >= params.cnn.threshold) {
+          addBallPercepts(percepts, scores, bestScore);
+        }
+      }
     }
-
-
   }
 
   DEBUG_REQUEST("Vision:MultiPassBallDetector:drawPercepts",
@@ -394,11 +395,11 @@ MultiBallPercept::BallPercept MultiPassBallDetector::createBallPercept(const Vec
   
 
 void MultiPassBallDetector::addBallPercepts(std::vector<MultiBallPercept::BallPercept>& percepts,
-    std::vector<double>& scores) {
+    std::vector<double>& scores, double scoreThreshold) {
   const double ballRadius = 50.0;
 
   for(size_t i=0; i < percepts.size(); i++) {
-    if(scores[i] >= params.cnn.threshold && percepts[i].centerInImage.x >= 0.0 && percepts[i].centerInImage.y >= 0.0) {
+    if(scores[i] >= scoreThreshold && percepts[i].centerInImage.x >= 0.0 && percepts[i].centerInImage.y >= 0.0) {
         if(CameraGeometry::imagePixelToFieldCoord(
             getCameraMatrix(), 
             getImage().cameraInfo,
