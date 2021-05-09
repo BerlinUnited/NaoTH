@@ -241,7 +241,6 @@ void MultiPassBallDetector::executeCNNOnPatches(const std::vector<BestPatchList:
       cnn->predict(patch, params.cnn.meanBrightnessOffset);
       STOPWATCH_STOP("MultiPassBallDetector:predict");
 
-      bool found = false;
       double radius = cnn->getRadius();
       Vector2d pos = cnn->getCenter();
       stopwatch.stop();
@@ -380,7 +379,6 @@ void MultiPassBallDetector::providePatches(const std::vector<BestPatchList::Patc
 }
 
 MultiBallPercept::BallPercept MultiPassBallDetector::createBallPercept(const Vector2d& center, double radius) {
-  const double ballRadius = 50.0;
   MultiBallPercept::BallPercept ballPercept;
   ballPercept.cameraId = cameraID;
   ballPercept.centerInImage = center;
