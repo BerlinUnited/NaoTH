@@ -49,7 +49,7 @@ void MultiPassBallDetector::execute(CameraInfo::CameraID id)
   // 1. pass: projection of the previous ball
   BestPatchList lastBallPatches = getPatchesByLastBall();
   allPatches = lastBallPatches.asVector();
-  executeCNNOnPatches(allPatches, static_cast<int>(lastBallPatches.size()), false, percepts, scores);
+  executeCNNOnPatches(allPatches, static_cast<int>(lastBallPatches.size()), false, percepts, scores, ColorClasses::red);
   addBallPercepts(percepts, scores, params.cnn.threshold);
 
   // 2. pass: keypoints  
@@ -66,7 +66,7 @@ void MultiPassBallDetector::execute(CameraInfo::CameraID id)
     keypointPatches = keypointList.asVector();
     allPatches.insert(allPatches.end(), keypointPatches.begin(), keypointPatches.end());
 
-    executeCNNOnPatches(keypointPatches, params.maxNumberOfKeys, params.checkContrast, percepts, scores);
+    executeCNNOnPatches(keypointPatches, params.maxNumberOfKeys, params.checkContrast, percepts, scores, ColorClasses::orange);
     addBallPercepts(percepts, scores, params.cnn.threshold);
 
   }
@@ -94,11 +94,6 @@ void MultiPassBallDetector::execute(CameraInfo::CameraID id)
 
          for(int x=centerPatch.min.x; x <= centerPatch.max.x; x += halfRadius) {
           for(int y=centerPatch.min.y; y <= centerPatch.max.y; y += halfRadius) {
-              DEBUG_REQUEST("Vision:MultiPassBallDetector:drawCandidates",
-                // draw center of respawned patch, which also marks it as respawned
-                CIRCLE_PX(ColorClasses::pink,x, y, 2);
-              );
-
               BestPatchList::Patch p(x-halfRadius, y-halfRadius, x+halfRadius, y+halfRadius, 0.0);
               aroundPromisingKeyPoint.push_back(p);
             }
@@ -107,7 +102,7 @@ void MultiPassBallDetector::execute(CameraInfo::CameraID id)
         percepts.clear();
         scores.clear();
 
-        executeCNNOnPatches(aroundPromisingKeyPoint, static_cast<int>(aroundPromisingKeyPoint.size()), false, percepts, scores);
+        executeCNNOnPatches(aroundPromisingKeyPoint, static_cast<int>(aroundPromisingKeyPoint.size()), false, percepts, scores, ColorClasses::pink);
         allPatches.insert(allPatches.end(), aroundPromisingKeyPoint.begin(), aroundPromisingKeyPoint.end());
 
         // Only add the most largest ball with the largest score since we are producing possibly overlapping patches
@@ -148,7 +143,7 @@ void MultiPassBallDetector::execute(CameraInfo::CameraID id)
 void MultiPassBallDetector::executeCNNOnPatches(const std::vector<BestPatchList::Patch>& best, 
     int maxNumberOfKeys, bool checkContrast,
     std::vector<MultiBallPercept::BallPercept>& ballPercepts,
-    std::vector<double>& scores) {
+    std::vector<double>& scores, ColorClasses::Color debugColor) {
   // the used patch size
   const int patch_size = 16;
 
@@ -261,7 +256,7 @@ void MultiPassBallDetector::executeCNNOnPatches(const std::vector<BestPatchList:
         // original patch
         RECT_PX(ColorClasses::skyblue, best[i].min.x, best[i].min.y, best[i].max.x, best[i].max.y);
         // possibly revised patch 
-        RECT_PX(ColorClasses::orange, patch.min.x, patch.min.y, patch.max.x, patch.max.y);
+        RECT_PX(debugColor, patch.min.x, patch.min.y, patch.max.x, patch.max.y);
       );
 
       index++;

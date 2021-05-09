@@ -210,7 +210,7 @@ private:
 
   void executeCNNOnPatches(const std::vector<BestPatchList::Patch>& best, int maxNumberOfKeys, bool checkContrast,
     std::vector<MultiBallPercept::BallPercept>& ballPercepts,
-    std::vector<double>& scores);
+    std::vector<double>& scores, ColorClasses::Color debugColor = ColorClasses::orange);
 
 
   BestPatchList getPatchesByLastBall();
