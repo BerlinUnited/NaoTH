@@ -298,8 +298,8 @@ def create_natural_detection_dataset(path, res):
             else:
                 # no region means no ball
                 radius = 0.0
-                x_coord = 0
-                y_coord = 0
+                x_coord = 0.5
+                y_coord = 0.5
 
             # for each row add the image and the prediction
             if is_ball:
