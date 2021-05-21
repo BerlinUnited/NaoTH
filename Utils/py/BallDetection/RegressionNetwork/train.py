@@ -52,7 +52,7 @@ def main(raw_args=None, model=None):
     with open(args.imgdb_path, "rb") as f:
         pickle.load(f)  # skip mean
         x = pickle.load(f)  # x are all input images
-        y = pickle.load(f)  # y are the trainings target: [x,y,r,1]
+        y = pickle.load(f)  # y are the trainings target: [r, x,y,1]
 
     # define the Keras network
     if args.proceed is not None and args.proceed is True:
