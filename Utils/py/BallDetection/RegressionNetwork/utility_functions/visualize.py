@@ -4,7 +4,11 @@ TODO show images from dataset with annotations for different datasets (naoth, b-
 import numpy as np
 import h5py
 import matplotlib.pyplot as plt
+import pickle
+from pathlib import Path
 
+DATA_DIR = Path(Path(__file__).parent.parent.absolute() / "data").resolve()
+MODEL_DIR = Path(Path(__file__).parent.parent.absolute() / "data/best_models").resolve()
 
 # get data
 def visualize_bhuman_dataset():
@@ -40,11 +44,30 @@ def visualize_tk3_classification():
 
 
 def visualize_tk3_detection():
-    pass
+    imgdb_path = str(DATA_DIR / 'tk03_natural_detection.pkl')
+    with open(imgdb_path, "rb") as f:
+        mean = pickle.load(f)
+        x = pickle.load(f)
+        y = pickle.load(f)
+
+    fig = plt.figure(figsize=(8, 8))
+    columns = 4
+    rows = 5
+    for i in range(1, columns * rows + 1):
+        img = x[i]
+        fig.add_subplot(rows, columns, i)
+        current_label = y[i]
+        print("current_label:", current_label)
+        circle1 = plt.Circle((current_label[1]*16, current_label[2]*16), current_label[0]*16, color='r', alpha=0.7)
+        ax = fig.gca()
+        ax.add_patch(circle1)
+        plt.imshow(img, cmap='gray')
+    plt.show()
 
 
 def visualize_tk3_segmenation():
     pass
 
+
 if __name__ == '__main__':
-    visualize_bhuman_dataset()
+    visualize_tk3_detection()
