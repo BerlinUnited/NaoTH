@@ -58,6 +58,7 @@ def visualize_tk3_detection():
         fig.add_subplot(rows, columns, i)
         current_label = y[i]
         print("current_label:", current_label)
+        # format for plotting is (xy), r
         circle1 = plt.Circle((current_label[1]*16, current_label[2]*16), current_label[0]*16, color='r', alpha=0.7)
         ax = fig.gca()
         ax.add_patch(circle1)
