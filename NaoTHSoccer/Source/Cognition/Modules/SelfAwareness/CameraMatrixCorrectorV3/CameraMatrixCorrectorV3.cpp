@@ -6,6 +6,7 @@
 
 #include "CameraMatrixCorrectorV3.h"
 #include <array>
+#include <algorithm>
 
 CameraMatrixCorrectorV3::CameraMatrixCorrectorV3():
     theCamMatErrorFunctionV3(getDebugRequest(), getDebugDrawings(), getDebugModify(), getFieldInfo(), getCameraInfo(), getCameraInfoTop()),
@@ -76,10 +77,13 @@ CameraMatrixCorrectorV3::CameraMatrixCorrectorV3():
       yaws.push_back(i);
   }
 
-  for(double pitch : pitchs){
-      for(double yaw : yaws){
+  for(double pitch : pitchs) 
+  {
+      for(double yaw : yaws) {
           target_points.push_back(Vector2d(yaw, pitch));
       }
+      // reverse the order for the next iteration
+      std::reverse(yaws.begin(), yaws.end());
   }
 
   current_target = target_points.begin();
@@ -304,10 +308,15 @@ bool CameraMatrixCorrectorV3::collectingData()
     last_pitch = current_pitch;
 
     // state transitions and triggering sampling
-    bool target_reached =     fabs(current_yaw   - current_target->x) < 3
-                           && fabs(current_pitch - current_target->y) < 3
-                           && fabs(vel_yaw)   < 0.2
-                           && fabs(vel_pitch) < 0.2;
+    double limit = 3;
+    MODIFY("CameraMatrixV3:limit", limit);
+    double vlimit = 0.2;
+    MODIFY("CameraMatrixV3:vlimit", vlimit);
+
+    bool target_reached =     fabs(current_yaw   - current_target->x) < limit
+                           && fabs(current_pitch - current_target->y) < limit
+                           && fabs(vel_yaw)   < vlimit
+                           && fabs(vel_pitch) < vlimit;
 
     if(target_reached && current_target != target_points.end()){
         sampling();

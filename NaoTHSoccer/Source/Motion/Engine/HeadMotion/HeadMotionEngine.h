@@ -50,6 +50,7 @@ BEGIN_DECLARE_MODULE(HeadMotionEngine)
   REQUIRE(InertialModel)
   REQUIRE(InertialSensorData)
   REQUIRE(KinematicChainSensor)
+  REQUIRE(KinematicChainMotor)
   REQUIRE(HeadMotionRequest)
   REQUIRE(SensorJointData)
   REQUIRE(FrameInfo)
@@ -78,9 +79,10 @@ private:
   {
     Parameters() : ParameterList("HeadMotionEngine")
     {
-      PARAMETER_REGISTER(max_velocity_deg_in_second_fast) = 60;
-      PARAMETER_REGISTER(max_velocity_deg_in_second_slow) = 90;
-      PARAMETER_REGISTER(cutting_velocity) = 40;
+      PARAMETER_ANGLE_REGISTER(max_head_velocity_stand) = 120; //  deg/s
+      PARAMETER_ANGLE_REGISTER(max_head_velocity_walk_fast) = 90; // deg/s velocity when walking fast
+      PARAMETER_ANGLE_REGISTER(max_head_velocity_walk_slow) = 120; // deg/s velocity when walking slow
+      PARAMETER_REGISTER(walk_fast_speed_threshold) = 40; // ~mm/s walking speed of the robot. Faster than this is considered fast walking
 
       PARAMETER_ANGLE_REGISTER(at_rest_threshold) = 0.3;
       PARAMETER_ANGLE_REGISTER(at_rest_threshold_walking) = 10;
@@ -88,18 +90,23 @@ private:
 
       PARAMETER_REGISTER(stiffness) = 0.7;
 
+      PARAMETER_REGISTER(use_lookAtWorldPointCool) = true;
+
       syncWithConfig();
     }
 
-    double max_velocity_deg_in_second_fast;
-    double max_velocity_deg_in_second_slow;
-    double cutting_velocity;
+    double max_head_velocity_stand;
+    double max_head_velocity_walk_fast;
+    double max_head_velocity_walk_slow;
+    double walk_fast_speed_threshold;
 
     double at_rest_threshold;
     double at_rest_threshold_walking;
     double at_target_threshold;
 
     double stiffness;
+
+    bool use_lookAtWorldPointCool;
   } params;
 
 private:
@@ -168,7 +175,7 @@ private:
   KinematicChain theKinematicChain;
 
   bool trajectoryHeadMove(const std::vector<Vector3d>& points);
-  void gotoPointOnTheGround(const Vector2d& target);
+  //void gotoPointOnTheGround(const Vector2d& target);
 
   void lookStraightAhead();
   void lookStraightAheadWithStabilization();
@@ -182,6 +189,7 @@ private:
   void moveByAngle(const Vector2d& target);
   void gotoAngle(const Vector2d& target);
 
+  void lookAtWorldPointCool(const Vector3d& target);
   void lookAtWorldPoint(const Vector3d& target);
   void lookAtWorldPointSimple(const Vector3d& target);
 

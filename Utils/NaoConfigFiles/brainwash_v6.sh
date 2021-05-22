@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x
+
 echo "using $BACKUP_DIRECTORY and $DEPLOY_DIRECTORY"
 
 HEAD_ID=$(cat /sys/qi/head_id)
@@ -79,6 +81,9 @@ setEtc(){
 
 	# brainwash udev rule
 	deployFile "/etc/udev/rules.d/brainwashing.rules" "root" "644" "v6"
+	
+	# logstick udev rule
+	deployFile "/etc/udev/rules.d/logstick.rules" "root" "644" "v6"
 
 	# ====================  host stuff ====================
 
@@ -147,6 +152,9 @@ naoth stop
 
 # brainwashinit
 deployFile "/usr/bin/brainwash" "root" "755" "v6"
+
+deployFile "/usr/bin/mount_logstick" "root" "755" "v6"
+deployFile "/usr/bin/collect_logs" "root" "755" "v6"
 
 # NaoTH binary start script
 deployFile "/usr/bin/naoth" "root" "755" "v6"
@@ -304,15 +312,16 @@ mount -o remount,ro /
 
 echo "Generate network configuration";
 
-NETWORK_WLAN_SSID="NAONET"
-NETWORK_WLAN_PW="a1b0a1b0a1"
-NETWORK_WLAN_IP="10.0.4"
-NETWORK_WLAN_MASK="255.255.255.0"
-NETWORK_WLAN_BROADCAST="10.0.4.255"
+# NOTE: defined as environmental variables in the main script
+#NETWORK_WLAN_SSID="NAONET"
+#NETWORK_WLAN_PW="a1b0a1b0a1"
+#NETWORK_WLAN_IP="10.0.4"
+#NETWORK_WLAN_MASK="255.255.255.0"
+#NETWORK_WLAN_BROADCAST="10.0.4.255"
 
-NETWORK_ETH_IP="192.168.13"
-NETWORK_ETH_MASK="255.255.255.0"
-NETWORK_ETH_BROADCAST="192.168.13.255"
+#NETWORK_ETH_IP="192.168.13"
+#NETWORK_ETH_MASK="255.255.255.0"
+#NETWORK_ETH_BROADCAST="192.168.13.255"
 
 NETWORK_WLAN_IP="$NETWORK_WLAN_IP.$N"
 NETWORK_ETH_IP="$NETWORK_ETH_IP.$N"
@@ -323,6 +332,10 @@ config_wlan0="$NETWORK_WLAN_IP netmask $NETWORK_WLAN_MASK broadcast $NETWORK_WLA
 config_eth0="$NETWORK_ETH_IP netmask $NETWORK_ETH_MASK broadcast $NETWORK_ETH_BROADCAST"
 wpa_supplicant_wlan0="-Dnl80211"
 EOF
+
+chown root:root /home/nao/.config/net
+chmod 644 /home/nao/.config/net
+
 
 # generate wpa_supplicant configuration
 cat << EOF > /home/nao/.config/wpa_supplicant.conf
@@ -337,6 +350,9 @@ network={
   priority=5
 }
 EOF
+
+chown root:root /home/nao/.config/wpa_supplicant.conf
+chmod 644 /home/nao/.config/wpa_supplicant.conf
 
 echo "Restart network services";
 systemctl restart net.eth0

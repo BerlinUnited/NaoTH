@@ -38,12 +38,12 @@ double CameraInfo::getOpeningAngleWidth() const
 
 double CameraInfo::getOpticalCenterX() const
 {
-  return double(resolutionWidth / 2);
+  return static_cast<double>(resolutionWidth / 2);
 }
 
 double CameraInfo::getOpticalCenterY() const
 {
-  return double(resolutionHeight / 2);
+  return static_cast<double>(resolutionHeight / 2);
 }
 
 unsigned long CameraInfo::getSize() const

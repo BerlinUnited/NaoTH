@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.collections.FXCollections?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<TabPane fx:id="tabs" side="LEFT" xmlns="http://javafx.com/javafx/8.0.162-ea" xmlns:fx="http://javafx.com/fxml/1">
+   <tabs>
+     <Tab fx:id="configurationsTab" closable="false" text="Configuration">
+       <content>
+         <fx:include fx:id="configurationsTabView" source="ConfigurationsTab.fxml" />
+       </content>
+     </Tab>
+      <Tab fx:id="representationsTab" closable="false" text="Representations">
+         <content>
+            <VBox prefHeight="300.0" prefWidth="600.0">
+               <children>
+                  <ToolBar prefHeight="40.0" prefWidth="200.0">
+                     <items>
+                        <Button fx:id="btnUpdateList" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" styleClass="refresh_button" text="Update" />
+                        <ChoiceBox fx:id="type" prefWidth="150.0" value="Cognition">
+                            <items>
+                              <FXCollections fx:factory="observableArrayList">
+                                  <String fx:value="Cognition" />
+                                  <String fx:value="Motion" />
+                              </FXCollections>
+                          </items>
+                        </ChoiceBox>
+                     </items>
+                  </ToolBar>
+                  <SplitPane fx:id="split" dividerPositions="0.2" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                     <items>
+                        <ListView fx:id="list" prefHeight="419.0" prefWidth="204.0" />
+                        <GridPane fx:id="contentArea">
+                           <columnConstraints>
+                              <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" percentWidth="33.33" prefWidth="100.0" />
+                              <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" percentWidth="33.33" prefWidth="100.0" />
+                              <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" percentWidth="33.33" prefWidth="100.0" />
+                           </columnConstraints>
+                           <rowConstraints>
+                              <RowConstraints minHeight="10.0" percentHeight="50.0" prefHeight="30.0" vgrow="ALWAYS" />
+                              <RowConstraints minHeight="10.0" percentHeight="50.0" prefHeight="30.0" vgrow="ALWAYS" />
+                           </rowConstraints></GridPane>
+                     </items>
+                  </SplitPane>
+               </children>
+            </VBox>
+         </content>
+      </Tab>
+   </tabs>
+</TabPane>

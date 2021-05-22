@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# print all commands just in case
+set -x #echo on
+
+# redirect all the output to the logger
+exec 1> >(logger -s -t mount_logstick) 2>&1
+
+mkdir -p /home/logstick
+mount /dev/logstick /home/logstick
+
+mkdir -p /home/logstick/logs
+cd /home/logstick/logs
+
+bash ./startBrainwashing.sh
+
+#umount /home/logstick

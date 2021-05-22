@@ -25,10 +25,10 @@ std::string HeadMotionRequest::getName(HeadMotionID id)
     case stabilize: return "stabilize";
     case look_straight_ahead: return "look_straight_ahead";
     case look_at_world_point: return "look_at_world_point";
-    case look_at_point_on_the_ground: return "look_at_point_on_the_ground";
+    //case look_at_point_on_the_ground: return "look_at_point_on_the_ground";
     default: return "unknown";
-  }///end switch
-}///end getName
+  }
+}//end getName
 
 void HeadMotionRequest::print(std::ostream &stream) const
 {
@@ -38,10 +38,11 @@ void HeadMotionRequest::print(std::ostream &stream) const
 
 HeadMotionRequest::HeadMotionID HeadMotionRequest::getId(const std::string& name)
 {
-  for(int i = 0; i < numOfHeadMotion; i++)
-  {
-    if(name == getName((HeadMotionID)i)) return (HeadMotionID)i;
-  }//end for
+  for(int i = 0; i < numOfHeadMotion; i++) {
+    if(name == getName(static_cast<HeadMotionID>(i))) {
+      return static_cast<HeadMotionID>(i);
+    }
+  }
   
   return numOfHeadMotion;
 }//end getId
