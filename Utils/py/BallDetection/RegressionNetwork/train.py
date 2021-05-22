@@ -28,7 +28,7 @@ def str2bool(v):
 def main(raw_args=None, model=None):
     parser = argparse.ArgumentParser(description='Train the network given')
 
-    parser.add_argument('-b', '--database-path', dest='imgdb_path', default=str(DATA_DIR / 'tk03_natural_detection.pkl'),
+    parser.add_argument('-b', '--database-path', dest='imgdb_path', default=str(DATA_DIR / 'tk03_combined_detection.pkl'),
                         help='Path to the image database to use for training. Default is imgdb.pkl in the data folder.')
     parser.add_argument("--output", dest="output", default="./", help="Folder where the trained models are saved")
 
@@ -52,7 +52,7 @@ def main(raw_args=None, model=None):
     with open(args.imgdb_path, "rb") as f:
         pickle.load(f)  # skip mean
         x = pickle.load(f)  # x are all input images
-        y = pickle.load(f)  # y are the trainings target: [x,y,r,1]
+        y = pickle.load(f)  # y are the trainings target: [r, x,y,1]
 
     # define the Keras network
     if args.proceed is not None and args.proceed is True:
@@ -65,7 +65,7 @@ def main(raw_args=None, model=None):
         print("ERROR: No model specified")
         exit(1)
 
-    """
+    """ 
         The save callback will overwrite the previous models if the new model is better then the last. Restarting the 
         training will always overwrite the models.
     """
@@ -82,18 +82,19 @@ def main(raw_args=None, model=None):
     # history = model.fit(x, y, batch_size=args.batch_size, epochs=args.epochs, verbose=1,
     # validation_data=(X_test, Y_test),callbacks=callbacks)
 
-    history = model.fit(x, y, batch_size=args.batch_size, epochs=args.epochs, verbose=1, validation_split=0.1,
+    history = model.fit(x, y, batch_size=256, epochs=args.epochs, verbose=1, validation_split=0.1,
                         callbacks=callbacks)
-    return history
+    history_filename = "history_" + model.name + "_" + Path(args.imgdb_path).stem + ".pkl"
+    return history, history_filename
 
 
 if __name__ == '__main__':
-    test_model = model_zoo.fy_1500_new()
+    test_model = model_zoo.naoth_classification1()
     output_dir = "models"
     # forward commandline arguments to the argparser in the main function
-    train_history = main(sys.argv[1:] + ['--output', output_dir], model=test_model)
+    train_history, history_filename = main(sys.argv[1:] + ['--output', output_dir], model=test_model)
 
     # save history in same folder as model
-    history_filepath = Path(output_dir) / ("history_" + test_model.name + "_tk03.pkl")
+    history_filepath = Path(output_dir) / history_filename
     with open(str(history_filepath), "wb") as f:
         pickle.dump(train_history.history, f)

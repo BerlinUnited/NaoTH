@@ -74,6 +74,7 @@ def create_detection_dataset(negative_data, positive_data, negative_labels, posi
 
 
 if __name__ == '__main__':
+    # TODO make a backup on our own servers
     download_bhuman2019("https://sibylle.informatik.uni-bremen.de/public/datasets/b-alls-2019/b-alls-2019.hdf5",
                         "data/bhuman/b-alls-2019.hdf5")
     download_bhuman2019("https://sibylle.informatik.uni-bremen.de/public/datasets/b-alls-2019/readme.txt",
