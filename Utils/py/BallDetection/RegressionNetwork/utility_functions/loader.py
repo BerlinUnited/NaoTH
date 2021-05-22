@@ -146,7 +146,7 @@ def create_blender_detection_dataset(path, res):
     return x, y, p
 
 
-def create_blender_detection_dataset2(path, res):
+def create_blender_detection_dataset_without_classification(path, res):
     """
         without classification value in output
     """
@@ -415,7 +415,7 @@ def create_natural_detection_dataset(path, res):
     return db_balls, db_noballs
 
 
-def create_natural_detection_dataset_2(path, res):
+def create_natural_detection_dataset_without_classification(path, res):
     """
     without classification value in output
     """
@@ -603,6 +603,10 @@ def create_natural_dataset(root_path, res, limit_noballs, dataset_type="detectio
             complete_db_noball_list.extend(db_noball_list)
         elif dataset_type == "detection":
             db_ball_list, db_noball_list = create_natural_detection_dataset(str(path), res)
+            complete_db_ball_list.extend(db_ball_list)
+            complete_db_noball_list.extend(db_noball_list)
+        elif dataset_type == "detection2":
+            db_ball_list, db_noball_list = create_natural_detection_dataset_without_classification(str(path), res)
             complete_db_ball_list.extend(db_ball_list)
             complete_db_noball_list.extend(db_noball_list)
         elif dataset_type == "segmentation":

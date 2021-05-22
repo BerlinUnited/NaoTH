@@ -13,8 +13,9 @@ import pickle
 from pathlib import Path
 import numpy as np
 
-from utility_functions.loader import create_natural_dataset, create_blender_detection_dataset, calculate_mean, subtract_mean, \
-    create_blender_segmentation_dataset, create_blender_classification_dataset
+from utility_functions.loader import create_natural_dataset, create_blender_detection_dataset, calculate_mean, \
+    subtract_mean, create_blender_segmentation_dataset, create_blender_classification_dataset, \
+    create_blender_detection_dataset_without_classification
 
 DATA_DIR = Path(Path(__file__).parent.absolute() / "data").resolve()
 
@@ -59,7 +60,8 @@ if __name__ == '__main__':
     parser.add_argument("-l", "--limit-noball", type=str2bool, nargs='?', dest="limit_noball",
                         const=True, help="Randomly select at most |balls| from no balls class")
     parser.add_argument("--data_type", dest="data_type",
-                        choices=["classification", "detection", "semantic_segmentation"], default="detection")
+                        choices=["classification", "detection", "detection2", "semantic_segmentation"],
+                        default="detection2")
 
     args = parser.parse_args()
     if args.download:
@@ -80,7 +82,7 @@ if __name__ == '__main__':
         store_output(output_name, mean, x, y, p)
 
         path = args.img_path + "/blender"
-        x_syn,y_syn = create_blender_classification_dataset(path, res)
+        x_syn, y_syn = create_blender_classification_dataset(path, res)
         mean_b = calculate_mean(x_syn)
         x_syn = subtract_mean(x_syn, mean_b)
 
@@ -111,7 +113,7 @@ if __name__ == '__main__':
         x_syn, y_syn, p_syn = create_blender_detection_dataset(path, res)
         mean_b = calculate_mean(x_syn)
         x_syn = subtract_mean(x_syn, mean_b)
-    
+
         print("save detection dataset with synthetic images")
         output_name = str(DATA_DIR / 'tk03_synthetic_detection.pkl')
         store_output(output_name, mean_b, x_syn, y_syn, p_syn)
@@ -124,6 +126,35 @@ if __name__ == '__main__':
 
         print("save detection dataset with combined images")
         output_name = str(DATA_DIR / 'tk03_combined_detection.pkl')
+        store_output(output_name, mean, X, Y, P)
+
+    if args.data_type == "detection2":
+        x, y, p = create_natural_dataset(args.img_path, res, args.limit_noball, "detection2")
+        print("sum:", np.sum(y))
+        mean = calculate_mean(x)
+        x = subtract_mean(x, mean)
+
+        print("save detection dataset with natural images")
+        output_name = str(DATA_DIR / 'tk03_natural_detection2.pkl')
+        store_output(output_name, mean, x, y, p)
+
+        path = args.img_path + "/blender"
+        x_syn, y_syn, p_syn = create_blender_detection_dataset_without_classification(path, res)
+        mean_b = calculate_mean(x_syn)
+        x_syn = subtract_mean(x_syn, mean_b)
+
+        print("save detection dataset with synthetic images")
+        output_name = str(DATA_DIR / 'tk03_synthetic_detection2.pkl')
+        store_output(output_name, mean_b, x_syn, y_syn, p_syn)
+
+        # merge the two datasets
+        X = np.concatenate((x, x_syn))
+        Y = np.concatenate((y, y_syn))
+        P = np.concatenate((p, p_syn))
+        mean = calculate_mean(X)
+
+        print("save detection dataset with combined images")
+        output_name = str(DATA_DIR / 'tk03_combined_detection2.pkl')
         store_output(output_name, mean, X, Y, P)
 
     if args.data_type == "semantic_segmentation":
