@@ -6,14 +6,21 @@ import h5py
 import matplotlib.pyplot as plt
 import pickle
 from pathlib import Path
+from bhuman_helper import download_bhuman2019
 
 DATA_DIR = Path(Path(__file__).parent.parent.absolute() / "data").resolve()
 MODEL_DIR = Path(Path(__file__).parent.parent.absolute() / "data/best_models").resolve()
 
-# get data
+
 def visualize_bhuman_dataset():
+    download_bhuman2019("https://sibylle.informatik.uni-bremen.de/public/datasets/b-alls-2019/b-alls-2019.hdf5",
+                        "data/bhuman/b-alls-2019.hdf5")
+    download_bhuman2019("https://sibylle.informatik.uni-bremen.de/public/datasets/b-alls-2019/readme.txt",
+                        "data/bhuman/readme.txt")
+
     f = h5py.File('../data/bhuman/b-alls-2019.hdf5', 'r')
 
+    # TODO combine the data and
     negative_data = np.array(f.get('negatives/data'))
     positive_data = np.array(f.get('positives/data'))
     negative_labels = np.array(f.get('negatives/labels'))
@@ -59,7 +66,8 @@ def visualize_tk3_detection():
         current_label = y[i]
         print("current_label:", current_label)
         # format for plotting is (xy), r
-        circle1 = plt.Circle((current_label[1]*16, current_label[2]*16), current_label[0]*16, color='r', alpha=0.7)
+        circle1 = plt.Circle((current_label[1] * 16, current_label[2] * 16), current_label[0] * 16, color='r',
+                             alpha=0.7)
         ax = fig.gca()
         ax.add_patch(circle1)
         plt.imshow(img, cmap='gray')
