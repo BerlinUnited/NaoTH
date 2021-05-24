@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import pickle
 from pathlib import Path
 from bhuman_helper import download_bhuman2019
-
+import tensorflow.keras as keras
 DATA_DIR = Path(Path(__file__).parent.parent.absolute() / "data").resolve()
 MODEL_DIR = Path(Path(__file__).parent.parent.absolute() / "data/best_models").resolve()
 
@@ -67,16 +67,89 @@ def visualize_tk3_detection():
         print("current_label:", current_label)
         # format for plotting is (xy), r
         circle1 = plt.Circle((current_label[1] * 16, current_label[2] * 16), current_label[0] * 16, color='r',
-                             alpha=0.7)
+                             alpha=0.5)
         ax = fig.gca()
         ax.add_patch(circle1)
         plt.imshow(img, cmap='gray')
     plt.show()
 
 
-def visualize_tk3_segmenation():
+def visualize_tk3_detection2():
+    """
+    this is for steffen
+    :return:
+    """
+    imgdb_path = str(DATA_DIR / 'tk03_natural_detection.pkl')
+    with open(imgdb_path, "rb") as f:
+        mean = pickle.load(f)
+        x = pickle.load(f)
+        y = pickle.load(f)
+
+    counter = 0
+    for i in range(100):
+        img = x[i]
+        img = img - mean
+        target = y[i]
+        print(target)
+        # if its a ball
+        if target[-1] == 1:
+            counter = counter + 1
+            fig = plt.figure()
+            current_label = y[i]
+            circle1 = plt.Circle((current_label[1] * 16, current_label[2] * 16), current_label[0] * 16, color='b',
+                                 alpha=0.35)
+            ax = fig.gca()
+            ax.add_patch(circle1)
+            plt.imshow(img, cmap='gray')
+            plt.show()
+            # plt.imsave("test.png", img)
+            if counter > 10:
+                break
+
+
+def visualize_tk3_detection3():
+    """
+    this is for steffen
+    :return:
+    """
+    imgdb_path = str(DATA_DIR / 'tk03_natural_detection.pkl')
+    with open(imgdb_path, "rb") as f:
+        mean = pickle.load(f)
+        x = pickle.load(f)
+        y = pickle.load(f)
+
+    model = keras.models.load_model(str(MODEL_DIR / 'fy1500_conf.h5'))
+    model.summary()
+
+
+
+    counter = 0
+    for i in range(100):
+        img = x[i] - mean
+        target = y[i]
+        if target[-1] == 1:
+            continue
+
+        input = x[0].reshape(1, *x[0].shape)
+        output = model.predict(input)[0]
+
+        counter = counter + 1
+        fig = plt.figure()
+        print(output)
+        circle1 = plt.Circle((output[1] * 16, output[2] * 16), output[0] * 16, color='b',
+                             alpha=0.35)
+        ax = fig.gca()
+        ax.add_patch(circle1)
+        plt.imshow(img, cmap='gray')
+        plt.show()
+        # plt.imsave("test.png", img)
+        if counter > 10:
+            break
+
+
+def visualize_tk3_segmentation():
     pass
 
 
 if __name__ == '__main__':
-    visualize_tk3_detection()
+    visualize_tk3_detection3()
