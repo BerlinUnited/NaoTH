@@ -52,8 +52,12 @@ public:
 
   enum CompetitionType
   {
-    competition_normal  = COMPETITION_TYPE_NORMAL,
-    competition_mixed   = 99 //COMPETITION_TYPE_MIXEDTEAM // Deprecated since 2021
+    competition_normal   = COMPETITION_TYPE_NORMAL,
+    //competition_mixed  = COMPETITION_TYPE_MIXEDTEAM // Deprecated since 2021
+    
+    // RC 2021
+    competition_1v1      = COMPETITION_TYPE_1VS1_CHALLENGE,
+    competition_passing  = COMPETITION_TYPE_PASSING_CHALLENGE
   };
 
   enum GamePhase
@@ -161,7 +165,7 @@ public:
   unsigned int playersPerTeam;                 // the number of players on a team
 
   CompetitionPhase competitionPhase;  // phase of the competition (COMPETITION_PHASE_ROUNDROBIN, COMPETITION_PHASE_PLAYOFF)
-  CompetitionType  competitionType;   // type of the competition (COMPETITION_TYPE_NORMAL, COMPETITION_TYPE_MIXEDTEAM, COMPETITION_TYPE_GENERAL_PENALTY_KICK)
+  CompetitionType  competitionType;   // type of the competition (COMPETITION_TYPE_NORMAL, COMPETITION_TYPE_1VS1_CHALLENGE, COMPETITION_TYPE_PASSING_CHALLENGE)
   GamePhase        gamePhase;         // phase of the game (GAME_PHASE_NORMAL, GAME_PHASE_PENALTYSHOOT, etc)
   GameState        gameState;         // state of the game (STATE_READY, STATE_PLAYING, etc)
   SetPlay          setPlay;           // active set play (SET_PLAY_NONE, SET_PLAY_GOAL_FREE_KICK, etc)
