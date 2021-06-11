@@ -1,6 +1,16 @@
 /* Symbols for accessing the data from the game controller object */
 namespace game_symbols("Game Control Symbols") 
 {
+  /* Type of the competition */
+  enum game.type
+  {
+    normal,
+    game_1v1,
+    passing
+  };
+
+  enum game.type input game.type;
+
   /* Enumeration for game states */
   enum game.state
   {
