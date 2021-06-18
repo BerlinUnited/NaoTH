@@ -28,6 +28,7 @@
 #include <vector>
 #include <fftw3/fftw3.h>
 #include <Tools/Filters/AssymetricalBoolFilter.h>
+#include <limits>
 
 using namespace naoth;
 
