@@ -21,13 +21,14 @@ void GameSymbols::registerSymbols(xabsl::Engine& engine)
 
 
   // enum type for game state (spl)
-  engine.registerEnumElement("game.state","game.state._initial_", PlayerInfo::initial);
-  engine.registerEnumElement("game.state","game.state.ready", PlayerInfo::ready);
-  engine.registerEnumElement("game.state","game.state.set", PlayerInfo::set);
-  engine.registerEnumElement("game.state","game.state.playing", PlayerInfo::playing);
-  engine.registerEnumElement("game.state","game.state.penalized", PlayerInfo::penalized);
-  engine.registerEnumElement("game.state","game.state.finished", PlayerInfo::finished);
-  engine.registerEnumElement("game.state","game.state.unstiff", PlayerInfo::unstiff);
+  engine.registerEnumElement("game.state","game.state._initial_",   PlayerInfo::initial);
+  engine.registerEnumElement("game.state","game.state.ready",       PlayerInfo::ready);
+  engine.registerEnumElement("game.state","game.state.set",         PlayerInfo::set);
+  engine.registerEnumElement("game.state","game.state.playing",     PlayerInfo::playing);
+  engine.registerEnumElement("game.state","game.state.penalized",   PlayerInfo::penalized);
+  engine.registerEnumElement("game.state","game.state.finished",    PlayerInfo::finished);
+  engine.registerEnumElement("game.state","game.state.unstiff",     PlayerInfo::unstiff);
+  engine.registerEnumElement("game.state","game.state.calibration", PlayerInfo::calibration);
 
   // current game state
   engine.registerEnumeratedInputSymbol("game.state", "game.state", &getGameState);

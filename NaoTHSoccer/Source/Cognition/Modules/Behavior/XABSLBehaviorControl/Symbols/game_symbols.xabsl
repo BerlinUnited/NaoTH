@@ -20,7 +20,8 @@ namespace game_symbols("Game Control Symbols")
     playing,
     penalized,
     finished,
-    unstiff
+    unstiff,
+    calibration
   };
 
   /* State of the game */
