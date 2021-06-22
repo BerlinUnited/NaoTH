@@ -45,9 +45,6 @@ option auto_calibration
   state calibrate
   {
     decision {
-      if(state_time > 20000) 
-        goto finish;
-      else
         stay;
     }
     action {

@@ -12,8 +12,8 @@ option calibration_evaluation
   {
     decision
     {
-      else if(game.current_mode == playing)
-        goto search;
+      else if(game.current_mode == calibration)
+        goto wait_a_bit;
       else
         stay;
     }
@@ -26,7 +26,7 @@ option calibration_evaluation
   state wait_a_bit
   {
     decision {
-      if(state_time > 3000) 
+      else if(state_time > 3000) 
         goto calibrate;//walk_to_position;
       else
         stay;
@@ -40,7 +40,7 @@ option calibration_evaluation
   state walk_to_position
   {
     decision {
-      if(state_time > 30000)
+      else if(state_time > 30000)
         goto wait_before_calibrate;
       else
         stay;
@@ -53,7 +53,7 @@ option calibration_evaluation
   state wait_before_calibrate
   {
     decision {
-      if(state_time > 5000) 
+      else if(state_time > 5000) 
         goto calibrate;
       else
         stay;
@@ -67,7 +67,7 @@ option calibration_evaluation
   state calibrate
   {
     decision {
-      if(state_time > 20000) 
+      else if(state_time > 20000) 
         goto finish;
       else
         stay;

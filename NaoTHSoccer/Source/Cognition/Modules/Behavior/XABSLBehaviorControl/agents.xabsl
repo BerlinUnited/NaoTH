@@ -173,6 +173,9 @@ include "Options/Test/agent/bumper_collision_agent.xabsl";
 // Competition Agent
 agent soccer_agent("Cool Soccer Agent", soccer_agent);
 
+agent auto_calibration_challenge21("auto_calibration_challenge21", auto_calibration_challenge21);
+
+
 // Competition Sub Agents
 agent role_spl_soccer("Role SPL Soccer", roles_spl_play_soccer);
 agent penalty("Penalty", penalty_agent);
