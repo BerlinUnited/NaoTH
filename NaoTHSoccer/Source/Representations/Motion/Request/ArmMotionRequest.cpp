@@ -39,6 +39,7 @@ std::string ArmMotionRequest::getName(ArmMotionID id)
     case arms_back: return "arms_back";
     case arms_down: return "arms_down";
     case arms_synchronised_with_walk: return "arms_synchronised_with_walk";
+    case raise_arm: return "raise_arm";
 
     default: return "unknown";
   }///end switch
@@ -55,10 +56,11 @@ void ArmMotionRequest::print(std::ostream &stream) const
 
 ArmMotionRequest::ArmMotionID ArmMotionRequest::getId(const std::string& name)
 {
-  for(int i = 0; i < numOfArmMotion; i++)
-  {
-    if(name == getName((ArmMotionID)i)) return (ArmMotionID)i;
-  }//end for
+  for(int i = 0; i < numOfArmMotion; i++) {
+    if(name == getName((ArmMotionID)i)) {
+      return (ArmMotionID)i;
+    }
+  }
   
   return numOfArmMotion;
 }//end getId

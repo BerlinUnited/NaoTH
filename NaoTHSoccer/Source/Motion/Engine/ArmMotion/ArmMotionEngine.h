@@ -117,6 +117,7 @@ private:
   void hold();
 
   bool armsDown();
+  bool raiseArm();
   bool armsOnBack();
   bool armsSynchronisedWithWalk();
 

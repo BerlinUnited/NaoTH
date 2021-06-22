@@ -168,6 +168,9 @@ void MotionSymbols::execute()
   // TODO: maybe better just to create new once?
   getMotionRequest().reset();
   getHeadMotionRequest().reset();
+
+  // HACK!
+  getMotionRequest().armMotionRequest.lShoulderPosition = Vector2d(Math::pi_2, 0.0);
 }
 
 void MotionSymbols::updateOutputSymbols()

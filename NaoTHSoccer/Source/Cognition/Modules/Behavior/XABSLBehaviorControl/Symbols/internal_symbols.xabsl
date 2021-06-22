@@ -56,7 +56,8 @@ namespace internal_symbols("Internal Symbols") {
   {
     normal,
     back,
-    synchronised_with_walk
+    synchronised_with_walk,
+    raise_arm
   };
 
   enum arm.control_mode internal arm.control_mode;

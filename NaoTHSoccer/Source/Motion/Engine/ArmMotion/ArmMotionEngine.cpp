@@ -103,6 +103,7 @@ void ArmMotionEngine::execute()
 
     case ArmMotionRequest::arms_back: armsOnBack(); break;
     case ArmMotionRequest::arms_down: armsDown(); break;
+    case ArmMotionRequest::raise_arm: raiseArm(); break;
     case ArmMotionRequest::arms_synchronised_with_walk: armsSynchronisedWithWalk(); break;
 
     case ArmMotionRequest::arms_none: // do nothing
@@ -368,6 +369,46 @@ bool ArmMotionEngine::armsDown()
   }
   return result;
 }//end armsDown
+
+bool ArmMotionEngine::raiseArm()
+{
+  static double target[JointData::numOfJoint];
+  target[JointData::RShoulderRoll]  = Math::fromDegrees(-10);
+  target[JointData::LShoulderRoll]  = Math::fromDegrees(0);
+  target[JointData::RShoulderPitch] = Math::fromDegrees(90);
+  target[JointData::LShoulderPitch] = Math::fromDegrees(-90);
+  target[JointData::RElbowRoll]     = Math::fromDegrees(0);
+  target[JointData::LElbowRoll]     = Math::fromDegrees(0);
+  target[JointData::RElbowYaw]      = Math::fromDegrees(0);
+  target[JointData::LElbowYaw]      = Math::fromDegrees(0);
+
+  for (int i = JointData::RShoulderRoll; i <= JointData::LElbowYaw; i++) {
+    getMotorJointData().stiffness[i] = params.armStiffness;
+  }
+
+  // need a stiff shoulder
+  getMotorJointData().stiffness[JointData::LShoulderPitch] = 0.9;
+
+
+  double diffMax = 0.0;
+  diffMax = max(diffMax, fabs(target[JointData::RElbowRoll] - theMotorJointDataOld.position[JointData::RElbowRoll]));
+  diffMax = max(diffMax, fabs(target[JointData::LElbowRoll] - theMotorJointDataOld.position[JointData::LElbowRoll]));
+
+  bool result = false;
+  if( diffMax <= 0.02)
+  {
+    result = moveToJoints(target);
+  }
+  else
+  {
+    target[JointData::RShoulderPitch] = Math::fromDegrees(params.armsOnBack.shoulderPitch);
+    target[JointData::LShoulderPitch] = Math::fromDegrees(params.armsOnBack.shoulderPitch);
+    target[JointData::RElbowYaw]      = Math::fromDegrees(-params.armsOnBack.elbowYaw);
+    target[JointData::LElbowYaw]      = Math::fromDegrees(params.armsOnBack.elbowYaw);
+    moveToJoints(target);
+  }
+  return result;
+}//end raiseArm
 
 bool ArmMotionEngine::armsOnBack()
 {
