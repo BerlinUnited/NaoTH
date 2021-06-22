@@ -42,6 +42,7 @@ std::string PlayerInfo::toString(RobotState value)
     RETURN_VALUE_TO_STR(finished);
     RETURN_VALUE_TO_STR(penalized);
     RETURN_VALUE_TO_STR(unstiff);
+    RETURN_VALUE_TO_STR(calibration);
   }
   
   ASSERT(false);

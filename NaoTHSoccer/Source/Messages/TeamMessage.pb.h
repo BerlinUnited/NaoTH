@@ -109,11 +109,12 @@ enum RobotState {
   playing = 3,
   finished = 4,
   penalized = 5,
-  unstiff = 6
+  unstiff = 6,
+  calibration = 7
 };
 bool RobotState_IsValid(int value);
 const RobotState RobotState_MIN = initial;
-const RobotState RobotState_MAX = unstiff;
+const RobotState RobotState_MAX = calibration;
 const int RobotState_ARRAYSIZE = RobotState_MAX + 1;
 
 const ::google::protobuf::EnumDescriptor* RobotState_descriptor();
