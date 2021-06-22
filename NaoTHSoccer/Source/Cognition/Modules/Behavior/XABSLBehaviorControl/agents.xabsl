@@ -37,6 +37,7 @@ include "Options/Basics/motion_init_stand_watch.xabsl";
 include "Options/Basics/show_calibration.xabsl";
 include "Options/Basics/stand_up.xabsl";
 include "Options/Basics/treat_lifted.xabsl";
+include "Options/Basics/auto_calibration.xabsl";
 
 // Head Control
 include "Options/HeadControl/head_control.xabsl";
@@ -111,6 +112,11 @@ include "Options/Test/agent/only_ball_looking_agent.xabsl";
 include "Options/Test/agent/passive_behavior_test_agent.xabsl";
 include "Options/Test/agent/striker_change_test_agent.xabsl";
 include "Options/Test/agent/search_test_agent.xabsl";
+include "Options/Test/agent/auto_calibration_challenge21.xabsl";
+
+
+// challenges21
+include "Options/Test/challenges21/calibration_evaluation.xabsl";
 
 // Pathplanner
 include "Options/Test/PathPlaner/path_move_around_ball_test.xabsl";

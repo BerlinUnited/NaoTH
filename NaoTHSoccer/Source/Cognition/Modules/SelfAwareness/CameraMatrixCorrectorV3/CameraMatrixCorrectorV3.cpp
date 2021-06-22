@@ -146,12 +146,16 @@ void CameraMatrixCorrectorV3::execute()
   }
 
   // sit down if auto calibrated
-  if(auto_calibrated){
-    getMotionRequest().id = motion::sit;
-    getMotionRequest().disable_relaxed_stand = false;
-  } else {
-    getMotionRequest().id = motion::stand;
-    getMotionRequest().disable_relaxed_stand = true;
+  bool use_automatic_mode = getCalibrationRequest().performAutomaticCameraMatrixCalibration;//false;
+
+  if(use_automatic_mode) {
+    if(auto_calibrated) {
+      getMotionRequest().id = motion::sit;
+      getMotionRequest().disable_relaxed_stand = false;
+    } else {
+      getMotionRequest().id = motion::stand;
+      getMotionRequest().disable_relaxed_stand = true;
+    }
   }
 
   // enable debug drawings in manual and auto mode
@@ -159,7 +163,6 @@ void CameraMatrixCorrectorV3::execute()
       theCamMatErrorFunctionV3.plot_CalibrationData(cam_mat_offsets);
   );
 
-  bool use_automatic_mode = false;
   DEBUG_REQUEST("CameraMatrixV3:automatic_mode",
     use_automatic_mode = true;
   );

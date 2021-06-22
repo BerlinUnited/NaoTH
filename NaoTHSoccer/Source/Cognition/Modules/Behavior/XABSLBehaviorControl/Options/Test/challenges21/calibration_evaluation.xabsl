@@ -1,0 +1,89 @@
+
+option calibration_evaluation
+{
+  common decision
+  {
+    if(!body.ready_to_walk || game.current_mode == penalized)
+      goto idle;
+  }
+  
+
+  initial state idle
+  {
+    decision
+    {
+      else if(game.current_mode == playing)
+        goto search;
+      else
+        stay;
+    }
+    action
+    {
+    }
+  }
+
+  
+  state wait_a_bit
+  {
+    decision {
+      if(state_time > 3000) 
+        goto calibrate;//walk_to_position;
+      else
+        stay;
+    }
+    action {
+      motion.type = stand;
+      head.control_mode = look_straight_ahead;
+    }
+  }
+
+  state walk_to_position
+  {
+    decision {
+      if(state_time > 30000)
+        goto wait_before_calibrate;
+      else
+        stay;
+    }
+    action {
+      //go_to_point(x = 2000, y = 2000, pi/2)
+    }
+  }
+
+  state wait_before_calibrate
+  {
+    decision {
+      if(state_time > 5000) 
+        goto calibrate;
+      else
+        stay;
+    }
+    action {
+      motion.type = stand;
+      head.control_mode = look_straight_ahead;
+    }
+  }
+
+  state calibrate
+  {
+    decision {
+      if(state_time > 20000) 
+        goto finish;
+      else
+        stay;
+    }
+    action {
+      motion.type = stand;
+      head.control_mode = look_straight_ahead;
+      strategy.automatic_calibration = true;
+    }
+  }
+
+  target state finish 
+  {
+    action{
+      motion.type = stand;
+      head.control_mode = look_straight_ahead;
+    }
+  }
+}

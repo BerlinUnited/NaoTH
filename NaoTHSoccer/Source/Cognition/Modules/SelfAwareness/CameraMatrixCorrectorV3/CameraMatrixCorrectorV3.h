@@ -35,6 +35,8 @@
 #include "Tools/Debug/DebugPlot.h"
 #include "Representations/Infrastructure/FrameInfo.h"
 
+#include "Representations/Modeling/CalibrationRequest.h"
+
 #include <Tools/Math/Optimizer.h>
 #include "CamMatErrorFunctionV3.h"
 
@@ -56,6 +58,8 @@ BEGIN_DECLARE_MODULE(CameraMatrixCorrectorV3)
   REQUIRE(FieldInfo)
   REQUIRE(CameraInfo)
   REQUIRE(CameraInfoTop)
+
+  REQUIRE(CalibrationRequest)
 
   PROVIDE(HeadMotionRequest)
   PROVIDE(MotionRequest)
