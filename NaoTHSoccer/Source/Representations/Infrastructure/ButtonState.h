@@ -17,7 +17,8 @@ class ButtonEvent
       NONE,
       PRESSED,
       RELEASED,
-      CLICKED  // button is pressed not longer than 1s
+      CLICKED,  // button is pressed not longer than 1s
+      numOfButtonEvent
     } eventState;
 
     unsigned int updateTime; // timestamp when this representation was updated
@@ -62,14 +63,10 @@ class ButtonEvent
 
     std::string print() const {
       switch(eventState) {
-        case PRESSED:
-          return "PRESSED";
-        case RELEASED:
-          return "RELEASED";
-        case CLICKED:
-          return "CLICKED";
-        default:
-          return "NONE";
+        case PRESSED: return "PRESSED";
+        case RELEASED: return "RELEASED";
+        case CLICKED: return "CLICKED";
+        default: return "NONE";
       }
     }
 };
