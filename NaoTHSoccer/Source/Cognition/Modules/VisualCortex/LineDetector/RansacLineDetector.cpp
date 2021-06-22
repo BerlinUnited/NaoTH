@@ -35,12 +35,11 @@ RansacLineDetector::~RansacLineDetector()
 }
 
 
-void RansacLineDetector::execute()
+void RansacLineDetector::execute(CameraInfo::CameraID id)
 {
+    cameraID = id;
+
     getRansacLinePerceptImage().reset();
-    getRansacLinePerceptImageTop().reset();
-    getRansacLinePercept().reset();
-    getRansacCirclePercept2018().reset();
 
     // prepare line id index structure to assign edgels to lines
     // prepare the index arrays
@@ -371,9 +370,9 @@ int RansacLineDetector::ransacEllipse(Ellipse& result)
 
 
 void RansacLineDetector::project_lines_on_image() const {
-    CameraMatrix cm = getCameraMatrixTop();
-    CameraInfo cam_info = getCameraInfoTop();
-    RansacLinePerceptImage& representation = getRansacLinePerceptImageTop();
+    CameraMatrix cm = getCameraMatrix();
+    CameraInfo cam_info = getCameraInfo();
+    RansacLinePerceptImage& representation = getRansacLinePerceptImage();
 
     for (const Math::LineSegment& field_line : getRansacLinePercept().fieldLineSegments) {
         Vector3d begin(field_line.begin().x, field_line.begin().y, 0);

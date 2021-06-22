@@ -35,6 +35,9 @@ option basic_play
       
       // this will be set in state play
       game.time_in_play = 0;
+
+      // reset automatic calibration flag
+      strategy.automatic_calibration = false;
       
       // react to the game controller and observe fall down
       decide_game_state();

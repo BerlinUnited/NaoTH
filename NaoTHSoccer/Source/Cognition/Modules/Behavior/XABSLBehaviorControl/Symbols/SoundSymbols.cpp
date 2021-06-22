@@ -42,7 +42,7 @@ void SoundSymbols::setSoundRequest(int value)
   {
     theInstance->getSoundPlayData().mute = false;
     if(value == 1) {
-      theInstance->getSoundPlayData().soundFile = "victory.wav";
+      theInstance->getSoundPlayData().soundFile = ":finished walking"//"victory.wav";
     } else if(value == 2) {
       theInstance->getSoundPlayData().soundFile = "asta_la_vista.wav";
     } else if(value == 3) {
@@ -61,7 +61,7 @@ int SoundSymbols::getSoundRequest()
 {
   if(theInstance->getSoundPlayData().soundFile == "") {
     return 0;
-  } else if(theInstance->getSoundPlayData().soundFile == "victory.wav") {
+  } else if(theInstance->getSoundPlayData().soundFile == ":finished walking") {
     return 1;
   } else if(theInstance->getSoundPlayData().soundFile == "asta_la_vista.wav") {
     return 2;

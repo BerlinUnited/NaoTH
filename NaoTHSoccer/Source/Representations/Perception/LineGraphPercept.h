@@ -38,6 +38,8 @@ public:
   std::vector<std::vector<EdgelD>> lineGraphsTop;
 };
 
+class LineGraphPerceptTop : public LineGraphPercept {};
+
 namespace naoth
 {
 template<>

@@ -347,6 +347,13 @@ void GameController::handleHeadButtons()
 
     getPlayerInfo().robotState = PlayerInfo::calibration;
   }
+
+  if(
+    (getButtonState()[ButtonState::Chest].isPressed      && getButtonState()[ButtonState::Chest].timeSinceEvent() > 1000) &&
+    (getButtonState()[ButtonState::HeadRear].isPressed  && getButtonState()[ButtonState::HeadRear].timeSinceEvent() > 1000)) {
+
+    getPlayerInfo().robotState = PlayerInfo::playing;
+  }
 }
 
 void GameController::updateLEDs()

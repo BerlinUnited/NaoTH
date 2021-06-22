@@ -37,6 +37,7 @@
 #include "Representations/Infrastructure/FrameInfo.h"
 
 #include "Representations/Modeling/CalibrationRequest.h"
+#include "Representations/Modeling/PlayerInfo.h"
 
 #include <Tools/Math/Optimizer.h>
 #include "LineCamMatErrorFunctionV3.h"
@@ -61,6 +62,7 @@ BEGIN_DECLARE_MODULE(CameraMatrixCorrectorV3)
   REQUIRE(FieldInfo)
   REQUIRE(CameraInfo)
   REQUIRE(CameraInfoTop)
+  REQUIRE(PlayerInfo)
 
   REQUIRE(CalibrationRequest)
 

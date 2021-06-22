@@ -148,7 +148,9 @@ void CameraMatrixCorrectorV3::execute()
   // sit down if auto calibrated
   bool use_automatic_mode = getCalibrationRequest().performAutomaticCameraMatrixCalibration;//false;
 
-  if(use_automatic_mode) {
+  if(use_automatic_mode && 
+    (getPlayerInfo().robotState == PlayerInfo::calibration || getPlayerInfo().robotState == PlayerInfo::penalized)) 
+  {
     if(auto_calibrated) {
       getMotionRequest().id = motion::sit;
       getMotionRequest().disable_relaxed_stand = false;
@@ -280,7 +282,7 @@ bool CameraMatrixCorrectorV3::calibrate()
   PLOT("CameraMatrixV3:avg_derror", derrors.getAverage());
   writeToRepresentation();
 
-  return ((  (derrors.getAverage() > -50) // average error decreases by less than this per second
+  return ((  (derrors.getAverage() > -1e-9) // average error decreases by less than this per second
            && derrors.isFull())
            || minimizer->step_failed());          // and we have a full history
 }
@@ -406,7 +408,7 @@ void CameraMatrixCorrectorV3::doItAutomatically()
         }
     }
 
-    if(auto_calibrated){
+    if(auto_calibrated) {
         writeToRepresentation();
         getCameraMatrixOffset().saveToConfig();
 
@@ -420,14 +422,22 @@ void CameraMatrixCorrectorV3::doItAutomatically()
 
 void CameraMatrixCorrectorV3::writeToRepresentation()
 {
+  /*
   getCameraMatrixOffset().body_rot = Vector2d(cam_mat_offsets(0),cam_mat_offsets(1));
   getCameraMatrixOffset().head_rot = Vector3d(cam_mat_offsets(2),cam_mat_offsets(3),cam_mat_offsets(4));
 
   getCameraMatrixOffset().cam_rot[CameraInfo::Top]    = Vector3d(cam_mat_offsets(5),cam_mat_offsets(6),cam_mat_offsets(7));
   getCameraMatrixOffset().cam_rot[CameraInfo::Bottom] = Vector3d(cam_mat_offsets(8),cam_mat_offsets(9),cam_mat_offsets(10));
+  */
+
+  getCameraMatrixOffset().body_rot = Vector2d(cam_mat_offsets(0),cam_mat_offsets(1));
+  getCameraMatrixOffset().head_rot = Vector3d(cam_mat_offsets(2),cam_mat_offsets(3), cam_mat_offsets(4));
+
+  getCameraMatrixOffset().cam_rot[CameraInfo::Top]    = Vector3d(cam_mat_offsets(5),cam_mat_offsets(6), cam_mat_offsets(7));
+  getCameraMatrixOffset().cam_rot[CameraInfo::Bottom] = Vector3d(cam_mat_offsets(8),cam_mat_offsets(9), cam_mat_offsets(10));
 }
 
-void CameraMatrixCorrectorV3::readFromRepresentation(){
+void CameraMatrixCorrectorV3::readFromRepresentation() {
   cam_mat_offsets << getCameraMatrixOffset().body_rot.x,
                      getCameraMatrixOffset().body_rot.y,
                      getCameraMatrixOffset().head_rot.x,

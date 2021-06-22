@@ -21,28 +21,31 @@
 #include <Representations/Infrastructure/CameraInfo.h>
 #include <Representations/Perception/CameraMatrix.h>
 
+#include "Tools/DoubleCamHelpers.h"
 #include "Ellipse.h"
 
 BEGIN_DECLARE_MODULE(RansacLineDetector)
-PROVIDE(DebugRequest)
-PROVIDE(DebugModify)
-PROVIDE(DebugDrawings)
-PROVIDE(DebugParameterList)
-PROVIDE(DebugImageDrawings)
-PROVIDE(DebugImageDrawingsTop)
+  PROVIDE(DebugRequest)
+  PROVIDE(DebugModify)
+  PROVIDE(DebugDrawings)
+  PROVIDE(DebugParameterList)
+  PROVIDE(DebugImageDrawings)
+  PROVIDE(DebugImageDrawingsTop)
 
-REQUIRE(LineGraphPercept)
-REQUIRE(FieldInfo)
+  REQUIRE(LineGraphPercept)
+  REQUIRE(LineGraphPerceptTop)
+  REQUIRE(FieldInfo)
 
-REQUIRE(CameraInfo)
-REQUIRE(CameraInfoTop)
-REQUIRE(CameraMatrix)
-REQUIRE(CameraMatrixTop)
+  REQUIRE(CameraInfo)
+  REQUIRE(CameraInfoTop)
+  REQUIRE(CameraMatrix)
+  REQUIRE(CameraMatrixTop)
 
-PROVIDE(RansacLinePercept)
-PROVIDE(RansacCirclePercept2018)
-PROVIDE(RansacLinePerceptImage)
-PROVIDE(RansacLinePerceptImageTop)
+  PROVIDE(RansacLinePercept)
+  PROVIDE(RansacCirclePercept2018)
+
+  PROVIDE(RansacLinePerceptImage)
+  PROVIDE(RansacLinePerceptImageTop)
 END_DECLARE_MODULE(RansacLineDetector)
 
 class RansacLineDetector: public RansacLineDetectorBase
@@ -51,7 +54,17 @@ public:
 RansacLineDetector();
 ~RansacLineDetector();
 
-virtual void execute();
+
+virtual void execute(CameraInfo::CameraID id);
+
+void execute()
+{
+  getRansacLinePercept().reset();
+  getRansacCirclePercept2018().reset();
+
+  execute(CameraInfo::Bottom);
+  execute(CameraInfo::Top);
+}
 
 private:
 class Parameters: public ParameterList
@@ -151,6 +164,13 @@ size_t choose_random_from(std::vector<size_t> &vec, int ith)  const {
     std::swap(vec[random_pos], vec[ith-1]);
     return vec[ith-1];
 }
+
+  CameraInfo::CameraID cameraID;
+  
+  DOUBLE_CAM_REQUIRE(RansacLineDetector, LineGraphPercept);
+  DOUBLE_CAM_REQUIRE(RansacLineDetector, CameraInfo);
+  DOUBLE_CAM_REQUIRE(RansacLineDetector, CameraMatrix);
+  DOUBLE_CAM_PROVIDE(RansacLineDetector, RansacLinePerceptImage);
 };
 
 #endif // RANSACLINEDETECTOR_H

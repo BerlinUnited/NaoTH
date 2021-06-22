@@ -8,10 +8,15 @@
 using namespace naoth;
 using namespace std;
 
+extern "C" cst_voice* register_cmu_us_slt(const char*);
+
 SoundControl::SoundControl() :
   stopping(false),
   media_path("Media/")
 {
+  flite_init();
+  voice = register_cmu_us_slt(nullptr);
+  
   playThread = std::thread(&SoundControl::play, this);
 
   ThreadUtil::setPriority(playThread, ThreadUtil::Priority::lowest);
@@ -41,8 +46,12 @@ void SoundControl::setSoundData(const SoundPlayData& theSoundData)
   if(theSoundData.soundFile == "" || !lock.owns_lock()) {
     return;
   }
-
-  filename = media_path + theSoundData.soundFile;
+  
+  if (theSoundData.soundFile[0] == ':') {
+    filename = theSoundData.soundFile;
+  } else {
+    filename = media_path + theSoundData.soundFile;
+  }
 
   // release the data lock and notify the waiting thread
   lock.unlock();
@@ -57,6 +66,9 @@ void SoundControl::play()
     std::unique_lock<std::mutex> lock(dataMutex);
     new_data_avaliable.wait(lock);
 
+    if(filename[0] == ':') {
+      flite_text_to_speech(filename.c_str(), voice, "play");
+    }
     std::cout << "[SoundControl] play " << filename << std::endl;
     std::string cmd = "/usr/bin/paplay " + filename;
     std::system(cmd.c_str());
