@@ -54,7 +54,7 @@ void SituationPriorProvider::execute()
   }
   
   //get BodyState
-  if(getBodyState().isLiftedUp){
+  if(getBodyState().isLiftedUp) {
     wasLiftedUp = true;
   }
 
