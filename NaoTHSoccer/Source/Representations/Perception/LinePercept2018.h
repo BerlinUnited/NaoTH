@@ -41,6 +41,7 @@ public:
   }
 };
 
+
 // RansacLineDetector
 class RansacLinePercept : public LinePercept2018
 {
@@ -54,6 +55,21 @@ public:
   }
 };
 
+
+class RansacLinePerceptImage
+{
+public:
+  std::vector<Math::LineSegment> imageFieldLineSegments;
+
+  void reset()
+  {
+    imageFieldLineSegments.clear();
+  }
+};
+
+class RansacLinePerceptImageTop : public RansacLinePerceptImage{};
+
+
 namespace naoth
 {
 template<>
@@ -65,12 +81,14 @@ class Serializer<RansacLinePercept>
 };
 }
 
+
 // RansacLineDetectorOnGraphs
 class ShortLinePercept : public LinePercept2018
 {
   public:
     //
 };
+
 
 namespace naoth
 {
@@ -82,6 +100,7 @@ class Serializer<ShortLinePercept>
   static void deserialize(std::istream& stream, ShortLinePercept& object);
 };
 }
+
 
 // RansacLineDetectorOnGraphs
 class VirtualLinePercept : public LinePercept2018
@@ -116,10 +135,6 @@ public:
   std::vector<LineIntersection> intersections;
   MiddleCircle middleCircle;
 };
-
-
-
-
 
 
 class RansacCirclePercept2018 : public MiddleCircle{};

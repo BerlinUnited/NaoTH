@@ -8,14 +8,18 @@
 
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugModify.h"
+#include <Tools/Debug/DebugImageDrawings.h>
 #include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/DebugParameterList.h"
+#include "Tools/CameraGeometry.h"
 
 #include "ransac_tools.h"
 
 #include "Representations/Infrastructure/FieldInfo.h"
 #include "Representations/Perception/LineGraphPercept.h"
 #include "Representations/Perception/LinePercept2018.h"
+#include <Representations/Infrastructure/CameraInfo.h>
+#include <Representations/Perception/CameraMatrix.h>
 
 #include "Ellipse.h"
 
@@ -24,12 +28,21 @@ PROVIDE(DebugRequest)
 PROVIDE(DebugModify)
 PROVIDE(DebugDrawings)
 PROVIDE(DebugParameterList)
+PROVIDE(DebugImageDrawings)
+PROVIDE(DebugImageDrawingsTop)
 
 REQUIRE(LineGraphPercept)
 REQUIRE(FieldInfo)
 
+REQUIRE(CameraInfo)
+REQUIRE(CameraInfoTop)
+REQUIRE(CameraMatrix)
+REQUIRE(CameraMatrixTop)
+
 PROVIDE(RansacLinePercept)
 PROVIDE(RansacCirclePercept2018)
+PROVIDE(RansacLinePerceptImage)
+PROVIDE(RansacLinePerceptImageTop)
 END_DECLARE_MODULE(RansacLineDetector)
 
 class RansacLineDetector: public RansacLineDetectorBase
@@ -117,6 +130,8 @@ ransac::RansacCircle circleRansac;
 
 void find_middle_circle(std::vector<size_t>& inlier_idx);
 void find_field_lines(std::vector<size_t>& inlier_idx);
+
+void project_lines_on_image() const;
 
 int ransacEllipse(Ellipse& result);
 

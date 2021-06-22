@@ -4,6 +4,7 @@
 #include <Tools/Math/Matrix_mxn.h>
 #include <numeric>
 
+
 RansacLineDetector::RansacLineDetector():
     lineRansac(params.line.maxIterations,
                params.line.outlierThresholdAngle,
@@ -22,13 +23,17 @@ RansacLineDetector::RansacLineDetector():
                            "", false);
     DEBUG_REQUEST_REGISTER("Vision:RansacLineDetector:draw_circle_field",
                            "", false);
+    DEBUG_REQUEST_REGISTER("Vision:RansacLineDetector:draw_lines_image",
+                           "", false);
     getDebugParameterList().add(&params);
 }
+
 
 RansacLineDetector::~RansacLineDetector()
 {
     getDebugParameterList().remove(&params);
 }
+
 
 void RansacLineDetector::execute()
 {
@@ -60,6 +65,8 @@ void RansacLineDetector::execute()
 
         find_field_lines(inlier_idx);
     }
+
+    project_lines_on_image();
 
     DEBUG_REQUEST("Vision:RansacLineDetector:draw_lines_field",
         FIELD_DRAWING_CONTEXT;
@@ -151,6 +158,7 @@ void RansacLineDetector::execute()
     );
 }
 
+
 void RansacLineDetector::find_field_lines(std::vector<size_t>& inlier_idx) {
     // reset parameters
     lineRansac.setParameters(params.line.maxIterations,
@@ -199,6 +207,7 @@ void RansacLineDetector::find_field_lines(std::vector<size_t>& inlier_idx) {
         }
     }
 }
+
 
 void RansacLineDetector::find_middle_circle(std::vector<size_t>& inlier_idx) {
     // reset parameters
@@ -271,6 +280,7 @@ void RansacLineDetector::find_middle_circle(std::vector<size_t>& inlier_idx) {
         }
     }
 }
+
 
 int RansacLineDetector::ransacEllipse(Ellipse& result)
 {
@@ -355,4 +365,43 @@ int RansacLineDetector::ransacEllipse(Ellipse& result)
     }
 
     return bestInlier;
+}
+
+
+void RansacLineDetector::project_lines_on_image() const {
+    CameraMatrix cm = getCameraMatrixTop();
+    CameraInfo cam_info = getCameraInfoTop();
+    RansacLinePerceptImage representation = getRansacLinePerceptImageTop();
+
+    for (const Math::LineSegment& field_line : getRansacLinePercept().fieldLineSegments) {
+        Vector3d begin(field_line.begin().x, field_line.begin().y, 0);
+        Vector3d end(field_line.end().x, field_line.end().y, 0);
+
+        Vector2i begin_image;
+        Vector2i end_image;
+        if(!(CameraGeometry::relativePointToImage(cm, cam_info, begin, begin_image) &&
+             CameraGeometry::relativePointToImage(cm, cam_info, end, end_image))) {
+            continue;
+        }
+
+        Math::LineSegment image_line(begin_image, end_image);
+        representation.imageFieldLineSegments.push_back(image_line);
+    }
+
+    DEBUG_REQUEST("Vision:RansacLineDetector:draw_lines_image",
+        IMAGE_DRAWING_CONTEXT;
+        CANVAS("ImageTop");
+        for(size_t i=0; i<representation.imageFieldLineSegments.size(); i++)
+        {
+            std::string color;
+            switch(i%3) {
+            case 0: color = "FF000066"; break;
+            case 1: color = "0000FF66"; break;
+            default: color = "00FFFF66"; break;
+            }
+            const Math::LineSegment& line = representation.imageFieldLineSegments[i];
+            PEN(color, 10);
+            LINE(line.begin().x, line.begin().y, line.end().x, line.end().y);
+        }
+    );
 }
