@@ -133,7 +133,7 @@ public:
       PARAMETER_REGISTER(edgelSimThreshold) = 0.8;
       PARAMETER_REGISTER(quadCompasSmoothingFactor) = 0.4;
       PARAMETER_REGISTER(minimalNumberOfPairs) = 0;
-      PARAMETER_REGISTER(maximalProjectedLineWidth) = 30;
+      PARAMETER_REGISTER(maximalProjectedLineWidth) = 1;//HACK: removed 30;
 
       // pixels, pairs must be apart from each other, to avoid aliasing
       PARAMETER_REGISTER(min_pair_pixel_distance) = 10;
