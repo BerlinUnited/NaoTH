@@ -37,6 +37,8 @@ RansacLineDetector::~RansacLineDetector()
 
 void RansacLineDetector::execute()
 {
+    getRansacLinePerceptImage().reset();
+    getRansacLinePerceptImageTop().reset();
     getRansacLinePercept().reset();
     getRansacCirclePercept2018().reset();
 
@@ -371,7 +373,7 @@ int RansacLineDetector::ransacEllipse(Ellipse& result)
 void RansacLineDetector::project_lines_on_image() const {
     CameraMatrix cm = getCameraMatrixTop();
     CameraInfo cam_info = getCameraInfoTop();
-    RansacLinePerceptImage representation = getRansacLinePerceptImageTop();
+    RansacLinePerceptImage& representation = getRansacLinePerceptImageTop();
 
     for (const Math::LineSegment& field_line : getRansacLinePercept().fieldLineSegments) {
         Vector3d begin(field_line.begin().x, field_line.begin().y, 0);

@@ -8,6 +8,7 @@
 #include "Tools/LinesTable.h"
 
 #include "Tools/DataStructures/Serializer.h"
+#include "Tools/DataStructures/Printable.h"
 
 class MiddleCircle
 {
@@ -56,7 +57,7 @@ public:
 };
 
 
-class RansacLinePerceptImage
+class RansacLinePerceptImage: public naoth::Printable
 {
 public:
   std::vector<Math::LineSegment> imageFieldLineSegments;
@@ -64,6 +65,11 @@ public:
   void reset()
   {
     imageFieldLineSegments.clear();
+  }
+
+  virtual void print(std::ostream& stream) const
+  {
+    stream << "number = " << imageFieldLineSegments.size() << std::endl;
   }
 };
 
