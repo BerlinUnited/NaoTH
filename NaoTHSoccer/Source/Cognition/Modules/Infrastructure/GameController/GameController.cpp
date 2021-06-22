@@ -108,8 +108,10 @@ void GameController::execute()
       getPlayerInfo().playerNumber = getGameData().newPlayerNumber;
     }
 
-    // ignore information from game controller when unstiff
-    if (getPlayerInfo().robotState != PlayerInfo::unstiff) {
+    // ignore information from game controller when unstiff or calibrating
+    if (getPlayerInfo().robotState != PlayerInfo::unstiff && 
+        getPlayerInfo().robotState != PlayerInfo::calibration) 
+    {
       getPlayerInfo().update(getGameData());
     }
 
@@ -238,7 +240,6 @@ void GameController::handleDebugRequest()
 
 void GameController::handleButtons()
 {
-
   if (getButtonState()[ButtonState::Chest].isSingleClick())
   {
     switch (getPlayerInfo().robotState)
@@ -264,6 +265,9 @@ void GameController::handleButtons()
       getPlayerInfo().robotState = PlayerInfo::initial;
       break;
     }
+    // calibration cannot be removed by chest button press
+    case PlayerInfo::calibration:
+      break;
     default:
       ASSERT(false);
     }
@@ -329,12 +333,19 @@ void GameController::handleHeadButtons()
     }
   }
 
-
-  if((getButtonState().buttons[ButtonState::HeadFront].isPressed && getButtonState()[ButtonState::HeadFront].timeSinceEvent() > 1000) &&
-    (getButtonState()[ButtonState::HeadMiddle].isPressed && getButtonState()[ButtonState::HeadMiddle].timeSinceEvent() > 1000) &&
-    (getButtonState()[ButtonState::HeadRear].isPressed && getButtonState()[ButtonState::HeadRear].timeSinceEvent() > 1000)) {
+  if((getButtonState()[ButtonState::HeadFront].isPressed  && getButtonState()[ButtonState::HeadFront].timeSinceEvent() > 1000) &&
+     (getButtonState()[ButtonState::HeadMiddle].isPressed && getButtonState()[ButtonState::HeadMiddle].timeSinceEvent() > 1000) &&
+     (getButtonState()[ButtonState::HeadRear].isPressed   && getButtonState()[ButtonState::HeadRear].timeSinceEvent() > 1000)) {
 
     getPlayerInfo().robotState = PlayerInfo::unstiff;
+  }
+
+  if(
+     getPlayerInfo().robotState == PlayerInfo::initial    && 
+     (getButtonState()[ButtonState::Chest].isPressed      && getButtonState()[ButtonState::Chest].timeSinceEvent() > 1000) &&
+     (getButtonState()[ButtonState::HeadFront].isPressed  && getButtonState()[ButtonState::HeadFront].timeSinceEvent() > 1000)) {
+
+    getPlayerInfo().robotState = PlayerInfo::calibration;
   }
 }
 
@@ -362,26 +373,29 @@ void GameController::updateLEDs()
   switch (getPlayerInfo().robotState)
   {
     case PlayerInfo::ready:
-        getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::BLUE] = 1.0;
+      getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::BLUE] = 1.0;
       break;
     case PlayerInfo::set:
-        getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::GREEN] = 1.0;
+      getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::GREEN] = 1.0;
       getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::RED] = 1.0;
       break;
     case PlayerInfo::playing:
-        getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::GREEN] = 1.0;
+      getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::GREEN] = 1.0;
       break;
     case PlayerInfo::penalized:
-        getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::RED] = 1.0;
+      getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::RED] = 1.0;
       break;
     case PlayerInfo::unstiff:
       // handle blinking chest button for unstiff state
       if (getFrameInfo().getFrameNumber() % 8 < 4) {
         getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::BLUE] = 1.0;
-      }
-      else {
+      } else {
         getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::BLUE] = 0.0;
       }
+      break;
+    case PlayerInfo::calibration:
+      getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::RED] = 1.0;
+      getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::BLUE] = 1.0;
       break;
     default:
       break;

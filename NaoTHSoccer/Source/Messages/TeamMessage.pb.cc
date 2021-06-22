@@ -355,23 +355,23 @@ void AddDescriptorsImpl() {
       "edTeam\020\001\022\016\n\nyellowTeam\020\002\022\r\n\tblackTeam\020\003\022"
       "\r\n\twhiteTeam\020\004\022\r\n\tgreenTeam\020\005\022\016\n\norangeT"
       "eam\020\006\022\016\n\npurpleTeam\020\007\022\r\n\tbrownTeam\020\010\022\014\n\010"
-      "grayTeam\020\t\022\020\n\013invalidTeam\020\377\001*d\n\nRobotSta"
+      "grayTeam\020\t\022\020\n\013invalidTeam\020\377\001*u\n\nRobotSta"
       "te\022\013\n\007initial\020\000\022\t\n\005ready\020\001\022\007\n\003set\020\002\022\013\n\007p"
       "laying\020\003\022\014\n\010finished\020\004\022\r\n\tpenalized\020\005\022\013\n"
-      "\007unstiff\020\006*\230\002\n\017RobotRoleStatic\022\026\n\022role_d"
-      "efender_left\020\000\022\030\n\024role_defender_center\020\001"
-      "\022\027\n\023role_defender_right\020\002\022\030\n\024role_midfie"
-      "lder_left\020\003\022\032\n\026role_midfielder_center\020\004\022"
-      "\031\n\025role_midfielder_right\020\005\022\025\n\021role_forwa"
-      "rd_left\020\006\022\027\n\023role_forward_center\020\007\022\026\n\022ro"
-      "le_forward_right\020\010\022\017\n\013role_goalie\020\t\022\020\n\014r"
-      "ole_unknown\020\n*b\n\020RobotRoleDynamic\022\r\n\trol"
-      "e_none\020\000\022\022\n\016role_supporter\020\001\022\031\n\025role_goa"
-      "lie_supporter\020\002\022\020\n\014role_striker\020\003B\033\n\031de."
-      "naoth.rc.core.messages"
+      "\007unstiff\020\006\022\017\n\013calibration\020\007*\230\002\n\017RobotRol"
+      "eStatic\022\026\n\022role_defender_left\020\000\022\030\n\024role_"
+      "defender_center\020\001\022\027\n\023role_defender_right"
+      "\020\002\022\030\n\024role_midfielder_left\020\003\022\032\n\026role_mid"
+      "fielder_center\020\004\022\031\n\025role_midfielder_righ"
+      "t\020\005\022\025\n\021role_forward_left\020\006\022\027\n\023role_forwa"
+      "rd_center\020\007\022\026\n\022role_forward_right\020\010\022\017\n\013r"
+      "ole_goalie\020\t\022\020\n\014role_unknown\020\n*b\n\020RobotR"
+      "oleDynamic\022\r\n\trole_none\020\000\022\022\n\016role_suppor"
+      "ter\020\001\022\031\n\025role_goalie_supporter\020\002\022\020\n\014role"
+      "_striker\020\003B\033\n\031de.naoth.rc.core.messages"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 2382);
+      descriptor, 2399);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "TeamMessage.proto", &protobuf_RegisterTypes);
   ::naothmessages::protobuf_CommonTypes_2eproto::AddDescriptors();
@@ -428,6 +428,7 @@ bool RobotState_IsValid(int value) {
     case 4:
     case 5:
     case 6:
+    case 7:
       return true;
     default:
       return false;

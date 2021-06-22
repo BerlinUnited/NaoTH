@@ -26,7 +26,8 @@ public:
     playing   = naoth::GameData::playing,
     finished  = naoth::GameData::finished,
     penalized,  // <== GameState doesn't have this :)
-    unstiff   // <== GameState doesn't have this :)
+    unstiff,    // <== GameState doesn't have this :)
+    calibration // <== GameState doesn't have this :)
   };
 
   // Same as SetPlay of the GameData, but can be different by each robot and set (e.g.) via DebugRequest
