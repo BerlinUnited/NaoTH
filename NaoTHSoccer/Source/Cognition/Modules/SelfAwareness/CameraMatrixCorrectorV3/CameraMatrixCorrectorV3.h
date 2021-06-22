@@ -15,6 +15,7 @@
 #include "Representations/Modeling/InertialModel.h"
 #include "Representations/Modeling/CameraMatrixOffset.h"
 #include "Representations/Perception/LineGraphPercept.h"
+#include "Representations/Perception/LinePercept2018.h"
 
 #include "Representations/Modeling/KinematicChain.h"
 
@@ -38,7 +39,7 @@
 #include "Representations/Modeling/CalibrationRequest.h"
 
 #include <Tools/Math/Optimizer.h>
-#include "CamMatErrorFunctionV3.h"
+#include "LineCamMatErrorFunctionV3.h"
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
@@ -52,6 +53,8 @@ BEGIN_DECLARE_MODULE(CameraMatrixCorrectorV3)
 
   // data needed for calibration
   REQUIRE(LineGraphPercept)
+  REQUIRE(RansacLinePerceptImage)
+  REQUIRE(RansacLinePerceptImageTop)
   REQUIRE(KinematicChain)
   REQUIRE(SensorJointData)
   REQUIRE(InertialModel)
@@ -87,6 +90,7 @@ private:
   Parameter cam_mat_offsets;
   Optimizer::BoundedVariable<Parameter> bounds;
 
+  typedef LineCamMatErrorFunctionV3 CamMatErrorFunctionV3;
   CamMatErrorFunctionV3 theCamMatErrorFunctionV3;
 
   Optimizer::GaussNewtonMinimizer<CamMatErrorFunctionV3, Parameter>* minimizer;

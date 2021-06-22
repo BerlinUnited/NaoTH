@@ -248,7 +248,7 @@ bool CameraMatrixCorrectorV3::calibrate()
 {
   double dt = getFrameInfo().getTimeInSeconds()-last_frame_info.getTimeInSeconds();
 
-  Eigen::Matrix<double, 11, 1> epsilon = Eigen::Matrix<double, 11, 1>::Constant(1e-4);
+  Eigen::Matrix<double, 11, 1> epsilon = Eigen::Matrix<double, 11, 1>::Constant(1e-13);
 
   Parameter offset;
   bool valid;
@@ -335,6 +335,7 @@ bool CameraMatrixCorrectorV3::collectingData()
 
 void CameraMatrixCorrectorV3::sampling()
 {
+    /*
     LineGraphPercept lineGraphPercept(getLineGraphPercept());
 
     // TODO: ignore upper image if the center is above the horizon
@@ -347,6 +348,26 @@ void CameraMatrixCorrectorV3::sampling()
 
     theCamMatErrorFunctionV3.add(CamMatErrorFunctionV3::CalibrationDataSample(getKinematicChain().theLinks[KinematicChain::Torso].M,
                                                                 lineGraphPercept,
+                                                                getInertialModel().orientation,
+                                                                getSensorJointData().position[JointData::HeadYaw],
+                                                                getSensorJointData().position[JointData::HeadPitch]
+                                                               ));
+    */
+
+    RansacLinePerceptImage ransac_line_percept_image(getRansacLinePerceptImage());
+    RansacLinePerceptImage ransac_line_percept_image_top(getRansacLinePerceptImageTop());
+
+    // TODO: ignore upper image if the center is above the horizon
+    // HACK: ignore it if headpitch is smaller than -15
+    //if(head_state == look_right_up || head_state == look_left_up
+    //   || last_head_state == look_right_up || last_head_state == look_left_up){
+    if(Math::toDegrees(getSensorJointData().position[JointData::HeadPitch]) < -15) {
+        ransac_line_percept_image.reset();
+        ransac_line_percept_image_top.reset();
+    }
+
+    theCamMatErrorFunctionV3.add(CamMatErrorFunctionV3::CalibrationDataSample(getKinematicChain().theLinks[KinematicChain::Torso].M,
+                                                                ransac_line_percept_image, ransac_line_percept_image_top,
                                                                 getInertialModel().orientation,
                                                                 getSensorJointData().position[JointData::HeadYaw],
                                                                 getSensorJointData().position[JointData::HeadPitch]

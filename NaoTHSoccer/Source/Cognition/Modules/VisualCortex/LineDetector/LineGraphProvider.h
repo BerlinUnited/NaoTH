@@ -78,7 +78,7 @@ public:
     //getProbabilisticQuadCompas().reset();
     getLineGraphPercept().reset();
 
-    execute(CameraInfo::Bottom);
+    //execute(CameraInfo::Bottom);
     execute(CameraInfo::Top);
     
     //getProbabilisticQuadCompas().normalize();
