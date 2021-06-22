@@ -210,7 +210,7 @@ void MonteCarloSelfLocator::execute()
     
       theSampleSet.resetLikelihood();
 
-	  // TODO: why is this a hack? Elaborate.
+      // TODO: why is this a hack? Elaborate.
       // HACK: separate update by the goal posts
       if(parameters.updateByGoalPostLocalize)
       {
@@ -231,8 +231,8 @@ void MonteCarloSelfLocator::execute()
       {
         updateBySituation();
       }
-
-	  // TODO. check what does it do?!
+      
+      // TODO. check what does it do?!
       // NOTE: statistics has to be after updates and before resampling
       // NOTE: normalizes the likelihood
       updateStatistics(theSampleSet);
@@ -255,7 +255,7 @@ void MonteCarloSelfLocator::execute()
 
       unsigned localize_time = getFrameInfo().getTimeSince(localize_start);
 
-	  // HACK: go to tracking if time>5s or more than 80% of samples did gather in a cluster
+	    // HACK: go to tracking if time>5s or more than 80% of samples did gather in a cluster
       if(localize_time > 5000 && moments.getRawMoment(0,0) > 0.8*(double)mhBackendSet.size()) {
         theSampleSet = mhBackendSet; // todo: implement swap
         state = TRACKING;
@@ -441,40 +441,41 @@ void MonteCarloSelfLocator::updateByOdometryRelative(SampleSet& sampleSet, bool 
 void MonteCarloSelfLocator::updateBySituation()
 {
   if(getSituationPrior().currentPrior == getSituationPrior().firstReady)
-    {
-      updateByStartPositions(theSampleSet);
-    }
-    else if(getSituationPrior().currentPrior == getSituationPrior().positionedInSet)
-    {
-      updateByOwnHalfLookingForward(theSampleSet);
-    }
-    else if(getSituationPrior().currentPrior == getSituationPrior().goaliePenalizedInSet)
-    {
-      updateByGoalBox(theSampleSet);
-    }
-    else if(getSituationPrior().currentPrior == getSituationPrior().set)
-    {
-      updateByOwnHalf(theSampleSet);
-    }
-    else if(getSituationPrior().currentPrior == getSituationPrior().playAfterPenalized)
-    {
-      updateBySidePositions(theSampleSet);
-    }
-    else if(getSituationPrior().currentPrior == getSituationPrior().oppHalf)
-    {
-      updateByOppHalf(theSampleSet);
-    }
-    else {
-      DEBUG_REQUEST("MCSLS:draw_state",
-        FIELD_DRAWING_CONTEXT;
-        PEN("000000", 30);
-        const Vector2d& fieldMin = getFieldInfo().fieldRect.min();
-        const Vector2d& fieldMax = getFieldInfo().fieldRect.max();
-        BOX(fieldMin.x, fieldMin.y, fieldMax.x, fieldMax.y);
-        LINE(fieldMin.x, fieldMin.y, fieldMax.x, fieldMax.y);
-        LINE(fieldMin.x, fieldMax.y, fieldMax.x, fieldMin.y);
-      );
-    }
+  {
+    updateByStartPositions(theSampleSet);
+  }
+  else if(getSituationPrior().currentPrior == getSituationPrior().positionedInSet)
+  {
+    updateByOwnHalfLookingForward(theSampleSet);
+  }
+  else if(getSituationPrior().currentPrior == getSituationPrior().goaliePenalizedInSet)
+  {
+    updateByGoalBox(theSampleSet);
+  }
+  else if(getSituationPrior().currentPrior == getSituationPrior().set)
+  {
+    updateByOwnHalf(theSampleSet);
+  }
+  else if(getSituationPrior().currentPrior == getSituationPrior().playAfterPenalized)
+  {
+    updateBySidePositions(theSampleSet);
+  }
+  else if(getSituationPrior().currentPrior == getSituationPrior().oppHalf)
+  {
+    updateByOppHalf(theSampleSet);
+  }
+  else 
+  {
+    DEBUG_REQUEST("MCSLS:draw_state",
+      FIELD_DRAWING_CONTEXT;
+      PEN("000000", 30);
+      const Vector2d& fieldMin = getFieldInfo().fieldRect.min();
+      const Vector2d& fieldMax = getFieldInfo().fieldRect.max();
+      BOX(fieldMin.x, fieldMin.y, fieldMax.x, fieldMax.y);
+      LINE(fieldMin.x, fieldMin.y, fieldMax.x, fieldMax.y);
+      LINE(fieldMin.x, fieldMax.y, fieldMax.x, fieldMin.y);
+    );
+  }
 }
 
 bool MonteCarloSelfLocator::updateBySensors(SampleSet& sampleSet) const
@@ -823,9 +824,9 @@ void MonteCarloSelfLocator::updateByLines2018(const LinePercept2018& linePercept
       {
         if(lineVotes[i] > 0)
         {
-          Vector2<double> p = getFieldInfo().fieldLinesTable.getLines()[i].begin();
-          Vector2<double> q = getFieldInfo().fieldLinesTable.getLines()[i].end();
-          Vector2<double> r = (p+q)*0.5;
+          Vector2d p = getFieldInfo().fieldLinesTable.getLines()[i].begin();
+          Vector2d q = getFieldInfo().fieldLinesTable.getLines()[i].end();
+          Vector2d r = (p+q)*0.5;
           LINE(p.x, p.y, q.x, q.y);
           TEXT_DRAWING(r.x+60, r.y+60, lineVotes[i]);
         }
@@ -833,9 +834,9 @@ void MonteCarloSelfLocator::updateByLines2018(const LinePercept2018& linePercept
 
       // the max vote
       PEN("FF0000", 20);
-      Vector2<double> p = getFieldInfo().fieldLinesTable.getLines()[maxIdx].begin();
-      Vector2<double> q = getFieldInfo().fieldLinesTable.getLines()[maxIdx].end();
-      //Vector2<double> r = (p+q)*0.5;
+      Vector2d p = getFieldInfo().fieldLinesTable.getLines()[maxIdx].begin();
+      Vector2d q = getFieldInfo().fieldLinesTable.getLines()[maxIdx].end();
+      //Vector2d r = (p+q)*0.5;
       LINE(p.x, p.y, q.x, q.y);
     );
     */
@@ -856,7 +857,7 @@ void MonteCarloSelfLocator::updateByMiddleCircle(const Vector2d& middleCircleCen
   double sigmaAngle    = parameters.sigmaAngleCenterCircle;
   double cameraHeight  = getCameraMatrix().translation.z;
 
-  Vector2<double> centerCirclePosition; // (0,0)
+  Vector2d centerCirclePosition; // (0,0)
 
   //TODO: this needs to be analyzed in more detail
   // Don't update angle if inside center cicle
@@ -927,14 +928,6 @@ void MonteCarloSelfLocator::updateByStartPositions(SampleSet& sampleSet) const
   LineDensity leftStartingLine(startLeft, endLeft, -Math::pi_2, parameters.startPositionsSigmaDistance, parameters.startPositionsSigmaAngle);
   LineDensity rightStartingLine(startRight, endRight, Math::pi_2, parameters.startPositionsSigmaDistance, parameters.startPositionsSigmaAngle);
 
-  //  for(size_t i = 0; i < sampleSet.size(); i++) {
-  //    if(sampleSet[i].translation.y > 0) {
-  //      sampleSet[i].likelihood *= leftStartingLine.update(sampleSet[i]);
-  //    } else {
-  //      sampleSet[i].likelihood *= rightStartingLine.update(sampleSet[i]);
-  //    }
-  //  }
-
   /*---- HACK BEGIN ----*/
   LineDensity startingLine;
   if(getPlayerInfo().playerNumber == 1 || getPlayerInfo().playerNumber == 3 || getPlayerInfo().playerNumber == 5) {
@@ -950,14 +943,7 @@ void MonteCarloSelfLocator::updateByStartPositions(SampleSet& sampleSet) const
 
   DEBUG_REQUEST("MCSLS:draw_state",
     FIELD_DRAWING_CONTEXT;
-    if(getPlayerInfo().playerNumber < 4)
-    {
-      leftStartingLine.draw(getDebugDrawings());
-    }
-    else
-    {
-      rightStartingLine.draw(getDebugDrawings());
-    }    
+    startingLine.draw(getDebugDrawings());
   );
 }
 
