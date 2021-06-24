@@ -52,7 +52,7 @@ void ButtonEventMonitor::update(ButtonEvent& buttonEvent, bool pressed)
   }
 
   // button is pressed not longer than 1s
-  if(buttonEvent == ButtonEvent::RELEASED && buttonEvent.timeSinceEvent() < maxTimeLengthOfClick) {
+  if(buttonEvent == ButtonEvent::RELEASED && buttonEvent.timeSinceEvent() > 50 && buttonEvent.timeSinceEvent() < maxTimeLengthOfClick) {
     buttonEvent = ButtonEvent::CLICKED;
 
     if(buttonEvent.clicksInSequence > 0  && buttonEvent.timeSinceClick() < maxTimeBetweenClicksInSequence) {
