@@ -44,6 +44,13 @@ project "NaoRobot"
     "cap",
     "attr",
     "wrap"
+
+    -- at the moment we run flite as a separate binary
+    -- in hte future is would be good to include it as a lib
+    --"flite",
+    --"flite_cmulex",
+    --"flite_cmu_us_slt",
+    --"flite_usenglish"
   }
 
   targetname "naoth"
