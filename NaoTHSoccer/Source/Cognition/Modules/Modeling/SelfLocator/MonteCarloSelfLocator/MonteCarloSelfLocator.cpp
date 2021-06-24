@@ -178,6 +178,10 @@ void MonteCarloSelfLocator::execute()
     localize_start = getFrameInfo().getTime();
   }
 
+  if(getPlayerInfo().robotState == PlayerInfo::calibration) {
+    state = KIDNAPPED;
+  }
+
   switch(state) 
   {
     case KIDNAPPED:
