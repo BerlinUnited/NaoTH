@@ -22,8 +22,9 @@
 using namespace naoth;
 using namespace std;
 
-HeadMotionEngine::HeadMotionEngine():
-    last_id(HeadMotionRequest::numOfHeadMotion)
+HeadMotionEngine::HeadMotionEngine()
+  :
+  lastFrameInfoWhenHeadMovedOrOnTarget(getFrameInfo())
 {
   DEBUG_REQUEST_REGISTER("HeadMotionEngine:export_g", "exports g for plotting the function", false);
   DEBUG_REQUEST_REGISTER("HeadMotionEngine:draw_search_points_on_field", "draw the projected search points on the field", false);
@@ -77,34 +78,58 @@ void HeadMotionEngine::execute()
 
   DEBUG_REQUEST_ON_DEACTIVE("HeadMotionEngine:export_g", export_g(););
 
-  bool target_changed = (last_motion_target - motion_target).abs() > params.at_target_threshold;
-  if(last_id != getHeadMotionRequest().id || target_changed) {
-	  //TODO vielleicht ist es sinnvoller die gelenkwinkel zu filtern anstatt die geschwindigkeit
-    absolute_velocity_buffer.clear();
+  updateHeadTargetReached();
+}//end execute
+
+void HeadMotionEngine::updateHeadTargetReached() 
+{
+  // calculate head velocity
+  Vector2d current_yaw_pitch_command(
+    getSensorJointData().position[JointData::HeadYaw], 
+    getSensorJointData().position[JointData::HeadPitch]
+  );
+  Vector2d headVelocity = (last_yaw_pitch_command - current_yaw_pitch_command) / getRobotInfo().getBasicTimeStepInSecond();
+  absolute_velocity_buffer.add(headVelocity);
+
+  // save for later
+  last_yaw_pitch_command = current_yaw_pitch_command;
+
+  // calculate if the target position was reached
+  // NOTE: motion_target is set in moveByAngle
+  if ( (motion_target - current_yaw_pitch_command).abs() < params.at_target_threshold ) {
+    getMotionStatus().head_target_reached = true;
+  } else {
+    getMotionStatus().head_target_reached = false;
   }
 
-  last_id = getHeadMotionRequest().id;
-  last_motion_target = motion_target;
+  // threshold for velocity depending on the motion state
+  double velocityThreshold = params.at_rest_threshold;
+  if (getMotionStatus().currentMotion == motion::walk ) {
+    velocityThreshold = params.at_rest_threshold_walking;
+  }
 
-  static Vector2d last_yaw_pitch;
-  Vector2d current_yaw_pitch(getSensorJointData().position[JointData::HeadYaw], getSensorJointData().position[JointData::HeadPitch]);
-  absolute_velocity_buffer.add((last_yaw_pitch - current_yaw_pitch) / getRobotInfo().getBasicTimeStepInSecond());
-  last_yaw_pitch = current_yaw_pitch;
+  // calculate f the head stopped moving => at rest
+  if(absolute_velocity_buffer.isFull() && absolute_velocity_buffer.getAverage().abs() < velocityThreshold) {
+    getMotionStatus().head_at_rest = true;
+  } else {
+    getMotionStatus().head_at_rest = false;
+  }
 
-  getMotionStatus().head_target_reached = (motion_target - current_yaw_pitch).abs() < params.at_target_threshold;
+  // check if the head didnt move for longer than 1s and is still not on target
+  if (!getMotionStatus().head_target_reached && getMotionStatus().head_at_rest) {
+    if( getFrameInfo().getTimeSince(lastFrameInfoWhenHeadMovedOrOnTarget) > params.timeThresholdForHeadStuck ) {
+      getMotionStatus().head_got_stuck = true;
+    }
+  } else {
+    getMotionStatus().head_got_stuck = false;
+    lastFrameInfoWhenHeadMovedOrOnTarget = getFrameInfo();
+  }
 
-  bool at_rest = absolute_velocity_buffer.getAverage().abs() < (getMotionStatus().currentMotion == motion::walk ? params.at_rest_threshold_walking : params.at_rest_threshold);
-
-  getMotionStatus().head_got_stuck = (!getMotionStatus().head_target_reached)
-                                     && at_rest
-                                     && absolute_velocity_buffer.isFull();
-
-  PLOT("HeadMotion:target_changed", target_changed);
   PLOT("HeadMotion:absolute_avg_velocity", absolute_velocity_buffer.getAverage().abs());
-  PLOT("HeadMotion:at_rest", at_rest);
+  PLOT("HeadMotion:at_rest", getMotionStatus().head_at_rest);
   PLOT("HeadMotion:target_reached", getMotionStatus().head_target_reached);
   PLOT("HeadMotion:got_stuck", getMotionStatus().head_got_stuck);
-}//end execute
+}
 
 void HeadMotionEngine::hold()
 {
@@ -237,6 +262,7 @@ void HeadMotionEngine::moveByAngle(const Vector2d& target)
 
   // little filter
   // todo: this filter is unstable, make it a PID or so before use
+  /*
   double maxAcceleration = 0.1;
   MODIFY("HeadMotionEngine:gotoAngle:maxAcceleration", maxAcceleration);
 
@@ -244,8 +270,10 @@ void HeadMotionEngine::moveByAngle(const Vector2d& target)
   velocity = velocity*(1.0-maxAcceleration) + update*maxAcceleration;
 
   headPos += velocity;
+  */
 
-
+  headPos += update;
+  
   // restrict yaw joint position to maximal limits
   headPos.x = Math::clamp(headPos.x, getMotorJointData().min[JointData::HeadYaw], getMotorJointData().max[JointData::HeadYaw]);
 
