@@ -110,8 +110,6 @@ void LineCamMatErrorFunctionV3::actual_plotting(const Parameter &p, naoth::Camer
 
 Eigen::VectorXd LineCamMatErrorFunctionV3::operator()(const Parameter& p) const
 {
-    Eigen::VectorXd r(numberOfResudials);
-
     Eigen::Matrix<double, 11, 1> parameter;
     if(bounds != nullptr){
         parameter = bounds->unbound(p);
@@ -125,17 +123,12 @@ Eigen::VectorXd LineCamMatErrorFunctionV3::operator()(const Parameter& p) const
     offsetCam[naoth::CameraInfo::Top]    = Vector3d(parameter(5), parameter(6),parameter(7));
     offsetCam[naoth::CameraInfo::Bottom] = Vector3d(parameter(8), parameter(9),parameter(10));
 
-    size_t idx = 0;
-    size_t empty = 0;
+    lineProjections.clear();
+
     for(int cameraID = 0; cameraID < naoth::CameraInfo::numOfCamera; cameraID++)
     {
         for(CalibrationData::const_iterator sample = calibrationData.begin(); sample != calibrationData.end(); ++sample)
         {
-            if (getLinesInImage(sample,cameraID).empty()) {
-                ++empty;
-                continue;
-            }
-
             CameraMatrix tmpCM = CameraGeometry::calculateCameraMatrixFromChestPose(
                         //sample->kinematicChain,
                         sample->chestPose,
@@ -151,9 +144,6 @@ Eigen::VectorXd LineCamMatErrorFunctionV3::operator()(const Parameter& p) const
 
             tmpCM.translation += Vector3d(global_position->x, global_position->y, 0); // move around on field
             tmpCM.rotation = RotationMatrix::getRotationZ(*global_orientation) * tmpCM.rotation;
-
-            std::vector<Math::LineSegment> lineProjections;
-            lineProjections.resize(getLinesInImage(sample,cameraID).size());
 
             // project lines to field
             for(size_t i = 0; i < getLinesInImage(sample,cameraID).size(); i++)
@@ -176,27 +166,29 @@ Eigen::VectorXd LineCamMatErrorFunctionV3::operator()(const Parameter& p) const
                             0.0,
                             end);
 
-                Math::LineSegment line_on_field(begin, end);
-                lineProjections[i] = line_on_field;
+                lineProjections.emplace_back(begin, end);
             }
-
-            double total_sum = 0;
-            for (const Math::LineSegment& line: lineProjections) {
-                for (const Math::LineSegment& line_relative: lineProjections) {
-                    double dot = line.getDirection() * line_relative.getDirection();
-                    double dot2 = dot*dot;
-                    double err = dot2*(1-dot2);
-                    total_sum += err;
-                }
-            }
-
-            r(idx) = -total_sum; // the resudial is target - actual, i.e. 0 - total_sum
-            ++idx;
         }
     }
 
-    ASSERT(empty+idx == calibrationData.size()*2);
-    ASSERT(idx == numberOfResudials);
+    Eigen::VectorXd r(numberOfResudials);
+
+    double total_sum = 0.0;
+    for (size_t i = 0; i < lineProjections.size(); ++i) {
+      for (size_t j = i+1; j < lineProjections.size(); ++j) {
+        double dot = lineProjections[i].getDirection() * lineProjections[j].getDirection();
+        double dot2 = dot*dot;
+        double err = dot2*(1-dot2);
+        total_sum -= err;
+      }
+    }
+    
+    size_t idx = 0;
+    r(idx) = -total_sum;
+
+
+    //ASSERT(empty+idx == calibrationData.size()*2);
+    //ASSERT(idx == numberOfResudials);
     return r;
 }
 

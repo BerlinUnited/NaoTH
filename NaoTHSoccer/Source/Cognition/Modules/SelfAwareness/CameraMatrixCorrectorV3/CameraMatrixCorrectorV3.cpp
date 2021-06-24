@@ -10,7 +10,7 @@
 
 CameraMatrixCorrectorV3::CameraMatrixCorrectorV3():
     theCamMatErrorFunctionV3(getDebugRequest(), getDebugDrawings(), getDebugModify(), getFieldInfo(), getCameraInfo(), getCameraInfoTop()),
-    gn_minimizer(1, 1.25, 0.005, /*double regularizer,*/ false)
+    gn_minimizer(1, 1.25, 0.005, /*double regularizer,*/ true)
 {
   getDebugParameterList().add(&getCameraMatrixOffset());
   getDebugParameterList().add(&cmc_params);
@@ -54,9 +54,9 @@ CameraMatrixCorrectorV3::CameraMatrixCorrectorV3():
   DEBUG_REQUEST_REGISTER("CameraMatrixV3:manual:reset_minimizer", "reset lm parameters to initial values", false);
 
   DEBUG_REQUEST_REGISTER("CameraMatrixV3:debug:enable_CamMatErrorFunctionV3_drawings", "needed to be activated for error function drawings", true);
-  DEBUG_REQUEST_REGISTER("CameraMatrixV3:debug:optimizer:use_GN",  "use Gauss-Newton based optimizer during calibration (default)", false);
+  DEBUG_REQUEST_REGISTER("CameraMatrixV3:debug:optimizer:use_GN",  "use Gauss-Newton based optimizer during calibration (default)", true);
   DEBUG_REQUEST_REGISTER("CameraMatrixV3:debug:optimizer:use_LM",  "use Levenberg-Marquardt based optimizer during calibration", false);
-  DEBUG_REQUEST_REGISTER("CameraMatrixV3:debug:optimizer:use_LM2", "use Levenberg-Marquardt based optimizer (smoothed update) during calibration", true);
+  DEBUG_REQUEST_REGISTER("CameraMatrixV3:debug:optimizer:use_LM2", "use Levenberg-Marquardt based optimizer (smoothed update) during calibration", false);
   DEBUG_REQUEST_REGISTER("CameraMatrixV3:debug:read_calibration_data_from_file", "", false);
   DEBUG_REQUEST_REGISTER("CameraMatrixV3:debug:write_calibration_data_to_file",  "", false);
 
@@ -68,7 +68,8 @@ CameraMatrixCorrectorV3::CameraMatrixCorrectorV3():
   play_calibrated = play_calibrating = play_collecting = true;
   last_error = 0;
 
-  minimizer = &lm2_minimizer;
+  //minimizer = &lm2_minimizer;
+  minimizer = &gn_minimizer;
 
   // sampling coordinates
   std::array<double,4> pitchs {-20, -10 , 0, 10};
@@ -99,6 +100,13 @@ CameraMatrixCorrectorV3::~CameraMatrixCorrectorV3()
 
 void CameraMatrixCorrectorV3::execute()
 {
+  // only calibrate in calibration or penalized
+  if (getPlayerInfo().robotState != PlayerInfo::calibration && 
+      getPlayerInfo().robotState != PlayerInfo::penalized)
+  {
+    return;
+  }
+
   if(cmc_params.check_changed()){
       update_bounds();
   }
@@ -148,8 +156,7 @@ void CameraMatrixCorrectorV3::execute()
   // sit down if auto calibrated
   bool use_automatic_mode = getCalibrationRequest().performAutomaticCameraMatrixCalibration;//false;
 
-  if(use_automatic_mode && 
-    (getPlayerInfo().robotState == PlayerInfo::calibration || getPlayerInfo().robotState == PlayerInfo::penalized)) 
+  if(use_automatic_mode) 
   {
     if(auto_calibrated) {
       getMotionRequest().id = motion::sit;
@@ -282,7 +289,7 @@ bool CameraMatrixCorrectorV3::calibrate()
   PLOT("CameraMatrixV3:avg_derror", derrors.getAverage());
   writeToRepresentation();
 
-  return ((  (derrors.getAverage() > -1e-9) // average error decreases by less than this per second
+  return ((  (derrors.getAverage() > -cmc_params.minimizationStopError) // average error decreases by less than this per second
            && derrors.isFull())
            || minimizer->step_failed());          // and we have a full history
 }
@@ -290,49 +297,25 @@ bool CameraMatrixCorrectorV3::calibrate()
 // returns true, if the trajectory is starting again from beginning
 bool CameraMatrixCorrectorV3::collectingData()
 {
-    if(current_target == target_points.end())
+    if(current_target == target_points.end()) {
         return true;
+    }
 
     getHeadMotionRequest().id = HeadMotionRequest::goto_angle;
     getHeadMotionRequest().targetJointPosition.x = Math::fromDegrees(current_target->x);
     getHeadMotionRequest().targetJointPosition.y = Math::fromDegrees(current_target->y);
-    getHeadMotionRequest().velocity = 20;
-    MODIFY("CameraMatrixV3:collecting_velocity", getHeadMotionRequest().velocity);
+    getHeadMotionRequest().velocity = cmc_params.maxHeadVelocity;
 
-    double dt = getFrameInfo().getTimeInSeconds()-last_frame_info.getTimeInSeconds();
-    double current_yaw   = Math::toDegrees(getSensorJointData().position[JointData::HeadYaw]);
-    double current_pitch = Math::toDegrees(getSensorJointData().position[JointData::HeadPitch]);
+    bool target_reached = getMotionStatus().head_at_rest && getMotionStatus().head_target_reached;
 
-    static double last_yaw(current_yaw);
-    static double last_pitch(current_pitch);
-
-    double vel_yaw   = (last_yaw   - current_yaw)/dt;
-    double vel_pitch = (last_pitch - current_pitch)/dt;
-
-    last_yaw   = current_yaw;
-    last_pitch = current_pitch;
-
-    // state transitions and triggering sampling
-    double limit = 3;
-    MODIFY("CameraMatrixV3:limit", limit);
-    double vlimit = 0.2;
-    MODIFY("CameraMatrixV3:vlimit", vlimit);
-
-    bool target_reached =     fabs(current_yaw   - current_target->x) < limit
-                           && fabs(current_pitch - current_target->y) < limit
-                           && fabs(vel_yaw)   < vlimit
-                           && fabs(vel_pitch) < vlimit;
-
-    if(target_reached && current_target != target_points.end()){
+    if(target_reached || getMotionStatus().head_got_stuck) {
         sampling();
         current_target++;
     }
 
-    PLOT("CameraMatrixV3:vel_yaw",vel_yaw);
-    PLOT("CameraMatrixV3:vel_pitch", vel_pitch);
     PLOT("CameraMatrixV3:target_reached", target_reached);
 
-    return current_target == target_points.end();
+    return false;
 }
 
 void CameraMatrixCorrectorV3::sampling()
@@ -430,6 +413,7 @@ void CameraMatrixCorrectorV3::writeToRepresentation()
   getCameraMatrixOffset().cam_rot[CameraInfo::Bottom] = Vector3d(cam_mat_offsets(8),cam_mat_offsets(9),cam_mat_offsets(10));
   */
 
+  cam_mat_offsets(4) = 0;
   getCameraMatrixOffset().body_rot = Vector2d(cam_mat_offsets(0),cam_mat_offsets(1));
   getCameraMatrixOffset().head_rot = Vector3d(cam_mat_offsets(2),cam_mat_offsets(3), cam_mat_offsets(4));
 

@@ -21,6 +21,7 @@
 
 #include "Representations/Motion/Request/HeadMotionRequest.h"
 #include "Representations/Motion/Request/MotionRequest.h"
+#include "Representations/Motion/MotionStatus.h"
 
 #include "Representations/Infrastructure/SoundData.h"
 
@@ -63,6 +64,7 @@ BEGIN_DECLARE_MODULE(CameraMatrixCorrectorV3)
   REQUIRE(CameraInfo)
   REQUIRE(CameraInfoTop)
   REQUIRE(PlayerInfo)
+  REQUIRE(MotionStatus)
 
   REQUIRE(CalibrationRequest)
 
@@ -157,6 +159,10 @@ private:
               PARAMETER_REGISTER(global_pose.position.y) = 0;
               PARAMETER_ANGLE_REGISTER(global_pose.orientation) = 0;
 
+
+              PARAMETER_ANGLE_REGISTER(maxHeadVelocity) = 20;
+              PARAMETER_REGISTER(minimizationStopError) = 0.01;
+
               syncWithConfig();
           }
 
@@ -184,6 +190,8 @@ private:
               double   orientation;
           } global_pose;
 
+          double maxHeadVelocity;
+          double minimizationStopError;
   } cmc_params;
 };
 
