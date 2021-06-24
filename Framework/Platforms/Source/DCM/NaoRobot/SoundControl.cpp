@@ -8,15 +8,10 @@
 using namespace naoth;
 using namespace std;
 
-extern "C" cst_voice* register_cmu_us_slt(const char*);
-
 SoundControl::SoundControl() :
   stopping(false),
   media_path("Media/")
 {
-  flite_init();
-  voice = register_cmu_us_slt(nullptr);
-  
   playThread = std::thread(&SoundControl::play, this);
 
   ThreadUtil::setPriority(playThread, ThreadUtil::Priority::lowest);
@@ -67,11 +62,14 @@ void SoundControl::play()
     new_data_avaliable.wait(lock);
 
     if(filename[0] == ':') {
-      flite_text_to_speech(filename.c_str(), voice, "play");
+      std::cout << "[SoundControl] say " << filename << std::endl;
+      std::string cmd = "/home/nao/bin/flite_cmu_us_slt \"" + filename.substr(1) + "\"";
+      std::system(cmd.c_str());
+    } else {
+      std::cout << "[SoundControl] play " << filename << std::endl;
+      std::string cmd = "/usr/bin/paplay " + filename;
+      std::system(cmd.c_str());
     }
-    std::cout << "[SoundControl] play " << filename << std::endl;
-    std::string cmd = "/usr/bin/paplay " + filename;
-    std::system(cmd.c_str());
 
     //TODO: handle the case if the file does not exist:
     //      if the file does not exist, then we end up in 
