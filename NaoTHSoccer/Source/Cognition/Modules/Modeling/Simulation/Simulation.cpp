@@ -88,13 +88,19 @@ void Simulation::execute()
     Vector2d expectedBallPos = getKickActionModel().expectedBallPos;
     FILLOVAL(expectedBallPos.x, expectedBallPos.y, 50, 50);
 
-    Vector2d globalBall = getRobotPose() *getBallModel().positionPreview;
-    Vector2d action_vector = (expectedBallPos - globalBall).normalize();
-    Vector2d from = globalBall + action_vector * 100;
-    Vector2d to = globalBall + action_vector * 350;
+    if(getKickActionModel().bestAction == KickActionModel::none) {
+      PEN("000000", 50);
+      Vector2d globalBall = getRobotPose() * getBallModel().positionPreview;
+      FILLOVAL(globalBall.x, globalBall.y, 100, 100);
+    } else {
+      Vector2d globalBall = getRobotPose() * getBallModel().positionPreview;
+      Vector2d action_vector = (expectedBallPos - globalBall).normalize();
+      Vector2d from = globalBall + action_vector * 100;
+      Vector2d to = globalBall + action_vector * 350;
 
-    PEN("FF0000", 50);
-    ARROW(from.x, from.y, to.x, to.y);
+      PEN("FF0000", 50);
+      ARROW(from.x, from.y, to.x, to.y);
+    }
   );
 
   //Debug stuff
@@ -193,10 +199,9 @@ size_t Simulation::decide_smart(const std::vector<ActionSimulator::ActionResults
     double current_potential = simulationModule->getModuleT()->evaluateAction(getRobotPose().translation);
     // make sure we dont kick the ball to a similar position on the potential field
     // choose a kick action only if it improves the ball position significantly
-    if (bestValue < (current_potential - theParameters.significance_thresh)){
+    if (bestValue < (current_potential - theParameters.significance_thresh)) {
       return best_action;
-    }
-    else{
+    } else {
       return 0; // assumes that 0 means turn action
     }
     
