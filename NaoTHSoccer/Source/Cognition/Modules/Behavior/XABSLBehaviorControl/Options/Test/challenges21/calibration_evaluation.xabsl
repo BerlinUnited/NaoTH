@@ -13,7 +13,7 @@ option calibration_evaluation
     decision
     {
       else if(game.current_mode == playing)
-        goto wait_a_bit;
+        goto search_for_ball_one;
       else
         stay;
     }
@@ -23,39 +23,73 @@ option calibration_evaluation
   }
 
   
-  state wait_a_bit
+  state search_for_ball_one
   {
     decision {
-      else if(state_time > 3000) 
+      else if(state_time > 5000) 
+        goto report_for_ball_one;
+      else
+        stay;
+    }
+    action {
+      motion.type = stand;
+      head.control_mode = search_for_ball;
+    }
+  }
+
+  state report_for_ball_one
+  {
+    decision {
+      else if(state_time > 500) 
         goto walk_to_position_one;
       else
         stay;
     }
     action {
       motion.type = stand;
-      head.control_mode = look_straight_ahead;
+      head.control_mode = search_for_ball;
+      sound.request = ball_position;
     }
   }
+
 
   state walk_to_position_one
   {
     decision {
       else if(action_done)
-        goto done_position_one;
+        goto done_position_one_report;
       else
         stay;
     }
     action {
       //go_to_point(x = 2000, y = 2000, pi/2)
       go_to_point_with_USOA(x=-4500, y=0, rot=0);
-      arm.control_mode = normal;
+      arm.control_mode = synchronised_with_walk;
+      //head.control_mode = look_around;
+      head.control_mode = search_for_ball_and_look_around;
+    }
+  }
+
+  state done_position_one_report
+  {
+    decision {
+      else if(state_time > 500)
+        goto done_position_one;
+      else
+        stay;
+    }
+    action {
+      motion.type = stand;
+      arm.control_mode = raise_arm;
+      head.control_mode = look_around;
+      sound.request = finished_walking;
     }
   }
 
   state done_position_one
   {
     decision {
-      else if(state_time > 3000)
+      else if(state_time > 2500)
         goto walk_to_position_two;
       else
         stay;
@@ -63,8 +97,7 @@ option calibration_evaluation
     action {
       motion.type = stand;
       arm.control_mode = raise_arm;
-      head.control_mode = search_for_ball_and_look_around;
-      sound.request = victory;
+      head.control_mode = look_around;
     }
   }
 
@@ -72,29 +105,76 @@ option calibration_evaluation
   {
     decision {
       else if(action_done)
-        goto done_position_two;
+        goto done_position_two_report;
       else
         stay;
     }
     action {
       //go_to_point(x = 2000, y = 2000, pi/2)
       go_to_point_with_USOA(x=0, y=0, rot=0);
+      arm.control_mode = synchronised_with_walk;
+      //head.control_mode = look_around;
+      head.control_mode = search_for_ball_and_look_around;
     }
   }
 
-  state done_position_two
+  state done_position_two_report
   {
     decision {
-      else if(state_time > 3000)
-        goto walk_to_position_three;
+      else if(state_time > 500)
+        goto done_position_two;
       else
         stay;
     }
     action {
       motion.type = stand;
       arm.control_mode = raise_arm;
-      head.control_mode = search_for_ball_and_look_around;
-      sound.request = victory;
+      head.control_mode = look_around;
+      sound.request = finished_walking;
+    }
+  }
+
+  state done_position_two
+  {
+    decision {
+      else if(state_time > 2500)
+        goto search_for_ball_two;
+      else
+        stay;
+    }
+    action {
+      motion.type = stand;
+      arm.control_mode = raise_arm;
+      head.control_mode = look_around;
+    }
+  }
+
+  state search_for_ball_two
+  {
+    decision {
+      else if(state_time > 3000) 
+        goto report_for_ball_two;
+      else
+        stay;
+    }
+    action {
+      motion.type = stand;
+      head.control_mode = search_for_ball;
+    }
+  }
+
+  state report_for_ball_two
+  {
+    decision {
+      else if(state_time > 500) 
+        goto walk_to_position_three;
+      else
+        stay;
+    }
+    action {
+      motion.type = stand;
+      head.control_mode = search_for_ball;
+      sound.request = ball_position;
     }
   }
 
@@ -102,20 +182,39 @@ option calibration_evaluation
   {
     decision {
       else if(action_done)
-        goto done_position_three;
+        goto done_position_three_report;
       else
         stay;
     }
     action {
       //go_to_point(x = 2000, y = 2000, pi/2)
       go_to_point_with_USOA(x=4500, y=0, rot=0);
+      arm.control_mode = synchronised_with_walk;
+      //head.control_mode = look_around;
+      head.control_mode = search_for_ball_and_look_around;
     }
   }
 
+  state done_position_three_report
+  {
+    decision {
+      else if(state_time > 500)
+        goto done_position_three;
+      else
+        stay;
+    }
+    action {
+      motion.type = stand;
+      arm.control_mode = raise_arm;
+      head.control_mode = look_around;
+      sound.request = finished_walking;
+    }
+  }
+  
   state done_position_three
   {
     decision {
-      else if(state_time > 3000)
+      else if(state_time > 2500)
         goto finish;
       else
         stay;
@@ -123,8 +222,7 @@ option calibration_evaluation
     action {
       motion.type = stand;
       arm.control_mode = raise_arm;
-      head.control_mode = search_for_ball_and_look_around;
-      sound.request = victory;
+      head.control_mode = look_around;
     }
   }
 
