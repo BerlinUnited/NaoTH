@@ -4,8 +4,8 @@
 * Definition of class SoundSymbols
 */
 
-#ifndef __SoundSymbols_H_
-#define __SoundSymbols_H_
+#ifndef SoundSymbols_H
+#define SoundSymbols_H
 
 #include <ModuleFramework/Module.h>
 #include <XabslEngine/XabslEngine.h>
@@ -16,7 +16,13 @@
 #include "Representations/Infrastructure/LEDRequest.h"
 #include "Representations/Infrastructure/SoundData.h"
 
+#include "Representations/Modeling/BallModel.h"
+#include "Representations/Modeling/RobotPose.h"
+
 BEGIN_DECLARE_MODULE(SoundSymbols)
+  REQUIRE(BallModel)
+
+  REQUIRE(RobotPose)
   PROVIDE(SoundPlayData)
 END_DECLARE_MODULE(SoundSymbols)
 
