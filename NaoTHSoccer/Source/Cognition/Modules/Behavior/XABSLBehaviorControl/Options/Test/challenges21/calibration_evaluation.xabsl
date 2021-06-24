@@ -13,12 +13,46 @@ option calibration_evaluation
     decision
     {
       else if(game.current_mode == playing)
-        goto search_for_ball_one;
+        goto calibrate_inertial;
       else
         stay;
     }
     action
     {
+    }
+  }
+
+  // from roles_play_soccer
+  state calibrate_inertial
+  {
+    decision
+    {
+      else if(sensor.inertial.calibrated)
+        goto localize;
+      else 
+        stay;
+    }
+    action
+    {
+      show_calibration();
+      motion.type = stand;
+      head.control_mode = look_straight_ahead;
+    }
+  }
+
+  state localize
+  {
+    decision
+    {
+      else if(robot_pose.is_valid || state_time > 12000)
+        goto search_for_ball_one;
+      else
+        stay;
+    }
+    action 
+    {
+      head.control_mode = look_around;
+      motion.type = stand;
     }
   }
 
