@@ -5050,12 +5050,12 @@ class MotionStatus : public ::google::protobuf::Message /* @@protoc_insertion_po
   bool head_target_reached() const;
   void set_head_target_reached(bool value);
 
-  // optional bool head_got_stuck = 12;
-  bool has_head_got_stuck() const;
-  void clear_head_got_stuck();
-  static const int kHeadGotStuckFieldNumber = 12;
-  bool head_got_stuck() const;
-  void set_head_got_stuck(bool value);
+  // optional bool head_got_stuck = 12 [deprecated = true];
+  GOOGLE_PROTOBUF_DEPRECATED_ATTR bool has_head_got_stuck() const;
+  GOOGLE_PROTOBUF_DEPRECATED_ATTR void clear_head_got_stuck();
+  GOOGLE_PROTOBUF_DEPRECATED_ATTR static const int kHeadGotStuckFieldNumber = 12;
+  GOOGLE_PROTOBUF_DEPRECATED_ATTR bool head_got_stuck() const;
+  GOOGLE_PROTOBUF_DEPRECATED_ATTR void set_head_got_stuck(bool value);
 
   // optional bool walk_emergency_stop = 13;
   bool has_walk_emergency_stop() const;
@@ -5063,6 +5063,13 @@ class MotionStatus : public ::google::protobuf::Message /* @@protoc_insertion_po
   static const int kWalkEmergencyStopFieldNumber = 13;
   bool walk_emergency_stop() const;
   void set_walk_emergency_stop(bool value);
+
+  // optional bool head_at_rest = 14;
+  bool has_head_at_rest() const;
+  void clear_head_at_rest();
+  static const int kHeadAtRestFieldNumber = 14;
+  bool head_at_rest() const;
+  void set_head_at_rest(bool value);
 
   // @@protoc_insertion_point(class_scope:naothmessages.MotionStatus)
  private:
@@ -5092,6 +5099,8 @@ class MotionStatus : public ::google::protobuf::Message /* @@protoc_insertion_po
   void clear_has_head_got_stuck();
   void set_has_walk_emergency_stop();
   void clear_has_walk_emergency_stop();
+  void set_has_head_at_rest();
+  void clear_has_head_at_rest();
 
   // helper for ByteSizeLong()
   size_t RequiredFieldsByteSizeFallback() const;
@@ -5112,6 +5121,7 @@ class MotionStatus : public ::google::protobuf::Message /* @@protoc_insertion_po
   bool head_target_reached_;
   bool head_got_stuck_;
   bool walk_emergency_stop_;
+  bool head_at_rest_;
   friend struct protobuf_Representations_2eproto::TableStruct;
 };
 // -------------------------------------------------------------------
@@ -13110,7 +13120,7 @@ inline void MotionStatus::set_head_target_reached(bool value) {
   // @@protoc_insertion_point(field_set:naothmessages.MotionStatus.head_target_reached)
 }
 
-// optional bool head_got_stuck = 12;
+// optional bool head_got_stuck = 12 [deprecated = true];
 inline bool MotionStatus::has_head_got_stuck() const {
   return (_has_bits_[0] & 0x00000800u) != 0;
 }
@@ -13156,6 +13166,30 @@ inline void MotionStatus::set_walk_emergency_stop(bool value) {
   set_has_walk_emergency_stop();
   walk_emergency_stop_ = value;
   // @@protoc_insertion_point(field_set:naothmessages.MotionStatus.walk_emergency_stop)
+}
+
+// optional bool head_at_rest = 14;
+inline bool MotionStatus::has_head_at_rest() const {
+  return (_has_bits_[0] & 0x00002000u) != 0;
+}
+inline void MotionStatus::set_has_head_at_rest() {
+  _has_bits_[0] |= 0x00002000u;
+}
+inline void MotionStatus::clear_has_head_at_rest() {
+  _has_bits_[0] &= ~0x00002000u;
+}
+inline void MotionStatus::clear_head_at_rest() {
+  head_at_rest_ = false;
+  clear_has_head_at_rest();
+}
+inline bool MotionStatus::head_at_rest() const {
+  // @@protoc_insertion_point(field_get:naothmessages.MotionStatus.head_at_rest)
+  return head_at_rest_;
+}
+inline void MotionStatus::set_head_at_rest(bool value) {
+  set_has_head_at_rest();
+  head_at_rest_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.MotionStatus.head_at_rest)
 }
 
 // -------------------------------------------------------------------
