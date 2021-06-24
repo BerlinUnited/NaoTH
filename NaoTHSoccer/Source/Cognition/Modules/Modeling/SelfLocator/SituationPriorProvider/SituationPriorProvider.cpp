@@ -63,6 +63,11 @@ void SituationPriorProvider::execute()
   {
     getSituationPrior().currentPrior = SituationPrior::firstReady;
   }
+  // NOTE: this never happens under regular circumstances. This is only needed for autonomous calibration challenge in 2021
+  else if(currentRobotState == PlayerInfo::playing && lastRobotState == PlayerInfo::initial && !walked_after_penalized_or_init)
+  {
+    getSituationPrior().currentPrior = SituationPrior::playAfterPenalized;
+  }
   // treat positioning after penalized
   else if( lastRobotState == PlayerInfo::penalized && !walked_after_penalized_or_init )
   {
