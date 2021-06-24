@@ -62,6 +62,7 @@ void GameLogger::execute()
     if(!firstRecording && oldState == getPlayerInfo().robotState) {
       log_this_frame = log_this_frame && getPlayerInfo().robotState != PlayerInfo::initial;
       log_this_frame = log_this_frame && getPlayerInfo().robotState != PlayerInfo::finished;
+      log_this_frame = log_this_frame && getPlayerInfo().robotState != PlayerInfo::unstiff;
       log_this_frame = log_this_frame && getMotionStatus().currentMotion != motion::init;
     }
 
