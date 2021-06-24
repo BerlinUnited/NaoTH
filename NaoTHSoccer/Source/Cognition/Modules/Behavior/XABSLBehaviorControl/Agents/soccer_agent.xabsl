@@ -5,11 +5,13 @@ option soccer_agent {
   {
     if (game.phase == penaltyshoot)
         goto penalty_shootout;
-     else if (game.phase == normal)
+    else if (game.phase == normal)
         goto normal_soccer;
+    else if(game.type == game_1v1)
+        goto game_1v1;
   }
   
-  initial state idle{
+  initial state idle {
     decision {
       else
         goto normal_soccer;
@@ -17,15 +19,21 @@ option soccer_agent {
     action {}
   }
 
-  state normal_soccer{
+  state normal_soccer {
     action {
       roles_spl_play_soccer();
     }
   }
 
-  state penalty_shootout{
+  state penalty_shootout {
     action {
       penalty_agent();
+    }
+  }
+
+  state game_1v1 {
+    action {
+      roles_spl_play_soccer();
     }
   }
 }
