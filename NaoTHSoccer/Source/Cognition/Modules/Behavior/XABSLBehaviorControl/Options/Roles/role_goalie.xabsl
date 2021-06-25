@@ -21,7 +21,7 @@ option role_goalie
   {
      decision 
      {
-       else if(strategy.role_dynamic == striker)
+       else if(strategy.role_dynamic == striker && ball.position.field.x < 0)
          goto clear_ball;
        else if (action_done)
          goto stand_and_look_at_ball;
@@ -44,7 +44,7 @@ option role_goalie
   {
      decision 
      {
-       else if(strategy.role_dynamic == striker)
+       else if(strategy.role_dynamic == striker && ball.position.field.x < 0)
          goto clear_ball;
        else if (action_done)
          goto stand_and_look_at_ball;
@@ -69,7 +69,7 @@ option role_goalie
   // NOTE: this should be part of a path planner!
   state return_to_field {
     decision {
-      else if(strategy.role_dynamic == striker)
+      else if(strategy.role_dynamic == striker && ball.position.field.x < 0)
         goto clear_ball;
       else if (abs(value = robot_pose.planned.y) <= (field.yPosLeftGoal + 100) || robot_pose.planned.x >= (field.xPosOwnGroundline+100))
         goto go_to_strategy_point;
@@ -77,7 +77,7 @@ option role_goalie
         stay;
     }
     action {
-      // use 300 to make sure, the goalie is back in the field -> go_to_point proximity!
+       // use 300 to make sure, the goalie is back in the field -> go_to_point proximity!
        go_to_point_with_USOA(
          x=field.xPosOwnGroundline+300,
          y=robot_pose.planned.y < 0 ? (field.yPosRightGoal - 300) : (field.yPosLeftGoal + 300),
@@ -88,24 +88,28 @@ option role_goalie
 
   state stand_and_look_at_ball {
     decision {
-      else if(strategy.role_dynamic == striker)
+      else if(strategy.role_dynamic == striker && ball.position.field.x < 0)
         goto clear_ball;
-      else if(vector.abs(x=locator.field_to_relative.x(x=strategy.position.home.x, y=strategy.position.home.y), y=locator.field_to_relative.y(x=strategy.position.home.x, y=strategy.position.home.y)) >= 300)
+      else if(state_time > 10000 && vector.abs(x=locator.field_to_relative.x(x=strategy.position.home.x, y=strategy.position.home.y), y=locator.field_to_relative.y(x=strategy.position.home.x, y=strategy.position.home.y)) >= 1000)
         goto go_to_strategy_point_search_for_ball;
       else 
         stay;
     }
     action {
-      motion.type = stand;
-      head.control_mode = search_for_ball_goalie;
+      //motion.type = stand;
+      //head.control_mode = search_for_ball_goalie;
+      search_ball();
+      motion.walk.style = stable;
+      head.control_mode = search_for_ball_and_look_around;
     }
   }
 
   state clear_ball {   
     decision {
-      else if(strategy.role_dynamic != striker) {
+      else if(strategy.role_dynamic != striker)
          goto go_to_strategy_point;
-      }
+      else if(ball.position.field.x > 0) 
+        goto stand_and_look_at_ball;
       else stay;
     }
     action {

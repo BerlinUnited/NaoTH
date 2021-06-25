@@ -17,9 +17,11 @@ option go_to_point_with_USOA
 	      if ((vector.abs(x=locator.field_to_relative.x(x=@x, y=@y), y=locator.field_to_relative.y(x=@x, y=@y)) < obstacle.ultrasound.distance)
 	            &&(obstacle.ultrasound.distance<400))
 	          goto approach_carefully;
-	      else if(obstacle.ultrasound.left.distance < 400)
+	      else if(obstacle.ultrasound.left.distance < 400 || 
+	        (ball.know_where_itis && ball.distance < 500 && ball.preview.y > 0))
 	          goto avoid_left;
-	      else if(obstacle.ultrasound.right.distance < 400)
+	      else if(obstacle.ultrasound.right.distance < 400 ||
+          (ball.know_where_itis && ball.distance < 500 && ball.preview.y > 0))
 	          goto avoid_right;
         else
           stay;

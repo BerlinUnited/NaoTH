@@ -65,11 +65,11 @@ option path_striker2018
   }
 
   state goto_ball {
-    decision{
-
+    decision 
+    {
       else if(vector.abs(x=ball.future.preview.x, y=ball.future.preview.y) < 300)
       {
-        if(attack.best_action == kick_short) {
+        if(attack.best_action == kick_short && abs(value=attack.direction.preview) < 20) {
           goto forwardkick;
         }
         else if(attack.best_action == sidekick_left)
@@ -103,7 +103,7 @@ option path_striker2018
     // long kick is ignored/not included in action selection
     //else if(attack.best_action == kick_long)
     //    goto long_kick;
-    else if(attack.best_action == kick_short)
+    else if(attack.best_action == kick_short && abs(value=attack.direction.preview) < 20) 
     {
       goto forwardkick;
     }

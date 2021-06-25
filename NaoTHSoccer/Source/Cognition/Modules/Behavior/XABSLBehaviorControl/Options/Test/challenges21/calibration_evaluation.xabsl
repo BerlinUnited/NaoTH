@@ -100,7 +100,7 @@ option calibration_evaluation
       go_to_point_with_USOA(x=-4500, y=0, rot=0);
       arm.control_mode = synchronised_with_walk;
       //head.control_mode = look_around;
-      head.control_mode = search_for_ball_and_look_around;
+      head.control_mode = look_around;
     }
   }
 
@@ -225,7 +225,7 @@ option calibration_evaluation
       go_to_point_with_USOA(x=4500, y=0, rot=0);
       arm.control_mode = synchronised_with_walk;
       //head.control_mode = look_around;
-      head.control_mode = search_for_ball_and_look_around;
+      head.control_mode = look_around;
     }
   }
 

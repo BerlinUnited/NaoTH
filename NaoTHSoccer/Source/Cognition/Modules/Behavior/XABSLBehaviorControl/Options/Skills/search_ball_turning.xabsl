@@ -4,7 +4,7 @@ option search_ball_turning
   enum direction @search_direction;
 
   common decision  {
-	  if(ball.know_where_itis)
+	  if(ball.know_where_itis && ball.position.field.x < 0)
 	    goto finish;
 	}
 

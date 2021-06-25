@@ -2,7 +2,7 @@ option search_ball
 {
   common decision
   {
-    if(ball.know_where_itis)
+    if(ball.know_where_itis && ball.position.field.x < 0)
       goto finish;
   }
 
@@ -10,7 +10,7 @@ option search_ball
   {
     decision {
       // if we last saw the ball in >2m distance, we just start looking left/right
-      else if(ball.distance > 2000) // 2m
+      else if(ball.distance > 2000 || ball.time_since_last_seen > 5000 || ball.position.field.x > 0) // 2m
       {
         // search for ball the ball in the direction last seen
         if(ball.last_known.y > 0)
@@ -65,7 +65,7 @@ option search_ball
   }
 
  state search_ball_rot_right
-  {
+ {
     decision {
       else if(action_done)
         goto search_ball_simple_left;

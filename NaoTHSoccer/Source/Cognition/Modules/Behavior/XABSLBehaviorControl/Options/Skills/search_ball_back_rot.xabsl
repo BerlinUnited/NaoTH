@@ -19,7 +19,7 @@ option search_ball_back_rot
 
   common decision  {
     // found ball!
-    if(ball.know_where_itis)
+    if(ball.know_where_itis && ball.position.field.x < 0)
       goto finish;
     // dont leave the field!
     else if(abs(value=robot_pose.planned.x) > field.xPosOpponentGroundline || 

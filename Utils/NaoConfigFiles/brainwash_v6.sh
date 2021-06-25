@@ -149,6 +149,7 @@ su nao -c "/usr/bin/paplay $DEPLOY_DIRECTORY/home/nao/naoqi/Media/usb_start.wav"
 
 # stop naoth
 naoth stop
+nao stop
 
 # brainwashinit
 deployFile "/usr/bin/brainwash" "root" "755" "v6"
@@ -364,9 +365,9 @@ systemctl restart net.wlan0
 # ==================== Done ====================
 
 # prevent reboot if appropiate file exists
-if [ ! -f "./noreboot" ]; then
-	reboot
-fi
+#if [ ! -f "./noreboot" ]; then
+#	reboot
+#fi
 
 
 echo "DONE"
