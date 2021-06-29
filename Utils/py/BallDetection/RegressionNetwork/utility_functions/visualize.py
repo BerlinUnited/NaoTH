@@ -82,8 +82,60 @@ class BhumanVisualizer(object):
 """
 
 
-def visualize_tk3_classification():
-    pass
+class TK3Visualizer(object):
+    def __init__(self, index_start):
+        self.ind = index_start + 1
+
+        imgdb_path = str(DATA_DIR / 'tk03_natural_detection.pkl')
+        with open(imgdb_path, "rb") as f:
+            mean = pickle.load(f)
+            self.x = pickle.load(f)
+            self.y = pickle.load(f)
+
+        self.init_plot()
+
+    def init_plot(self):
+        # Adjust bottom to make room for Buttons
+        fig = plt.figure(figsize=(8, 8))
+        columns = 4
+        rows = 5
+        start_value = 0
+
+        self.subplot_list = list()
+
+        for plot_idx, i in enumerate(range(start_value, start_value + columns * rows)):
+            img = self.x[i]
+            a = fig.add_subplot(rows, columns, plot_idx + 1)
+            self.subplot_list.append(a)
+            current_label = self.y[i]
+
+            #circle1 = plt.Circle((current_label[1], current_label[2]), current_label[3], color='r', alpha=0.7)
+            circle1 = plt.Circle((current_label[1] * 16, current_label[2] * 16), current_label[0] * 16, color='r',
+                                 alpha=0.5)
+            ax = fig.gca()
+            ax.add_patch(circle1)
+            plt.imshow(img, cmap='gray')
+
+        # Connect to a "switch" Button, setting its left, top, width, and height
+        axswitch = plt.axes([0.40, 0.07, 0.2, 0.05])
+        bswitch = Button(axswitch, 'Next')
+        bswitch.on_clicked(self.next)
+        plt.show()
+
+    # This function is called when bswitch is clicked
+    def next(self, event):
+        for idx, subplot in enumerate(self.subplot_list):
+            subplot.cla()
+            # get new image data
+            img = self.x[self.ind]
+            current_label = self.y[self.ind]
+            circle1 = plt.Circle((current_label[1], current_label[2]), current_label[3], color='r', alpha=0.7)
+
+            subplot.add_patch(circle1)
+            subplot.imshow(img, cmap='gray')
+
+            self.ind += 1
+            plt.draw()
 
 
 def visualize_tk3_detection():
@@ -108,6 +160,12 @@ def visualize_tk3_detection():
         ax.add_patch(circle1)
         plt.imshow(img, cmap='gray')
     plt.show()
+
+def visualize_tk3_classification():
+    pass
+
+
+
 
 
 def visualize_tk3_detection2():
@@ -187,3 +245,4 @@ def visualize_tk3_segmentation():
 
 if __name__ == '__main__':
     BhumanVisualizer(0)
+    #TK3Visualizer(0)
