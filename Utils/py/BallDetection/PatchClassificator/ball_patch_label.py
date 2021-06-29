@@ -219,18 +219,10 @@ if __name__ == "__main__":
     fig = plt.figure()
 
     bla = PatchLabeling()
-    #logFilePath = "C:/Users/Benji/.naoth/datasets/demo_image/rc17_ball_far.log" #parse_arguments(sys.argv[1:])
-    logFilePath = "game.log"  # parse_arguments(sys.argv[1:])
+    logFilePath = parse_arguments(sys.argv[1:])
 
     # type : 0-'Y', 1-'YUV', 2-'YUVC'
     bla.patchdata, _ = patchReader.read_all_patches_from_log(logFilePath, type=2)
-    print(len(bla.patchdata))
-    print(bla.patchdata[0])
-
-    for i in bla.patchdata:
-        print(i.shape)
-        a = np.array(i[0::4])
-        print(a.shape)
 
     # load the label file
     label_file = os.path.join(os.path.dirname(logFilePath), 'ball_patch.json')

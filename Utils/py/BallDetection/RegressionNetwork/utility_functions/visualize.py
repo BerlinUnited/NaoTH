@@ -9,6 +9,7 @@ import pickle
 from pathlib import Path
 from bhuman_helper import download_bhuman2019
 import tensorflow.keras as keras
+
 DATA_DIR = Path(Path(__file__).parent.parent.absolute() / "data").resolve()
 MODEL_DIR = Path(Path(__file__).parent.parent.absolute() / "data/best_models").resolve()
 
@@ -155,8 +156,6 @@ def visualize_tk3_detection3():
 
     model = keras.models.load_model(str(MODEL_DIR / 'fy1500_conf.h5'))
     model.summary()
-
-
 
     counter = 0
     for i in range(100):
