@@ -33,10 +33,6 @@ template <class V> class Vector2
     y(static_cast<V>(other.y))
   {}
 
-  //TODO: check if this might be better or faster. The above version also 
-  // covers this special case.
-  //Vector2<V>& operator=(const Vector2<V>& other) = default;
-
   Vector2<V> clone() const {
     return Vector2<V>(*this);
   }
