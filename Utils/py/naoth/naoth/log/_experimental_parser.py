@@ -85,7 +85,7 @@ class SymbolParser:
             instance_name = self.enum_id_to_name[enum.id]
             
             # HACK: some values are set to invalid at the begining, such as numOfHeadMotion
-            # those values are not represented in the xabsl enums. So we just ser the to 
+            # those values are not represented in the xabsl enums. So we just set them to 
             # "unknown"
             try:
                 value = enum_type(enum.value)
