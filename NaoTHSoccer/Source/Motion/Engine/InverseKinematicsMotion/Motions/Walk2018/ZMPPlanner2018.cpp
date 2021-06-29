@@ -140,9 +140,9 @@ void ZMPPlanner2018::execute(){
 Vector2d ZMPPlanner2018::simplest(const FootStep& step, double offsetX, double offsetY)
 {
   Pose3D supFoot = step.supFoot();
-  supFoot.translate(offsetX, offsetY * step.liftingFoot(), 0);
+  supFoot.translate(offsetX, offsetY * static_cast<double>(step.liftingFoot()), 0);
   return Vector2d(supFoot.translation.x, supFoot.translation.y);
-}//end simplest
+}
 
 Vector2d ZMPPlanner2018::bezierBased(
   const FootStep step,
@@ -187,7 +187,7 @@ Vector2d ZMPPlanner2018::bezierBased(
   double start_x  = (supFoot.translation.x + startFoot.translation.x)/2  + offsetX;
   double target_x = (supFoot.translation.x + targetFoot.translation.x)/2 + offsetX;
 
-  double supFootY = supFoot.translation.y + offsetY * step.liftingFoot();
+  double supFootY = supFoot.translation.y + offsetY * static_cast<double>(step.liftingFoot());
 
   static std::vector<Vector2d> trajectory;
   static unsigned int idx;
