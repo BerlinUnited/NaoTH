@@ -33,7 +33,7 @@ void SocketStream::init(GSocket* s)
   mRecvdLen = 0;
 }
 
-void SocketStream::send(const std::string& msg) throw(std::runtime_error)
+void SocketStream::send(const std::string& msg)
 {
   if(socket == NULL)
   {
@@ -73,7 +73,7 @@ SocketStream& SocketStream::send()
   return *this;
 }
 
-int SocketStream::recv(std::string& msg) throw(std::runtime_error)
+int SocketStream::recv(std::string& msg)
 {
   if(socket == NULL)
   {
@@ -118,7 +118,7 @@ void SocketStream::prefixedSend()
   }
 }
 
-bool SocketStream::isFixedLengthDataAvailable(unsigned int len) throw(std::runtime_error)
+bool SocketStream::isFixedLengthDataAvailable(unsigned int len)
 {
   if(socket == NULL || !g_socket_is_connected(socket))
   {
