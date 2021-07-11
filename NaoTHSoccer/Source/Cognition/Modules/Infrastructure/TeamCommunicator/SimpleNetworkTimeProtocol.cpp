@@ -34,7 +34,7 @@ void SimpleNetworkTimeProtocol::createNtpRequest()
     // if another player is present
     if(!players.empty() && params.maxSyncingPlayer > 0) {
         // randomly select teammates
-        std::random_shuffle(players.begin(), players.end());
+        std::shuffle(players.begin(), players.end(), SimpleNetworkTimeProtocol::rng);
         // fill ntp request for max. syncing partners
         for(unsigned int i = 0; i<players.size() && i<params.maxSyncingPlayer; ++i) {
             auto& player = tm.data.at(players.at(i));
