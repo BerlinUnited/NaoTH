@@ -89,8 +89,6 @@ pages:
     - if: '$CI_PIPELINE_SOURCE == "trigger"'
     - if: $CI_COMMIT_BRANCH == "develop"
   script:
-    # install system dependencies used in ./Utils/CI-Tools/pages.sh  # TODO put them into the toolchain
-    - apt update && apt install tree wget -y
     # handle generation of the html folder structure for cppcheck output
     - ./Utils/CI-Tools/pages.sh
     # generate a index.html listing all the subfolders
