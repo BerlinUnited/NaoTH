@@ -4,7 +4,7 @@ stages:
  - deploy
 
 default:
-  image: $DOCKER_IMAGE
+  image: $TOOLCHAIN_DOCKER_IMAGE
 
 variables:
     branch_name: $CI_COMMIT_REF_NAME
