@@ -41,9 +41,9 @@ compile_nao_gcc:
     - if: '$CI_PIPELINE_SOURCE == "trigger"'
     - if: $CI_COMMIT_BRANCH == "develop"
   script:
-  - ls
   - cd NaoTHSoccer/Make
   - ./compileGame.sh -j 4
+  - ./compileLoLa.sh -j 4
   artifacts:
     expire_in: 4 weeks
     name: "nao_gcc"
@@ -79,6 +79,7 @@ compile_nao_clang:
   - cd NaoTHSoccer/Make
   - echo -en "if PLATFORM == \"Nao\" then\n    _OPTIONS[\"crosscompiler\"] = \"clang\"\nend\n" > projectconfig.user.lua
   - ./compileGame.sh -j 4
+  - ./compileLoLa.sh -j 4
   artifacts:
     expire_in: 4 weeks
     name: "nao_clang"
@@ -110,7 +111,7 @@ publish_naoth_docker:
   dependencies:
     - compile_nao_gcc
     - compile_local_gcc
-    - compile_nao_clang
+    # - compile_nao_clang  # this would overwrite the gcc binaries
   rules:
     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop"'
     - if: '$CI_PIPELINE_SOURCE == "web"'
@@ -123,6 +124,7 @@ publish_naoth_docker:
     - docker pull $TOOLCHAIN_DOCKER_IMAGE
     - docker create --name temp_container $TOOLCHAIN_DOCKER_IMAGE
     - docker cp NaoTHSoccer/dist temp_container:/binaries/
+    - docker cp ./ temp_container:/naoth/repo/
     - docker commit temp_container scm.cms.hu-berlin.de:4567/berlinunited/naoth-2020:$branchname
     - docker push scm.cms.hu-berlin.de:4567/berlinunited/naoth-2020:$branchname
 
@@ -134,10 +136,9 @@ publish_naoth_python:
     - if: $CI_COMMIT_BRANCH == "develop"
       changes:
       - Utils/py/naoth/**/*
-  dependencies: []
+  dependencies: []  # don't download any artifacts to this job for speed
   script:
   - cd NaoTHSoccer/Make
   - premake5 gmake2 --protoc
   - cd ../../Utils/py/naoth
   - ./package_naoth.sh
-  # TODO make sure it does not download the build artifacts. this is for speed
