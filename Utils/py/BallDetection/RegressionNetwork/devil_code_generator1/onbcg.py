@@ -13,7 +13,6 @@ import numpy as np
 from tensorflow.keras import backend as K
 from tensorflow.keras.layers import Convolution2D, MaxPooling2D, Flatten, Dropout, BatchNormalization, \
     LeakyReLU, Dense, ReLU
-from tensorflow.keras.models import load_model
 
 sse_conv = '''
 {indent}w = _mm_set_ps({w3}f, {w2}f, {w1}f, {w0}f);
@@ -80,10 +79,10 @@ def get_size(x, i=1):
 
 
 class NaoTHCompiler:
-    def __init__(self, imdb, model_path, code_path, unroll_level=0, arch="general", conv_mode=0, test_binary=False):
+    def __init__(self, imdb, model, code_path, unroll_level=0, arch="general", conv_mode=0, test_binary=False):
         self.imdb = imdb
         self.dataset_mean = self.imdb["mean"]
-        self.model_path = model_path
+        self.model = model
         self.code_path = code_path
         self.unroll_level = unroll_level
         self.arch = arch
@@ -117,10 +116,8 @@ class NaoTHCompiler:
         self.write_header(self.arch, class_name)
 
         # handle model layers
-        model = load_model(self.model_path)
         _x = self.test_image
-        last_activation = 'none'
-        for layer in model.layers:
+        for layer in self.model.layers:
             print("layer is: ", layer, self.c_inf['layer'])
             if type(layer) == Convolution2D:
                 self.write_cpp('\n \t// Convolution Layer\n')
@@ -138,14 +135,12 @@ class NaoTHCompiler:
                     _x, self.c_inf = self.rectified_linear_unit(_x, 0)
                 if layer.activation.__name__ == 'softmax':
                     _x, self.c_inf = self.softmax(_x)
-                last_activation = layer.activation.__name__
             elif type(layer) == MaxPooling2D:
                 self.write_cpp('\n \t// Maxpool Layer \n')
                 _x, self.c_inf = self.max_pool(_x, layer.pool_size, layer.strides)
             elif type(layer) == LeakyReLU:
                 self.write_cpp('\n \t// Leaky ReLu Layer\n')
                 _x, self.c_inf = self.rectified_linear_unit(_x, float(layer.alpha))
-                last_activation = 'leaky'
             elif type(layer) == ReLU:
                 self.write_cpp('\n \t// ReLu Layer\n')
                 _x, self.c_inf = self.rectified_linear_unit(_x, 0)
@@ -203,10 +198,10 @@ class NaoTHCompiler:
     def write_naoth_header_file(self, class_name, output_folder="."):
         fp = open(os.path.join(output_folder, class_name + ".h"), "w")
         with fp:
-            print("#ifndef _{}_H".format(class_name.upper()), file=fp)
-            print("#define _{}_H".format(class_name.upper()), file=fp)
+            print("#ifndef {}_H".format(class_name.upper()), file=fp)
+            print("#define {}_H".format(class_name.upper()), file=fp)
             print("", file=fp)
-            print("# include <emmintrin.h>", file=fp)
+            print("#include <emmintrin.h>", file=fp)
             print("", file=fp)
             print("#include \"AbstractCNNClassifier.h\"", file=fp)
             print("", file=fp)
@@ -304,7 +299,7 @@ void {}::predict(const BallCandidates::PatchYUVClassified& patch, double meanBri
 \t}}
 """ % self.dataset_mean
 
-# TODO how to write strings
+        # TODO how to write strings
         cnn_part = '''
 \tcnn(in_step);
 }\n
@@ -317,7 +312,6 @@ void {}::predict(const BallCandidates::PatchYUVClassified& patch, double meanBri
     def write_footer(self, _x, class_name):
         if self.c_inf["f"] is not None:
             self.c_inf["f"].write('}\n')
-            # TODO build a switch for compiling a test predict function for timing tests
             self.write_predict_function(class_name)
             self.write_get_radius_function(class_name)
             self.write_get_center_function(class_name)
@@ -1159,6 +1153,7 @@ void {}::predict(float in_step[16][16][1], double meanBrightnessOffset)
                         ))
 
                         i += 1
+            self.c_inf["f"].write(';\n')
 
             # ReLU
             if relu:
