@@ -446,4 +446,4 @@ void BallKeyPointExtractor::calculateKeyPointsFull(const ImageType& integralImag
   }
 }
 
-#endif // _BallKeyPointExtractor_H_
+#endif // _BallKeyPointExtractor_H_-

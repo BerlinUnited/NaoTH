@@ -74,6 +74,9 @@ Vector2d CameraGeometry::relativePointToCameraAngle(
 
   return Vector2d(
       atan2(vectorToPoint.y, vectorToPoint.x), // angle horizontal
+
+      // TODO: maybe it should be
+      //atan2(vectorToPoint.z, std::hypot(vectorToPoint.x, vectorToPoint.y) )
       atan2(vectorToPoint.z, vectorToPoint.x) // angle vertical
       );
 }
@@ -234,22 +237,13 @@ void CameraGeometry::calculateArtificialHorizon( const Pose3D& cameraMatrix,
 
 Vector2d CameraGeometry::lookAtPoint(const Vector3d& point, double cameraHeight)
 {
-  Vector3d vector;
-  Vector2d result;
-  double pitch;
-  double yaw;
-  vector.x = point.x;
-  vector.y = point.y;
-  //camera height
-  vector.z = point.z-cameraHeight;
+  Vector3d vector(point);
+  vector.z -= cameraHeight;
 
-  yaw = atan2(vector.y,vector.x);
-  pitch = -atan2(vector.z,sqrt(vector.y*vector.y + vector.x*vector.x));
+  double yaw   =  atan2(vector.y, vector.x);
+  double pitch = -atan2(vector.z, std::hypot(vector.x,vector.y));
 
-  result.x = yaw;
-  result.y = pitch;
-
-  return result;
+  return Vector2d(yaw, pitch);
 }//end lookAtPoint
 
 

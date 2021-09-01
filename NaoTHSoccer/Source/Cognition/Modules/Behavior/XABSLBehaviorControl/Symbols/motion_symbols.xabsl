@@ -10,8 +10,7 @@ namespace motion_symbols("Motion Symbols") {
     look_straight_ahead,
     look_at_point,
     look_at_world_point,
-    look_at_point_on_the_ground
-,
+    look_at_point_on_the_ground,
     goto_angle
   };
   

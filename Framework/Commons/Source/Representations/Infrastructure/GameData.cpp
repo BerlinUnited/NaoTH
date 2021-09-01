@@ -71,7 +71,9 @@ std::string GameData::toString(CompetitionType value)
   switch (value)
   {
     RETURN_VALUE_TO_STR(competition_normal);
-    RETURN_VALUE_TO_STR(competition_mixed);
+    RETURN_VALUE_TO_STR(competition_1v1);
+    RETURN_VALUE_TO_STR(competition_passing);
+    //RETURN_VALUE_TO_STR(competition_mixed); // deprecated since 2021
   }
   
   ASSERT(false);

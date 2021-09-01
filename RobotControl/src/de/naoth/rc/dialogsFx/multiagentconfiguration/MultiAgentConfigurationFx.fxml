@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SplitMenuButton?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox prefHeight="578.0" prefWidth="756.0" stylesheets="@ui/style.css" xmlns="http://javafx.com/javafx/8.0.162-ea" xmlns:fx="http://javafx.com/fxml/1">
+  <children>
+      <AnchorPane prefHeight="562.0" prefWidth="756.0" VBox.vgrow="ALWAYS">
+         <children>
+            <TabPane fx:id="tabpane" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+            <HBox layoutX="724.0" layoutY="3.0" spacing="4.0" AnchorPane.rightAnchor="3.0" AnchorPane.topAnchor="3.0">
+               <children>
+                  <SplitMenuButton fx:id="btnActions" mnemonicParsing="false" onAction="#addRobots" text="+">
+                    <items>
+                      <MenuItem fx:id="miDisconnect" disable="true" mnemonicParsing="false" onAction="#disconnectAll" text="Disconnect All" />
+                      <MenuItem fx:id="miReconnect" disable="true" mnemonicParsing="false" onAction="#reconnectAll" text="Reconnect all" />
+                        <MenuItem fx:id="miClose" disable="true" mnemonicParsing="false" onAction="#closeAll" text="Close all" />
+                    </items>
+                  </SplitMenuButton>
+               </children>
+            </HBox>
+         </children>
+      </AnchorPane>
+  </children>
+</VBox>

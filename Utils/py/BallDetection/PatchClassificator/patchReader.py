@@ -81,14 +81,32 @@ def read_all_patches_from_log(fileName, type=0):
     camera_index = []
     patches = []
     for frame in LogReader(fileName, my_parser):
-        ball_candidates = frame["BallCandidates"]
+        try:
+            ball_candidates = frame["BallCandidates"]
+        except:
+            # this can happen at the end of the log where the frame is not fully recorded
+            print("An exception occurred")
+            continue
+
+        if ball_candidates is None:
+            continue
+        #print(ball_candidates)
         for p in ball_candidates.patches:
             if p.type == type:
                 data = numpy.fromstring(p.data, dtype=numpy.uint8)
                 patches.append(data)
                 camera_index.append([0])
 
-        ball_candidates_top = frame["BallCandidatesTop"]
+
+        try:
+            ball_candidates_top = frame["BallCandidatesTop"]
+        except:
+            # this can happen at the end of the log where the frame is not fully recorded
+            print("An exception occurred")
+            continue
+        # TODO check if there is a difference here to the try block
+        if ball_candidates_top is None:
+            continue
         for p in ball_candidates_top.patches:
             if p.type == type:
                 data = numpy.fromstring(p.data, dtype=numpy.uint8)

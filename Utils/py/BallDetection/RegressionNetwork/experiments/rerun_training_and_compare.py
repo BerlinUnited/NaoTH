@@ -3,7 +3,6 @@
 """
 import pickle
 from pathlib import Path
-from inspect import getmembers, isfunction
 import utility_functions.model_zoo as model_zoo
 from train import main
 
@@ -16,8 +15,9 @@ def start_training(test_model, num_runs=30, num_epochs=100):
         if not output_path.exists():
             Path.mkdir(output_path)
 
+        # TODO make custom config for each model, handle output path changes in each iteration somehow
         history = main(
-            ['-b', str(DATA_DIR / 'imgdb.pkl'), '--epochs', str(num_epochs), '--output', str(output_path)],
+            ['-b', str(DATA_DIR / 'tk03_combined_detection.pkl'), '--epochs', str(num_epochs), '--output', str(output_path)],
             test_model)
 
         # save trainings history to file
@@ -30,10 +30,12 @@ if __name__ == '__main__':
     num_epochs = 100
 
     # this code assumes only model functions are in model zoo
-    model_list = getmembers(model_zoo, isfunction)
-    for model in model_list:
-        print("Train on model: ", model[0])
+    model_list = ["fy_1500_new", "model1"]
+    for modelname in model_list:
+        print("Train on model: ", modelname)
+        method_to_call = getattr(model_zoo, modelname)
+
         # call the model function from model zoo
-        current_model = model[1]()
+        current_model = method_to_call()
 
         start_training(current_model, num_runs, num_epochs)
