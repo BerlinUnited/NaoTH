@@ -48,7 +48,7 @@ public:
     closeFile();
   }
 
-  void openFile(const char* filePath)
+  void openFile(const std::string& filePath)
   {
     closeFile();
     dataBuffer.clear();
