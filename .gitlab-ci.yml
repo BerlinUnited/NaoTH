@@ -43,7 +43,7 @@ compile_nao_gcc:
   script:
   - cd NaoTHSoccer/Make
   - ./compileGame.sh -j 4
-  - ./compileLoLa.sh -j 4
+  - ./compileLoLaAdaptor.sh -j 4
   artifacts:
     expire_in: 4 weeks
     name: "nao_gcc"
@@ -79,13 +79,14 @@ compile_nao_clang:
   - cd NaoTHSoccer/Make
   - echo -en "if PLATFORM == \"Nao\" then\n    _OPTIONS[\"crosscompiler\"] = \"clang\"\nend\n" > projectconfig.user.lua
   - ./compileGame.sh -j 4
-  - ./compileLoLa.sh -j 4
+  - ./compileLoLaAdaptor.sh -j 4
   artifacts:
     expire_in: 4 weeks
     name: "nao_clang"
     paths:
       - NaoTHSoccer/dist/
 
+# this job must be named pages
 pages:
   stage: deploy
   rules:
