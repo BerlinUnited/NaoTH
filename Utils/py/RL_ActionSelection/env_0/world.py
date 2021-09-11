@@ -51,8 +51,6 @@ from copy import deepcopy
 import numpy as np
 
 
-
-
 class Field():
     """
     the field class represents the soccer field
@@ -85,12 +83,10 @@ class Field():
             # ball trajectory is none, if the two points are less than 1 cm apart
             return (object1.x < -4500 and (-750 < object1.y < 750))
         in_goal = self.own_goal_line.intersect(ball_trajectory) and \
-                      ball_trajectory.intersect(self.own_goal_line)
+                  ball_trajectory.intersect(self.own_goal_line)
         if in_goal == float('inf'):
             in_goal = 0
         return in_goal
-
-
 
         # return ((object1.x < -4500) and (-750 < object1.y < 750))
 
@@ -101,15 +97,14 @@ class Field():
         :return: boolean
         """
 
-
-        ball_trajectory = self.get_ball_trajectory(object1,object2)
+        ball_trajectory = self.get_ball_trajectory(object1, object2)
 
         if object2 is None or ball_trajectory is None:
             # ball trajectory is none, if the two points are less than 1 cm apart
             return (object1.x > 4500 and (-750 < object1.y < 750))
 
         in_goal = self.opp_goal_line.intersect(ball_trajectory) and \
-                        ball_trajectory.intersect(self.opp_goal_line)
+                  ball_trajectory.intersect(self.opp_goal_line)
         if in_goal == float('inf'):
             in_goal = 0
         return in_goal
@@ -135,8 +130,7 @@ class Field():
                 return True
         return False
 
-
-    def in_field(self,object):
+    def in_field(self, object):
         """
         detects weather the object is in the field
         :param object: m2d Vector2
@@ -152,6 +146,7 @@ class Field():
         :return: return line segment
         """
         return LineSegment(player, ball)
+
 
 class Rules(Field):
     """
@@ -206,7 +201,8 @@ class Rules(Field):
         player = state.position
 
         new_ball = Vec()
-        if (not self.in_field(ball)) and (not self.in_own_goal(ball, player)) and (not self.in_opp_goal(ball, player)):
+        if (not self.in_field(ball)) and (not self.in_own_goal(ball, player)) and (
+        not self.in_opp_goal(ball, player)):
             if player is not None:
                 ## here we always asume that there is only one player thus we know who touched the ball at last
                 ### the opponent goal is on the right, the own goal on the left side
@@ -235,8 +231,9 @@ class Rules(Field):
                 else:
                     new_ball.y = -2600
 
-            ball = new_ball # set new_ball as ball otherwise just return the ball position
+            ball = new_ball  # set new_ball as ball otherwise just return the ball position
         state.ball_position = ball
+
 
 class World(Rules, Actions_3):
     """
@@ -251,9 +248,9 @@ class World(Rules, Actions_3):
 
     """
 
-    reset_x_range = [-4490,4490]
-    reset_y_range = [-2990,2990]
-    reset_rad_range = [0, 2*np.pi]
+    reset_x_range = [-4490, 4490]
+    reset_y_range = [-2990, 2990]
+    reset_rad_range = [0, 2 * np.pi]
 
     history = []  # add max size??
 
@@ -269,7 +266,8 @@ class World(Rules, Actions_3):
         if reward_function is None:
             self.reward = lambda state=None, old_state=None: None
         else:
-            self.reward = lambda state, old_state: reward_function(self, state, old_state)  # reward function which derives reward from state ( inout must be State object )
+            self.reward = lambda state, old_state: reward_function(self, state,
+                                                                   old_state)  # reward function which derives reward from state ( inout must be State object )
 
         self.state = self.reset_state()  # initialize state
 
@@ -301,7 +299,6 @@ class World(Rules, Actions_3):
         # (otherwise rotation action could get lost)
         if state.position.x != state.ball_position.x or \
                 state.position.y != state.ball_position.y:
-
             # robot orientation (direction) is the direction of the shortest path to the ball
             state.direction = (state.ball_position - state.position).normalize()
             # new position is equal to ball position
@@ -314,11 +311,12 @@ class World(Rules, Actions_3):
     def reset_state(self, range_x=reset_x_range, range_y=reset_y_range, range_rad=reset_rad_range):
         new_state = State()
 
-        new_state.position.x = np.random.randint(range_x[0], range_x[1])  # get random position in field
+        new_state.position.x = np.random.randint(range_x[0],
+                                                 range_x[1])  # get random position in field
         new_state.position.y = np.random.randint(range_y[0], range_y[1])
         new_state.ball_position = deepcopy(new_state.position)
 
-        rad = range_rad[1]*np.random.rand() - range_rad[0]*np.random.rand()
+        rad = range_rad[1] * np.random.rand() - range_rad[0] * np.random.rand()
         new_state.direction = Vec(1, 0).rotate(rad)
         self.state = new_state
 
@@ -330,7 +328,7 @@ class World(Rules, Actions_3):
             return True  # reward = -100
 
         for obstacle in self.obstacles:
-            pass # check collision
+            pass  # check collision
 
         return False
 
@@ -347,11 +345,11 @@ class World(Rules, Actions_3):
 
         old_state = deepcopy(self.state)
 
-        self.perform_action(self.state, action) # do action
+        self.perform_action(self.state, action)  # do action
 
         reward, done = self.reward(self.state, old_state)  # get reward for action
 
-        #done = self.terminated(self.state)  # get termination state (bool)
+        # done = self.terminated(self.state)  # get termination state (bool)
 
         self.move_robot_to_ball(self.state)  # move robot to ball
 
@@ -359,7 +357,8 @@ class World(Rules, Actions_3):
 
         self.remember(old_state, action, reward, new_state, done)  # add to history
 
-        observation = self.feature(self.state)  # output the observation for environment (simplified position)
+        observation = self.feature(
+            self.state)  # output the observation for environment (simplified position)
 
         info = {}
 
@@ -378,12 +377,12 @@ class World(Rules, Actions_3):
         from naoth import math2d as m2d
         from tools.tools import draw_field
 
-        state_history = [None]*len(self.history)
-        action_history = [None]*len(self.history)
+        state_history = [None] * len(self.history)
+        action_history = [None] * len(self.history)
         for i, entry in enumerate(self.history):
             state_history[i] = entry[0]
             action_history[i] = entry[1]
-            if i == len(self.history)-1:
+            if i == len(self.history) - 1:
                 state_history.append(entry[3])
 
         print(action_history)
@@ -395,29 +394,26 @@ class World(Rules, Actions_3):
 
         # h1 = np.array([[h.state.pose.translation.x, h.state.pose.translation.y] for h in run])
         positions = np.array([[state.position.x, state.position.y] for state in state_history])
-        #plt.plot(positions[:,0], positions[:,1], '-or')
+        # plt.plot(positions[:,0], positions[:,1], '-or')
 
         _, action_names = self.get_actions_degree(0)
 
         for i, state in enumerate(state_history):
-            #plt.scatter(positions[:i+1, 0], positions[:i+1, 1], '-or')
+            # plt.scatter(positions[:i+1, 0], positions[:i+1, 1], '-or')
 
-            plt.plot(positions[:i+1, 0], positions[:i+1, 1], '-or')
+            plt.plot(positions[:i + 1, 0], positions[:i + 1, 1], '-or')
 
             arrow_head = m2d.Vector2(500, 0).rotate(state.direction.angle())
-            axes.arrow(state.position.x, state.position.y, arrow_head.x, arrow_head.y, head_width=100,
+            axes.arrow(state.position.x, state.position.y, arrow_head.x, arrow_head.y,
+                       head_width=100,
                        head_length=100, fc='k', ec='k')
-            if i < len(state_history)-1:
-                axes.text(x=positions[i,0],y=positions[i,1]+30,s=action_names[action_history[i]])
+            if i < len(state_history) - 1:
+                axes.text(x=positions[i, 0], y=positions[i, 1] + 30,
+                          s=action_names[action_history[i]])
             plt.pause(0.2)
         plt.show()
 
-
-        print("#"*20)
-
-
-
-
+        print("#" * 20)
 
 
 if __name__ == "__main__":
@@ -426,8 +422,8 @@ if __name__ == "__main__":
     from naoth import math2d
 
     simWorld = World(reward.simple_reward, features.no_features_normalized)
-    simWorld.state = State(position=math2d.Vector2(4000,2800),direction=math2d.Vector2(0,1))
-    #print simWorld.feature(simWorld.state).shape
+    simWorld.state = State(position=math2d.Vector2(4000, 2800), direction=math2d.Vector2(0, 1))
+    # print simWorld.feature(simWorld.state).shape
     simWorld.step(0)
     simWorld.step(0)
     simWorld.render()

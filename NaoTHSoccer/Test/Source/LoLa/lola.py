@@ -99,7 +99,7 @@ class Robot :
     
   def read (self):
     stream = self.socket.recv( 896 )
-    upacker = msgpack.unpackb(stream)
+    upacker = msgpack.unpackb(stream, raw=False)
     return upacker
     
   def command (self, category, device, value):
@@ -122,7 +122,7 @@ def main ():
     robot.command( "Stiffness" , "HeadPitch" , 1.00 )
     ear_completion = 0
     head_pitch = 0.0
-    
+
     while True :
       data = robot.read()
       positions_value = data[ "Position" ]
@@ -133,7 +133,7 @@ def main ():
       distances = {}
       for index,name in enumerate (robot.sonars):
         distances[name] = sonars_value[index]
-      print distances
+      print(distances)
       touch_value = data[ "Touch" ]
       touch = {}
       for index,name in enumerate (robot.touch):
@@ -158,7 +158,7 @@ def main ():
       robot.command( "Position" , "HeadPitch" , head_pitch)
       robot.send()
   except KeyboardInterrupt :
-    print "Exit"
+    print("Exit")
   finally :
     robot.close()
   

@@ -2,7 +2,7 @@
  * @file SimSparkController.cpp
  *
  * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
- * @breief Interface for the SimSpark simulator
+ * @brief Interface for the SimSpark simulator
  *
  */
 
@@ -12,9 +12,11 @@
 #include "PlatformInterface/Platform.h"
 #include "Tools/Communication/MessageQueue/MessageQueue4Threads.h"
 #include <Tools/ImageProcessing/ColorModelConversions.h>
-#include <Tools/DataConversion.h>
+#include <Tools/StringTools.h>
 //#include <Tools/Debug/DebugRequest.h>
 #include <DebugCommunication/DebugCommandManager.h>
+
+#include <Tools/ThreadUtil.h>
 #include <Tools/NaoTime.h>
 #include <Tools/NaoInfo.h>
 #include <Tools/Math/Common.h>
@@ -52,7 +54,7 @@ SimSparkController::SimSparkController(const std::string& name)
   registerInput<TeamMessageDataIn>(*this);
   registerInput<GameData>(*this);
   registerInput<GPSData>(*this);
-  registerInput<BatteryData>(*this);
+  registerInput<UltraSoundReceiveData>(*this);
 
   // register output
   registerOutput<const MotorJointData>(*this);
@@ -146,17 +148,17 @@ SimSparkController::~SimSparkController()
 
 string SimSparkController::getBodyNickName() const
 {
-  return theGameInfo.teamName + DataConversion::toStr(theGameInfo.playerNumber);
+  return theGameInfo.teamName + StringTools::toStr(theGameInfo.playerNumber);
 }
 
 string SimSparkController::getHeadNickName() const
 {
-  return theGameInfo.teamName + DataConversion::toStr(theGameInfo.playerNumber);
+  return theGameInfo.teamName + StringTools::toStr(theGameInfo.playerNumber);
 }
 
 string SimSparkController::getBodyID() const
 {
-  return DataConversion::toStr(theGameInfo.playerNumber);
+  return StringTools::toStr(theGameInfo.playerNumber);
 }
 
 bool SimSparkController::connect(const std::string& host, int port)
@@ -427,23 +429,20 @@ void SimSparkController::actLoop()
 {
   while( !exiting )
   {
-    {
+    { // NOTE: lock object lives only in this code block
       std::unique_lock<std::mutex> lock(theTimeMutex);
       theTimeCond.wait(lock);
       calculateNextActTime();
     }
+
     unsigned int now = NaoTime::getNaoTimeInMilliSeconds();
     if ( theNextActTime > now )
     {
-      unsigned int t = theNextActTime - now;
-#ifdef WIN32
-      Sleep(t);
-#else
-      usleep(t * 1000);
-#endif
+      ThreadUtil::sleep(theNextActTime - now);
     }
+
     act();
-  } // end while not exiting
+  }
 }
 
 void SimSparkController::act()
@@ -465,9 +464,9 @@ void SimSparkController::multiThreadsMain()
 {
   cout << "SimSpark Controller runs in multi-threads" << endl;
 
-  std::thread senseThread = std::thread([this]{this->senseLoop();});
-  std::thread actThread = std::thread([this]{this->actLoop();});
-  std::thread motionThread = std::thread([this]{this->motionLoop();});
+  std::thread senseThread = std::thread(&SimSparkController::senseLoop, this);
+  std::thread actThread = std::thread(&SimSparkController::actLoop, this);
+  std::thread motionThread = std::thread(&SimSparkController::motionLoop, this);
 
   cognitionLoop();
 
@@ -576,7 +575,7 @@ bool SimSparkController::updateSensors(std::string& msg)
           }
 
           //HACK: assume the image is behind of "See"
-          int offset = paseImage(pcont->lastPos);
+          int offset = parseImage(pcont->lastPos);
           pcont->lastPos = &(pcont->lastPos[offset]);
           isNewImage = offset > 0;
         }
@@ -611,6 +610,7 @@ bool SimSparkController::updateSensors(std::string& msg)
         }
         else if ("GPS" == name) { ok = updateGPS(t->next); }
         else if ("BAT" == name) { ok = updateBattery(t->next); }
+        else if ("US" == name) { ok = updateSonar(t->next); }
         else
         {
           if( ignore.find(name) == ignore.end() ) // new unknown message
@@ -664,12 +664,12 @@ int SimSparkController::parseInt(char* data, int& value)
 {
   std::string tmp;
   int c = parseString(data, tmp);
-  DataConversion::strTo(tmp, value);
+  StringTools::strTo(tmp, value);
   return c;
 }
 
 
-int SimSparkController::paseImage(char* data)
+int SimSparkController::parseImage(char* data)
 {
   //(IMG (s 320 240) (
 
@@ -916,6 +916,58 @@ bool SimSparkController::updateBattery(const sexp_t* sexp)
   return true;
 }//end updateBattery
 
+// Example message: (US Left (0.52, 5.00, 5.00, 5.00, 5.00, 5.00, 5.00, 5.00, 5.00, 5.00))
+bool SimSparkController::updateSonar(const sexp_t* sexp)
+{
+    string name;
+    SexpParser::parseValue(sexp, name);
+
+    // decide which 'side' should be updated
+    double *data = nullptr;
+    if (name == "Left") {
+        data = theUSData.dataLeft;
+    } else if (name == "Right") {
+        data = theUSData.dataRight;
+    } else {
+        cerr << "Unknown sonar sensor!\n";
+        return false;
+    }
+
+    // read sonar echoes
+    sexp = sexp->next;
+    if (SexpParser::isList(sexp))
+    {
+        unsigned int i = 0;
+        double echo = 0;
+        const sexp_t* echoes = sexp->list;
+        while (echoes && i < UltraSoundReceiveData::numOfUSEcho) {
+            if (SexpParser::parseValue(echoes, echo)) {
+                data[i++] = echo;
+            } else {
+                cerr << "Unable to parse sonar echo!\n";
+            }
+            echoes = echoes->next;
+        }
+
+        // fill remaining echoes
+        for (; i < UltraSoundReceiveData::numOfUSEcho; ++i) {
+            data[i] = UltraSoundReceiveData::INVALID;
+        }
+
+        // HACK: introduce some "noise" on the last echo, so that the
+        //       UltraSoundObstacleLocator recognizes the new data
+        data[UltraSoundReceiveData::numOfUSEcho - 1] +=
+                NaoTime::getNaoTimeInMilliSeconds() % 2 == 0 ? 0.01 : -0.01;
+
+        // take the smallest value; the first echoes are the smallest
+        theUSData.rawdata = std::min(theUSData.dataLeft[0], theUSData.dataRight[0]);
+    } else {
+        cerr << "Missing sonar echoes!\n";
+        return false;
+    }
+
+    return true;
+}//end updateSonar
 
 // Example message:
 // (GPS (n torso) (tf 0.00 1.00 0.00 -2.00 -1.00 0.00 0.00 2.10 0.00 -0.00 1.00 0.40 0.00 -0.00 0.00 1.00))
@@ -1327,6 +1379,11 @@ void SimSparkController::get(BatteryData& data)
 void SimSparkController::get(GPSData& data)
 {
   data = theGPSData;
+}
+
+void SimSparkController::get(UltraSoundReceiveData& data)
+{
+  data = theUSData;
 }
 
 void SimSparkController::get(Image& data)

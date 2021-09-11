@@ -13,7 +13,6 @@ IntegralFieldDetector::IntegralFieldDetector()
   getDebugParameterList().add(&params);
 }
 
-
 IntegralFieldDetector::~IntegralFieldDetector()
 {
   getDebugParameterList().remove(&params);
@@ -23,155 +22,124 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
 {
   cameraID = id;
   getFieldPercept().reset();
+  endpoints.clear();
 
-  if((cameraID==CameraInfo::Top)? params.set_whole_image_as_field_top: params.set_whole_image_as_field_bottom) {
+  // Get the camera parameters of the camera image we run the detection on
+  Parameters::cam_params cam_params = cameraID==CameraInfo::Top? params.top:
+                                                                 params.bottom;
+  if(cam_params.set_image_as_field) {
     // skip field detection and set whole image under the horizon as field
-    FieldPercept::FieldPoly fieldPoly;
-    fieldPoly.add(0, 0);
-    fieldPoly.add(0, getImage().height()-1);
-    fieldPoly.add(getImage().width()-1, getImage().height()-1);
-    fieldPoly.add(getImage().width()-1, 0);
-    fieldPoly.add(0, 0);
-
-    getFieldPercept().setField(fieldPoly, getArtificialHorizon());
-    if(fieldPoly.getArea() >= 5600) {
-      getFieldPercept().valid = true;
-    }
-
-    DEBUG_REQUEST("Vision:IntegralFieldDetector:mark_field_polygon",
-      size_t idx = 0;
-      ColorClasses::Color color = getFieldPercept().valid ? ColorClasses::blue : ColorClasses::red;
-      const FieldPercept::FieldPoly& poly = getFieldPercept().getValidField();
-      for(size_t i = 1; i < poly.size(); i++)
-      {
-        LINE_PX(color, poly[idx].x, poly[idx].y, poly[i].x, poly[i].y);
-        idx = i;
-      }
-    );
+    // set endpoints to the upper image corners
+    endpoints = {{0, 0}, {static_cast<int>(getImage().width())-1, 0}};
+    create_field();
     return;
   }
 
+  // TODO: maybe rename getBallDetectorIntegralImage to IntegralImage
+  // TODO: isValid necessary?
   if(!getBallDetectorIntegralImage().isValid()) {
     return;
   }
-  endpoints.clear();
 
-  factor = getBallDetectorIntegralImage().FACTOR;
-  const int width = getBallDetectorIntegralImage().getWidth();
-  const int height = getBallDetectorIntegralImage().getHeight();
+  const int width = getImage().width();
+  const int height = getImage().height();
 
-  const int grid_size = (cameraID==CameraInfo::Top ? params.grid_size_top:
-                                                     params.grid_size_bottom) / factor;
+  // calculate theoretical cell sizes
+  const double cell_width = static_cast<double>(width) / cam_params.column_count;
+  const double cell_height = static_cast<double>(height) / cam_params.row_count;
 
-  // determine number of grids
-  const int n_cells_horizontal = width / grid_size;
-  const int n_cells_vertical = height / grid_size;
+  if (std::min(cell_width, cell_height) < 1) {
+      // cells are to small -> invalid parameters
+      return;
+  }
 
-  // pixels lost due to integer division
-  // TODO: rest is expected to be less then n_cells
-  int rest_H = width - (n_cells_horizontal * grid_size);
-  int rest_V = height - (n_cells_vertical * grid_size);
-
-  const int pixels_per_cell = grid_size * grid_size;
-  const int min_green = (int)(pixels_per_cell*params.proportion_of_green);
-  const int min_end_green = (int)(pixels_per_cell*params.end_proportion_of_green);
-
-  bool first = true;
+  bool is_first_column = true; // first column where field cells have been found
   bool green_found = false;
-  bool former_green = false;
+  bool prev_was_green = false;
   Cell last_green_cell;
+
+  // iterate columns
   Cell cell;
-  // TODO: simplify calculations of cell bounds.
-  // In perticular get rid of bilataral usage of cell.maxX and cell.minY
-  // where the integer devision rest is added.
-  // In short: Make everything double and calculate grid sizes and thresholds individually
-  for (cell.minX=0; cell.minX + grid_size-1 < width; cell.minX = cell.maxX + 1)
+  for (double x=0.0; x + cell_width-1 < width; x += cell_width)
   {
-    // FIXME: check whether the -1 is correct here with the use of integral image
-    cell.maxX = cell.minX + grid_size-1;
-    int horizon_height = std::max(
-          (int) (getArtificialHorizon().point(toImage(cell.maxX)).y),
-          (int) (getArtificialHorizon().point(toImage(cell.minX)).y)
-        );
-    int min_scan_y = Math::clamp(toIntegral(horizon_height), 0, height-1);
+    // calculate column bounds - The right cell x coordinate (cell.maxX) is part of the cell area
+    cell.minX = static_cast<int>(x);
+    cell.maxX = static_cast<int>(x + (cell_width-1)); // cell_width-1 because n * cell_width = width
+
+    // We only need to look for the field below the horizon -> calculate the first y value below the horizon
+    const int horizon_height = static_cast<int>(std::max(
+        getArtificialHorizon().point(cell.maxX).y,
+        getArtificialHorizon().point(cell.minX).y));
+    const int min_scan_y = Math::clamp(horizon_height, 0, height-1);
 
     int skipped = 0;
     int successive_green = 0;
-    int rest = rest_V; // copy, because we need it several times
-    int cell_number = 1;
-    // scan up
-    for(cell.maxY = height-1; cell.maxY - grid_size + 1 >= min_scan_y; cell.maxY = cell.minY - 1)
-    {
-      // FIXME: check whether the -1 is correct here with the use of integral image
-      cell.minY = cell.maxY - grid_size + 1;
+    int row_number = 1;
 
-      // calculate number of green pixels in the cell
-      cell.sum_of_green = getBallDetectorIntegralImage().getSumForRect(
-            cell.minX, cell.minY, cell.maxX, cell.maxY, 1);
+    // iterate rows; scan from bottom to top until min_scan_y
+    for(double y = height-1; y - (cell_height-1) >= min_scan_y; y -= cell_height)
+    {
+      // calculate row bounds
+      cell.maxY = static_cast<int>(y);
+      cell.minY = static_cast<int>(y - (cell_height-1));
+
+      // check if the cell is mostly green
+      const double cell_green_density = cell.calc_green_density(getBallDetectorIntegralImage());
+      const bool cell_is_green = cell_green_density >= params.proportion_of_green;
 
       DEBUG_REQUEST("Vision:IntegralFieldDetector:draw_grid",
-        ColorClasses::Color color;
-        if(cell.sum_of_green >= min_green) {
-          color = ColorClasses::green;
-        } else {
-          color = ColorClasses::red;
-        }
-        RECT_PX(color, toImage(cell.minX), toImage(cell.minY),
-                       toImage(cell.maxX), toImage(cell.maxY));
+        IMAGE_DRAWING_CONTEXT;
+        CANVAS((cameraID==CameraInfo::Top? "ImageTop": "ImageBottom"));
+        std::string color = cell_is_green? "00FF00": "FF00FF";
+        PEN(color, 1);
+        BOX(cell.minX, cell.minY, cell.maxX, cell.maxY);
       );
 
-      if(cell.sum_of_green >= min_green) {
+      if(cell_is_green) {
         skipped = 0;
         ++successive_green;
 
-        if (successive_green >= params.min_successive_green
-            || cell_number == successive_green) {
+        // We found a field cell if all previous cells or the last params.min_successive_green cells were green
+        if (successive_green >= params.min_successive_green || successive_green == row_number) {
           last_green_cell = cell;
-          former_green = true;
+          prev_was_green = true;
           green_found = true;
         }
       } else {
-        if(former_green && cell.sum_of_green > min_end_green) {
+        // Cell may contain the field boundary -> check with a smaller threshold
+        if(prev_was_green && cell_green_density >= params.end_proportion_of_green) {
           last_green_cell = cell;
         }
         ++skipped;
+        // We may allow a number of cells to be skipped (e.g. cells lying on white field lines)
         if (skipped > params.max_skip_cells) {
           successive_green = 0;
         }
-        former_green = false;
+        prev_was_green = false;
       }
-      // ensure cells will end on the upper image border
-      if(rest > 0) {
-        rest--;
-        cell.minY--;
-      }
-      cell_number++;
+      row_number++;
     }
 
+    // determing the endpoint
     if(green_found){
-      if(first) { // find the left most endpoint
+      // Additionally: Left most cell -> Determine the left most field endpoint
+      if(is_first_column) {
         Vector2i left_endpoint;
-        find_endpoint(toImage(last_green_cell.minX), last_green_cell, left_endpoint);
+        find_endpoint(last_green_cell.minX, last_green_cell, left_endpoint);
         endpoints.push_back(left_endpoint);
-        first = false;
+        is_first_column = false;
       }
       Vector2i endpoint;
-      find_endpoint(toImage((last_green_cell.minX + last_green_cell.maxX) / 2),
+      find_endpoint((last_green_cell.minX + last_green_cell.maxX) / 2,
                     last_green_cell, endpoint);
       endpoints.push_back(endpoint);
     }
+  } // end scan
 
-    // ensure cells will end on the right image border
-    if(rest_H > 0) {
-      rest_H--;
-      cell.maxX++;
-    }
-  }
-
-  if(green_found) { // find the right most endpoint
+  // Right most cell -> Determine the right most endpoint so that there is no gap
+  if(green_found) {
     Vector2i right_endpoint;
-    find_endpoint((last_green_cell.maxX + 1) * factor - 1,
-                  last_green_cell, right_endpoint);
+    find_endpoint(last_green_cell.maxX, last_green_cell, right_endpoint);
     endpoints.push_back(right_endpoint);
   }
 
@@ -180,13 +148,16 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
   }
 }
 
+/**
+ * Calculate the y value with the best green score inside the given cell and assign it to endpoint
+ */
 void IntegralFieldDetector::find_endpoint(int x, const Cell& cell, Vector2i& endpoint) {
   double score = 0.;
   double best_score = 0.;
-  int minY = toImage(cell.minY);
   endpoint.x = x;
-  endpoint.y = toImage(cell.maxY);
-  for (int y=endpoint.y; y>=minY; --y) {
+  endpoint.y = cell.maxY;
+  // scan up and increase score if pixel is green, otherwise decrease score
+  for (int y=endpoint.y; y>=cell.minY; --y) {
     Pixel pixel = getImage().get(endpoint.x, y);
     if (getFieldColorPercept().greenHSISeparator.isColor(pixel)) {
       score += params.positive_score;
@@ -199,13 +170,18 @@ void IntegralFieldDetector::find_endpoint(int x, const Cell& cell, Vector2i& end
     }
   }
   DEBUG_REQUEST("Vision:IntegralFieldDetector:draw_end_cell",
-    RECT_PX(ColorClasses::skyblue, toImage(cell.minX), toImage(cell.minY),
-                                   toImage(cell.maxX), toImage(cell.maxY));
-    CIRCLE_PX(ColorClasses::orange, endpoint.x, endpoint.y, 1);
+    IMAGE_DRAWING_CONTEXT;
+    CANVAS(((cameraID==CameraInfo::Top)? "ImageTop": "ImageBottom"));
+
+    PEN("1CFFE4", 1);
+    BOX(cell.minX, cell.minY, cell.maxX, cell.maxY);
+    PEN("FFFF00", 1);
+    CIRCLE(endpoint.x, endpoint.y, 2);
   );
 }
 
 void IntegralFieldDetector::create_field() {
+  // Create projection if the first and last endpoint on the lower image border
   Vector2i p1 = endpoints.front();
   p1.y = getImage().height() - 1;
   Vector2i p2 = endpoints.back();
@@ -221,19 +197,23 @@ void IntegralFieldDetector::create_field() {
     fieldPoly.add(result[i]);
   }
 
-  // add field to percept
+  // add field to percept; ensures field polygon is under the horizon (required if set_whole_image_as_field is set)
   getFieldPercept().setField(fieldPoly, getArtificialHorizon());
   // check result
-  getFieldPercept().valid = fieldPoly.getArea() >= 5600;
+  // TODO: field should be valid if no field is detected (add field is_empty)
+  getFieldPercept().valid = fieldPoly.getArea() >= params.min_field_area;
 
   DEBUG_REQUEST("Vision:IntegralFieldDetector:mark_field_polygon",
-    size_t idx = 0;
-    ColorClasses::Color color = getFieldPercept().valid ? ColorClasses::blue : ColorClasses::red;
+    IMAGE_DRAWING_CONTEXT;
+    CANVAS(((cameraID==CameraInfo::Top)? "ImageTop": "ImageBottom"));
+
+    std::string color = getFieldPercept().valid ? "FFFF00" : "FF0000";
+    PEN(color, 2);
+
     const FieldPercept::FieldPoly& poly = getFieldPercept().getValidField();
     for(size_t i = 1; i < poly.size(); i++)
     {
-      LINE_PX(color, poly[idx].x, poly[idx].y, poly[i].x, poly[i].y);
-      idx = i;
+      LINE(poly[i-1].x, poly[i-1].y, poly[i].x, poly[i].y);
     }
   );
 }

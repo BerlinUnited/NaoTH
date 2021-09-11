@@ -51,6 +51,8 @@ void Simulation::execute()
   );
 
   //Proceed with Calculations only if ball is seen in the last 1 second
+  //HACK: collides with conditions (head movement) in behavior
+  // -> this does not trust the valid flag
   if (!getBallModel().valid || getFrameInfo().getTimeInSeconds() >= getBallModel().getFrameInfoWhenBallWasSeen().getTimeInSeconds() + 1)
   {
     return;
@@ -115,6 +117,7 @@ size_t Simulation::decide_smart(const std::vector<ActionSimulator::ActionResults
 
     // ignore actions with too high chance of kicking out
     double score = results.likelihood(ActionSimulator::BallPositionCategory::INFIELD) + results.likelihood(ActionSimulator::BallPositionCategory::OPPGOAL);
+    // TODO: maybe rename to kick_out_percentage?
     if (score <= max(0.0, theParameters.good_threshold_percentage)) {
       continue;
     }
@@ -124,6 +127,7 @@ size_t Simulation::decide_smart(const std::vector<ActionSimulator::ActionResults
   }
 
   // no acceptable actions
+  // HACK: we should set default action explicitely
   if (acceptableActions.empty()) {
     return 0; //assumes 0 is the turn action
   }
@@ -139,7 +143,10 @@ size_t Simulation::decide_smart(const std::vector<ActionSimulator::ActionResults
     const ActionSimulator::ActionResults& results = actionsConsequences[acceptableActions[i]];
 
     // chance of scoring a goal must be significant
+    // TODO find parameters where this is relevant
+    // TODO minGoalParticles is absolute values, should be relative to number of particles
     if (results.category(ActionSimulator::BallPositionCategory::OPPGOAL) < theParameters.minGoalParticles) {
+      // This action can still be choosen according to the potential field, but it is not considered a goal action
       continue;
     }
 
@@ -170,8 +177,9 @@ size_t Simulation::decide_smart(const std::vector<ActionSimulator::ActionResults
   // no goal actions => select one of the acceptable actions based on strategic value
   if (goalActions.empty())
   {
+    //TODO check image in paper/teamreport for potential field definition
     size_t best_action = 0;
-    double bestValue = std::numeric_limits<double>::max(); // assuming potential is [0.0, inf]
+    double bestValue = std::numeric_limits<double>::max(); // assuming potential is [-inf, inf]
     for (std::vector<size_t>::const_iterator it = acceptableActions.begin(); it != acceptableActions.end(); ++it)
     {
       double potential = simulationModule->getModuleT()->evaluateAction(actionsConsequences[*it]);
@@ -183,7 +191,8 @@ size_t Simulation::decide_smart(const std::vector<ActionSimulator::ActionResults
     }
     // get the value of current position
     double current_potential = simulationModule->getModuleT()->evaluateAction(getRobotPose().translation);
-    //std::cout << "Current potential difference: " << std::abs(current_potential - bestValue) << std::endl;
+    // make sure we dont kick the ball to a similar position on the potential field
+    // choose a kick action only if it improves the ball position significantly
     if (bestValue < (current_potential - theParameters.significance_thresh)){
       return best_action;
     }
@@ -192,20 +201,22 @@ size_t Simulation::decide_smart(const std::vector<ActionSimulator::ActionResults
     }
     
   }
-
-  // find min of goalActions
-  size_t best_action = 0;
-  double bestValue = std::numeric_limits<double>::max(); // assuming potential is [0.0, inf]
-  for (std::vector<size_t>::const_iterator it = goalActions.begin(); it != goalActions.end(); ++it)
-  {
-    double potential = simulationModule->getModuleT()->evaluateAction(actionsConsequences[*it]);
-    if (potential < bestValue) {
-      best_action = *it;
-      bestValue = potential;
+  else{
+    // find min of goalActions (min value is best)
+    size_t best_action = 0;
+    double bestValue = std::numeric_limits<double>::max(); // assuming potential is [-inf, inf]
+    for (std::vector<size_t>::const_iterator it = goalActions.begin(); it != goalActions.end(); ++it)
+    {
+      double potential = simulationModule->getModuleT()->evaluateAction(actionsConsequences[*it]);
+      if (potential < bestValue) {
+        best_action = *it;
+        bestValue = potential;
+      }
     }
+    return best_action;
   }
-  return best_action;
-
+  // should never happen
+  ASSERT(false);
 }
 
 void Simulation::draw_action_results(const ActionSimulator::ActionResults& actionsResults, const Color& color) const

@@ -10,14 +10,57 @@
 
 using namespace naoth;
 
+/*
+ * NOTE: we are using the "natural embedding" of pixel inices into the 
+ *       continuous image plane. I.e., a pixel with indices (x,y)
+ *       lies also at the cordinates (x,y) in the contunuous plane.
+ *       This means, that the origin of the CIP lies in the center of the 
+ *       pixel (0,0), and the upper left corner of the image has coordinates 
+ *       (-0.5, -0.5). The center of the CIP is located at (width/2-0.5, height/2-0.5)
+ *
+ * Visualization of used Coordinate-Frames and their relation:
+ *                     z-cam
+ *                     ^
+ *            |        |                        Legend:
+ *   x-idx--> 0 1 2 3 4|5 6 7 8 9                 ?-cip: Continuous Image Plane
+ *           -|--------|----------                ?-idx: Image Pixel Index
+ *        --0|¤-¤-¤-¤-¤-¤-¤-¤-¤-¤|--> x-cip              (sometimes also named
+ *           ||        |         |                        Discrete Image Plane)
+ * y-idx--> 1|¤ ¤ ¤ ¤ ¤|¤ ¤ ¤ ¤ ¤|                ?-cam: Camera Frame Axis
+ *           ||        |         |
+ *          2|¤ ¤ ¤ ¤ ¤|¤ ¤ ¤ ¤ ¤|              Note:
+ * y-cam <---||--------|---------|--              - origin of CIP coincides with
+ *          3|¤ ¤ ¤ ¤ ¤|¤ ¤ ¤ ¤ ¤|                  the center of pixel (0, 0)
+ *           ||        |         |                - x-cam points into the image
+ *          4|¤ ¤ ¤ ¤ ¤|¤ ¤ ¤ ¤ ¤<-pixel            plane (i.e. from your point
+ *           ||        |         |                  of view into your monitor)
+ *          5|¤ ¤ ¤ ¤ ¤|¤ ¤ ¤ ¤ ¤|<-image plane
+ *           -|--------|----------
+ *            |        |
+ *            v
+ *            y-cip
+ *
+ *  direction of view   z-cam
+ *  of the image above  |                                         oooo
+ *     ----------->     |                  |                    oooooooo
+ *                      |                  |<- image plane     ooObjectoo
+ *  projection center-> *-------------------------> x-cam        oooooo
+ *                      |<- focal length ->|                       ll
+ *                      |                  |                       ll
+ *                      |                  y-cip                  dllb
+ *
+ */
+
 Vector3d CameraGeometry::imagePixelToCameraCoords( const CameraInfo& cameraInfo,
                                                    const double imgX,
                                                    const double imgY)
 {
+  // NOTE: the origin of the Continuous Image Plane (CIP) lies in the center of the pixel (0,0) 
+  //       thus the opical center in the CIP coordinates lies at (width/2-0.5, height/2-0.5)
   Vector3d pixelVector;
-  pixelVector.x = cameraInfo.getFocalLength();
-  pixelVector.y = cameraInfo.getOpticalCenterX() - imgX;
-  pixelVector.z = cameraInfo.getOpticalCenterY() - imgY;
+  pixelVector.x =  cameraInfo.getFocalLength();
+  pixelVector.y = (cameraInfo.getOpticalCenterX() - 0.5) - imgX;
+  pixelVector.z = (cameraInfo.getOpticalCenterY() - 0.5) - imgY;
   return pixelVector;
 }
 
@@ -31,9 +74,12 @@ Vector2d CameraGeometry::relativePointToCameraAngle(
 
   return Vector2d(
       atan2(vectorToPoint.y, vectorToPoint.x), // angle horizontal
+
+      // TODO: maybe it should be
+      //atan2(vectorToPoint.z, std::hypot(vectorToPoint.x, vectorToPoint.y) )
       atan2(vectorToPoint.z, vectorToPoint.x) // angle vertical
       );
-}//end relativePointToImageDouble
+}
 
 bool CameraGeometry::relativePointToImage( 
   const CameraMatrix& cameraMatrix,
@@ -52,11 +98,14 @@ bool CameraGeometry::relativePointToImage(
   }
 
   double factor = cameraInfo.getFocalLength() / vectorToPoint.x;
-  pointInImage.x = -(vectorToPoint.y * factor) + 0.5 + cameraInfo.getOpticalCenterX();
-  pointInImage.y = -(vectorToPoint.z * factor) + 0.5 + cameraInfo.getOpticalCenterY();
+
+  // NOTE: the origin of the Continuous Image Plane (CIP) lies in the center of the pixel (0,0) 
+  //       thus the opical center in the CIP coordinates lies at (width/2-0.5, height/2-0.5)
+  pointInImage.x = -(vectorToPoint.y * factor) + (cameraInfo.getOpticalCenterX() - 0.5);
+  pointInImage.y = -(vectorToPoint.z * factor) + (cameraInfo.getOpticalCenterY() - 0.5);
 
   return true;
-}//end relativePointToImageDouble
+}
 
 bool CameraGeometry::relativePointToImage( 
   const CameraMatrix& cameraMatrix,
@@ -79,10 +128,7 @@ Vector2d CameraGeometry::pixelToAngles( const naoth::CameraInfo& cameraInfo,
                                         const double imgX,
                                         const double imgY)
 {
-  Vector3d pixelVector;
-  pixelVector.x = cameraInfo.getFocalLength();
-  pixelVector.y = -imgX + cameraInfo.getOpticalCenterX();
-  pixelVector.z = -imgY + cameraInfo.getOpticalCenterY();
+  Vector3d pixelVector = imagePixelToCameraCoords(cameraInfo, imgX, imgY);
 
   return Vector2d(
       atan2(pixelVector.y, pixelVector.x), // angle horizontal
@@ -191,22 +237,13 @@ void CameraGeometry::calculateArtificialHorizon( const Pose3D& cameraMatrix,
 
 Vector2d CameraGeometry::lookAtPoint(const Vector3d& point, double cameraHeight)
 {
-  Vector3d vector;
-  Vector2d result;
-  double pitch;
-  double yaw;
-  vector.x = point.x;
-  vector.y = point.y;
-  //camera height
-  vector.z = point.z-cameraHeight;
+  Vector3d vector(point);
+  vector.z -= cameraHeight;
 
-  yaw = atan2(vector.y,vector.x);
-  pitch = -atan2(vector.z,sqrt(vector.y*vector.y + vector.x*vector.x));
+  double yaw   =  atan2(vector.y, vector.x);
+  double pitch = -atan2(vector.z, std::hypot(vector.x,vector.y));
 
-  result.x = yaw;
-  result.y = pitch;
-
-  return result;
+  return Vector2d(yaw, pitch);
 }//end lookAtPoint
 
 

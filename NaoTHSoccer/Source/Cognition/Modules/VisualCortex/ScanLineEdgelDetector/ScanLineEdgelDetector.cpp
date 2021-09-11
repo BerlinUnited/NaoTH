@@ -24,12 +24,12 @@ ScanLineEdgelDetector::ScanLineEdgelDetector()
 
   DEBUG_REQUEST_REGISTER("Vision:ScanLineEdgelDetector:mark_scan_segments", "...", false);
 
-  getDebugParameterList().add(&theParameters);
+  getDebugParameterList().add(&params);
 }
 
 ScanLineEdgelDetector::~ScanLineEdgelDetector()
 {
-  getDebugParameterList().remove(&theParameters);
+  getDebugParameterList().remove(&params);
 }
 
 void ScanLineEdgelDetector::execute(CameraInfo::CameraID id)
@@ -49,14 +49,14 @@ void ScanLineEdgelDetector::execute(CameraInfo::CameraID id)
   // scan only inside the estimated field region
   //horizon_height = getFieldPerceptRaw().getValidField().points[0].y;
 
-  int scanline_count = (cameraID ==CameraInfo::Top)?theParameters.scanline_count_top:theParameters.scanline_count_bottom;
+  int scanline_count = (cameraID ==CameraInfo::Top)? params.scanline_count_top: params.scanline_count_bottom;
 
   // horizontal stepsize between the scanlines
   double step = static_cast<double>(getImage().width()) / static_cast<double>(scanline_count);
   double scanline_x = step / 2.0;
 
   // don't scan the lower lines in the image
-  int borderY = getImage().height() - theParameters.pixel_border_y - 1;
+  int borderY = getImage().height() - params.pixel_border_y - 1;
   
   // start and endpoints for the scanlines
   Vector2i start((int) scanline_x, borderY);
@@ -168,20 +168,20 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id,
   bool begin_found = false;
 
   // calculate the threashold
-  int t_edge = theParameters.brightness_threshold_top;
+  int t_edge = params.brightness_threshold_top;
   // HACK (TEST): make it dependend on the angle of the camera in the future
   if(cameraID == CameraInfo::Bottom) {
-    t_edge = theParameters.brightness_threshold_bottom;
+    t_edge = params.brightness_threshold_bottom;
   }
 
   // calculate the threshold depending on the reprojected size of the ball in the image
-  if(theParameters.dynamicThreshold) 
+  if(params.dynamicThreshold)
   {
     double radius = CameraGeometry::estimatedBallRadius(
       getCameraMatrix(),getCameraInfo(), getFieldInfo().ballRadius, 
       getCameraInfo().resolutionWidth / 2, getCameraInfo().resolutionHeight / 4*3);
 
-    t_edge = Math::clamp((int)radius, theParameters.dynamicThresholdMin, theParameters.dynamicThresholdMax);
+    t_edge = Math::clamp((int)radius, params.dynamicThresholdMin, params.dynamicThresholdMax);
   }
 
   Vector2i lastGreenPoint(point); // HACK
@@ -256,7 +256,7 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id,
       // new end edgel
       // found a new double edgel
       bool not_in_green_area = (numberOfSamples <= 3 || numberOfGreen*2 < numberOfSamples);
-      if(begin_found && (!theParameters.double_edgel_green_check || not_in_green_area)) {
+      if(begin_found && (!params.double_edgel_green_check || not_in_green_area)) {
         add_double_edgel(scan_id);
       }
 
@@ -273,7 +273,7 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id,
     // HACK
     if(getFieldColorPercept().isFieldColor(pixel))
     {
-      if(movingWindow.getAverage() > theParameters.minEndPointGreenDensity)
+      if(movingWindow.getAverage() > params.minEndPointGreenDensity)
       {
         lastGreenPoint = point;
         endPoint.greenFound = true;
@@ -370,7 +370,7 @@ ColorClasses::Color ScanLineEdgelDetector::estimateColorOfSegment(const Vector2i
     endY = begin.y;
   }
 
-  const int numberOfSamples = theParameters.green_sampling_points;
+  const int numberOfSamples = params.green_sampling_points;
   int length = beginY - endY; //begin.y - end.y;
   int numberOfGreen = 0;
   Vector2i point(begin.x, beginY);
@@ -416,7 +416,7 @@ Vector2d ScanLineEdgelDetector::calculateGradient(const Vector2i& point) const
   // no angle at the border (shouldn't happen)
   if( point.x < offset || point.x + offset + 1 > (int)getImage().width() ||
       point.y < offset || point.y + offset + 1 > (int)getImage().height() ) {
-    return gradient;
+    ASSERT(false);
   }
 
   //apply Sobel Operator on (pointX, pointY)

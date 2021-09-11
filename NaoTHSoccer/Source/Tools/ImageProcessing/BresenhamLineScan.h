@@ -17,7 +17,6 @@
 //#include "Tools/Math/Common.h"
 #include "Tools/Math/Line.h"
 #include "Tools/Math/Vector2.h"
-#include "Tools/Math/MVTools.h"
 
 #include "Representations/Infrastructure/CameraInfo.h"
 

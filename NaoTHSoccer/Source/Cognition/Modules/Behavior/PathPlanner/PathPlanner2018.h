@@ -66,6 +66,11 @@ private:
     {
       PARAMETER_REGISTER(readyForSideKickThresholdX)            = 4.0;
       PARAMETER_REGISTER(readyForSideKickThresholdY)            = 0.3;
+      PARAMETER_REGISTER(forwardKickThreshold_near.x)           = 25; // mm
+      PARAMETER_REGISTER(forwardKickThreshold_near.y)           = 25; // mm
+      PARAMETER_REGISTER(forwardKickThreshold_far.x)            = 50; // mm
+      PARAMETER_REGISTER(forwardKickThreshold_far.y)            = 25; // mm
+      //PARAMETER_REGISTER(nearApproachForwardKickBallPosOffsetX) = 110;
       PARAMETER_REGISTER(nearApproachSideKickBallPosOffsetX)    = 100;
       PARAMETER_REGISTER(sidekickOffsetY) = 40.0;
       PARAMETER_REGISTER(sideKickTime) = 300;
@@ -93,6 +98,9 @@ private:
 
     double readyForSideKickThresholdX;
     double readyForSideKickThresholdY;
+    Vector2d forwardKickThreshold_far;
+    Vector2d forwardKickThreshold_near;
+    //double nearApproachForwardKickBallPosOffsetX;
     double nearApproachSideKickBallPosOffsetX;
     double sidekickOffsetY;
     int sideKickTime;
@@ -172,19 +180,7 @@ private:
   // Used to synchronize stepIDs of WalkEngine to take control
   unsigned int lastStepRequestID;
 
-  void addStep(const StepBufferElement& new_step) {
-    stepBuffer.push_back(new_step);
-    //std::cout << new_step.debug_name << std::endl;
-  }
-
-  /*
-  NOTE: this feature is for future generations of advanced programmers who like to program like javascript peasants
-  const StepBufferElement& addStep(const std::string& name) {
-    stepBuffer.emplace_back(name);
-    return stepBuffer.back();
-  }
-  */
-
+  void addStep(const StepBufferElement& new_step);
   void updateSpecificStep(const unsigned int index, StepBufferElement& step);
   void manageStepBuffer();
   void executeStepBuffer();

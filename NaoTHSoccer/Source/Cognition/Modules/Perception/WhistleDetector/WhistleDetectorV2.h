@@ -9,8 +9,8 @@
 * (simmilar to the austrian kangaroos whistle detector)
 */
 
-#ifndef _WhistleDetectorV2_h_
-#define _WhistleDetectorV2_h_
+#ifndef WhistleDetectorV2_H
+#define WhistleDetectorV2_H
 
 #include <ModuleFramework/Module.h>
 
@@ -28,6 +28,7 @@
 #include <vector>
 #include <fftw3/fftw3.h>
 #include <Tools/Filters/AssymetricalBoolFilter.h>
+#include <limits>
 
 using namespace naoth;
 
@@ -214,4 +215,4 @@ private:
   FFT fft;
 
 };
-#endif // _WhistleDetectorV2_h_
+#endif // WhistleDetectorV2_H

@@ -6,21 +6,18 @@
 
 #include "SimpleRoleDecision.h"
 #include <PlatformInterface/Platform.h>
-#include  <Tools/DataConversion.h>
-
-#include <math.h>
 
 using namespace std;
 
 
 SimpleRoleDecision::SimpleRoleDecision()
 {
-  getDebugParameterList().add(&parameters);
+  getDebugParameterList().add(&params);
 }
 
 SimpleRoleDecision::~SimpleRoleDecision()
 {
-  getDebugParameterList().remove(&parameters);
+  getDebugParameterList().remove(&params);
 }
 
 void SimpleRoleDecision::execute() {
@@ -40,7 +37,7 @@ void SimpleRoleDecision::computeStrikers() {
     const TeamMessageData& messageData = it.second;
     const unsigned int number = it.first;
 
-    if((getFrameInfo().getTimeSince(messageData.frameInfo.getTime()) < parameters.maximumFreshTime) && // the message is fresh...
+    if((getFrameInfo().getTimeSince(messageData.frameInfo.getTime()) < params.maximumFreshTime) && // the message is fresh...
         number != getPlayerInfo().playerNumber && // its not me...
         messageData.custom.wasStriker // the guy wants to be striker...
         ) {
@@ -65,13 +62,13 @@ void SimpleRoleDecision::computeStrikers() {
       const TeamMessageData& messageData = it.second;
       const unsigned int number = it.first;
 
-      double time_bonus = messageData.custom.wasStriker ? parameters.strikerBonusTime : 0.0; //At this point, the only robot that may still have been a striker is us
+      double time_bonus = messageData.custom.wasStriker ? params.strikerBonusTime : 0.0; //At this point, the only robot that may still have been a striker is us
 
     if (!messageData.fallen
       && messageData.custom.robotState == PlayerInfo::playing
       && number != 1 // goalie is not considered
-      && getFrameInfo().getTimeSince(messageData.frameInfo.getTime()) < parameters.maximumFreshTime // its fresh
-      && (messageData.ballAge >= 0 && messageData.ballAge < parameters.maxBallLostTime+time_bonus )// the guy sees the ball
+      && getFrameInfo().getTimeSince(messageData.frameInfo.getTime()) < params.maximumFreshTime // its fresh
+      && (messageData.ballAge >= 0 && messageData.ballAge < params.maxBallLostTime+time_bonus )// the guy sees the ball
       ) 
     {
       Vector2d ballPos = messageData.ballPosition;

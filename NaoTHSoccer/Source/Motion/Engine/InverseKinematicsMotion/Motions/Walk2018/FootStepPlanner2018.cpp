@@ -119,7 +119,7 @@ void FootStepPlanner2018::calculateNewStep(const Step& lastStep, Step& newStep, 
 
     // print it only once
     if(newStep.footStep.liftingFoot() == FootStep::NONE && lastStep.footStep.liftingFoot() != FootStep::NONE) {
-      std::cout << "walk stopping ..." << std::endl;
+      //std::cout << "walk stopping ..." << std::endl;
     }
     return;
   } else {
@@ -444,14 +444,23 @@ void FootStepPlanner2018::restrictStepChange(Pose2D& step, const Pose2D& lastSte
         maxChangeTurn     = parameters.limits.maxStepTurn   * parameters.limits.maxStepChange;
     }
 
+    // calculate planned change
     Pose2D change;
     change.translation = step.translation - lastStep.translation;
     change.rotation = Math::normalize(step.rotation - lastStep.rotation);
 
-    change.translation.x = Math::clamp(change.translation.x, -maxChangeDownX, maxChangeX);
-    change.translation.y = Math::clamp(change.translation.y, -maxChangeDownY, maxChangeY);
-    change.rotation = Math::clamp(change.rotation, -maxChangeDownTurn, maxChangeTurn);
+    // apply restrictions to change
+    if(parameters.limits.applyChangeX) {
+      change.translation.x = Math::clamp(change.translation.x, -maxChangeDownX, maxChangeX);
+    }
+    if(parameters.limits.applyChangeY) {
+      change.translation.y = Math::clamp(change.translation.y, -maxChangeDownY, maxChangeY);
+    }
+    if(parameters.limits.applyChangeRotation) {
+      change.rotation = Math::clamp(change.rotation, -maxChangeDownTurn, maxChangeTurn);
+    }
 
+    // apply restricted change
     step.translation = lastStep.translation + change.translation;
     step.rotation = Math::normalize(lastStep.rotation + change.rotation);
 }

@@ -1,0 +1,9 @@
+tensorflow==2.5.0
+numpy==1.19.5
+opencv-python==4.5.1.48
+matplotlib==3.4.1
+kaggle==1.5.12
+h5py  # we need for b-human dataset but it comes in an old version with tensorflow
+
+pydot  # needed for nncg
+toml

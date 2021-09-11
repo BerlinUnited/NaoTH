@@ -15,6 +15,8 @@
 #include "Representations/Perception/FieldPercept.h"
 #include "Representations/Perception/BodyContour.h"
 #include "Representations/Perception/FieldColorPercept.h"
+#include "Representations/Infrastructure/FieldInfo.h"
+#include "Representations/Modeling/BallModel.h"
 
 #include "Representations/Perception/MultiChannelIntegralImage.h"
 #include "Representations/Perception/BallCandidates.h"
@@ -65,6 +67,8 @@ BEGIN_DECLARE_MODULE(CNNBallDetector)
 
   REQUIRE(CameraMatrix)
   REQUIRE(CameraMatrixTop)
+  REQUIRE(FieldInfo)
+  REQUIRE(BallModel)
 
   REQUIRE(FieldPercept)
   REQUIRE(FieldPerceptTop)
@@ -85,6 +89,11 @@ public:
 
   virtual void execute()
   {
+    // update selected classifier from parameters
+    if(params.check_changed()) {
+      setClassifier(params.classifier, params.classifierClose);
+    }
+
     getMultiBallPercept().reset();
 
     stopwatch_values.clear();
@@ -92,6 +101,8 @@ public:
     execute(CameraInfo::Bottom);
     execute(CameraInfo::Top);
 
+
+    // debug stuff
     double mean = 0;
     if(!stopwatch_values.empty()){
         for (auto i = stopwatch_values.begin(); i < stopwatch_values.end(); ++i){
@@ -117,12 +128,13 @@ private:
       
       PARAMETER_REGISTER(cnn.threshold) = 0.4;
       PARAMETER_REGISTER(cnn.thresholdClose) = 0.45;
-      PARAMETER_REGISTER(cnn.meanBrightness) = 0.5;
+      // Constant offset added to the input of the CNN. < 0 darker, > 0 brighter. T
+      PARAMETER_REGISTER(cnn.meanBrightnessOffset) = 0.0; 
       
-
 
       PARAMETER_REGISTER(maxNumberOfKeys) = 12;
       PARAMETER_REGISTER(numberOfExportBestPatches) = 2;
+      PARAMETER_REGISTER(providePatches) = false;
 
       PARAMETER_REGISTER(postBorderFactorClose) = 0.0;
       PARAMETER_REGISTER(postBorderFactorFar) = 0.3;
@@ -133,8 +145,8 @@ private:
       PARAMETER_REGISTER(contrastMinimumClose) = 50;
 
 
-      PARAMETER_REGISTER(classifier) = "fy1500_2";
-      PARAMETER_REGISTER(classifierClose) = "fy1500_2";
+      PARAMETER_REGISTER(classifier) = "fy1500_conf";
+      PARAMETER_REGISTER(classifierClose) = "fy1500_conf";
 
       PARAMETER_REGISTER(brightnessMultiplierBottom) = 1.0;
       PARAMETER_REGISTER(brightnessMultiplierTop) = 1.0;
@@ -149,11 +161,12 @@ private:
       double threshold;
       double thresholdClose;
 
-      double meanBrightness;
+      double meanBrightnessOffset;
     } cnn;
 
     int maxNumberOfKeys;
     int numberOfExportBestPatches;
+    bool providePatches;
 
     double postBorderFactorClose;
     double postBorderFactorFar;
@@ -186,8 +199,10 @@ private:
 
 private:
   void calculateCandidates();
-  void addBallPercept(const Vector2i& center, double radius);
+  void addBallPercept(const Vector2d& center, double radius);
   void extractPatches();
+  void providePatches();
+  void addPatchByLastBall();
 
   void setClassifier(const std::string& name, const std::string& nameClose);
   std::map<std::string, std::shared_ptr<AbstractCNNFinder> > createCNNMap();

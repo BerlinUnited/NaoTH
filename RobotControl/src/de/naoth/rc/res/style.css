@@ -1,0 +1,147 @@
+/*******************************************************************************
+ *                                                                             *
+ * Some (default) button stylings                                              *
+ *                                                                             *
+ ******************************************************************************/
+Button.update {
+    /* button with resizable image */
+    -fx-background-image: url(lucky/view-refresh.png);
+    -fx-background-size: 16px 16px;
+    -fx-background-repeat: no-repeat;
+    /* position the image correctly */
+    -fx-background-position: 8;
+    -fx-label-padding: 0 0 0 20;
+}
+
+Button.save {
+    /* image only button */
+    -fx-background-image: url(lucky/media-floppy.png);
+    -fx-background-size: 20px 20px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-content-display: graphic-only;
+    -fx-pref-width: 30;
+}
+
+Button.export {
+    /* image only button */
+    -fx-background-image: url(lucky/document-export.png);
+    -fx-background-size: 20px 20px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-content-display: graphic-only;
+    -fx-pref-width: 30;
+}
+
+Button.copy {
+    /* image only button */
+    -fx-background-image: url(lucky/copy.png);
+    -fx-background-size: 10px 10px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-content-display: graphic-only;
+    -fx-pref-width: 16;
+}
+
+Button.pause,
+ToggleButton.pause
+{
+    /* image only button */
+    -fx-background-image: url(lucky/pause.png);
+    -fx-background-size: 10px 10px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-content-display: graphic-only;
+    -fx-pref-width: 16;
+}
+
+Button.play,
+ToggleButton.play
+{
+    /* image only button */
+    -fx-background-image: url(lucky/play.png);
+    -fx-background-size: 10px 10px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-content-display: graphic-only;
+    -fx-pref-width: 16;
+}
+
+/*******************************************************************************
+ *                                                                             *
+ * ModuleConfiurationDialog                                                    *
+ *                                                                             *
+ ******************************************************************************/
+.inactive {
+    -fx-text-fill: grey;
+}
+
+Button.module {
+    -fx-background-color: -fx-shadow-highlight-color, -fx-outer-border, -fx-inner-border, rgb(160, 160, 255);
+}
+
+Button.module:hover {
+    -fx-background-color: -fx-shadow-highlight-color, -fx-outer-border, -fx-inner-border, rgb(160, 160, 255, 0.5);
+}
+
+Button.representation {
+    -fx-background-color: -fx-shadow-highlight-color, -fx-outer-border, -fx-inner-border, rgb(255, 192, 128);
+}
+
+Button.representation:hover {
+    -fx-background-color: -fx-shadow-highlight-color, -fx-outer-border, -fx-inner-border, rgb(255, 192, 128, 0.5);
+}
+
+/* * Representation list  * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+#representation-list ToggleButton {
+    /* same for all state icons (below); image only button */
+    -fx-background-size: 19px 19px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+}
+
+#representation-list ToggleButton.info {
+    -fx-background-image: url(lucky/dialog-information.png);
+}
+
+#representation-list ToggleButton.warning {
+    -fx-background-image: url(lucky/dialog-warning.png);
+}
+
+#representation-list ToggleButton.error {
+    -fx-background-image: url(lucky/dialog-error.png);
+}
+
+#representation-list .list-cell.info {
+    -fx-background-color: white;
+}
+
+#representation-list .list-cell.info:odd {
+    -fx-background-color: derive(white, -5%);
+}
+
+#representation-list .list-cell.warning {
+    -fx-background-color: #ffffa0;
+}
+
+#representation-list .list-cell.warning:odd {
+    -fx-background-color: derive(#ffffa0, -5%);
+}
+
+#representation-list .list-cell.error {
+    -fx-background-color: #ffb4b4;
+}
+
+#representation-list .list-cell.error:odd {
+    -fx-background-color: derive(#ffb4b4, -5%);
+}
+
+#representation-list .list-cell.info:selected,
+#representation-list .list-cell.info:odd:selected,
+#representation-list .list-cell.warning:selected,
+#representation-list .list-cell.warning:odd:selected,
+#representation-list .list-cell.error:selected,
+#representation-list .list-cell.error:odd:selected {
+    -fx-background-color: -fx-selection-bar;
+}

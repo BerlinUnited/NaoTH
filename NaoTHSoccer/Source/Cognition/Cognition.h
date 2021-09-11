@@ -50,7 +50,7 @@ public:
 
 private:
   Stopwatch stopwatch;
-  
+
 };
 
 #endif  /* _Cognition_h_ */

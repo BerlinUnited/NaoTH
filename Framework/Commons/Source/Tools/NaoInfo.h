@@ -30,14 +30,17 @@ public:
   public:
     RobotDimensions() : ParameterList("RobotDimensions")
     {
-      PARAMETER_REGISTER(cameraTrans[naoth::CameraInfo::Top].offset.x) = 58.71;
-      PARAMETER_REGISTER(cameraTrans[naoth::CameraInfo::Top].offset.y) = 0;
-      PARAMETER_REGISTER(cameraTrans[naoth::CameraInfo::Top].offset.z) = 63.64;
-      PARAMETER_REGISTER(cameraTrans[naoth::CameraInfo::Top].rotationY) = 1.2;
+      // http://doc.aldebaran.com/2-4/family/robots/video_robot.html
+      // http://doc.aldebaran.com/2-8/family/nao_technical/kinematics_naov6.html#naov6-urdf-files
+      // Valid for NAO 4,5 & 6. For NAO V6 see the URDF file.
+      PARAMETER_REGISTER(cameraTrans[naoth::CameraInfo::Top].offset.x)     = 58.71;
+      PARAMETER_REGISTER(cameraTrans[naoth::CameraInfo::Top].offset.y)     = 0;
+      PARAMETER_REGISTER(cameraTrans[naoth::CameraInfo::Top].offset.z)     = 63.64;
+      PARAMETER_REGISTER(cameraTrans[naoth::CameraInfo::Top].rotationY)    = 1.2;
 
-      PARAMETER_REGISTER(cameraTrans[naoth::CameraInfo::Bottom].offset.x) = 50.71;
-      PARAMETER_REGISTER(cameraTrans[naoth::CameraInfo::Bottom].offset.y) = 0;
-      PARAMETER_REGISTER(cameraTrans[naoth::CameraInfo::Bottom].offset.z) = 17.74;
+      PARAMETER_REGISTER(cameraTrans[naoth::CameraInfo::Bottom].offset.x)  = 50.71;
+      PARAMETER_REGISTER(cameraTrans[naoth::CameraInfo::Bottom].offset.y)  = 0;
+      PARAMETER_REGISTER(cameraTrans[naoth::CameraInfo::Bottom].offset.z)  = 17.74;
       PARAMETER_REGISTER(cameraTrans[naoth::CameraInfo::Bottom].rotationY) = 39.7;
 
       syncWithConfig();

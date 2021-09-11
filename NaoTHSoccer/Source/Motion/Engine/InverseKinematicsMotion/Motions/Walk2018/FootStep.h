@@ -20,7 +20,7 @@ public:
     NONE = 0,
     RIGHT = -LEFT
   };
-  
+
   FootStep(){}
 
   FootStep(const InverseKinematic::FeetPose& feet, Foot liftingFoot):
@@ -49,7 +49,7 @@ public:
   InverseKinematic::FeetPose begin() const
   {
     InverseKinematic::FeetPose feet;
-    
+
     switch(theLiftingFoot)
     {
       case LEFT:
@@ -71,7 +71,7 @@ public:
   InverseKinematic::FeetPose end() const
   {
     InverseKinematic::FeetPose feet;
-    
+
     switch(theLiftingFoot)
     {
       case LEFT:
@@ -109,13 +109,15 @@ public:
     canvas.rotate(-theFootEnd.rotation.getZAngle());
     canvas.translate(-theFootEnd.translation.x, -theFootEnd.translation.y);
   }//end draw
-   
+
    Foot liftingFoot() const { return theLiftingFoot; }
-   
+
    const Pose3D& footBegin() const { return theFootBegin; }
    const Pose3D& footEnd() const { return theFootEnd; }
    Pose3D& footEnd() { return theFootEnd; }
    const Pose3D& supFoot() const { return theSupFoot; }
+   // hack...
+   Pose3D& supFoot() { return theSupFoot; }
 
    // calculated and used by the FootStepPlanner
    const Pose2D& stepRequest() const { return theStepRequest; }
@@ -123,7 +125,7 @@ public:
 
    const Pose2D& offset() const { return theOffset; }
    Pose2D& offset() { return theOffset; }
-   
+
 private:
    Foot theLiftingFoot;
    Pose3D theFootBegin, theFootEnd, theSupFoot;

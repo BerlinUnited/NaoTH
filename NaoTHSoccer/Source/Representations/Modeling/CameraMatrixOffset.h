@@ -2,15 +2,17 @@
 * @file CameraMatrixOffset.h
 *
 * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
+* @author <a href="mailto:kaden@informatik.hu-berlin.de">Steffen Kaden</a>
 */
 
-#ifndef _CameraMatrixOffset_h_
-#define _CameraMatrixOffset_h_
+#ifndef CameraMatrixOffset_H
+#define CameraMatrixOffset_H
 
 #include <Representations/Infrastructure/CameraInfo.h>
-#include "Tools/Math/Vector2.h"
-#include "Tools/DataStructures/Printable.h"
-#include "Tools/DataStructures/ParameterList.h"
+
+#include <Tools/Math/Vector2.h>
+#include <Tools/DataStructures/Printable.h>
+#include <Tools/DataStructures/ParameterList.h>
 #include <Tools/DataStructures/Serializer.h>
 
 //serialization
@@ -31,44 +33,48 @@ public:
     PARAMETER_REGISTER(head_rot.y) = 0;
     PARAMETER_REGISTER(head_rot.z) = 0;
 
-    PARAMETER_REGISTER(cam_rot[naoth::CameraInfo::Top].x) = 0;
-    PARAMETER_REGISTER(cam_rot[naoth::CameraInfo::Top].y) = 0;
-    PARAMETER_REGISTER(cam_rot[naoth::CameraInfo::Top].z) = 0;
+    // NOTE: explicite naming of the parameters
+    registerParameter("cam_rot.top.x", cam_rot[naoth::CameraInfo::Top].x) = 0;
+    registerParameter("cam_rot.top.y", cam_rot[naoth::CameraInfo::Top].y) = 0;
+    registerParameter("cam_rot.top.z", cam_rot[naoth::CameraInfo::Top].z) = 0;
 
-    PARAMETER_REGISTER(cam_rot[naoth::CameraInfo::Bottom].x) = 0;
-    PARAMETER_REGISTER(cam_rot[naoth::CameraInfo::Bottom].y) = 0;
-    PARAMETER_REGISTER(cam_rot[naoth::CameraInfo::Bottom].z) = 0;
+    registerParameter("cam_rot.bottom.x", cam_rot[naoth::CameraInfo::Bottom].x) = 0;
+    registerParameter("cam_rot.bottom.y", cam_rot[naoth::CameraInfo::Bottom].y) = 0;
+    registerParameter("cam_rot.bottom.z", cam_rot[naoth::CameraInfo::Bottom].z) = 0;
 
     syncWithConfig();
   }
 
   virtual ~CameraMatrixOffset(){}
 
+  // Experimental
   Vector2d offsetByGoalModel;
-  Vector2d offset;
 
   Vector2d body_rot;
   Vector3d head_rot;
+
+  // TODO: do we need indexing here? It makes access difficult. There are only few places where indexed access is useful.
   Vector3d cam_rot[naoth::CameraInfo::numOfCamera];
+ 
 
   virtual void print(std::ostream& stream) const
   {
     stream << "----Offsets-------------" << std::endl;
     stream << "----Body----------------" << std::endl;
-    stream << "Roll  (x): "<< Math::toDegrees(body_rot.x) << " °" << std::endl;
-    stream << "Pitch (y): "<< Math::toDegrees(body_rot.y) << " °" << std::endl;
+    stream << "Roll  (x): "<< Math::toDegrees(body_rot.x) << " deg" << std::endl;
+    stream << "Pitch (y): "<< Math::toDegrees(body_rot.y) << " deg" << std::endl;
     stream << "----Head----------------" << std::endl;
-    stream << "Roll  (x): "<< Math::toDegrees(head_rot.x) << " °" << std::endl;
-    stream << "Pitch (y): "<< Math::toDegrees(head_rot.y) << " °" << std::endl;
-    stream << "Yaw   (z): "<< Math::toDegrees(head_rot.z) << " °" << std::endl;
+    stream << "Roll  (x): "<< Math::toDegrees(head_rot.x) << " deg" << std::endl;
+    stream << "Pitch (y): "<< Math::toDegrees(head_rot.y) << " deg" << std::endl;
+    stream << "Yaw   (z): "<< Math::toDegrees(head_rot.z) << " deg" << std::endl;
     stream << "----TopCam--------------" << std::endl;
-    stream << "Roll  (x): "<< Math::toDegrees(cam_rot[naoth::CameraInfo::Top].x)  << " °" << std::endl;
-    stream << "Pitch (y): "<< Math::toDegrees(cam_rot[naoth::CameraInfo::Top].y)  << " °" << std::endl;
-    stream << "Yaw   (z): "<< Math::toDegrees(cam_rot[naoth::CameraInfo::Top].z)  << " °" << std::endl;
+    stream << "Roll  (x): "<< Math::toDegrees(cam_rot[naoth::CameraInfo::Top].x)  << " deg" << std::endl;
+    stream << "Pitch (y): "<< Math::toDegrees(cam_rot[naoth::CameraInfo::Top].y)  << " deg" << std::endl;
+    stream << "Yaw   (z): "<< Math::toDegrees(cam_rot[naoth::CameraInfo::Top].z)  << " deg" << std::endl;
     stream << "----BottomCam-----------" << std::endl;
-    stream << "Roll  (x): "<< Math::toDegrees(cam_rot[naoth::CameraInfo::Bottom].x)  << " °" << std::endl;
-    stream << "Pitch (y): "<< Math::toDegrees(cam_rot[naoth::CameraInfo::Bottom].y)  << " °" << std::endl;
-    stream << "Yaw   (z): "<< Math::toDegrees(cam_rot[naoth::CameraInfo::Bottom].z)  << " °" << std::endl;
+    stream << "Roll  (x): "<< Math::toDegrees(cam_rot[naoth::CameraInfo::Bottom].x)  << " deg" << std::endl;
+    stream << "Pitch (y): "<< Math::toDegrees(cam_rot[naoth::CameraInfo::Bottom].y)  << " deg" << std::endl;
+    stream << "Yaw   (z): "<< Math::toDegrees(cam_rot[naoth::CameraInfo::Bottom].z)  << " deg" << std::endl;
   }
 };
 
@@ -81,16 +87,12 @@ class Serializer<CameraMatrixOffset>
   static void serialize(const CameraMatrixOffset& representation, std::ostream& stream)
   {
     naothmessages::CameraMatrixCalibration msg;
-    for(int id=0; id < naoth::CameraInfo::numOfCamera; id++) {
-      naoth::DataConversion::toMessage(representation.cam_rot[id], *msg.add_correctionoffsetcam());
-    }
 
-    msg.mutable_correctionoffsetbody()->set_x(representation.body_rot.x);
-    msg.mutable_correctionoffsetbody()->set_y(representation.body_rot.y);
+    naoth::DataConversion::toMessage(representation.cam_rot[naoth::CameraInfo::Top], *msg.add_correctionoffsetcam());
+    naoth::DataConversion::toMessage(representation.cam_rot[naoth::CameraInfo::Bottom], *msg.add_correctionoffsetcam());
 
-    msg.mutable_correctionoffsethead()->set_x(representation.head_rot.x);
-    msg.mutable_correctionoffsethead()->set_y(representation.head_rot.y);
-    msg.mutable_correctionoffsethead()->set_z(representation.head_rot.z);
+    naoth::DataConversion::toMessage(representation.body_rot, *msg.mutable_correctionoffsetbody());
+    naoth::DataConversion::toMessage(representation.head_rot, *msg.mutable_correctionoffsethead());
 
     google::protobuf::io::OstreamOutputStream buf(&stream);
     msg.SerializeToZeroCopyStream(&buf);
@@ -101,19 +103,14 @@ class Serializer<CameraMatrixOffset>
     naothmessages::CameraMatrixCalibration msg;
     google::protobuf::io::IstreamInputStream buf(&stream);
     msg.ParseFromZeroCopyStream(&buf);
-    
-    for(int id=0; id < naoth::CameraInfo::numOfCamera; id++) {
-        naoth::DataConversion::fromMessage(msg.correctionoffsetcam(id), representation.cam_rot[id]);
-    }
 
-    representation.body_rot.x = msg.mutable_correctionoffsetbody()->x();
-    representation.body_rot.y = msg.mutable_correctionoffsetbody()->y();
+    naoth::DataConversion::fromMessage(msg.correctionoffsetcam(0), representation.cam_rot[naoth::CameraInfo::Top]);
+    naoth::DataConversion::fromMessage(msg.correctionoffsetcam(1), representation.cam_rot[naoth::CameraInfo::Bottom]);
 
-    representation.head_rot.x = msg.mutable_correctionoffsethead()->x();
-    representation.head_rot.y = msg.mutable_correctionoffsethead()->y();
-    representation.head_rot.z = msg.mutable_correctionoffsethead()->z();
+    naoth::DataConversion::fromMessage(msg.correctionoffsetbody(), representation.body_rot);
+    naoth::DataConversion::fromMessage(msg.correctionoffsethead(), representation.head_rot);
   }
 };
 }
 
-#endif // _CameraMatrixOffset_h_
+#endif // CameraMatrixOffset_H
