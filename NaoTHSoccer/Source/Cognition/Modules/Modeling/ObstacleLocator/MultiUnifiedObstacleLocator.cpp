@@ -77,7 +77,7 @@ void MultiUnifiedObstacleLocator::do_debug() {
         FIELD_DRAWING_CONTEXT;
         for(const Obstacle& obs : obstacles) {
             auto points = obs.shape_points.getPoints();
-            for(int i = 0; i+1 < points.size(); ++i) {
+            for(size_t i = 0; i+1 < points.size(); ++i) {
                 LINE(points[i].x, points[i].y, points[i+1].x, points[i+1].y);
             }
 
