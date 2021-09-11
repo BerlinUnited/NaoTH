@@ -8,6 +8,7 @@
 #define _PathModel_H_
 
 #include <Tools/DataStructures/Printable.h>
+#include "Tools/Math/Pose2D.h"
 
 class PathModel : public naoth::Printable
 {
@@ -43,6 +44,7 @@ public:
   enum class PathPlanner2018Routine
   {
     NONE,
+    AVOID,
     MOVE_AROUND_BALL2,
     FORWARDKICK,
     SIDEKICK_LEFT,
@@ -63,6 +65,7 @@ public:
   bool stable;
 
   bool kick_executed;
+  Pose2D target_point;
 
   virtual void print(std::ostream& stream) const
   {
@@ -113,6 +116,9 @@ public:
     case PathPlanner2018Routine::NONE:
         path_type2018 = "none";
         break;
+    case PathPlanner2018Routine::AVOID:
+      path_type2018 = "avoid";
+      break;
     case PathPlanner2018Routine::MOVE_AROUND_BALL2:
       path_type2018 = "move_around_ball";
       break;
