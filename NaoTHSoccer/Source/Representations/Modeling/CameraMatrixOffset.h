@@ -33,16 +33,6 @@ public:
     PARAMETER_REGISTER(head_rot.y) = 0;
     PARAMETER_REGISTER(head_rot.z) = 0;
 
-    /*
-    PARAMETER_REGISTER(cam_rot[naoth::CameraInfo::Top].x) = 0;
-    PARAMETER_REGISTER(cam_rot[naoth::CameraInfo::Top].y) = 0;
-    PARAMETER_REGISTER(cam_rot[naoth::CameraInfo::Top].z) = 0;
-
-    PARAMETER_REGISTER(cam_rot[naoth::CameraInfo::Bottom].x) = 0;
-    PARAMETER_REGISTER(cam_rot[naoth::CameraInfo::Bottom].y) = 0;
-    PARAMETER_REGISTER(cam_rot[naoth::CameraInfo::Bottom].z) = 0;
-    */
-
     // NOTE: explicite naming of the parameters
     registerParameter("cam_rot.top.x", cam_rot[naoth::CameraInfo::Top].x) = 0;
     registerParameter("cam_rot.top.y", cam_rot[naoth::CameraInfo::Top].y) = 0;
@@ -51,17 +41,6 @@ public:
     registerParameter("cam_rot.bottom.x", cam_rot[naoth::CameraInfo::Bottom].x) = 0;
     registerParameter("cam_rot.bottom.y", cam_rot[naoth::CameraInfo::Bottom].y) = 0;
     registerParameter("cam_rot.bottom.z", cam_rot[naoth::CameraInfo::Bottom].z) = 0;
-
-    /*
-    // TODO: Version 2 (see below)
-    PARAMETER_REGISTER(cam_rot.top.x) = 0;
-    PARAMETER_REGISTER(cam_rot.top.y) = 0;
-    PARAMETER_REGISTER(cam_rot.top.z) = 0;
-
-    PARAMETER_REGISTER(cam_rot.bottom.x) = 0;
-    PARAMETER_REGISTER(cam_rot.bottom.y) = 0;
-    PARAMETER_REGISTER(cam_rot.bottom.z) = 0;
-    */
 
     syncWithConfig();
   }
