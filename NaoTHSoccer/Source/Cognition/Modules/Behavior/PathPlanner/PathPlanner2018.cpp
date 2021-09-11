@@ -62,13 +62,9 @@ void PathPlanner2018::execute()
     moveAroundBall2(getPathModel().direction, getPathModel().radius, getPathModel().stable);
     break;
   case PathModel::PathPlanner2018Routine::FORWARDKICK:
-    //if (farApproach())
+    if (nearApproach_forwardKick(params.forwardKickOffset.x, params.forwardKickOffset.y))
     {
-      //TODO remove offsets from pathmodel
-      if (nearApproach_forwardKick(params.forwardKickOffset.x, params.forwardKickOffset.y))
-      {
-        forwardKick();
-      }
+      forwardKick();
     }
     break;
   case PathModel::PathPlanner2018Routine::SIDEKICK_LEFT:
