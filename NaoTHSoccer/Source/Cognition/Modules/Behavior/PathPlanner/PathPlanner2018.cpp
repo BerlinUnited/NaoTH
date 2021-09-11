@@ -6,6 +6,9 @@
 */
 
 #include "PathPlanner2018.h"
+#include "Tools/Math/Polygon.h"
+#include "Tools/Math/Line.h"
+#include <forward_list>
 
 PathPlanner2018::PathPlanner2018()
   :
@@ -21,6 +24,17 @@ PathPlanner2018::PathPlanner2018()
 PathPlanner2018::~PathPlanner2018()
 {
   getDebugParameterList().remove(&params);
+}
+
+double comp(Vector2d b, Vector2d a){
+  return a * b / a.abs();
+}
+// determines if a point p is on the left hand side of the line segment defined by s_begin, s_end
+bool on_left_hand_side(Vector2d p, Vector2d s_begin, Vector2d s_end){
+  Vector2d s_begin_to_p = p - s_begin;
+  Vector2d s_begin_to_s_end = s_end - s_begin;
+  Vector2d left_normal(-s_begin_to_s_end.y, s_begin_to_s_end.x);
+  return comp(s_begin_to_p, left_normal) >= 0;
 }
 
 void PathPlanner2018::execute()
@@ -57,8 +71,11 @@ void PathPlanner2018::execute()
       return;
     }
     break;
-  //TODO maybe use a parameter to select the actual routine that is executed when move around is set from the behavior???
+  case PathModel::PathPlanner2018Routine::AVOID:
+    avoid_obstacle(getPathModel().target_point);
+    break;
   case PathModel::PathPlanner2018Routine::MOVE_AROUND_BALL2:
+    //TODO maybe use a parameter to select the actual routine that is executed when move around is set from the behavior???
     moveAroundBall2(getPathModel().direction, getPathModel().radius, getPathModel().stable);
     break;
   case PathModel::PathPlanner2018Routine::FORWARDKICK:
@@ -206,6 +223,142 @@ void PathPlanner2018::moveAroundBall2(const double direction, const double radiu
     PLOT("PathPlanner:move_around_ball_2:target:x", target_point.x);
     PLOT("PathPlanner:move_around_ball_2:target:y", target_point.y);
     PLOT("PathPlanner:move_around_ball_2:target:reached", target_reached);
+  }
+}
+
+void PathPlanner2018::avoid_obstacle(Pose2D target_point){
+  using namespace std;
+  using namespace Math;
+
+  if (stepBuffer.empty())
+  {
+    // HACK: limit path length to avoid endless loop
+    // TODO: better limit number of iterations
+    // TODO: does the algorithm terminate in every case?
+    //       What if no valid path exists (reachability)
+    int path_length = 0;
+    int max_path_length = 20;
+
+    target_point.translation = Vector2d(2000, 0);//getBallModel().position;
+    forward_list<Vector2d> path({Vector2d(), target_point.translation});
+
+    auto vertex = path.begin();
+    do {
+      bool collision = false;
+      LineSegment path_segment = LineSegment(*vertex, *next(vertex));
+
+      // handle all obstacles
+      for (const Obstacle& obs : getObstacleModel().obstacleList) {
+        const auto& obstacle_points = obs.shape_points.getPoints();
+        vector<Vector2d> intersection_points;
+        vector<Vector2d> obs_vertices;
+
+        // check if the current path segment intersects the current obstacle
+        for (auto obs_vertex = obstacle_points.begin(); next(obs_vertex) != obstacle_points.end(); ++obs_vertex) {
+          LineSegment polygon_segment = LineSegment(*obs_vertex, *next(obs_vertex));
+
+          //add intersection point with convex polygon to list
+          if (path_segment.intersect(polygon_segment)
+              && polygon_segment.intersect(path_segment)){
+            collision = true;
+            double t = path_segment.intersection(polygon_segment);
+            intersection_points.push_back(path_segment.point(t));
+            obs_vertices.push_back(*obs_vertex);
+            obs_vertices.push_back(*next(obs_vertex));
+          }
+
+          // ASSUMPTION: convex polygon
+          if(intersection_points.size() == 2) break;
+        }
+
+        // determine and add new point to the path
+        bool replace_next_vertex = false;
+        if (collision) {
+          // start or end endpoint of the path segment lies inside the polygon
+          if(intersection_points.size() == 1) {
+            if(on_left_hand_side(*vertex, obs_vertices[0], obs_vertices[1])) { // start point is inside the obstacle
+              // TODO: maybe improve how leaving an obstacle is handled
+              //       currently ignore that there was a collision
+              collision = false;
+              continue;
+            } else { // end point is inside the obstacle
+              if (next(vertex, 2) == path.end()) { // the end point is the target point
+                collision = false;
+                continue;
+              } else {
+                replace_next_vertex = true;
+                intersection_points.push_back(*next(vertex));
+              }
+            }
+          }
+
+          Vector2d ab = intersection_points[1] - intersection_points[0];
+          if (on_left_hand_side(obs.center, intersection_points[0], intersection_points[1])) {
+            ab.x = -ab.x;
+          } else {
+            ab.y = -ab.y;
+          }
+          swap(ab.x, ab.y);
+
+          // TODO: maybe the new point might be choosen a little bit more intelligently
+          //   	   e.g. use a intersection point with other edges of the polygon in the direction of ab
+          Vector2d debug_mean = (intersection_points[0] + intersection_points[1]) * 0.5;
+          Vector2d new_point = (intersection_points[0] + intersection_points[1]) * 0.5 + ab;
+          // debug
+          PEN("555555", 1);
+          LINE(debug_mean.x, debug_mean.y, new_point.x, new_point.y);
+          if(replace_next_vertex) { // the endpoint of the path segment lies inside the polygon
+            *next(vertex) = new_point; // so replace it by a new point
+          } else {
+            // add new vertex after current one to the path
+            path.insert_after(vertex, new_point);
+            ++path_length;
+          }
+
+          // the path was changed after the current vertex
+          // so we need to check for all obstacles again
+          // if the new part is valid
+
+          // debug
+          PEN("00FF00", 1);
+          for(auto v = path.begin(); next(v) != path.end(); ++v){
+              LINE(v->x, v->y, next(v)->x, next(v)->y);
+          }
+          break;
+        }
+      } // end obstacle loop
+
+      // there was no collision so the path is valid until the next vertex
+      if(!collision) ++vertex;
+
+    } while(next(vertex) != path.end() and path_length < max_path_length);
+
+    FIELD_DRAWING_CONTEXT;
+    if (path_length < max_path_length) {
+        PEN("000000", 1);
+    } else {
+        PEN("FF0000", 1);
+    }
+
+    for(auto vertex = path.begin(); next(vertex) != path.end(); ++vertex){
+        LINE(vertex->x, vertex->y, next(vertex)->x, next(vertex)->y);
+    }
+
+
+    //StepBufferElement avoid_step;
+    //avoid_step.debug_name = "avoid_step";
+    //avoid_step.setPose(Pose2D(0.0, path[1]));
+    //avoid_step.setStepType(StepType::WALKSTEP);
+    //avoid_step.setCharacter(params.moveAroundBallCharacterStable);
+    //avoid_step.setScale(1.0);
+    //avoid_step.setCoordinate(Coordinate::Hip);
+    //avoid_step.setFoot(Foot::NONE);
+    //avoid_step.setSpeedDirection(fromDegrees(0.0));
+    //avoid_step.setRestriction(RestrictionMode::SOFT);
+    //avoid_step.setProtected(false);
+    //avoid_step.setTime(250);
+
+    //addStep(avoid_step);
   }
 }
 
