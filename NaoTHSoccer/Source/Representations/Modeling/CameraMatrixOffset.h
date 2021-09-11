@@ -55,7 +55,7 @@ public:
 
   // TODO: do we need indexing here? It makes access difficult. There are only few places where indexed access is useful.
   Vector3d cam_rot[naoth::CameraInfo::numOfCamera];
-  
+ 
 
   virtual void print(std::ostream& stream) const
   {
@@ -103,7 +103,7 @@ class Serializer<CameraMatrixOffset>
     naothmessages::CameraMatrixCalibration msg;
     google::protobuf::io::IstreamInputStream buf(&stream);
     msg.ParseFromZeroCopyStream(&buf);
-     
+
     naoth::DataConversion::fromMessage(msg.correctionoffsetcam(0), representation.cam_rot[naoth::CameraInfo::Top]);
     naoth::DataConversion::fromMessage(msg.correctionoffsetcam(1), representation.cam_rot[naoth::CameraInfo::Bottom]);
 
