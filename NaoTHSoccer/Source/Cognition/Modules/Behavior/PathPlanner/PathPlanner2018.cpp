@@ -52,7 +52,7 @@ void PathPlanner2018::execute()
   }
 
   // HACK: xabsl set a forced motion request => clear everything
-  if (getPathModel().path_routine == PathModel::PathRoutine::NONE && getMotionRequest().forced) {
+  if (getPathModel().path2018_routine == PathModel::PathPlanner2018Routine::NONE && getMotionRequest().forced) {
     stepBuffer.clear();
     return;
   }

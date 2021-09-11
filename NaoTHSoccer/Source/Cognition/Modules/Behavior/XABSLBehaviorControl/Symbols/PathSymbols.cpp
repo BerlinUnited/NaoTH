@@ -20,10 +20,6 @@ void PathSymbols::registerSymbols(xabsl::Engine& engine)
 
   engine.registerEnumeratedOutputSymbol("path2018.routine", "path2018.routine", &setPathRoutine2018, &getPathRoutine2018);
 
-  // go to ball: distance and yOffset
-  engine.registerDecimalOutputSymbol("path.distance", &getPathModel().distance);
-  engine.registerDecimalOutputSymbol("path.yOffset", &getPathModel().yOffset);  //TODO delete me
-
   // move around ball: direction and radius
   //engine.registerDecimalOutputSymbol("path.direction", &getPathModel().direction); // TODO this is in degrees should be converted here somehow
   engine.registerDecimalOutputSymbol("path.direction", &setDirection, &getDirection);
