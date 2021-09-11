@@ -331,7 +331,7 @@ void PathPlanner2018::avoid_obstacle(Pose2D target_point){
       // there was no collision so the path is valid until the next vertex
       if(!collision) ++vertex;
 
-    } while(next(vertex) != path.end() and path_length < max_path_length);
+    } while(next(vertex) != path.end() && path_length < max_path_length);
 
     FIELD_DRAWING_CONTEXT;
     if (path_length < max_path_length) {
