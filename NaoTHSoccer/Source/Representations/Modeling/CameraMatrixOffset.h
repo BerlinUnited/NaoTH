@@ -69,9 +69,7 @@ public:
   virtual ~CameraMatrixOffset(){}
 
   // Experimental
-  Vector2d offsetByGoalModel; 
-  //Vector2d offset;
-
+  Vector2d offsetByGoalModel;
 
   Vector2d body_rot;
   Vector3d head_rot;
