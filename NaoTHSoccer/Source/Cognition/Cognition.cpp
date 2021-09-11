@@ -119,7 +119,6 @@
 #include "Modules/Modeling/StaticDebugModelProvider/StaticDebugModelProvider.h"
 
 #include "Modules/Modeling/ObstacleLocator/MultiUnifiedObstacleLocator.h"
-#include "Modules/Modeling/Simulation/SimulationTest.h"
 
 #include "Modules/Modeling/Simulation/Simulation.h"
 #include "Modules/Modeling/Simulation/KickDirectionSimulator.h"
