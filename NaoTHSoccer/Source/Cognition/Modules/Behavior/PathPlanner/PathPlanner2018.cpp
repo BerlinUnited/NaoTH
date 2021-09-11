@@ -318,16 +318,18 @@ bool PathPlanner2018::nearApproach_forwardKick(const double offsetX, const doubl
     targetPos.y = ballPos.y - offsetY;
 
     // Am I ready for a kick or still walking to the ball?
-    // In other words: Can I only perform one step before touching the ball or more steps?
-    //TODO rewrite the condition from plan step if possible to dont plan steps if to close already
-    if (std::abs(targetPos.x)  > params.forwardKickThreshold.x || std::abs(targetPos.y) > params.forwardKickThreshold.y)
+    // Approach further if we are too far away, or foot not aligned to ball or foot to close - We use different thresholds for too far and too close
+    if (targetPos.x  > params.forwardKickThreshold_far.x || std::abs(targetPos.y) > params.forwardKickThreshold_far.y || targetPos.x < params.forwardKickThreshold_near.x)
     {
-        // generate a correction step
+      // generate a correction step
       double translation_xy = params.stepLength;  //TODO kann man nicht die steplength aus den motion nehmen?
 
-      //std::abs(targetPos.y) => das heisst doch wenn der ball in der y richtung springt wird ein schritt zurück geplant und ausgeführt
+      // std::abs(targetPos.y) => das heisst doch wenn der ball in der y richtung springt wird ein schritt zurück geplant und ausgeführt
       // das ist dafür das das er an den ball anlaufen kann ohne zu rotieren. Wenn man nah am ball ist wird angenommen das die Rotation
-      //stimmt und dann soll diese auch nicht korrigiert werden
+      // stimmt und dann soll diese auch nicht korrigiert werden
+      // TODO: Falls targetPos.x perfekt ist (=0) und abs(targetPos.y) > params.forwardKickThreshold_far.y wird trotzdem ein Schritt zurück gemacht,
+      //       obwohl ein einfacher Side-Step ausreichen könnte.
+      //       Die obige Erklärung(?) scheint nicht nachvollziehbar.
       double translation_x = std::min(translation_xy, targetPos.x - std::abs(targetPos.y));
       double translation_y = std::min(translation_xy, std::abs(targetPos.y)) * (targetPos.y < 0 ? -1 : 1);
 

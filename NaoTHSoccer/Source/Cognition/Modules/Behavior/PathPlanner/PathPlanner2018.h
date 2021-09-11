@@ -66,6 +66,11 @@ private:
     {
       PARAMETER_REGISTER(readyForSideKickThresholdX)            = 4.0;
       PARAMETER_REGISTER(readyForSideKickThresholdY)            = 0.3;
+      PARAMETER_REGISTER(forwardKickThreshold_near.x)           = 25; // mm
+      PARAMETER_REGISTER(forwardKickThreshold_near.y)           = 25; // mm
+      PARAMETER_REGISTER(forwardKickThreshold_far.x)            = 50; // mm
+      PARAMETER_REGISTER(forwardKickThreshold_far.y)            = 25; // mm
+      //PARAMETER_REGISTER(nearApproachForwardKickBallPosOffsetX) = 110;
       PARAMETER_REGISTER(nearApproachSideKickBallPosOffsetX)    = 100;
       PARAMETER_REGISTER(sidekickOffsetY) = 40.0;
       PARAMETER_REGISTER(sideKickTime) = 300;
@@ -93,6 +98,9 @@ private:
 
     double readyForSideKickThresholdX;
     double readyForSideKickThresholdY;
+    Vector2d forwardKickThreshold_far;
+    Vector2d forwardKickThreshold_near;
+    //double nearApproachForwardKickBallPosOffsetX;
     double nearApproachSideKickBallPosOffsetX;
     double sidekickOffsetY;
     int sideKickTime;
