@@ -13,8 +13,7 @@ namespace path_symbols("PathPlanner Symbols") {
   };
 
   enum path2018.routine output path2018.routine;
-  
-  float output path.distance;  
+   
   float output path.direction;
   float output path.radius;
   bool output path.stable;
