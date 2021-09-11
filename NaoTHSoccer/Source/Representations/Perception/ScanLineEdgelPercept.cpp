@@ -48,6 +48,7 @@ void Serializer<ScanLineEdgelPercept>::serialize(const ScanLineEdgelPercept& rep
     pair_msg.set_begin(pair.begin);
     pair_msg.set_end(pair.end);
     pair_msg.set_id(pair.id);
+    pair_msg.set_adaptive(pair.adaptive);
   }
 
   // serialize the message
@@ -96,6 +97,7 @@ void Serializer<ScanLineEdgelPercept>::deserialize(std::istream& stream, ScanLin
     pair.begin = pair_msg.begin();
     pair.end = pair_msg.end();
     pair.id = pair_msg.id();
+    pair.adaptive = pair_msg.adaptive();
 
     // TODO: is it ok here?
     // recalculate the values for the center edgel like in ScanLineEdgelDetector.h

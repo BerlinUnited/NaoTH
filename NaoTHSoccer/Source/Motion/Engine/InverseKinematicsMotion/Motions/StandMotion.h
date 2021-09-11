@@ -131,10 +131,7 @@ private:
 
   //InverseKinematic::HipFeetPose relaxedPose;
   JointData relaxData;
-  bool relaxedPoseInitialized;
-  bool isRelaxing;
-  bool resetedAfterLifting;
-
+  
   JointMonitor jointMonitors[naoth::JointData::numOfJoint];
 
   // used by StandMotion:stiffness_controller

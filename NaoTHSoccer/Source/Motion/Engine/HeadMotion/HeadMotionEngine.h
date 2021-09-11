@@ -12,6 +12,7 @@
 
 #include <Tools/Math/Vector2.h>
 #include <Tools/Math/Vector3.h>
+#include <vector>
 
 #include <ModuleFramework/Module.h>
 
@@ -29,6 +30,7 @@
 #include <Representations/Modeling/CameraMatrixOffset.h>
 
 #include "Tools/DataStructures/RingBufferWithSum.h"
+#include "Tools/DataStructures/Spline.h"
 
 // Debug
 #include "Tools/Debug/DebugModify.h"
@@ -48,6 +50,7 @@ BEGIN_DECLARE_MODULE(HeadMotionEngine)
   REQUIRE(InertialModel)
   REQUIRE(InertialSensorData)
   REQUIRE(KinematicChainSensor)
+  REQUIRE(KinematicChainMotor)
   REQUIRE(HeadMotionRequest)
   REQUIRE(SensorJointData)
   REQUIRE(FrameInfo)
@@ -76,34 +79,103 @@ private:
   {
     Parameters() : ParameterList("HeadMotionEngine")
     {
-      PARAMETER_REGISTER(max_velocity_deg_in_second_fast) = 60;
-      PARAMETER_REGISTER(max_velocity_deg_in_second_slow) = 90;
-      PARAMETER_REGISTER(cutting_velocity) = 40;
+      PARAMETER_ANGLE_REGISTER(max_head_velocity_stand) = 120; //  deg/s
+      PARAMETER_ANGLE_REGISTER(max_head_velocity_walk_fast) = 90; // deg/s velocity when walking fast
+      PARAMETER_ANGLE_REGISTER(max_head_velocity_walk_slow) = 120; // deg/s velocity when walking slow
+      PARAMETER_REGISTER(walk_fast_speed_threshold) = 40; // ~mm/s walking speed of the robot. Faster than this is considered fast walking
 
       PARAMETER_ANGLE_REGISTER(at_rest_threshold) = 0.3;
       PARAMETER_ANGLE_REGISTER(at_rest_threshold_walking) = 10;
       PARAMETER_ANGLE_REGISTER(at_target_threshold) = 3;
 
+      PARAMETER_REGISTER(stiffness) = 0.7;
+
+      PARAMETER_REGISTER(use_lookAtWorldPointCool) = true;
+
       syncWithConfig();
     }
 
-    double max_velocity_deg_in_second_fast;
-    double max_velocity_deg_in_second_slow;
-    double cutting_velocity;
+    double max_head_velocity_stand;
+    double max_head_velocity_walk_fast;
+    double max_head_velocity_walk_slow;
+    double walk_fast_speed_threshold;
 
     double at_rest_threshold;
     double at_rest_threshold_walking;
     double at_target_threshold;
+
+    double stiffness;
+
+    bool use_lookAtWorldPointCool;
   } params;
 
 private:
+
+  // HACK: limits.
+  // TODO: make them parameters. (as soon as we have a config system that allows loading vectors :)
+  // NOTE: V4, V5, V6 have the same limits
+  // http://doc.aldebaran.com/2-8/family/nao_technical/joints_naov6.html#naov6-joints-head-joints
+  // http://doc.aldebaran.com/2-1/family/robots/joints_robot.html
+  std::vector<double> headLimitsHeadYaw  = 
+  {
+    -2.086017,
+    -1.526988,
+    -1.089958,
+    -0.903033,
+    -0.756077,
+    -0.486074,
+     0.000000,
+     0.486074,
+     0.756077,
+     0.903033,
+     1.089958,
+     1.526988,
+     2.086017
+  };
+
+  std::vector<double> headLimitsHeadPitchMin = 
+  {
+    -0.449073,
+    -0.330041,
+    -0.430049,
+    -0.479965,
+    -0.548033,
+    -0.671951,
+    -0.671951,
+    -0.671951,
+    -0.548033,
+    -0.479965,
+    -0.430049,
+    -0.330041,
+    -0.449073  
+  };
+  
+  std::vector<double> headLimitsHeadPitchMax = 
+  {
+    0.330041,
+    0.200015,
+    0.300022,
+    0.330041,
+    0.370010,
+    0.422021,
+    0.515047,
+    0.422021,
+    0.370010,
+    0.330041,
+    0.300022,
+    0.200015,
+    0.330041
+  };
+  
+  tk::spline headLimitFunctionMin;
+  tk::spline headLimitFunctionMax;
 
   // internal use
   naoth::JointData theJointData;
   KinematicChain theKinematicChain;
 
-  bool trajectoryHeadMove(const std::vector<Vector3<double> >& points);
-  void gotoPointOnTheGround(const Vector2<double>& target);
+  bool trajectoryHeadMove(const std::vector<Vector3d>& points);
+  //void gotoPointOnTheGround(const Vector2d& target);
 
   void lookStraightAhead();
   void lookStraightAheadWithStabilization();
@@ -114,13 +186,14 @@ private:
   void search();
   void randomSearch();
 
-  void moveByAngle(const Vector2<double>& target);
-  void gotoAngle(const Vector2<double>& target);
+  void moveByAngle(const Vector2d& target);
+  void gotoAngle(const Vector2d& target);
 
-  void lookAtWorldPoint(const Vector3<double>& target);
-  void lookAtWorldPointSimple(const Vector3<double>& target);
+  void lookAtWorldPointCool(const Vector3d& target);
+  void lookAtWorldPoint(const Vector3d& target);
+  void lookAtWorldPointSimple(const Vector3d& target);
 
-  Vector3<double> g(double yaw, double pitch, const Vector3<double>& pointInWorld);
+  Vector3d g(double yaw, double pitch, const Vector3d& pointInWorld);
   void export_g();
 
   // for providing head_target_reached and head_got_stuck

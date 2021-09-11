@@ -117,6 +117,9 @@ class TorsoRotationStabilizer : private TorsoRotationStabilizerBase
           correctionX += rotationP.x * inertial.x;
           correctionY += rotationP.y * inertial.y;
 
+          PLOT("torsoRotationStabilizer:correctionX", correctionX);
+          PLOT("torsoRotationStabilizer:correctionY", correctionY);
+
           if(parameters.localRotationCalibration) {
             p.localInHip();
             p.hip.rotateX(correctionX);
@@ -128,11 +131,9 @@ class TorsoRotationStabilizer : private TorsoRotationStabilizerBase
             p.hip.rotateY(correctionY);
             p.hip.translate(0, 0, height);
           }
-          
 
           lastGyroError = error;
         }
-
         return true;
       }
 

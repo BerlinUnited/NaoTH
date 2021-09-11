@@ -9,7 +9,6 @@ ConditionPathExists=/home/nao/bin/naoth
 Type=idle
 ExecStart = /home/nao/bin/naoth
 EnvironmentFile=/etc/conf.d/naoth
-WorkingDirectory=/home/nao
 #CPUAccounting=true
 #CPUShares=8192
 LimitRTPRIO=55

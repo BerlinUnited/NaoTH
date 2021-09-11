@@ -67,3 +67,4 @@ BestPatchList::Patch BallKeyPointExtractor::refineKeyPoint(const BestPatchList::
 
   return maxPatch;
 }
+

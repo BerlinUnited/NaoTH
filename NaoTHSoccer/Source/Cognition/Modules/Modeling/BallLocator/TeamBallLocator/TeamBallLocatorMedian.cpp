@@ -13,12 +13,12 @@ TeamBallLocatorMedian::TeamBallLocatorMedian()
   DEBUG_REQUEST_REGISTER("TeamBallLocatorMedian:draw_teamball_input", "draw all the balls uses for teamball", false);
   DEBUG_REQUEST_REGISTER("TeamBallLocatorMedian:draw_ownball", "draw all the balls uses for teamball", false);
   
-  getDebugParameterList().add(&theParameters);
+  getDebugParameterList().add(&params);
 }
 
 TeamBallLocatorMedian::~TeamBallLocatorMedian()
 {
-	getDebugParameterList().remove(&theParameters);
+    getDebugParameterList().remove(&params);
 }
 
 void TeamBallLocatorMedian::execute()
@@ -75,7 +75,7 @@ void TeamBallLocatorMedian::execute()
   // we are iterating through the sorted array from small (old) to high (new) times
   for(cutOff = ballPosHist.begin(); cutOff != ballPosHist.end(); cutOff++)
   {
-    if(cutOff->t >= getTeamBallModel().time - theParameters.maxTimeOffset)
+    if (cutOff->t >= getTeamBallModel().time - params.maxTimeOffset)
     {
       break;
     }
@@ -88,7 +88,7 @@ void TeamBallLocatorMedian::execute()
   // we are iterating through the sorted array from small (old) to high (new) times
   for(cutOff = ownballPosHist.begin(); cutOff != ownballPosHist.end(); cutOff++)
   {
-    if(cutOff->t >= getTeamBallModel().time - theParameters.maxTimeOffset)
+    if (cutOff->t >= getTeamBallModel().time - params.maxTimeOffset)
     {
       break;
     }
@@ -144,7 +144,7 @@ void TeamBallLocatorMedian::execute()
   }
 
   // set validity of the teamball -> invalidate after a certain time
-  getTeamBallModel().valid = (getTeamBallModel().time + theParameters.maxTimeValid >= getFrameInfo().getTime());
+  getTeamBallModel().valid = (getTeamBallModel().time + params.maxTimeValid >= getFrameInfo().getTime());
 
   DEBUG_REQUEST("TeamBallLocatorMedian:draw_ball_on_field",
     FIELD_DRAWING_CONTEXT;

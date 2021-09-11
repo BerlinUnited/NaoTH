@@ -3,8 +3,6 @@
 #include <Tools/ThreadUtil.h>
 #include "Tools/NaoTime.h"
 
-#include <cmath>
-#include <chrono>
 #include <pulse/error.h>
 
 using namespace std;
@@ -19,7 +17,7 @@ AudioRecorder::AudioRecorder()
   recordingTimestamp(0)
 {
   std::cout << "[INFO] AudioRecorder thread started" << std::endl;
-  audioRecorderThread = std::thread([this] {this->execute();});
+  audioRecorderThread = std::thread(&AudioRecorder::execute, this);
   ThreadUtil::setPriority(audioRecorderThread, ThreadUtil::Priority::lowest);
   ThreadUtil::setName(audioRecorderThread, "AudioRecorder");
 }
@@ -44,7 +42,6 @@ AudioRecorder::~AudioRecorder()
 
 void AudioRecorder::execute()
 {
-  // return;
   while(!exiting)
   {
     // initialize the audio stream if necessary
@@ -96,7 +93,6 @@ void AudioRecorder::execute()
     }
 
   } // end while
-
   
 } // end execute
 
@@ -146,14 +142,8 @@ void AudioRecorder::initAudio()
     .channels = (uint8_t)control.numChannels
   };
 
-  // NAO V5
-  // profile:
-  //   /usr/share/pulseaudio/alsa-mixer/profile-sets/aldebaran-robotics/tangential-trapeze.conf
-  // info:
-  //   pacmd list-sources
-  // 
+  // NOTE: manually configure the channel map (because the default config seems to be different for NAO <= V4 and NAO >= V5)
   // channel-map = rear-left,rear-right,front-left,front-right
-  // NOTE: manually configure the channel map for NAO V5 because the default config seems to be from NAO V4
   pa_channel_map paChannelMap;
   paChannelMap.channels = (uint8_t)control.numChannels;
   paChannelMap.map[0] = PA_CHANNEL_POSITION_REAR_LEFT;
@@ -163,7 +153,6 @@ void AudioRecorder::initAudio()
   
   // Create the recording stream
   int error = 0;
-
   paSimple = pa_simple_new(NULL, "AudioRecorder", PA_STREAM_RECORD, NULL, "AudioRecorder", &paSampleSpec, &paChannelMap, NULL, &error);
 
   if (!paSimple) {

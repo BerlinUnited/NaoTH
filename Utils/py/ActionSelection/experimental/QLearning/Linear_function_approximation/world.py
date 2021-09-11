@@ -41,13 +41,11 @@
 
 import math
 
-from naoth.math2d import Vector2 as Vec
-from naoth.math2d import LineSegment
+from naoth.math import Vector2 as Vec
+from naoth.math import LineSegment
 
 from actions import Actions
 from state import State
-
-
 
 
 class Field():
@@ -64,7 +62,7 @@ class Field():
     def __init__(self):
         self.width = 9000
         self.height = 6000
-        self.center_point = Vec(0,0)
+        self.center_point = Vec(0, 0)
         self.opp_goal_line = LineSegment(Vec(4500, 750), Vec(4500, 750))
         self.own_goal_line = LineSegment(Vec(-4500, 750), Vec(-4500, -750))
 
@@ -80,7 +78,7 @@ class Field():
             # ball trajectory is none, if the two points are less than 1 cm apart
             return (object1.x < -4500 and (-750 < object1.y < 750))
         in_goal = self.own_goal_line.intersection(ball_trajectory) and \
-                      ball_trajectory.intersection(self.own_goal_line)
+                  ball_trajectory.intersection(self.own_goal_line)
         if in_goal == float('inf'):
             in_goal = 0
         return in_goal
@@ -91,19 +89,18 @@ class Field():
         :param object: m2d Vector2
         :return: boolean
         """
-        ball_trajectory = self.get_ball_trajectory(object1,object2)
+        ball_trajectory = self.get_ball_trajectory(object1, object2)
 
         if object2 is None or ball_trajectory is None:
             # ball trajectory is none, if the two points are less than 1 cm apart
             return (object1.x > 4500 and (-750 < object1.y < 750))
         in_goal = self.opp_goal_line.intersection(ball_trajectory) and \
-                        ball_trajectory.intersection(self.opp_goal_line)
+                  ball_trajectory.intersection(self.opp_goal_line)
         if in_goal == float('inf'):
             in_goal = 0
-        return in_goal # TODO: VERY IMPORTANT !!!! CHECK IF BOTH LINES HAVE INTERSECTION ON THEIR LINE SEGMENT
+        return in_goal  # TODO: VERY IMPORTANT !!!! CHECK IF BOTH LINES HAVE INTERSECTION ON THEIR LINE SEGMENT
 
-
-    def in_field(self,object):
+    def in_field(self, object):
         """
         detects weather the object is in the field
         :param object: m2d Vector2
@@ -118,9 +115,10 @@ class Field():
         :param player: math2d Vector2 object
         :return: return line segment
         """
-        if (ball-player).abs() <= 100:
+        if (ball - player).abs() <= 100:
             return None  # if distance of the player and ball are to small, return nothing
         return LineSegment(player, ball)
+
 
 class Rules(Field):
     """
@@ -129,6 +127,7 @@ class Rules(Field):
 
     this implementation is going to be rather naive and not complete
     """
+
     def apply_rules(self, ball, player=None):
         """
         applies all robo cup rules
@@ -174,7 +173,8 @@ class Rules(Field):
         """
         sides = ['lower', 'upper']
         new_ball = Vec()
-        if not (self.in_field(ball) or self.in_onw_goal(ball, player) or self.in_opp_goal(ball, player)):
+        if not (self.in_field(ball) or self.in_onw_goal(ball, player) or self.in_opp_goal(ball,
+                                                                                          player)):
             if player is not None:
                 side = sides[ball.y > 0]
                 ## here we always asume that there is only one player thus we know who touched the ball at last
@@ -208,15 +208,17 @@ class Rules(Field):
 
             # TODO: if player is None fall einfuegen // Noetig??
 
-            ball = new_ball # set new_ball as ball otherwise just return the ball position
+            ball = new_ball  # set new_ball as ball otherwise just return the ball position
         return ball
+
 
 class World:
     """
     wrapper class with which the simulator interacts
     """
+
     def __init__(self):
-        #self.current_state = initial_state
+        # self.current_state = initial_state
         self.last_action = None
         self.actions = Actions(add_noise=True)
         self.Rules = Rules()
@@ -227,14 +229,12 @@ class World:
         self.last_action = chosen_action
 
     def set_robot_position_to_ball_position(self, given_state):
-        if given_state.position != given_state.ball_position: # just set if position don't not equal
+        if given_state.position != given_state.ball_position:  # just set if position don't not equal
             # (otherwise rotation action could get lost
             given_state.direction = (given_state.ball_position - given_state.position).normalize()
             # robot orientation (direction) is the direction of the shortest path to the ball
             given_state.position = given_state.ball_position
             # new position is equal to ball position
-
-
 
 
 if __name__ == "__main__":
@@ -258,33 +258,57 @@ if __name__ == "__main__":
     """
 
     simWorld = World()
-    for i in range(0,5):
-        print "Action: " + str(i)
-        print "before:"
+    for i in range(0, 5):
+        print
+        "Action: " + str(i)
+        print
+        "before:"
         new_state = State()
-        print "Ball Position:"
-        print new_state.ball_position
-        print "Position:"
-        print new_state.position
-        print "Direction"
-        print new_state.direction
-        print "++++++++"
+        print
+        "Ball Position:"
+        print
+        new_state.ball_position
+        print
+        "Position:"
+        print
+        new_state.position
+        print
+        "Direction"
+        print
+        new_state.direction
+        print
+        "++++++++"
         simWorld.do_action(new_state, i)
-        print "after kick"
-        print "Ball Position:"
-        print new_state.ball_position
-        print "Position:"
-        print new_state.position
-        print "Direction"
-        print new_state.direction
-        print "++++++++"
+        print
+        "after kick"
+        print
+        "Ball Position:"
+        print
+        new_state.ball_position
+        print
+        "Position:"
+        print
+        new_state.position
+        print
+        "Direction"
+        print
+        new_state.direction
+        print
+        "++++++++"
         simWorld.set_robot_position_to_ball_position(new_state)
-        print "after resetting position"
-        print "Ball Position:"
-        print new_state.ball_position
-        print "Position:"
-        print new_state.position
-        print "Direction"
-        print new_state.direction
-        print "------------------"
-
+        print
+        "after resetting position"
+        print
+        "Ball Position:"
+        print
+        new_state.ball_position
+        print
+        "Position:"
+        print
+        new_state.position
+        print
+        "Direction"
+        print
+        new_state.direction
+        print
+        "------------------"

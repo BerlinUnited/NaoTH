@@ -71,14 +71,7 @@ public:
   VirtualVisionProcessor();
   virtual ~VirtualVisionProcessor();
 
-  virtual void execute()
-  {
-    getMultiBallPercept().reset();
-    getVirtualLinePercept().reset();
-
-    execute(CameraInfo::Top);
-    execute(CameraInfo::Bottom);
-  }
+  virtual void execute();
 
 private:
 

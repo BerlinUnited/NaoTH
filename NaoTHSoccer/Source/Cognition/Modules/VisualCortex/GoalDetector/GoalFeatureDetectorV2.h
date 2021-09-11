@@ -105,7 +105,7 @@ private:
     double thresholdFeatureGradient;
   };
 
-  Parameters parameters;
+  Parameters params;
 
   void findEdgelFeatures(const Vector2d& scanDir, const Vector2i& p1);
   Vector2d calculateGradientUV(const Vector2i& point) const;

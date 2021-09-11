@@ -58,6 +58,53 @@ CameraSettingsRequest::CameraSettingsRequest(string configName)
   PARAMETER_REGISTER(v5.powerlineFrequency) = 50;
 
   setAutoExposureWeights(100);
+  
+  
+  // V6
+/*
+                     brightness (int)    : min=-255 max=255 step=1 default=0 value=60
+                       contrast (int)    : min=0 max=255 step=1 default=32 value=64
+                     saturation (int)    : min=0 max=255 step=1 default=64 value=128
+                            hue (int)    : min=-180 max=180 step=1 default=0 value=0
+ white_balance_temperature_auto (bool)   : default=1 value=0
+                           gain (int)    : min=0 max=1023 step=1 default=16 value=176
+                       hue_auto (bool)   : default=0 value=0
+      white_balance_temperature (int)    : min=2500 max=6500 step=500 default=2500 value=0
+                      sharpness (int)    : min=0 max=9 step=1 default=4 value=0
+                  exposure_auto (menu)   : min=0 max=3 default=0 value=1
+              exposure_absolute (int)    : min=0 max=1048575 step=1 default=512 value=10000
+                 focus_absolute (int)    : min=0 max=250 step=25 default=0 value=0
+                     focus_auto (bool)   : default=0 value=0
+                     brightness (int)    : min=-255 max=255 step=1 default=0 value=60
+                       contrast (int)    : min=0 max=255 step=1 default=32 value=64
+                     saturation (int)    : min=0 max=255 step=1 default=64 value=128
+                            hue (int)    : min=-180 max=180 step=1 default=0 value=0
+ white_balance_temperature_auto (bool)   : default=1 value=0
+                           gain (int)    : min=0 max=1023 step=1 default=16 value=176
+                       hue_auto (bool)   : default=0 value=0
+      white_balance_temperature (int)    : min=2500 max=6500 step=500 default=2500 value=0
+                      sharpness (int)    : min=0 max=9 step=1 default=4 value=0
+
+*/
+  PARAMETER_REGISTER(v6.autoExposition) = false;
+
+  PARAMETER_REGISTER(v6.exposure) = 10000;
+  PARAMETER_REGISTER(v6.saturation) = 64;
+
+  PARAMETER_REGISTER(v6.autoWhiteBalancing) = false;
+  PARAMETER_REGISTER(v6.gain) = 16;
+  PARAMETER_REGISTER(v6.brightness) = 0;
+  PARAMETER_REGISTER(v6.contrast) = 32;
+  PARAMETER_REGISTER(v6.sharpness) = 4;
+  PARAMETER_REGISTER(v6.hue) = 0;
+  
+  // initial values that "look" good in the lab
+  PARAMETER_REGISTER(v6.gain_red) = 1280;
+  PARAMETER_REGISTER(v6.gain_green) = 1024;
+  PARAMETER_REGISTER(v6.gain_blue) = 2048;
+  
+  PARAMETER_REGISTER(v6.horizontalFlip) = false;
+  PARAMETER_REGISTER(v6.verticalFlip) = false;
 
   syncWithConfig();
 }
@@ -120,7 +167,28 @@ CameraSettings CameraSettingsRequest::getCameraSettings() const
       result.autoExposureWeights[i][j] = autoExposureWeights[i][j];
     }
   }
+  
+  
+  // V6
+  result.v6.autoExposition = v6.autoExposition;
 
+  result.v6.exposure = v6.exposure;
+  result.v6.saturation = v6.saturation;
+
+  result.v6.autoWhiteBalancing = v6.autoWhiteBalancing;
+  result.v6.gain = v6.gain;
+  result.v6.brightness = v6.brightness;
+  result.v6.contrast = v6.contrast;
+  result.v6.sharpness = v6.sharpness;
+  result.v6.hue = v6.hue;
+  
+  result.v6.gain_red = v6.gain_red;
+  result.v6.gain_green = v6.gain_green;
+  result.v6.gain_blue = v6.gain_blue;
+  
+  result.v6.horizontalFlip = v6.horizontalFlip;
+  result.v6.verticalFlip = v6.verticalFlip;
+  
   return result;
 }
 
@@ -147,5 +215,7 @@ CommonCameraSettingsRequest::CommonCameraSettingsRequest(string configName)
 
   PARAMETER_REGISTER(isActive) = false;
 
+  // V6
+  
   syncWithConfig();
 }

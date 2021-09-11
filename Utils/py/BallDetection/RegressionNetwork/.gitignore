@@ -1,0 +1,10 @@
+# ignore python specific files
+venv/*
+
+# ignore data
+data/*
+models/
+
+
+# don't ignore best models
+!data/best_models

@@ -7,8 +7,10 @@ import numpy as np
 import matplotlib as mpl
 from matplotlib import pyplot as plt
 from matplotlib.patches import Circle
+
 # TODO make a tools script in root folder which imports all the scripts in tools folder
-cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(os.path.split(inspect.getfile(inspect.currentframe()))[0], "..")))
+cmd_subfolder = os.path.realpath(
+    os.path.abspath(os.path.join(os.path.split(inspect.getfile(inspect.currentframe()))[0], "..")))
 if cmd_subfolder not in sys.path:
     sys.path.insert(0, cmd_subfolder)
 
@@ -16,15 +18,15 @@ from tools import tools
 from tools.action import Category
 from tools import field_info as field
 
-
 from matplotlib.backends.backend_pgf import FigureCanvasPgf
+
 mpl.backend_bases.register_backend('pgf', FigureCanvasPgf)
 
-pgf_params = {                          # setup matplotlib to use latex for output
-    'pgf.texsystem': 'pdflatex',        # change this if using xetex or luatex
-    'text.usetex': True,                # use LaTeX to write all text
+pgf_params = {  # setup matplotlib to use latex for output
+    'pgf.texsystem': 'pdflatex',  # change this if using xetex or luatex
+    'text.usetex': True,  # use LaTeX to write all text
     'font.family': 'serif',
-    'font.serif': [],                   # blank entries should cause plots to inherit fonts from the document
+    'font.serif': [],  # blank entries should cause plots to inherit fonts from the document
     'font.sans-serif': [],
     'font.monospace': [],
     # 'font.size': 10,
@@ -35,10 +37,10 @@ pgf_params = {                          # setup matplotlib to use latex for outp
     # 'figure.figsize': figsize(0.8), #[6, 4],     # default fig size of 0.9 textwidth
     'figure.autolayout': True,
     'pgf.preamble': [
-        r'\usepackage[utf8x]{inputenc}',    # use utf8 fonts because your computer can handle it :)
-        r'\usepackage[T1]{fontenc}',        # plots will be generated using this preamble
-        ]
-    }
+        r'\usepackage[utf8x]{inputenc}',  # use utf8 fonts because your computer can handle it :)
+        r'\usepackage[T1]{fontenc}',  # plots will be generated using this preamble
+    ]
+}
 mpl.rcParams.update(pgf_params)
 
 mpl.rcParams['xtick.direction'] = 'in'
@@ -62,13 +64,14 @@ def plot_start_positions(exp):
 def extract_values(exp, strategy, get_value):
     # NOTE: we ignore the last element here
     # for extraction of 'rotation' and 'walk_dist' the last element should included.
-    return [get_value(e) for frame in exp['frames'] for e in frame['sim'][strategy][1:-1] if get_value(e) != 0] #if np.abs(get_value(e)) > np.radians(10)
+    return [get_value(e) for frame in exp['frames'] for e in frame['sim'][strategy][1:-1] if
+            get_value(e) != 0]  # if np.abs(get_value(e)) > np.radians(10)
 
 
 def plot_histogram(exp):
+    names = {'optimal_one': 'optimal one', 'optimal_all': 'optimal all', 'fast': 'fast',
+             'optimal_value': 'optimal value', 'fast_best': 'fast best'}
 
-    names = {'optimal_one': 'optimal one', 'optimal_all': 'optimal all', 'fast': 'fast', 'optimal_value': 'optimal value', 'fast_best': 'fast best'}
-    
     kick_values = []
     labels = []
     values = []
@@ -77,10 +80,11 @@ def plot_histogram(exp):
         print(strategy)
         values += [np.abs(np.degrees(extract_values(exp, strategy, lambda x: x.turn_around_ball)))]
 
-        kick_values += [[len(frame['sim'][strategy])-1 for frame in exp['frames']]]
+        kick_values += [[len(frame['sim'][strategy]) - 1 for frame in exp['frames']]]
         labels += [names[strategy]]
 
-        max_value = max(np.abs(np.degrees(extract_values(exp, strategy, lambda x: x.turn_around_ball))))
+        max_value = max(
+            np.abs(np.degrees(extract_values(exp, strategy, lambda x: x.turn_around_ball))))
 
         print(max_value)
 
@@ -96,7 +100,7 @@ def plot_histogram(exp):
     ax[0].set_yscale("log")
     ax[0].set_ylabel('Number of occurrences.')
     ax[0].set_xlabel('Turn around ball in deg.')
-    
+
     ax[1].boxplot(np.transpose(np.array(kick_values)), labels=labels)
     ax[1].set_ylabel('Number of kicks until goal.')
     ax[1].grid()
@@ -173,7 +177,7 @@ def plot_matrix(exp):
     axes.pcolor(x_range, y_range, f, cmap="jet", alpha=0.8)
     plt.show()
 
-    
+
 def show_run(run):
     plt.clf()
     axes = plt.gca()
@@ -185,7 +189,8 @@ def show_run(run):
 
 
 def extract_invalid_runs(exp, strategy):
-    return [frame['sim'][strategy] for frame in exp['frames'] if frame['sim'][strategy][-2].state_category != Category.OPPGOAL]
+    return [frame['sim'][strategy] for frame in exp['frames'] if
+            frame['sim'][strategy][-2].state_category != Category.OPPGOAL]
 
 
 def test(exp):
@@ -200,18 +205,17 @@ def test(exp):
 
                 if np.max(np.abs(np.degrees([e.turn_around_ball for e in run[0:-1]]))) >= 110:
                     print(np.degrees(run[0].state.pose.rotation))
-                    print([(np.degrees(e.turn_around_ball), e.selected_action_idx) for e in run[0:-1]])
+                    print([(np.degrees(e.turn_around_ball), e.selected_action_idx) for e in
+                           run[0:-1]])
                     show_run(run)
-  
+
 
 if __name__ == "__main__":
-
-    data_prefix = os.path.realpath(os.path.abspath(os.path.join(cmd_subfolder,"../data")))
+    data_prefix = os.path.realpath(os.path.abspath(os.path.join(cmd_subfolder, "../data")))
     data_prefix = "./data/"
     # file = data_prefix + "simulation_6.pickle"
     # print("read file: " + file)
-    
-    
+
     experiment = pickle.load(open(data_prefix + 'simulation_10.pickle', "rb"))
     '''
     experiment = pickle.load(open(data_prefix + "simulation_6.pickle", "rb"))
@@ -220,7 +224,7 @@ if __name__ == "__main__":
     experiment['frames'] += experiment2['frames']
     experiment['frames'] += experiment3['frames']
     '''
-    print (len(experiment['frames']))
+    print(len(experiment['frames']))
 
     # plot_start_positions(experiment)
 

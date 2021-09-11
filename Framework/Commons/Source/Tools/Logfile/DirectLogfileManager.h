@@ -6,6 +6,7 @@
 #ifndef _DirectLogfileManager_h_
 #define _DirectLogfileManager_h_
 
+#include <cstdint>
 #include <cstring>
 #include <iostream>
 #include <fstream>
@@ -65,7 +66,8 @@ public:
   DirectLogfileManager()
     : 
     valid_frame(false),
-    stream(&buffer)
+    stream(&buffer),
+    writtenBytes(0)
   {
   }
 
@@ -81,14 +83,16 @@ public:
 
     buffer.clear();
     this->name = name;
-    this->frameNumber = frameNumber;
+    // NOTE: 'unsigned int' might be larger on some platforms, but here we NEED 4 bytes
+    this->frameNumber = static_cast<uint32_t>(frameNumber);
     return stream;
   }
 
-  void openFile(const char* filePath)
+  void openFile(const std::string& filePath)
   {
     closeFile();
     outFile.open(filePath, std::ios::out | std::ios::binary);
+    writtenBytes = 0;
   }
   
   void closeFile()
@@ -110,7 +114,7 @@ public:
   }
 
   size_t getWrittentBytesCount() const {
-    return std::max(static_cast<size_t>(0), static_cast<size_t>(outFile.tellp()));
+    return writtenBytes;
   }
 
   bool is_ready() const {
@@ -129,11 +133,18 @@ private:
     // make sure the data stream is alright
     //ASSERT(outFile.good());
 
-    outFile.write((const char*)(&frameNumber), sizeof(unsigned int));
+    // NOTE: sizeof(frameNumber) has to be 4 bytes
+    outFile.write((const char*)(&frameNumber), sizeof(frameNumber));
+    writtenBytes += 4;
+
     outFile << name << '\0';
+    writtenBytes += name.size() + 1;
 
     outFile.write((const char*) &buffer.size(), 4);
+    writtenBytes += 4;
+
     outFile.write(buffer.buf(), buffer.size());
+    writtenBytes += buffer.size();
 
     valid_frame = false;
   }
@@ -143,10 +154,11 @@ private:
   mutable std::ofstream outFile;
 
   bool valid_frame;
-  unsigned int frameNumber;
+  uint32_t frameNumber; // NOTE: the logfile format expects 4 byte
   std::string name;
   SimpleBuffer buffer;
   std::ostream stream;
+  size_t writtenBytes;
 };
 
 #endif //_DirectLogfileManager_h_

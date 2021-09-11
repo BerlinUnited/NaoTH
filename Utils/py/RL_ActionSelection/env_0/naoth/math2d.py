@@ -21,24 +21,24 @@ class Vector2:
 
     def rotate(self, a):
         return Vector2(
-          math.cos(a)*self.x - math.sin(a)*self.y,
-          math.sin(a)*self.x + math.cos(a)*self.y)
+            math.cos(a) * self.x - math.sin(a) * self.y,
+            math.sin(a) * self.x + math.cos(a) * self.y)
 
     def abs(self):
-        return math.sqrt(self.x*self.x + self.y*self.y)
+        return math.sqrt(self.x * self.x + self.y * self.y)
 
     def __mul__(self, other):
         if isinstance(other, Vector2):
-            return self.x*other.x + self.y*other.y
+            return self.x * other.x + self.y * other.y
         elif isinstance(other, (int, float, long)):
-            return Vector2(self.x*other, self.y*other)
+            return Vector2(self.x * other, self.y * other)
         else:
             return NotImplemented
 
     # TODO python3: use __truediv__
     # https://docs.python.org/3/library/operator.html
     def __div__(self, divisor):
-        return Vector2(self.x/divisor, self.y/divisor)
+        return Vector2(self.x / divisor, self.y / divisor)
 
     def __str__(self):
         return "({0},{1})".format(self.x, self.y)
@@ -53,7 +53,7 @@ class Vector2:
         if self.x == 0 and self.y == 0:
             return Vector2(self.x, self.y)
         else:
-            return (Vector2(self.x, self.y)*length) / self.abs()
+            return (Vector2(self.x, self.y) * length) / self.abs()
 
     # TODO is this function really necessary?
     def rotate_right(self):
@@ -78,8 +78,8 @@ class Pose2D:
             return other.rotate(self.rotation) + self.translation
         elif isinstance(other, Pose2D):
             p = Pose2D()
-            p.translation = self*other.translation
-            p.rotation = (self.rotation + other.rotation + math.pi) % (2*math.pi) - math.pi
+            p.translation = self * other.translation
+            p.rotation = (self.rotation + other.rotation + math.pi) % (2 * math.pi) - math.pi
             return p
         else:
             return NotImplemented
@@ -103,7 +103,7 @@ class Pose2D:
 
     def __str__(self):
         return "(translation = {0}, rotation = {1})".format(self.translation, self.rotation)
-        
+
     def rotate(self, a):
         self.rotation += a
 
@@ -117,49 +117,50 @@ class Pose2D:
 class LineSegment(object):
     def __init__(self, begin, end):
         self.base = begin
-        self.direction = end-self.base
+        self.direction = end - self.base
         self.length = Vector2.abs(self.direction)
         if self.direction.abs() != 0:
             self.direction /= self.direction.abs()
 
     def __str__(self):
-        return str("Begin: " + str(self.base)) + " End: " + str(self.base+self.direction*self.length)
+        return str("Begin: " + str(self.base)) + " End: " + str(
+            self.base + self.direction * self.length)
 
     def begin(self):
         return self.base
 
     def end(self):
-        return self.base+self.direction*self.length
+        return self.base + self.direction * self.length
 
     def point(self, t):
         t = clamp(t, 0.0, self.length)
-        return self.base + self.direction*t
+        return self.base + self.direction * t
 
     def project(self, p):
-        return self.direction*p - self.direction*self.base
+        return self.direction * p - self.direction * self.base
 
     def projection(self, p):
-        t = self.direction*p - self.direction*self.base
+        t = self.direction * p - self.direction * self.base
         return self.point(t)
 
     def intersection(self, other):
         normal = Vector2(-other.direction.y, other.direction.x)
-        t = normal*self.direction
+        t = normal * self.direction
         if t == 0:
             return float('Inf')
 
-        t = normal*(other.base-self.base)/t
+        t = normal * (other.base - self.base) / t
         t = clamp(t, 0.0, self.length)
 
         return t
 
     def line_intersection(self, other):
         normal = Vector2(-other.direction.y, other.direction.x)
-        t = normal*self.direction
+        t = normal * self.direction
         if t == 0:
             return float('Inf')
         else:
-            return normal*(other.base-self.base)/t
+            return normal * (other.base - self.base) / t
 
     def intersect(self, other):
         t = self.line_intersection(other)

@@ -1,6 +1,6 @@
 syntax = "proto2";
 package naothmessages;
-option java_package= "de.naoth.rc.messages";
+option java_package= "de.naoth.rc.core.messages";
 
 import "CommonTypes.proto";
 import "Framework-Representations.proto";
@@ -246,6 +246,7 @@ message EdgelPair {
   required int32 begin = 1;
   required int32 end = 2;
   required int32 id = 3;
+  optional bool adaptive = 4;
 }
 
 message ScanLineEdgelPercept {
@@ -393,6 +394,10 @@ message GroundContactModel {
 message CollisionPercept {
   required uint32 timeCollisionArmLeft = 1;
   required uint32 timeCollisionArmRight = 2;
+  required bool isCollisionLeftBumper = 3;
+  required bool isCollisionRightBumper = 4;
+  required double lastComputedCollisionLeft = 5;
+  required double lastComputedCollisionRight = 6;
 }
 
 message IMUData
@@ -444,7 +449,7 @@ message WhistlePercept {
     required double responseValue = 3;
   }
   
-  optional int32 counter  = 1;
+  optional uint32 frameWhenWhistleDetected  = 1;
   optional string captureFile = 2;
   repeated Whistle recognizedWhistles = 3;
   optional bool whistleDetected = 4;
@@ -458,4 +463,15 @@ message DebugModify {
   }
   
   repeated ModifyValue valueMap = 1;
+}
+
+
+message StepBuffer {
+  optional Pose3D support_foot = 1;
+}
+
+message bodyAwareness {
+  optional bool isLifted = 1;
+  optional DoubleVector3  calculatedCoM= 2;
+  optional DoubleVector3 currentCoMError = 3;
 }

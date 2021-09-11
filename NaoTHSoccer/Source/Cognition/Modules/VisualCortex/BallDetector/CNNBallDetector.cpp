@@ -4,6 +4,7 @@
 #include "Tools/PatchWork.h"
 #include "Tools/BlackSpotExtractor.h"
 
+#include "Classifier/Model1.h"
 #include "Classifier/Fy1500_Conf.h"
 #include "Classifier/FrugallyDeep.h"
 
@@ -17,6 +18,7 @@ CNNBallDetector::CNNBallDetector()
   DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:refinePatches", "draw refined ball key points", false);
   DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:drawPercepts", "draw ball percepts", false);
   DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:drawPatchContrast", "draw patch contrast (only when contrast-check is in use!", false);
+  DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:draw_projected_ball","", false);
 
   DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:extractPatches", "generate YUVC patches", false);
 
@@ -29,7 +31,8 @@ CNNBallDetector::CNNBallDetector()
 
   cnnMap = createCNNMap();
 
-  setClassifier("fy1500_conf", "fy1500_conf");
+  // initialize classifier selection
+  setClassifier(params.classifier, params.classifierClose);
 }
 
 CNNBallDetector::~CNNBallDetector()
@@ -50,11 +53,7 @@ void CNNBallDetector::execute(CameraInfo::CameraID id)
   //theBallKeyPointExtractor->getModuleT()->calculateKeyPoints(best);
   theBallKeyPointExtractor->getModuleT()->calculateKeyPointsBetter(best);
 
-
-  // update selected classifier from parameters
-  // TODO: make it more efficient
-  setClassifier(params.classifier, params.classifierClose);
-
+  addPatchByLastBall();
 
   if(best.size() > 0) {
     calculateCandidates();
@@ -79,7 +78,12 @@ void CNNBallDetector::execute(CameraInfo::CameraID id)
     extractPatches();
   );
 
-  if(params.numberOfExportBestPatches > 0) {
+  if(params.providePatches) 
+  {
+    providePatches();
+  } 
+  else if(params.numberOfExportBestPatches > 0) 
+  {
     extractPatches();
   }
 
@@ -105,6 +109,7 @@ std::map<string, std::shared_ptr<AbstractCNNFinder> > CNNBallDetector::createCNN
 
   // register classifiers
   result.insert({ "fy1500_conf", std::make_shared<Fy1500_Conf>() });
+  result.insert({ "model1", std::make_shared<Model1>() });
 
 #ifndef WIN32
   result.insert({ "fdeep_fy1300", std::make_shared<FrugallyDeep>("fy1300.json")});
@@ -227,7 +232,7 @@ void CNNBallDetector::calculateCandidates()
       }
 
       STOPWATCH_START("CNNBallDetector:predict");
-      cnn->find(patch, params.cnn.meanBrightness);
+      cnn->predict(patch, params.cnn.meanBrightnessOffset);
       STOPWATCH_STOP("CNNBallDetector:predict");
 
       bool found = false;
@@ -242,15 +247,15 @@ void CNNBallDetector::calculateCandidates()
 
       if (found) {
         // adjust the center and radius of the patch
-        Vector2i ballCenterInPatch(static_cast<int>(pos.x * patch.width()), static_cast<int>(pos.y*patch.width()));
+        Vector2d ballCenterInPatch(pos.x * patch.width(), pos.y*patch.width());
        
-        addBallPercept(patch.min + ballCenterInPatch, radius*patch.width());
+        addBallPercept(ballCenterInPatch + patch.min, radius*patch.width());
       }
 
       DEBUG_REQUEST("Vision:CNNBallDetector:drawCandidates",
         // original patch
         RECT_PX(ColorClasses::skyblue, (*i).min.x, (*i).min.y, (*i).max.x, (*i).max.y);
-        // possibly recised patch 
+        // possibly revised patch 
         RECT_PX(ColorClasses::orange, patch.min.x, patch.min.y, patch.max.x, patch.max.y);
       );
 
@@ -261,6 +266,13 @@ void CNNBallDetector::calculateCandidates()
 } // end calculateCandidates
 
 
+/** 
+ * Extract at most numberOfExportBestPatches for the logfile (and add it to the blackboard). 
+ *
+ * WARNING: This will include the border around the patch. The resulting patch is 24x24 pixel in size
+ *          (currently internal patches size is 16x16). 
+ *          To reconstruct the original patch, remove the border again.
+ */
 void CNNBallDetector::extractPatches()
 {
   int idx = 0;
@@ -286,7 +298,19 @@ void CNNBallDetector::extractPatches()
   }
 }
 
-void CNNBallDetector::addBallPercept(const Vector2i& center, double radius) 
+/** Provides all the internally generated patches in the representation */
+void CNNBallDetector::providePatches()
+{
+  for(BestPatchList::reverse_iterator i = best.rbegin(); i != best.rend(); ++i)
+  {
+    BallCandidates::PatchYUVClassified& q = getBallCandidates().nextFreePatchYUVClassified();
+    q.min = (*i).min;
+    q.max = (*i).max;
+    q.setSize(16);
+  }
+}
+
+void CNNBallDetector::addBallPercept(const Vector2d& center, double radius) 
 {
   const double ballRadius = 50.0;
   MultiBallPercept::BallPercept ballPercept;
@@ -308,3 +332,41 @@ void CNNBallDetector::addBallPercept(const Vector2i& center, double radius)
   }
 }
 
+void CNNBallDetector::addPatchByLastBall()
+{
+  if (getBallModel().valid)
+  {
+    Vector3d ballInField;
+    ballInField.x = getBallModel().position.x;
+    ballInField.y = getBallModel().position.y;
+    ballInField.z = getFieldInfo().ballRadius;
+
+    Vector2i ballInImage;
+    if (CameraGeometry::relativePointToImage(getCameraMatrix(), getImage().cameraInfo, ballInField, ballInImage))
+    {
+
+      double estimatedRadius = CameraGeometry::estimatedBallRadius(
+          getCameraMatrix(), getImage().cameraInfo, getFieldInfo().ballRadius,
+          ballInImage.x, ballInImage.y);
+
+      int border = static_cast<int>((estimatedRadius * 1.1) + 0.5);
+
+      Vector2i start = ballInImage - border;
+      Vector2i end = ballInImage + border;
+
+      if (start.y >= 0 && end.y < static_cast<int>(getImage().height()) && start.x >= 0 && end.x < static_cast<int>(getImage().width()))
+      {
+        DEBUG_REQUEST("Vision:CNNBallDetector:draw_projected_ball",
+                      RECT_PX(ColorClasses::pink, start.x, start.y, end.x, end.y);
+                      CIRCLE_PX(ColorClasses::pink, ballInImage.x, ballInImage.y, static_cast<int>(estimatedRadius));
+                      );
+        best.add(
+            start.x,
+            start.y,
+            end.x,
+            end.y,
+            -1.0);
+      }
+    }
+  }
+}

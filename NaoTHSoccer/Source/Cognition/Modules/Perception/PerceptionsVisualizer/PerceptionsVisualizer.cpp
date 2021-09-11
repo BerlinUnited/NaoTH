@@ -39,8 +39,6 @@ PerceptionsVisualizer::PerceptionsVisualizer()
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:field:players_percept", "draw players percept", false);
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:image_px:players_percept", "draw players percept", false);
 
-  DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:field:corrrect_camera_matrix","", false);
-
   DEBUG_REQUEST_REGISTER( "PerceptionsVisualizer:image:draw_field_polygon", "draw field boundaries in image", false);
 
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:field:field_info", "", false);
@@ -147,10 +145,6 @@ void PerceptionsVisualizer::execute(CameraInfo::CameraID id)
     FIELD_DRAWING_CONTEXT;
 
     CameraMatrix cameraMatrix(getCameraMatrix());
-    DEBUG_REQUEST("PerceptionsVisualizer:field:corrrect_camera_matrix",
-      cameraMatrix.rotateY(getCameraMatrixOffset().offset.y)
-                  .rotateX(getCameraMatrixOffset().offset.x);
-    );
 
     for(size_t i = 0; i < getScanLineEdgelPercept().endPoints.size(); i++)
     {

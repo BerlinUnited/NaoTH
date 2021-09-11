@@ -54,6 +54,7 @@ public:
     yDensity(0),
     timestamp(0)
   {
+    reset();
   }
 
 private:
