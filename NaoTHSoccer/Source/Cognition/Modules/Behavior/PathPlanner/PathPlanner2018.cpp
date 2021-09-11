@@ -237,7 +237,9 @@ void PathPlanner2018::avoid_obstacle(Pose2D target_point){
     // TODO: does the algorithm terminate in every case?
     //       What if no valid path exists (reachability)
     int path_length = 0;
+    int number_of_retries = 0;
     int max_path_length = 20;
+    int max_retries = 20;
 
     target_point.translation = Vector2d(2000, 0);//getBallModel().position;
     forward_list<Vector2d> path({Vector2d(), target_point.translation});
@@ -309,29 +311,35 @@ void PathPlanner2018::avoid_obstacle(Pose2D target_point){
           LINE(debug_mean.x, debug_mean.y, new_point.x, new_point.y);
           if(replace_next_vertex) { // the endpoint of the path segment lies inside the polygon
             *next(vertex) = new_point; // so replace it by a new point
+            ++number_of_retries;
           } else {
             // add new vertex after current one to the path
             path.insert_after(vertex, new_point);
             ++path_length;
           }
 
-          // the path was changed after the current vertex
-          // so we need to check for all obstacles again
-          // if the new part is valid
-
           // debug
           PEN("00FF00", 1);
           for(auto v = path.begin(); next(v) != path.end(); ++v){
               LINE(v->x, v->y, next(v)->x, next(v)->y);
           }
+
+          // the path was changed after the current vertex
+          // so we need to check for all obstacles again
+          // if the new part is valid
           break;
         }
       } // end obstacle loop
 
       // there was no collision so the path is valid until the next vertex
-      if(!collision) ++vertex;
+      if(!collision) {
+          ++vertex;
+          number_of_retries = 0;
+      }
 
-    } while(next(vertex) != path.end() and path_length < max_path_length);
+    } while(next(vertex) != path.end()
+            && path_length < max_path_length
+            && number_of_retries < max_retries);
 
     FIELD_DRAWING_CONTEXT;
     if (path_length < max_path_length) {
