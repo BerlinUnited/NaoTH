@@ -152,9 +152,6 @@ workspace "NaoTHSoccer"
     buildoptions {"-Wno-sign-conversion"}
     -- clang - allow unused functions in cpp files
     buildoptions {"-Wno-unused-function"}
-    -- ignore static float b_5[4] = {7.914805e-02f, 4.3910053e-02f, 1.06536165e-01f, -2.9649496e-02f};
-    -- clang wants to have double braces in this case.
-    --buildoptions {"-Wno-missing-braces"}
     
     -- for debugging:
     -- buildoptions {"-time"}
