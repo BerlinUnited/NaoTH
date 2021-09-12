@@ -54,7 +54,7 @@ java.sourceCompatibility = JavaVersion.VERSION_1_8
 java.targetCompatibility = JavaVersion.VERSION_1_8
 
 // configure the application plugin
-application.mainClassName = 'de.naoth.rc.RobotControlImpl'
+application.getMainClass().set('de.naoth.rc.RobotControlImpl')
 application.executableDir = '' // do not create a "bin" directory in install/zip
 application.applicationName = 'robotcontrol' // set the startscripts to lower case
 // HACK: show splashscreen for 'gradlew run'
@@ -127,7 +127,7 @@ jar {
   // create a manifest for the jar
   manifest {
     attributes 'Class-Path': sourceSets.main.runtimeClasspath.collect { it.name }.join(' ')
-    attributes 'Main-Class': application.mainClassName
+    attributes 'Main-Class': application.getMainClass()
     attributes 'SplashScreen-Image': 'de/naoth/rc/res/Splash.png'
   }
   
