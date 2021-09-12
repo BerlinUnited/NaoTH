@@ -154,11 +154,16 @@ workspace "NaoTHSoccer"
     buildoptions {"-Wno-unused-function"}
     -- ignore static float b_5[4] = {7.914805e-02f, 4.3910053e-02f, 1.06536165e-01f, -2.9649496e-02f};
     -- clang wants to have double braces in this case.
-    buildoptions {"-Wno-missing-braces"}
+    --buildoptions {"-Wno-missing-braces"}
     
     -- for debugging:
     -- buildoptions {"-time"}
 
+    filter "files:../Source/Tools/DataStructures/Spline.cpp"
+      warnings "Off"
+
+    filter "files:../Source/Cognition/Modules/VisualCortex/BallDetector/Classifier/*"
+      warnings "Off"
     
   -- additional defines for visual studio   
   filter {"system:windows", "action:vs*"}
