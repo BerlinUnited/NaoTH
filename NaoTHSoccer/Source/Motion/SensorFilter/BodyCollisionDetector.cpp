@@ -76,7 +76,7 @@ void BodyCollisionDetector::execute()
       draw_impact_vector(Vector2d(correctionX, correctionY));
     );
 
-    //Collision Detection Math goes here
+    //Collision Detection Math goes here 
 
 
     lastGyroError = error;
@@ -88,7 +88,7 @@ void BodyCollisionDetector::draw_impact_vector(Vector2d vec)
 {
   // TODO make the arrow more visible
   FIELD_DRAWING_CONTEXT;
-  PEN("FF0000", 10);
-  //vec = vec.normalize(500);
-  ARROW(0, 0, vec.x * 10000, vec.y * 10000);
+    PEN("FF0000", 10);
+    //vec = vec.normalize(500);
+    ARROW(0, 0, vec.x * 10000, vec.y * 10000);
 }

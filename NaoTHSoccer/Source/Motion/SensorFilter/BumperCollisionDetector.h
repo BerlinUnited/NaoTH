@@ -3,26 +3,19 @@
 
 #include <ModuleFramework/Module.h>
 
-#include <Representations/Modeling/CollisionModel.h>
-#include <Representations/Infrastructure/UltraSoundData.h>
 #include <Representations/Infrastructure/ButtonData.h>
 #include <Representations/Infrastructure/FrameInfo.h>
 #include <Representations/Motion/CollisionPercept.h>
 
-
 #include <Tools/DataStructures/ParameterList.h>
-#include <Tools/Debug/DebugRequest.h>
-#include <Tools/Debug/DebugModify.h>
 #include <Tools/Debug/DebugParameterList.h>
 
 BEGIN_DECLARE_MODULE(BumperCollisionDetector)
   REQUIRE(FrameInfo)
-  REQUIRE(UltraSoundReceiveData)
   REQUIRE(ButtonData)
-  PROVIDE(DebugModify)
-  PROVIDE(CollisionModel)
+
   PROVIDE(DebugParameterList)
-  PROVIDE(CollisionPercept)
+  PROVIDE(CollisionPercept)  // Footbumper and arms
 END_DECLARE_MODULE(BumperCollisionDetector)
 
 class BumperCollisionDetector : public BumperCollisionDetectorBase
