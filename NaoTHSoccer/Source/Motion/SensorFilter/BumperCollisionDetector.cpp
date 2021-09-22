@@ -1,4 +1,3 @@
-
 #include "BumperCollisionDetector.h"
 
 BumperCollisionDetector::BumperCollisionDetector()
