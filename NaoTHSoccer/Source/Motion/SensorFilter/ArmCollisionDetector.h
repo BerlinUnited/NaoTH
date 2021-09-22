@@ -5,8 +5,8 @@
 * ArmCollisionDetector: detect collisions with arms based on joint position deviation.
 */
 
-#ifndef _ArmCollisionDetector_H_
-#define _ArmCollisionDetector_H_
+#ifndef ARM_COLLISION_DETECTOR_H
+#define ARM_COLLISION_DETECTOR_H
 
 #include <ModuleFramework/Module.h>
 
@@ -24,21 +24,19 @@
 // debug
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugPlot.h"
-#include "Tools/Debug/DebugModify.h"
 #include "Tools/Debug/DebugParameterList.h"
 
 
 BEGIN_DECLARE_MODULE(ArmCollisionDetector)
-  PROVIDE(DebugRequest)
-  PROVIDE(DebugPlot)
-  PROVIDE(DebugModify)
-  PROVIDE(DebugParameterList)
-
   REQUIRE(FrameInfo)
   REQUIRE(MotorJointData)
   REQUIRE(SensorJointData)
   REQUIRE(MotionStatus)
   REQUIRE(MotionRequest)
+
+  PROVIDE(DebugRequest)
+  PROVIDE(DebugPlot)
+  PROVIDE(DebugParameterList)
 
   PROVIDE(CollisionPercept)
 END_DECLARE_MODULE(ArmCollisionDetector)
@@ -77,4 +75,4 @@ private:
   //ArmMotionRequest::ArmMotionID armStatus;
 };
 
-#endif //_ArmCollisionDetector_H_
+#endif // ARM_COLLISION_DETECTOR_H
