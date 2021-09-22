@@ -76,7 +76,7 @@ void BodyCollisionDetector::execute()
       draw_impact_vector(Vector2d(correctionX, correctionY));
     );
 
-    //Collision Detection Math goes here 
+    //Collision Detection Math goes here
 
 
     lastGyroError = error;
