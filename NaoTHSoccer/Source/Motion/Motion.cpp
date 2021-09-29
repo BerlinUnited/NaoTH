@@ -50,7 +50,6 @@ Motion::Motion()
   theOdometryCalculator = registerModule<OdometryCalculator>("OdometryCalculator", true);
   theKinematicChainProvider = registerModule<KinematicChainProviderMotion>("KinematicChainProvider", true);
 
-  theArmCollisionDetector = registerModule<ArmCollisionDetector>("ArmCollisionDetector", false);
   theArmCollisionDetector2018 = registerModule<ArmCollisionDetector2018>("ArmCollisionDetector2018", true);
   theBumperCollisionDetector = registerModule<BumperCollisionDetector>("BumperCollisionDetector", false);
 
