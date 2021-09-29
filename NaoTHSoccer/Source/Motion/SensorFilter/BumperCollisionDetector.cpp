@@ -11,20 +11,22 @@ BumperCollisionDetector::~BumperCollisionDetector()
 }
 
 void BumperCollisionDetector::execute()
-{
+{   
+    // record time when on of the bumper sides where pressed on the left foot
+    if (getButtonData().isPressed[ButtonData::LeftFootLeft] ||
+        getButtonData().isPressed[ButtonData::LeftFootRight]) {
+        lastBumpTimeLeft = getFrameInfo();
+    }
+
+    // record time when on of the bumper sides where pressed on the right foot
     if (getButtonData().isPressed[ButtonData::RightFootLeft]
         || getButtonData().isPressed[ButtonData::RightFootRight])
     {
         lastBumpTimeRight = getFrameInfo();
     }
-    if (getButtonData().isPressed[ButtonData::LeftFootLeft]
-        || getButtonData().isPressed[ButtonData::LeftFootRight])
-    {
-        lastBumpTimeLeft = getFrameInfo();
-    }
 
-  if (getCollisionPercept().isLeftFootColliding)
-  {
+    // reset the colliding bool if buttons are not pressed and the time since the last press/collision is too long ago
+    if (getCollisionPercept().isLeftFootColliding){
       if (!getButtonData().isPressed[ButtonData::LeftFootLeft]
           && !getButtonData().isPressed[ButtonData::LeftFootRight]
           && (getFrameInfo().getTimeSince(lastBumpTimeLeft.getTime()) > params.collisionInterval))
@@ -32,45 +34,44 @@ void BumperCollisionDetector::execute()
           getCollisionPercept().isLeftFootColliding = false;
           collisionStartTimeLeft = getFrameInfo();
       }
-  }
+    }
 
-  if (getCollisionPercept().isRightFootColliding)
-  {
-      if (!getButtonData().isPressed[ButtonData::RightFootLeft]
-          && !getButtonData().isPressed[ButtonData::RightFootRight]
-          && (getFrameInfo().getTimeSince(lastBumpTimeRight.getTime()) > params.collisionInterval))
-      {
-          getCollisionPercept().isRightFootColliding = false;
-          collisionStartTimeRight = getFrameInfo();
-      }
-  }
+    // reset the colliding bool if buttons are not pressed and the time since the last press/collision is too long ago
+    if (getCollisionPercept().isRightFootColliding){
+        if (!getButtonData().isPressed[ButtonData::RightFootLeft]
+            && !getButtonData().isPressed[ButtonData::RightFootRight]
+            && (getFrameInfo().getTimeSince(lastBumpTimeRight.getTime()) > params.collisionInterval))
+        {
+            getCollisionPercept().isRightFootColliding = false;
+            collisionStartTimeRight = getFrameInfo();
+        }
+    }
   
-  if (!getCollisionPercept().isLeftFootColliding && !getCollisionPercept().isRightFootColliding)
-  {
-    // no collision yet, check if one occured
-    // (and be sure it's really a collison)
-    if( getButtonData().isPressed[ButtonData::RightFootLeft]
-        || getButtonData().isPressed[ButtonData::RightFootRight])
-    {
-        getCollisionPercept().isRightFootColliding = true;
-        collisionStartTimeRight = getFrameInfo();
-    }
+    if (!getCollisionPercept().isLeftFootColliding && !getCollisionPercept().isRightFootColliding){
+        // no collision yet, check if one occured
+        // (and be sure it's really a collison)
+        if( getButtonData().isPressed[ButtonData::RightFootLeft]
+            || getButtonData().isPressed[ButtonData::RightFootRight])
+        {
+            getCollisionPercept().isRightFootColliding = true;
+            collisionStartTimeRight = getFrameInfo();
+        }
 
-    // no collision yet, check if one occured
-    // (and be sure it's really a collison)
-    if (getButtonData().isPressed[ButtonData::LeftFootLeft]
-        || getButtonData().isPressed[ButtonData::LeftFootRight])
-    {
-        getCollisionPercept().isLeftFootColliding = true;
-        collisionStartTimeLeft = getFrameInfo();
+        // no collision yet, check if one occured
+        // (and be sure it's really a collison)
+        if (getButtonData().isPressed[ButtonData::LeftFootLeft]
+            || getButtonData().isPressed[ButtonData::LeftFootRight])
+        {
+            getCollisionPercept().isLeftFootColliding = true;
+            collisionStartTimeLeft = getFrameInfo();
+        }
     }
-  }
 
   //Now we want to distinguish single bumper presses from "real" collisions
   if ((getFrameInfo().getTimeSince(collisionStartTimeLeft.getTime()) > params.collisionInterval*params.timesToBump)
       && getCollisionPercept().isLeftFootColliding)
   {
-      //Left bumper collision -> evasive movement
+      //Left bumper collision
       getCollisionPercept().lastComputedCollisionLeft = getFrameInfo().getTimeInSeconds();
       getCollisionPercept().collision_left_bumper = true;
 
@@ -84,7 +85,7 @@ void BumperCollisionDetector::execute()
   if ((getFrameInfo().getTimeSince(collisionStartTimeRight.getTime()) > params.collisionInterval*params.timesToBump)
       && getCollisionPercept().isRightFootColliding)
   {
-      //Right bumper collision -> evasive movement
+      //Right bumper collision
       getCollisionPercept().lastComputedCollisionRight = getFrameInfo().getTimeInSeconds();
       getCollisionPercept().collision_right_bumper = true;
 
