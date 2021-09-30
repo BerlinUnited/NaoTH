@@ -4,8 +4,8 @@
 * Definition of class RedBallDetector
 */
 
-#ifndef _RedBallDetector_H_
-#define _RedBallDetector_H_
+#ifndef RedBallDetector_H
+#define RedBallDetector_H
 
 #include <ModuleFramework/Module.h>
 #include <ModuleFramework/Representation.h>
@@ -16,6 +16,7 @@
 #include <Tools/Math/Matrix_nxn.h>
 #include <Tools/ImageProcessing/ColorModelConversions.h>
 
+#include <Representations/Infrastructure/CameraInfo.h>
 #include <Representations/Infrastructure/Image.h>
 
 #include "Representations/Infrastructure/FieldInfo.h"
@@ -44,6 +45,9 @@ BEGIN_DECLARE_MODULE(RedBallDetector)
 
   REQUIRE(FieldInfo)
   REQUIRE(FrameInfo)
+
+  REQUIRE(CameraInfo)
+  REQUIRE(CameraInfoTop)
 
   REQUIRE(Image)
   REQUIRE(ImageTop)
@@ -137,10 +141,11 @@ private:
   DOUBLE_CAM_PROVIDE(RedBallDetector, DebugImageDrawings);
 
   // double cam stuff
+  DOUBLE_CAM_REQUIRE(RedBallDetector, CameraInfo);
   DOUBLE_CAM_REQUIRE(RedBallDetector, Image);
   DOUBLE_CAM_REQUIRE(RedBallDetector, CameraMatrix);
   DOUBLE_CAM_REQUIRE(RedBallDetector, FieldColorPercept);
   DOUBLE_CAM_REQUIRE(RedBallDetector, FieldPercept);          
 };//end class RedBallDetector
 
-#endif // _RedBallDetector_H_
+#endif // RedBallDetector_H

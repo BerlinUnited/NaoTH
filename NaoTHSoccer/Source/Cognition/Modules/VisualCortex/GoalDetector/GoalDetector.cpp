@@ -158,7 +158,7 @@ void GoalDetector::calcuateGoalPosts()
 
       // NOTE: if the projection is not successfull, then post.position = (0,0)
       bool projectionOk = CameraGeometry::imagePixelToFieldCoord(
-          getCameraMatrix(), getImage().cameraInfo,
+          getCameraMatrix(), getCameraInfo(),
           post.basePoint.x, post.basePoint.y, 0.0,
           post.position);
 

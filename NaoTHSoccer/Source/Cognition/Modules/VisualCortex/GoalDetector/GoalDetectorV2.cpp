@@ -176,7 +176,7 @@ void GoalDetectorV2::calcuateGoalPosts()
 
       // NOTE: if the projection is not successfull, then post.position = (0,0)
       bool projectionOk = CameraGeometry::imagePixelToFieldCoord(
-          getCameraMatrix(), getImage().cameraInfo,
+          getCameraMatrix(), getCameraInfo(),
           post.basePoint.x, post.basePoint.y, 0.0,
           post.position);
 
@@ -372,7 +372,7 @@ Vector2d GoalDetectorV2::getBackProjectedTopPoint(const GoalPercept::GoalPost& p
   Vector3d pt1(p1.x, p1.y, getFieldInfo().goalHeight);
 
   Vector2i topInImage1;
-  CameraGeometry::relativePointToImage(getCameraMatrix(), getImage().cameraInfo, pt1,topInImage1); 
+  CameraGeometry::relativePointToImage(getCameraMatrix(), getCameraInfo(), pt1,topInImage1); 
   return topInImage1;
 }
 
@@ -382,7 +382,7 @@ Vector2d GoalDetectorV2::getBackProjectedBasePoint(const GoalPercept::GoalPost& 
   Vector3d pt1(p1.x, p1.y, 0.0);
 
   Vector2i topInImage1;
-  CameraGeometry::relativePointToImage(getCameraMatrix(), getImage().cameraInfo, pt1,topInImage1); 
+  CameraGeometry::relativePointToImage(getCameraMatrix(), getCameraInfo(), pt1,topInImage1); 
   return topInImage1;
 }
 
@@ -401,8 +401,8 @@ int GoalDetectorV2::getBackProjectedTopBarWidth(const GoalPercept::GoalPost& pos
 
   Vector2i topInImage1;
   Vector2i topInImage2;
-  CameraGeometry::relativePointToImage(getCameraMatrix(), getImage().cameraInfo, pt1,topInImage1); 
-  CameraGeometry::relativePointToImage(getCameraMatrix(), getImage().cameraInfo, pt2,topInImage2);
+  CameraGeometry::relativePointToImage(getCameraMatrix(), getCameraInfo(), pt1,topInImage1); 
+  CameraGeometry::relativePointToImage(getCameraMatrix(), getCameraInfo(), pt2,topInImage2);
 
   return (topInImage1 - topInImage2).abs();
 }
@@ -422,8 +422,8 @@ int GoalDetectorV2::getBackProjectedBaseBarWidth(const GoalPercept::GoalPost& po
 
   Vector2i topInImage1;
   Vector2i topInImage2;
-  CameraGeometry::relativePointToImage(getCameraMatrix(), getImage().cameraInfo, pt1,topInImage1); 
-  CameraGeometry::relativePointToImage(getCameraMatrix(), getImage().cameraInfo, pt2,topInImage2);
+  CameraGeometry::relativePointToImage(getCameraMatrix(), getCameraInfo(), pt1,topInImage1); 
+  CameraGeometry::relativePointToImage(getCameraMatrix(), getCameraInfo(), pt2,topInImage2);
 
   return (topInImage1 - topInImage2).abs();
 }
@@ -436,8 +436,8 @@ int GoalDetectorV2::getBackProjectedPostHeight(const GoalPercept::GoalPost& post
 
   Vector2i pbImg;
   Vector2i ptImg;
-  CameraGeometry::relativePointToImage(getCameraMatrix(), getImage().cameraInfo, pb, pbImg); 
-  CameraGeometry::relativePointToImage(getCameraMatrix(), getImage().cameraInfo, pt, ptImg);
+  CameraGeometry::relativePointToImage(getCameraMatrix(), getCameraInfo(), pb, pbImg); 
+  CameraGeometry::relativePointToImage(getCameraMatrix(), getCameraInfo(), pt, ptImg);
 
   return (pbImg - ptImg).abs();
 }
