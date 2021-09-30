@@ -18,29 +18,24 @@
 
 CameraInfoSetter::CameraInfoSetter()
 {
-  getDebugParameterList().add(&getCameraInfo().getCameraInfoParameter());
-  getDebugParameterList().add(&getCameraInfoTop().getCameraInfoParameter());
-  
 }
 
 CameraInfoSetter::~CameraInfoSetter()
 {
-  getDebugParameterList().remove(&getCameraInfo().getCameraInfoParameter());
-  getDebugParameterList().remove(&getCameraInfoTop().getCameraInfoParameter());
 }
 
 void CameraInfoSetter::execute()
 {
-  const CameraSettings camSettings = getCameraSettingsRequest().getCameraSettings();
+  //const CameraSettings camSettings = getCameraSettingsRequest().getCameraSettings();
   // copy parameter based representation to the "pure" one
-  getCameraInfo().cameraID = CameraInfo::Bottom;
+  //getCameraInfo().cameraID = CameraInfo::Bottom;
 
   // set param for image
   getImage().cameraInfo = getCameraInfo();
 
-  const CameraSettings camSettingsTop = getCameraSettingsRequestTop().getCameraSettings();
+  //const CameraSettings camSettingsTop = getCameraSettingsRequestTop().getCameraSettings();
   // copy parameter based representation to the "pure" one
-  getCameraInfoTop().cameraID = CameraInfo::Top;
+  //getCameraInfoTop().cameraID = CameraInfo::Top;
 
   // check if the camera settings actually changed something in the CameraInfo
   // uses
