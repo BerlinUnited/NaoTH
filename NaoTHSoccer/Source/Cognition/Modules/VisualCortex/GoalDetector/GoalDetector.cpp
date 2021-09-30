@@ -197,7 +197,7 @@ Vector2i GoalDetector::scanForEndPoint(const Vector2i& start, const Vector2d& di
 {
   Vector2i pos(start);
   Pixel pixel;
-  BresenhamLineScan footPointScanner(pos, direction, getImage().cameraInfo);
+  BresenhamLineScan footPointScanner(pos, direction, getImage().width(), getImage().height());
 
   // initialize the scanner
   Vector2i peak_point(pos);

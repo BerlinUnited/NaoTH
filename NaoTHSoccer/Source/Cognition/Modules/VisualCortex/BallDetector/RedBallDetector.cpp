@@ -201,7 +201,7 @@ bool RedBallDetector::spiderScan(const Vector2i& start, std::vector<Vector2i>& e
 bool RedBallDetector::scanForEdges(const Vector2i& start, const Vector2d& direction, std::vector<Vector2i>& points) const
 {
   Vector2i point(start);
-  BresenhamLineScan scanner(point, direction, getImage().cameraInfo);
+  BresenhamLineScan scanner(point, direction, getImage().width(), getImage().height());
 
   // initialize the scanner
   Vector2i peak_point_min(start);
