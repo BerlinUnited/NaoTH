@@ -1,8 +1,8 @@
-#include "UltrasonicObstacleLocator2020.h"
+#include "UltrasonicObstacleDetector2020.h"
 
-UltrasonicObstacleLocator2020::UltrasonicObstacleLocator2020()
+UltrasonicDetector2020::UltrasonicDetector2020()
 {
-    DEBUG_REQUEST_REGISTER("UltrasonicObstacleLocation2020:draw3D:measurements", "", false);
+    DEBUG_REQUEST_REGISTER("UltrasonicDetector2020:draw3D:measurements", "", false);
 
     rightReceiverInTorso.translation = {47.7, -41.6, 50.9};
     leftReceiverInTorso.translation  = {47.7,  41.6, 50.9};
@@ -18,7 +18,7 @@ UltrasonicObstacleLocator2020::UltrasonicObstacleLocator2020()
     getDebugParameterList().add(&parameter);
 }
 
-void UltrasonicObstacleLocator2020::execute()
+void UltrasonicDetector2020::execute()
 {
     // reset percept representation and measuremnt vectors
     getUltrasonicObstaclePercept().location_on_ground.clear();
@@ -66,7 +66,7 @@ void UltrasonicObstacleLocator2020::execute()
 //  return false;
 //}
 
-void UltrasonicObstacleLocator2020::draw() const
+void UltrasonicDetector2020::draw() const
 {
     DEBUG_REQUEST("UltrasonicObstacleLocation2020:draw3D:measurements",
         for(auto& point : leftInWorld){

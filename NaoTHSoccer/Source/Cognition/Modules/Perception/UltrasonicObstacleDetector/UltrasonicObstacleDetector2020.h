@@ -1,5 +1,5 @@
-#ifndef ULTRASONIC_OBSTACLE_LOCATOR_2020_H
-#define ULTRASONIC_OBSTACLE_LOCATOR_2020_H
+#ifndef ULTRASONIC_OBSTACLE_DETECTOR_2020_H
+#define ULTRASONIC_OBSTACLE_DETECTOR_2020_H
 
 #include <ModuleFramework/Module.h>
 
@@ -14,7 +14,7 @@
 #include "Representations/Modeling/KinematicChain.h"
 #include "Representations/Perception/ObstaclePercept.h"
 
-BEGIN_DECLARE_MODULE(UltrasonicObstacleLocator2020)
+BEGIN_DECLARE_MODULE(UltrasonicDetector2020)
   PROVIDE(DebugParameterList)
   PROVIDE(DebugRequest)
   PROVIDE(DebugDrawings3D)
@@ -24,13 +24,13 @@ BEGIN_DECLARE_MODULE(UltrasonicObstacleLocator2020)
   REQUIRE(KinematicChain)
 
   PROVIDE(UltrasonicObstaclePercept)
-END_DECLARE_MODULE(UltrasonicObstacleLocator2020)
+END_DECLARE_MODULE(UltrasonicDetector2020)
 
-class UltrasonicObstacleLocator2020 : UltrasonicObstacleLocator2020Base
+class UltrasonicDetector2020 : UltrasonicDetector2020Base
 {
     public:
-        UltrasonicObstacleLocator2020();
-        virtual ~UltrasonicObstacleLocator2020(){
+        UltrasonicDetector2020();
+        virtual ~UltrasonicDetector2020(){
             getDebugParameterList().remove(&parameter);
         }
 
@@ -45,7 +45,7 @@ class UltrasonicObstacleLocator2020 : UltrasonicObstacleLocator2020Base
 
         class UltrasonicParameter : public ParameterList {
             public:
-                UltrasonicParameter() : ParameterList("UltrasonicObstacleLocator"){
+                UltrasonicParameter() : ParameterList("UltrasonicDetector2020"){
                     PARAMETER_REGISTER(ground_threshold) = 40;
 
                     syncWithConfig();
@@ -60,4 +60,4 @@ class UltrasonicObstacleLocator2020 : UltrasonicObstacleLocator2020Base
         //bool is_new_data_avaliable() const;
 };
 
-#endif // ULTRASONIC_OBSTACLE_LOCATOR_2020_H
+#endif // ULTRASONIC_OBSTACLE_DETECTOR_2020_H
