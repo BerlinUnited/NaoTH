@@ -86,9 +86,9 @@ public:
   //Is the body lifted up
   bool isLiftedUp;
 
+  // modeled battery state
   bool isDischarging;
   bool isCharging;
-
   // filtered state of the battery
   double batteryCharge;
 

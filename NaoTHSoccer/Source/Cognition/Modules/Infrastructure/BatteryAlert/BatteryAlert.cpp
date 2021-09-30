@@ -18,7 +18,9 @@ void BatteryAlert::execute()
   const double soundRepeatInterval = 22000; // 22s
 
   //if the battery is lower than 6% repeat sound every 22s
+  // TODO: use getBodyState().batteryCharge ?
   if(getBatteryData().charge < minimalCharge &&  
+     // FIXME: use getBodyState().isCharging
      getBodyState().isDischarging && // only make noise it not charging
      getFrameInfo().getTime() > timeWhenLastPlayedSound + soundRepeatInterval) 
   {

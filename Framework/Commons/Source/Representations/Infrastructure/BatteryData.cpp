@@ -15,7 +15,3 @@ void BatteryData::print(std::ostream& stream) const
   stream << "current: " << current << std::endl;
   stream << "temperature: " << temperature << std::endl;
 }
-
-BatteryData::~BatteryData()
-{
-}
