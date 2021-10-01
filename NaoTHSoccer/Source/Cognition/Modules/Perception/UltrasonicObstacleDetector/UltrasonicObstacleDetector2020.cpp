@@ -5,7 +5,7 @@ UltrasonicDetector2020::UltrasonicDetector2020()
     DEBUG_REQUEST_REGISTER("UltrasonicDetector2020:draw3D:measurements", "", false);
 
     rightReceiverInTorso.translation = {47.7, -41.6, 50.9};
-    leftReceiverInTorso.translation  = {47.7,  41.6, 50.9};
+    leftReceiverInTorso.translation  = {47.7,  41.6, 50.9}; 
 
     rightReceiverInTorso.rotation = RotationMatrix::getRotationZ(-0.4363)
                                     * RotationMatrix::getRotationY(0.2618);
@@ -68,7 +68,7 @@ void UltrasonicDetector2020::execute()
 
 void UltrasonicDetector2020::draw() const
 {
-    DEBUG_REQUEST("UltrasonicObstacleLocation2020:draw3D:measurements",
+    DEBUG_REQUEST("UltrasonicDetector2020:draw3D:measurements",
         for(auto& point : leftInWorld){
             SPHERE("0000FF", 10, point);
         }
