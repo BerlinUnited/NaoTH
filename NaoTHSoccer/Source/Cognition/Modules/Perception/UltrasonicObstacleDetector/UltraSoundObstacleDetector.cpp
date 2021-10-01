@@ -1,10 +1,10 @@
 /**
- * @file ObstacleLocator.h
+ * @file ObstacleDetector.h
  *
  * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
  * @author <a href="mailto:borisov@informatik.hu-berlin.de">Alexander Borisov</a>
  * @author <a href="mailto:krienelk@informatik.hu-berlin.de">Dominik Krienelke</a>
- * Implementation of class ObstacleLocator
+ * Implementation of class ObstacleDetector
  */
 
 #include "UltraSoundObstacleDetector.h"

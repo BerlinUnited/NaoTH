@@ -1,8 +1,8 @@
 /**
- * @file UltraSoundObstacleLocator.h
+ * @file UltraSoundObstacleDetector.h
  *
  * @author <a href="mailto:kaptur@informatik.hu-berlin.de">Christian Kaptur</a>
- * Declaration of class ObstacleLocator
+ * Declaration of class ObstacleDetector
  */
 
 #ifndef _UltraSoundObstacleDetector_h_
