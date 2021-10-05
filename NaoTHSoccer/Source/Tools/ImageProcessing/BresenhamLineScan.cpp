@@ -12,8 +12,6 @@
 
 #include "Tools/Math/Geometry.h"
 
-using namespace naoth;
-
 BresenhamLineScan::BresenhamLineScan()
 {
   double dir = Math::pi_2;
@@ -30,24 +28,24 @@ BresenhamLineScan::BresenhamLineScan(const Vector2d& direction)
   setup(direction);
 }
 
-BresenhamLineScan::BresenhamLineScan(const double& direction)
+BresenhamLineScan::BresenhamLineScan(const double direction)
 {
   setup(direction);
 }
 
-BresenhamLineScan::BresenhamLineScan(const Vector2i& start, const Vector2d& direction, const CameraInfo& cameraInfo)
+BresenhamLineScan::BresenhamLineScan(const Vector2i& start, const Vector2d& direction, const unsigned int width, const unsigned int height)
 {
-  setup(start, direction, cameraInfo);
+  setup(start, direction, width, height);
 }
 
-BresenhamLineScan::BresenhamLineScan(const Vector2i& start, const double& direction, const CameraInfo& cameraInfo)
+BresenhamLineScan::BresenhamLineScan(const Vector2i& start, const double direction, const unsigned int width, const unsigned int height)
 {
-  setup(start, direction, cameraInfo);
+  setup(start, direction, width, height);
 }
 
-BresenhamLineScan::BresenhamLineScan(const Math::Line& line, const CameraInfo& cameraInfo)
+BresenhamLineScan::BresenhamLineScan(const Math::Line& line, const unsigned int width, const unsigned int height)
 {
-  setup(line, cameraInfo);
+  setup(line, width, height);
 }
 
 
@@ -91,7 +89,7 @@ void BresenhamLineScan::setup(const Vector2i& start, const Vector2i& end)
   setup(end-start);
 }
 
-void BresenhamLineScan::setup(const double& direction)
+void BresenhamLineScan::setup(const double direction)
 {
   setup(Vector2i(static_cast<int>(cos(direction)*1024.0), static_cast<int>(sin(direction)*1024.0)));
 }
@@ -101,29 +99,29 @@ void BresenhamLineScan::setup(const Vector2d& direction)
   setup(Vector2i(static_cast<int>(direction.x*1024.0), static_cast<int>(direction.y*1024.0)));
 }
 
-void BresenhamLineScan::setup(const Vector2i& start, const double& direction, const CameraInfo& cameraInfo)
+void BresenhamLineScan::setup(const Vector2i& start, const double direction, const unsigned int width, const unsigned int height)
 {
   // Create a line through the point start with the given direction
   Math::Line line(Pose2D(direction, start));
 
-  setup(line, cameraInfo);
+  setup(line, width, height);
 }
 
-void BresenhamLineScan::setup(const Vector2i& start, const Vector2d& direction, const CameraInfo& cameraInfo)
+void BresenhamLineScan::setup(const Vector2i& start, const Vector2d& direction, const unsigned int width, const unsigned int height)
 {
   // Create a line through the point start with the given direction
   Math::Line line(start, direction);
 
-  setup(line, cameraInfo);
+  setup(line, width, height);
 }
 
-void BresenhamLineScan::setup(const Math::Line& line, const CameraInfo& cameraInfo)
+void BresenhamLineScan::setup(const Math::Line& line, const unsigned int width, const unsigned int height)
 {
   Vector2i pointOne;
   Vector2i pointTwo;
 
   const Vector2i frameUpperLeft(0,0);
-  const Vector2i frameLowerRight(cameraInfo.resolutionWidth-1, cameraInfo.resolutionHeight-1);
+  const Vector2i frameLowerRight(width-1, height-1);
   Geometry::getIntersectionPointsOfLineAndRectangle(frameUpperLeft, frameLowerRight, line, pointOne, pointTwo);
 
   setup(pointTwo - line.getBase());
