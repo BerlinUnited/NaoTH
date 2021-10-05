@@ -10,8 +10,8 @@
 * @author <a href="mailto:oberlies@sim.tu-darmstadt.de">Tobias Oberlies</a> (revised constructors and commenting) 
 */
 
-#ifndef BresenhamLineScan_h
-#define BresenhamLineScan_h
+#ifndef BRESENHAMLINESCAN_H
+#define BRESENHAMLINESCAN_H
 
 #include "Tools/Math/Line.h"
 #include "Tools/Math/Vector2.h"
@@ -160,4 +160,4 @@ private:
 };
 
 
-#endif // BresenhamLineScan_h
+#endif // BRESENHAMLINESCAN_H
