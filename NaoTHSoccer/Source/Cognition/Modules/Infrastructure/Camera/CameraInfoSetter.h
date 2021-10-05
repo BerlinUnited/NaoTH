@@ -49,7 +49,6 @@ public:
   virtual ~CameraInfoSetter();
 
   virtual void execute();
-private:
 };
 
 #endif // CAMERAINFOSETTER_H

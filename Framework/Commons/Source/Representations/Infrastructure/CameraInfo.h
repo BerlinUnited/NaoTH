@@ -127,5 +127,5 @@ namespace naoth
   
 }
 
-#endif  /* CAMERAINFO_H */
+#endif // CAMERAINFO_H
 

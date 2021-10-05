@@ -5,8 +5,8 @@
 * Declaration of class CameraDebug
 */
 
-#ifndef CameraDebug_h
-#define CameraDebug_h
+#ifndef CAMERADEBUG_H
+#define CAMERADEBUG_H
 
 #include <ModuleFramework/Module.h>
 
@@ -67,6 +67,6 @@ private:
 
 };
 
-#endif // CameraDebug_h
+#endif // CAMERADEBUG_H
 
 
