@@ -1,17 +1,19 @@
 /**
-The SettingManager generalizes the access to the V4L camera settings. 
-It provides two functions query and apply allowing to read and write
-settings to the camera. SettingManager is an abstract class and is 
-supposed to be specialized for a particular camera. The class also
-provides a number of low level functions for interaction with the 
-V4L devices.
+* @file V4LCameraSettingsManager.handling
 
-One of the key aims is to extend or to fix the functionality provided 
-by the partiular camera driver.
+  The SettingManager generalizes the access to the V4L camera settings. 
+  It provides two functions query and apply allowing to read and write
+  settings to the camera. SettingManager is an abstract class and is 
+  supposed to be specialized for a particular camera. The class also
+  provides a number of low level functions for interaction with the 
+  V4L devices.
+
+  One of the key aims is to extend or to fix the functionality provided 
+  by the partiular camera driver.
 */
 
-#ifndef _V4LCameraSettingsManager_H_
-#define _V4LCameraSettingsManager_H_
+#ifndef V4LCAMERASETTINGSMANAGER_H
+#define V4LCAMERASETTINGSMANAGER_H
 
 #include <Representations/Infrastructure/CameraSettings.h>
 
@@ -110,4 +112,4 @@ private:
   static bool hasIOErrorPrint(int lineNumber, const std::string& cameraName, int errOccured, int errNo, bool exitByIOError, const std::string& paramName = "");
 };
 
-#endif //_V4LCameraSettingsManager_H_
+#endif // V4LCAMERASETTINGSMANAGER_H

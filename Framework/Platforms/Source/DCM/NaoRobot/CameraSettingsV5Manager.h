@@ -1,5 +1,10 @@
-#ifndef _CameraSettingsV5Manager_H_
-#define _CameraSettingsV5Manager_H_
+/**
+* @file CameraSettingsV5Manager.h
+*
+*/
+
+#ifndef CAMERASETTINGSV5MANAGER_H
+#define CAMERASETTINGSV5MANAGER_H
 
 #include "V4LCameraSettingsManager.h"
 #include <Representations/Infrastructure/CameraSettings.h>
@@ -23,4 +28,4 @@ private:
   int getAutoExposureGridID(size_t i, size_t j);
 };
 
-#endif // _CameraSettingsV5Manager_H_
+#endif // CAMERASETTINGSV5MANAGER_H

@@ -1,5 +1,10 @@
-#ifndef _CameraSettingsV6Manager_H_
-#define _CameraSettingsV6Manager_H_
+/**
+* @file CameraSettingsV6Manager.h
+*
+*/
+
+#ifndef CAMERASETTINGSV6MANAGER_H
+#define CAMERASETTINGSV6MANAGER_H
 
 #include "V4LCameraSettingsManager.h"
 #include <Representations/Infrastructure/CameraSettings.h>
@@ -69,4 +74,4 @@ private:
   bool setRegister(int cameraFd, uint16_t addr, uint16_t val);
 };
 
-#endif // _CameraSettingsV6Manager_H_
+#endif // CAMERASETTINGSV6MANAGER_H
