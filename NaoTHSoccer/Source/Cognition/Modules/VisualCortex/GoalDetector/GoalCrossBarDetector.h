@@ -6,8 +6,8 @@
 * Definition of class GoalCrossBarDetector
 */
 
-#ifndef GoalCrossBarDetector_H
-#define GoalCrossBarDetector_H
+#ifndef GOALCROSSBARDETECTOR_H
+#define GOALCROSSBARDETECTOR_H
 
 #include <ModuleFramework/Module.h>
 
@@ -266,4 +266,4 @@ private:
 
 };//end class GoalCrossBarDetector
 
-#endif // GoalCrossBarDetector_H
+#endif // GOALCROSSBARDETECTOR_H

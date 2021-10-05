@@ -1,5 +1,10 @@
-#ifndef MultiPassBallDetector_H
-#define MultiPassBallDetector_H
+/**
+* @file MultiPassBallDetector.h
+* 
+*/
+
+#ifndef MULTIPASSBALLDETECTOR_H
+#define MULTIPASSBALLDETECTOR_H
 
 #include <ModuleFramework/Module.h>
 #include <ModuleFramework/ModuleManager.h>

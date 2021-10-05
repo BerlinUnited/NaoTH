@@ -1,5 +1,10 @@
-#ifndef CNNBallDetector_H
-#define CNNBallDetector_H
+/**
+* @file CNNBallDetector.h
+* 
+*/
+
+#ifndef CNNBALLDETECTOR_H
+#define CNNBALLDETECTOR_H
 
 #include <ModuleFramework/Module.h>
 #include <ModuleFramework/ModuleManager.h>
@@ -235,4 +240,4 @@ private:
   DOUBLE_CAM_PROVIDE(CNNBallDetector, BallCandidates);
 };//end class CNNBallDetector
 
-#endif // CNNBallDetector_H
+#endif // CNNBALLDETECTOR_H

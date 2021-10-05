@@ -4,8 +4,8 @@
 * Definition of class RedBallDetector
 */
 
-#ifndef RedBallDetector_H
-#define RedBallDetector_H
+#ifndef REDBALLDETECTOR_H
+#define REDBALLDETECTOR_H
 
 #include <ModuleFramework/Module.h>
 #include <ModuleFramework/Representation.h>
@@ -148,4 +148,4 @@ private:
   DOUBLE_CAM_REQUIRE(RedBallDetector, FieldPercept);          
 };//end class RedBallDetector
 
-#endif // RedBallDetector_H
+#endif // REDBALLDETECTOR_H

@@ -6,8 +6,8 @@
 * Definition of class GoalDetectorV2
 */
 
-#ifndef GoalDetectorV2_H
-#define GoalDetectorV2_H
+#ifndef GOALDETECTORV2_H
+#define GOALDETECTORV2_H
 
 #include <ModuleFramework/Module.h>
 
@@ -208,4 +208,4 @@ private:
 
 };//end class GoalDetectorV2
 
-#endif // GoalDetectorV2_H
+#endif // GOALDETECTORV2_H

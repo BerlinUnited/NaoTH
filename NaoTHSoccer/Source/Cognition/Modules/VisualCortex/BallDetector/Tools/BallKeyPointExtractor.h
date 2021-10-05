@@ -4,8 +4,8 @@
 * Sorted list evaluated non-overlaping patches
 */
 
-#ifndef BallKeyPointExtractor_H
-#define BallKeyPointExtractor_H
+#ifndef BALLKEYPOINTEXTRACTOR_H
+#define BALLKEYPOINTEXTRACTOR_H
 
 #include <ModuleFramework/Module.h>
 
@@ -453,4 +453,4 @@ void BallKeyPointExtractor::calculateKeyPointsFull(const ImageType& integralImag
   }
 }
 
-#endif // BallKeyPointExtractor_H
+#endif // BALLKEYPOINTEXTRACTOR_H
