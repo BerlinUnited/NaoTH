@@ -43,11 +43,13 @@ public:
   std::vector<Vector2d> newHullLeft;
   std::vector<Vector2d> newHullRight;
 
-  //stuff for bumper collision
-  bool isLeftFootColliding;
-  bool isRightFootColliding;
+  // bumper collision
+  bool isLeftFootColliding;  // indicate single button press
+  bool isRightFootColliding;  // indicate single button press
   double lastComputedCollisionLeft;
   double lastComputedCollisionRight;
+
+  // indicate real collisoin
   bool collision_left_bumper;
   bool collision_right_bumper;
   

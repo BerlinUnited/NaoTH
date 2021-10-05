@@ -63,11 +63,9 @@ struct SPLStandardMessage
   // constructor
   SPLStandardMessage() :
     version(SPL_STANDARD_MESSAGE_STRUCT_VERSION),
-    // NOTE: in the satdard message those are initialized to -1, 
-    //       which triggers a conversion warning. -1 is not necessary for us.
     playerNum(0),
     teamNum(0),
-    fallen(0),
+    fallen(255), // placeholder to detect in the TCM if this field is not set
     ballAge(-1.f),
     numOfDataBytes(0)
   {

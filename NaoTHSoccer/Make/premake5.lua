@@ -156,6 +156,11 @@ workspace "NaoTHSoccer"
     -- for debugging:
     -- buildoptions {"-time"}
 
+    filter "files:../Source/Tools/DataStructures/Spline.cpp"
+      warnings "Off"
+
+    filter "files:../Source/Cognition/Modules/VisualCortex/BallDetector/Classifier/*"
+      warnings "Off"
     
   -- additional defines for visual studio   
   filter {"system:windows", "action:vs*"}
@@ -165,6 +170,15 @@ workspace "NaoTHSoccer"
     buildoptions {"/wd4290"} -- exception specification ignored (typed specifications are ignored)
     buildoptions {"/wd4800"} -- protobuf 3.4.1 forcing value to bool 'true' or 'false' (performance warning)
     buildoptions {"/wd4503"} -- disable decorated name length exceeded warning
+    buildoptions {"/experimental:external  /external:W0"}
+    -- TODO those arguments are a copy of the values given to sysincludedirs. Figure out a way to make it less redundant
+    buildoptions {"/external:I " .. FRAMEWORK_PATH .. "/Commons/Source/Messages"}
+    buildoptions {"/external:I " .. EXTERN_PATH .. "/include"}
+    buildoptions {"/external:I " .. EXTERN_PATH .. "/include/glib-2.0"}
+    buildoptions {"/external:I " .. EXTERN_PATH .. "/include/gio-unix-2.0"}
+    buildoptions {"/external:I " .. EXTERN_PATH .. "/lib/glib-2.0/include"}
+    
+    cppdialect "c++14"
     links {"ws2_32"}
     
     ignoredefaultlibraries { "MSVCRT" }

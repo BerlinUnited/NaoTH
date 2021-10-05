@@ -25,10 +25,10 @@ using namespace std;
 HeadMotionEngine::HeadMotionEngine():
     last_id(HeadMotionRequest::numOfHeadMotion)
 {
-  theKinematicChain.init(theJointData);
-
   DEBUG_REQUEST_REGISTER("HeadMotionEngine:export_g", "exports g for plotting the function", false);
   DEBUG_REQUEST_REGISTER("HeadMotionEngine:draw_search_points_on_field", "draw the projected search points on the field", false);
+
+  theKinematicChain.init(theJointData);
 
   headLimitFunctionMin.set_boundary(tk::spline::second_deriv, 0.0, tk::spline::second_deriv, 0.0, false);
   headLimitFunctionMin.set_points(headLimitsHeadYaw, headLimitsHeadPitchMin);
@@ -46,7 +46,7 @@ HeadMotionEngine::~HeadMotionEngine()
 
 void HeadMotionEngine::execute()
 {
-  // HACK: update torso
+  // HACK: update torso rotation
   theKinematicChain.theLinks[KinematicChain::Torso].M = getKinematicChainSensor().theLinks[KinematicChain::Torso].M;
 
   switch(getHeadMotionRequest().id)
@@ -56,9 +56,14 @@ void HeadMotionEngine::execute()
     case HeadMotionRequest::look_at_point:
       lookAtPoint(); break;
     case HeadMotionRequest::look_at_world_point:
-      lookAtWorldPoint(getHeadMotionRequest().targetPointInTheWorld); break;
-    case HeadMotionRequest::look_at_point_on_the_ground:
-      gotoPointOnTheGround(getHeadMotionRequest().targetPointOnTheGround); break;
+      if (params.use_lookAtWorldPointCool) {
+        lookAtWorldPointCool(getHeadMotionRequest().targetPointInTheWorld); 
+      } else {
+        lookAtWorldPoint(getHeadMotionRequest().targetPointInTheWorld);
+      }
+      break;
+    //case HeadMotionRequest::look_at_point_on_the_ground:
+    //  gotoPointOnTheGround(getHeadMotionRequest().targetPointOnTheGround); break;
     case HeadMotionRequest::goto_angle:
       gotoAngle(getHeadMotionRequest().targetJointPosition);  break;
     case HeadMotionRequest::hold:
@@ -113,6 +118,7 @@ void HeadMotionEngine::hold()
   getMotorJointData().position[JointData::HeadPitch] = getSensorJointData().position[JointData::HeadPitch];
 }
 
+/*
 void HeadMotionEngine::gotoPointOnTheGround(const Vector2d& target)
 {
   Vector3d pointOnTheGround(target.x,target.y,0.0);
@@ -122,17 +128,18 @@ void HeadMotionEngine::gotoPointOnTheGround(const Vector2d& target)
   CameraGeometry::imagePixelToFieldCoord(
     getCameraMatrix(),
     getCameraInfo(),
-    static_cast<double>(getCameraInfo().getOpticalCenterX()),
-    static_cast<double>(getCameraInfo().getOpticalCenterY()),
+    getCameraInfo().getOpticalCenterX(),
+    getCameraInfo().getOpticalCenterY(),
     0.0,
     centerOnField);
 
   std::vector<Vector3d> points;
-  points.push_back(Vector3d(centerOnField.x,centerOnField.y,0.0));
+  points.push_back(Vector3d(centerOnField.x, centerOnField.y, 0.0));
   points.push_back(pointOnTheGround);
 
   trajectoryHeadMove(points);
 }
+*/
 
 // move the head to the position target = (yaw, pitch)
 void HeadMotionEngine::gotoAngle(const Vector2d& target)
@@ -145,28 +152,29 @@ void HeadMotionEngine::gotoAngle(const Vector2d& target)
 
 void HeadMotionEngine::moveByAngle(const Vector2d& target)
 {
-  // Bas maximal head velocity for the case if the robot is stationary.
-  double max_velocity_deg_in_second = params.max_velocity_deg_in_second_slow;
+  // Base maximal head velocity for the case if the robot is stationary.
+  double max_head_velocity = params.max_head_velocity_stand;
   
   // Restrict the head velocity when walking. Calculate depending on the walking speed.
   if(getMotionStatus().currentMotion == motion::walk)
   {
     double walking_speed = getMotionStatus().plannedMotion.hip.translation.abs();
 
-    if(walking_speed > params.cutting_velocity) {
-      max_velocity_deg_in_second = params.max_velocity_deg_in_second_slow;
+    if(walking_speed > params.walk_fast_speed_threshold) {
+      // we are walking fast!
+      max_head_velocity = params.max_head_velocity_walk_fast;
     } else {
-      double t = walking_speed/params.cutting_velocity;
-      max_velocity_deg_in_second = (1.0 - t)*params.max_velocity_deg_in_second_slow + t*params.max_velocity_deg_in_second_fast;
+      double t = walking_speed/params.walk_fast_speed_threshold; // in [0, 1]
+      // t = 0 => walking slow => max_velocity_deg_in_second_walk_slow
+      // t = 1 => walking fast => max_velocity_deg_in_second_walk_fast
+      max_head_velocity = (1.0 - t)*params.max_head_velocity_walk_slow + t*params.max_head_velocity_walk_fast;
     }
   }
 
-  max_velocity_deg_in_second = min(getHeadMotionRequest().velocity, max_velocity_deg_in_second);
+  max_head_velocity = min(getHeadMotionRequest().velocity, max_head_velocity);
+  MODIFY("HeadMotionEngine:gotoAngle:max_velocity_deg_in_second", max_head_velocity);
 
-  MODIFY("HeadMotionEngine:gotoAngle:max_velocity_deg_in_second", max_velocity_deg_in_second);
-  double max_velocity = Math::fromDegrees(max_velocity_deg_in_second)*getRobotInfo().getBasicTimeStepInSecond();
-
-
+  
   // current position
   Vector2d headPos( getMotorJointData().position[JointData::HeadYaw],
                     getMotorJointData().position[JointData::HeadPitch]);
@@ -175,6 +183,7 @@ void HeadMotionEngine::moveByAngle(const Vector2d& target)
   motion_target = headPos + target;
 
   // calculate the update step (normalize with speed if needed)
+  // FIXME: this is not quite correct
   Vector2d update( Math::normalize(target.x), Math::normalize(target.y) );
 
   // TODO: verify. This might be made more elegant with the limits of the joints
@@ -190,9 +199,10 @@ void HeadMotionEngine::moveByAngle(const Vector2d& target)
     update.x = update.x - Math::pi2;
   }
 
-  // restrict to maximal velocity
-  if (update.abs() > max_velocity) {
-    update = update.normalize(max_velocity);
+  // restrict to maximal moving distance for this step
+  double max_head_angle_distance = max_head_velocity*getRobotInfo().getBasicTimeStepInSecond();
+  if (update.abs() > max_head_angle_distance) {
+    update = update.normalize(max_head_angle_distance);
   }
 
   // limit the acceleration
@@ -255,6 +265,46 @@ void HeadMotionEngine::moveByAngle(const Vector2d& target)
   getMotorJointData().position[JointData::HeadPitch] = headPos.y;
 }//end moveByAngle
 
+void HeadMotionEngine::lookAtWorldPointCool(const Vector3d& origTarget)
+{
+  // HACK: transform the head motion request to hip from the support foot coordinates
+  const Pose3D& lFoot = getKinematicChainMotor().theLinks[KinematicChain::LFoot].M;
+  const Pose3D& rFoot = getKinematicChainMotor().theLinks[KinematicChain::RFoot].M;
+  Vector3d target(origTarget);
+
+  // transform the requested target to hip coordinates
+  if(getHeadMotionRequest().coordinate == HeadMotionRequest::LFoot) {
+    target = lFoot*target;
+  } else if(getHeadMotionRequest().coordinate == HeadMotionRequest::RFoot) {
+    target = rFoot*target;
+  }
+
+  /*
+  CameraMatrix cameraMatrix = CameraGeometry::calculateCameraMatrixFromChestPose(
+    getKinematicChainMotor().theLinks[KinematicChain::Torso].M,
+    NaoInfo::robotDimensions.cameraTransform[naoth::CameraInfo::Bottom].offset,
+    NaoInfo::robotDimensions.cameraTransform[naoth::CameraInfo::Bottom].rotationY,
+    getCameraMatrixOffset().body_rot,
+    getCameraMatrixOffset().head_rot,
+    getCameraMatrixOffset().cam_rot[naoth::CameraInfo::Bottom],
+    getSensorJointData().position[JointData::HeadYaw],
+    getSensorJointData().position[JointData::HeadPitch],
+    getInertialModel().orientation);
+
+  Vector2d x = CameraGeometry::lookAtPoint(target, cameraMatrix.translation.z);
+  */
+
+  Vector2d x;
+  if(getHeadMotionRequest().cameraID == naoth::CameraInfo::Top) {
+    x = CameraGeometry::lookAtPoint(target, getCameraMatrixTop().translation.z);
+  } else {
+    x = CameraGeometry::lookAtPoint(target, getCameraMatrix().translation.z);
+  }
+
+  //moveByAngle(x);
+  gotoAngle(x);
+}//end lookAtWorldPointCool
+
 // needed by lookAtWorldPoint
 Vector3d HeadMotionEngine::g(double yaw, double pitch, const Vector3d& pointInWorld)
 {
@@ -296,16 +346,14 @@ Vector3d HeadMotionEngine::g(double yaw, double pitch, const Vector3d& pointInWo
 void HeadMotionEngine::lookAtWorldPoint(const Vector3d& origTarget)
 {
   // HACK: transform the head motion request to hip from the support foot coordinates
-  const Pose3D& lFoot = getKinematicChainSensor().theLinks[KinematicChain::LFoot].M;
-  const Pose3D& rFoot = getKinematicChainSensor().theLinks[KinematicChain::RFoot].M;
+  const Pose3D& lFoot = getKinematicChainMotor().theLinks[KinematicChain::LFoot].M;
+  const Pose3D& rFoot = getKinematicChainMotor().theLinks[KinematicChain::RFoot].M;
   Vector3d target(origTarget);
 
-  // left foot is the support foot
+  // transform the requested target to hip coordinates
   if(getHeadMotionRequest().coordinate == HeadMotionRequest::LFoot) {
     target = lFoot*target;
-  }
-
-  if(getHeadMotionRequest().coordinate == HeadMotionRequest::RFoot) {
+  } else if(getHeadMotionRequest().coordinate == HeadMotionRequest::RFoot) {
     target = rFoot*target;
   }
 

@@ -5,13 +5,7 @@ The requirements are defined in requirements.txt. You can install them with pip 
 pip install -r requirements.txt
 ``` 
 
-Conda users can use the `environment.yml`. To create a conda environment use 
-
-```sh
-conda env export -n conda-env -f environment.yml
-```
-
-NOTE: make sure you have a compatible python interpreter for tensorflow-1.15; especially Arch users!
+NOTE: make sure you have a compatible python interpreter for the tensorflow version specified. especially Arch users!
 
 
 ## Input data
@@ -39,9 +33,12 @@ so it can be used from other scripts as well. See `experiments/rerun_training_an
 example.
 
 ## Export Neural Networks
-Currently we have two methods for exporting the trained neural network. One exports a json file for 
-use with the frugally deep learning lib. The other exports c++ code. The c++ exported version is
+Currently we have three methods for exporting the trained neural network. One exports a json file for 
+use with the frugally deep learning lib. The other two export c++ code. The c++ exported versions are
 designed to be used inside the NaoTH Framework. 
 
 ### C++ Version - devil code generator 1
 run `python devil_code_generator1/compile.py`
+
+### C++ Version - devil code generator 2
+TODO

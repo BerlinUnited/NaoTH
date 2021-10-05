@@ -1,14 +1,20 @@
 /**
 * @file ObstacleModel.cpp
 *
-* @author <a href="mailto:christian.heinemann@student.hu-berlin.de">Christian Heinemann</a>
-* @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
+* @author <a href="mailto:schlottb@informatik.hu-berlin.de">Schlotter, Stella Alice</a>
 * Implementation of class ObstacleModel
 *
 */
 
 #include "ObstacleModel.h"
 #include <limits>
+
+Obstacle::Obstacle()
+  : center(Vector2d()),
+    shape_points(Math::Polygon<double>())
+{
+}
+
 
 void ObstacleModel::print(std::ostream& stream) const
 {

@@ -47,7 +47,6 @@ private:
   void updateLEDs();
 
 private:
-  GameData::GameState lastGameState;
   bool debug_whistle_heard;
   bool play_by_whistle;
 };

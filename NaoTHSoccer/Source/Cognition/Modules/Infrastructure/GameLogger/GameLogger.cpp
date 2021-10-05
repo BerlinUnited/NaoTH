@@ -11,9 +11,12 @@ GameLogger::GameLogger()
   lastAudioDataTimestamp(0),
   lastRecordedPlainImageID(CameraInfo::Bottom)
 {
-  logfileManager.openFile("/tmp/game.log");
+  const std::string gameLogPath = params.logDirPath + "/game.log";
+  const std::string imageLogPath = params.logDirPath + "/images.log";
+
+  logfileManager.openFile(gameLogPath);
   
-  imageOutFile.open("/tmp/images.log", ios::out | ios::binary);
+  imageOutFile.open(imageLogPath, ios::out | ios::binary);
   lastTimeImageRecorded = getFrameInfo();
 
   getDebugParameterList().add(&params);

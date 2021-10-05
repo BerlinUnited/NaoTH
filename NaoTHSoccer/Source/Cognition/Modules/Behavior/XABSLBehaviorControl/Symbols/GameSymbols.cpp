@@ -12,6 +12,13 @@ using namespace std;
 
 void GameSymbols::registerSymbols(xabsl::Engine& engine)
 {
+  // enum for the competition type
+  engine.registerEnumElement("game.type", "game.type.normal"  , GameData::competition_normal);
+  engine.registerEnumElement("game.type", "game.type.game_1v1", GameData::competition_1v1);
+  engine.registerEnumElement("game.type", "game.type.passing" , GameData::competition_passing);
+
+  engine.registerEnumeratedInputSymbol("game.type", "game.type", &getCompetitionType);
+
 
   // enum type for game state (spl)
   engine.registerEnumElement("game.state","game.state._initial_", PlayerInfo::initial);
@@ -20,9 +27,11 @@ void GameSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerEnumElement("game.state","game.state.playing", PlayerInfo::playing);
   engine.registerEnumElement("game.state","game.state.penalized", PlayerInfo::penalized);
   engine.registerEnumElement("game.state","game.state.finished", PlayerInfo::finished);
+  engine.registerEnumElement("game.state","game.state.unstiff", PlayerInfo::unstiff);
 
   // current game state
   engine.registerEnumeratedInputSymbol("game.state", "game.state", &getGameState);
+
 
   engine.registerDecimalInputSymbol("game.player_number", &getPlayerNumber);
   engine.registerDecimalInputSymbol("game.msecsRemaining", &getMsecsRemaining);
@@ -51,11 +60,16 @@ void GameSymbols::registerSymbols(xabsl::Engine& engine)
 
   // current game phase
   engine.registerEnumeratedInputSymbol("game.phase", "game.phase", &getGamePhase);
+  
 
 }//end registerSymbols
 
 GameSymbols* GameSymbols::theInstance = NULL;
 bool GameSymbols::playingIsSetByGameController = false;
+
+int GameSymbols::getCompetitionType() {
+  return theInstance->getGameData().competitionType;
+}
 
 bool GameSymbols::getPlayingIsSetByGameController() {
   if (theInstance->getGameData().valid) {

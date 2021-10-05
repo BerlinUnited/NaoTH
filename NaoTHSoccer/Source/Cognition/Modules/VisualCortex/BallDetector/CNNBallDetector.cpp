@@ -18,6 +18,7 @@ CNNBallDetector::CNNBallDetector()
   DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:refinePatches", "draw refined ball key points", false);
   DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:drawPercepts", "draw ball percepts", false);
   DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:drawPatchContrast", "draw patch contrast (only when contrast-check is in use!", false);
+  DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:draw_projected_ball","", false);
 
   DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:extractPatches", "generate YUVC patches", false);
 
@@ -51,6 +52,8 @@ void CNNBallDetector::execute(CameraInfo::CameraID id)
   theBallKeyPointExtractor->getModuleT()->setCameraId(cameraID);
   //theBallKeyPointExtractor->getModuleT()->calculateKeyPoints(best);
   theBallKeyPointExtractor->getModuleT()->calculateKeyPointsBetter(best);
+
+  addPatchByLastBall();
 
   if(best.size() > 0) {
     calculateCandidates();
@@ -329,3 +332,41 @@ void CNNBallDetector::addBallPercept(const Vector2d& center, double radius)
   }
 }
 
+void CNNBallDetector::addPatchByLastBall()
+{
+  if (getBallModel().valid)
+  {
+    Vector3d ballInField;
+    ballInField.x = getBallModel().position.x;
+    ballInField.y = getBallModel().position.y;
+    ballInField.z = getFieldInfo().ballRadius;
+
+    Vector2i ballInImage;
+    if (CameraGeometry::relativePointToImage(getCameraMatrix(), getImage().cameraInfo, ballInField, ballInImage))
+    {
+
+      double estimatedRadius = CameraGeometry::estimatedBallRadius(
+          getCameraMatrix(), getImage().cameraInfo, getFieldInfo().ballRadius,
+          ballInImage.x, ballInImage.y);
+
+      int border = static_cast<int>((estimatedRadius * 1.1) + 0.5);
+
+      Vector2i start = ballInImage - border;
+      Vector2i end = ballInImage + border;
+
+      if (start.y >= 0 && end.y < static_cast<int>(getImage().height()) && start.x >= 0 && end.x < static_cast<int>(getImage().width()))
+      {
+        DEBUG_REQUEST("Vision:CNNBallDetector:draw_projected_ball",
+                      RECT_PX(ColorClasses::pink, start.x, start.y, end.x, end.y);
+                      CIRCLE_PX(ColorClasses::pink, ballInImage.x, ballInImage.y, static_cast<int>(estimatedRadius));
+                      );
+        best.add(
+            start.x,
+            start.y,
+            end.x,
+            end.y,
+            -1.0);
+      }
+    }
+  }
+}

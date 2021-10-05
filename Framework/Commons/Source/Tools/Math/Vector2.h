@@ -17,15 +17,16 @@ template <class V> class Vector2
   /** The vector values */
   V x, y;
 
-  /** Default constructor. */
-  Vector2<V>() : x(0), y(0)
-  {}
+  /**
+  * Constructors
+  */
+  Vector2<V>() : x(0), y(0) {}
+  Vector2<V>(V x, V y) : x(x), y(y) {}
 
-  /** Default constructor. */
-  Vector2<V>(V x, V y) : x(x), y(y)
-  {}
+  // Since C++11 we have to declare copy constructor explicitly.
+  Vector2<V> ( const Vector2<V> & ) = default;
 
-  // copy constructor
+  // conversion copy constructor, used to cast the type
   template<class W>
   Vector2<V>(const Vector2<W>& other) : 
     x(static_cast<V>(other.x)), 
@@ -34,29 +35,6 @@ template <class V> class Vector2
 
   Vector2<V> clone() const {
     return Vector2<V>(*this);
-  }
-
-  /** Assignment operator
-  *\param other The other vector that is assigned to this one
-  *\return A reference to this object after the assignment.
-  */
-  Vector2<V>& operator=(const Vector2<V>& other)
-  {
-    x = other.x; 
-    y = other.y;
-    return *this;
-  }
-
-  /** Assignment operator which converts a vector from another type
-  *\param other The other vector that is assigned to this one
-  *\return A reference to this object after the assignment.
-  */
-  template<class W>
-  Vector2<V>& operator=(const Vector2<W>& other)
-  {
-    x = static_cast<V>(other.x); 
-    y = static_cast<V>(other.y);
-    return *this;
   }
 
   /** Addition of another vector to this one.

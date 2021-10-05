@@ -43,7 +43,6 @@
 #include "Modules/SelfAwareness/KinematicChainProvider/KinematicChainProvider.h"
 #include "Modules/SelfAwareness/ArtificialHorizonCalculator/ArtificialHorizonCalculator.h"
 #include "Modules/SelfAwareness/BodyContourProvider/BodyContourProvider.h"
-#include "Modules/SelfAwareness/CameraMatrixCorrectorV2/CameraMatrixCorrectorV2.h"
 #include "Modules/SelfAwareness/CameraMatrixCorrectorV3/CameraMatrixCorrectorV3.h"
 
 #include "Modules/VisualCortex/HistogramProvider.h"
@@ -61,7 +60,10 @@
 #include "Modules/VisualCortex/GoalDetector/GoalCrossBarDetector.h"
 #include "Modules/VisualCortex/BallDetector/RedBallDetector.h"
 #include "Modules/VisualCortex/BallDetector/CNNBallDetector.h"
+#include "Modules/VisualCortex/BallDetector/MultiPassBallDetector.h"
 #include "Modules/VisualCortex/IntegralImageProvider.h"
+
+#include "Modules/VisualCortex/ObstacleDetector/NoGreenObstacleDetector.h"
 
 #include "Modules/SelfAwareness/FakeCameraMatrixFinder/FakeCameraMatrixFinder.h"
 #include "Modules/VisualCortex/FakeBallDetector/FakeBallDetector.h"
@@ -81,7 +83,8 @@
 // modeling
 #include "Modules/Modeling/BodyStateProvider/BodyStateProvider.h"
 #include "Modules/Modeling/FieldCompass/FieldCompass.h"
-#include "Modules/Modeling/ObstacleLocator/UltraSoundObstacleLocator.h"
+#include "Modules/Perception/UltrasonicObstacleDetector/UltraSoundObstacleDetector.h"
+#include "Modules/Perception/UltrasonicObstacleDetector/UltrasonicObstacleDetector2020.h"
 #include "Modules/Infrastructure/TeamCommunicator/TeamCommReceiveEmulator.h"
 #include "Modules/Modeling/TeamMessageStatistics/TeamMessageStatisticsModule.h"
 #include "Modules/Modeling/TeamMessageStatistics/TeamMessagePlayersStateModule.h"
@@ -114,15 +117,15 @@
 #include "Modules/Modeling/BallLocator/MultiKalmanBallLocator/MultiKalmanBallLocator.h"
 #include "Modules/Modeling/StaticDebugModelProvider/StaticDebugModelProvider.h"
 
+#include "Modules/Modeling/ObstacleLocator/MultiUnifiedObstacleLocator.h"
+
 #include "Modules/Modeling/Simulation/Simulation.h"
 #include "Modules/Modeling/Simulation/KickDirectionSimulator.h"
 #include "Modules/Modeling/SelfLocator/SituationPriorProvider/SituationPriorProvider.h"
 
-
 // behavior
 #include "Modules/Behavior/BasicTestBehavior/BasicTestBehavior.h"
 #include "Modules/Behavior/XABSLBehaviorControl/XABSLBehaviorControl.h"
-#include "Modules/Behavior/PathPlanner/PathPlanner.h"
 #include "Modules/Behavior/PathPlanner/PathPlanner2018.h"
 
 using namespace std;
@@ -150,11 +153,11 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   ModuleCreator<Sensor>* sensor = registerModule<Sensor>(std::string("Sensor"), true);
   sensor->getModuleT()->init(platformInterface, platform);
 
-  /* 
+  /*
   * to register a module use
   *   REGISTER_MODULE(ModuleClassName);
   *
-  * Remark: to enable the module don't forget 
+  * Remark: to enable the module don't forget
   *         to set the value in modules.cfg
   */
 
@@ -180,8 +183,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(CameraMatrixFinder);
   REGISTER_MODULE(KinematicChainProvider);
   REGISTER_MODULE(ArtificialHorizonCalculator);
-  REGISTER_MODULE(BodyContourProvider);
-  REGISTER_MODULE(CameraMatrixCorrectorV2);
+  REGISTER_MODULE(BodyContourProvider);	
 
   REGISTER_MODULE(HistogramProvider);
   REGISTER_MODULE(IntegralImageProvider);
@@ -198,9 +200,11 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(GoalDetectorV2);
   REGISTER_MODULE(GoalCrossBarDetector);
 
+  REGISTER_MODULE(NoGreenObstacleDetector);
+
   REGISTER_MODULE(RedBallDetector);
   REGISTER_MODULE(CNNBallDetector);
-  
+  REGISTER_MODULE(MultiPassBallDetector);
   REGISTER_MODULE(FakeCameraMatrixFinder);
   REGISTER_MODULE(FakeBallDetector);
 
@@ -210,14 +214,15 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(RansacLineDetector);
   REGISTER_MODULE(RansacLineDetectorOnGraphs);
   REGISTER_MODULE(LineAugmenter);
-  
+
   REGISTER_MODULE(CompassProvider);
 
   // modeling
   REGISTER_MODULE(SituationPriorProvider);
   REGISTER_MODULE(BodyStateProvider);
   REGISTER_MODULE(FieldCompass);
-  REGISTER_MODULE(UltraSoundObstacleLocator);
+  REGISTER_MODULE(UltraSoundObstacleDetector);
+  REGISTER_MODULE(UltrasonicDetector2020);
   REGISTER_MODULE(TeamCommReceiveEmulator);
   REGISTER_MODULE(TeamMessageStatisticsModule);
   REGISTER_MODULE(TeamMessagePlayersStateModule);
@@ -233,6 +238,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(TeamBallLocatorMedian);
   REGISTER_MODULE(TeamBallLocatorCanopyCluster);
 
+  REGISTER_MODULE(MultiUnifiedObstacleLocator);
   /*
    * BEGIN ROLE DECISIONS
    */
@@ -264,13 +270,12 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   // behavior
   REGISTER_MODULE(BasicTestBehavior);
   REGISTER_MODULE(XABSLBehaviorControl);
-  REGISTER_MODULE(PathPlanner);
   REGISTER_MODULE(PathPlanner2018);
 
   REGISTER_MODULE(CameraMatrixCorrectorV3);
 
   REGISTER_MODULE(TeamCommSender);
-  
+
   // debug
   REGISTER_MODULE(GameLogger);
   REGISTER_MODULE(Debug);
@@ -285,13 +290,13 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
 
   // use the configuration in order to set whether a module is activated or not
   const naoth::Configuration& config = Platform::getInstance().theConfiguration;
-  
+
   list<string>::const_iterator name = getExecutionList().begin();
   for(;name != getExecutionList().end(); ++name)
   {
     bool active = false;
-    if(config.hasKey("modules", *name)) {    
-      active = config.getBool("modules", *name);      
+    if(config.hasKey("modules", *name)) {
+      active = config.getBool("modules", *name);
     }
     if(active) {
       std::cout << "[Cognition] activating module " << *name << std::endl;
@@ -331,7 +336,7 @@ void Cognition::call()
       module->execute();
     }
   }
-  
+
   STOPWATCH_STOP("Cognition.Execute");
 
 

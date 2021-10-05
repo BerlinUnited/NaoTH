@@ -9,6 +9,7 @@
 
 #include <Tools/Math/Vector2.h>
 #include <list>
+#include <vector>
 
 class BestPatchList
 {
@@ -154,6 +155,16 @@ public:
 
   size_t size() const {
     return patches.size();
+  }
+
+  std::vector<Patch> asVector() const {
+    std::vector<Patch> result;
+    result.reserve(patches.size());
+    // Add in reverse order, so the entries with the highest value come first
+    for(BestPatchList::reverse_iterator i = patches.crbegin(); i != patches.crend(); ++i) {
+      result.push_back(*i);
+    }
+    return result;
   }
 
 private:
