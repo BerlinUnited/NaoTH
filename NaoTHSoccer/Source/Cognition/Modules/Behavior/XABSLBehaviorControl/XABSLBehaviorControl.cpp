@@ -88,7 +88,7 @@ void XABSLBehaviorControl::loadBehaviorFromFile(std::string file, std::string ag
   // delete the old engine if avaliable
   delete theEngine;
   // create a new engine 
-  theEngine = xabsl::EngineFactory<XABSLBehaviorControl>::create(theErrorHandler, this->xabslTime); 
+  theEngine = xabsl::EngineFactory<XABSLBehaviorControl>::create(theErrorHandler, getFrameInfo());
   //
   registerXABSLSymbols();
 
@@ -122,9 +122,6 @@ void XABSLBehaviorControl::loadBehaviorFromFile(std::string file, std::string ag
 
 void XABSLBehaviorControl::execute()
 {
-  // ATTENTION: it has to be set before xabsl engine is executed!!!
-  xabslTime = getFrameInfo().getTime();
-
   // execute the behavior
   if(theEngine != NULL && !theErrorHandler.errorsOccurred)
   {

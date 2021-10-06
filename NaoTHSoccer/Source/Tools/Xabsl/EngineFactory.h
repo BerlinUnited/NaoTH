@@ -1,36 +1,44 @@
+/** 
+* @file EngineFactory.h
+* 
+* The class EngineFactory wraps a getter function 
+* providing the time to the xabsl engine.
+*/
+
 #ifndef ENGINEFACTORY_H
 #define ENGINEFACTORY_H
 
 #include <Tools/Debug/NaoTHAssert.h>
+#include <Representations/Infrastructure/FrameInfo.h>
 
 namespace xabsl
 {
 
-/** wraps a getter function providing the time to the xabsl engine */
+
 template<class T>
 class EngineFactory
 {
 private:
 
-  EngineFactory(){}
-  static const unsigned int* timestamp;
+  EngineFactory() {}
+  static const naoth::FrameInfo* frameInfo;
 
 public:
 
-  static xabsl::Engine* create(ErrorHandler& e, const unsigned int& time_ref)
+  static xabsl::Engine* create(ErrorHandler& e, const naoth::FrameInfo& frameInfo)
   {
-    timestamp = &time_ref;
+    EngineFactory<T>::frameInfo = &frameInfo;
     return new xabsl::Engine(e, &getTime);
-  }//end createEngine
+  }
 
   static unsigned int getTime()
   {
-    ASSERT(timestamp != NULL);
-    return *timestamp;
-  }//end getTime
+    ASSERT(frameInfo != NULL);
+    return (*frameInfo).getTime();
+  }
 };
 
-template<class T> const unsigned int* EngineFactory<T>::timestamp = NULL;
+template<class T> const naoth::FrameInfo* EngineFactory<T>::frameInfo = NULL;
 
 }//end namespace xabsl
 #endif // ENGINEFACTORY_H

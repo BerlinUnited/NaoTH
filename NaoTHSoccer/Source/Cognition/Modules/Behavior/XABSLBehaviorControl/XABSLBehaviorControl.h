@@ -115,9 +115,6 @@ private:
   // TODO: remove this member
   std::string agentName;
 
-  /** time passed into the xabsl engine */
-  unsigned int xabslTime;
-
   // needed for serialization
   std::vector<double> inputDecimalBuffer;
   std::vector<bool> inputBooleanBuffer;
