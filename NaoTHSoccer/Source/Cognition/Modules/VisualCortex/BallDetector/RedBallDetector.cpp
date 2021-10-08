@@ -63,7 +63,7 @@ void RedBallDetector::execute(CameraInfo::CameraID id)
 
     // estimate the ball radius based on the projected distance of the center point
     double estimatedRadius = CameraGeometry::estimatedBallRadius(
-      getCameraMatrix(), getImage().cameraInfo,
+      getCameraMatrix(), getCameraInfo(),
       getFieldInfo().ballRadius, point.x, point.y);
 
     DEBUG_REQUEST("Vision:RedBallDetector:draw_ball_estimated",
@@ -255,7 +255,7 @@ void RedBallDetector::calculateBallPercept(const Vector2i& center, double radius
   // calculate the ball
   bool ballOK = CameraGeometry::imagePixelToFieldCoord(
         getCameraMatrix(),
-        getImage().cameraInfo,
+        getCameraInfo(),
         center.x,
         center.y,
         getFieldInfo().ballRadius,

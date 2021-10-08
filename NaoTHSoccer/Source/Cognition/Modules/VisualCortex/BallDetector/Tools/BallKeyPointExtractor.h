@@ -4,10 +4,12 @@
 * Sorted list evaluated non-overlaping patches
 */
 
-#ifndef _BallKeyPointExtractor_H_
-#define _BallKeyPointExtractor_H_
+#ifndef BALLKEYPOINTEXTRACTOR_H
+#define BALLKEYPOINTEXTRACTOR_H
 
 #include <ModuleFramework/Module.h>
+
+#include <Representations/Infrastructure/CameraInfo.h>
 
 #include "Representations/Infrastructure/FieldInfo.h"
 #include "Representations/Perception/MultiChannelIntegralImage.h"
@@ -36,6 +38,9 @@ BEGIN_DECLARE_MODULE(BallKeyPointExtractor)
   PROVIDE(DebugDrawings)
 
   REQUIRE(FieldInfo) // needed for ball radius
+
+  REQUIRE(CameraInfo)
+  REQUIRE(CameraInfoTop)
 
   REQUIRE(Image)
   REQUIRE(ImageTop)
@@ -172,9 +177,11 @@ private:
   Parameter params;
   CameraInfo::CameraID cameraID;
 
-  mutable double values[640/4][480/4][2];
+  // FIXME: the same size as integral image?
+  mutable double values[naoth::IMAGE_WIDTH/4][naoth::IMAGE_HEIGHT/4][2];
 
   // double cam stuff
+  DOUBLE_CAM_REQUIRE(BallKeyPointExtractor, CameraInfo);
   DOUBLE_CAM_REQUIRE(BallKeyPointExtractor, Image);
   DOUBLE_CAM_REQUIRE(BallKeyPointExtractor, CameraMatrix);
   DOUBLE_CAM_REQUIRE(BallKeyPointExtractor, FieldPercept);
@@ -211,7 +218,7 @@ void BallKeyPointExtractor::calculateKeyPoints(const ImageType& integralImage, B
   for(point.y = minY/FACTOR; point.y < (int)integralImage.getHeight(); ++point.y)
   {
     double estimatedRadius = CameraGeometry::estimatedBallRadius(
-      getCameraMatrix(), getImage().cameraInfo, getFieldInfo().ballRadius,
+      getCameraMatrix(), getCameraInfo(), getFieldInfo().ballRadius,
       point.x*FACTOR, point.y*FACTOR);
     
     double radius = std::max( 6.0, estimatedRadius);
@@ -270,7 +277,7 @@ void BallKeyPointExtractor::calculateKeyPointsFast(const ImageType& integralImag
   for(point.y = minY/FACTOR; point.y < height; ++point.y)
   {
     double estimatedRadius = CameraGeometry::estimatedBallRadius(
-      getCameraMatrix(), getImage().cameraInfo, getFieldInfo().ballRadius,
+      getCameraMatrix(), getCameraInfo(), getFieldInfo().ballRadius,
       getImage().width()/2, point.y*FACTOR);
     
     // Note: we have a minimal allowed radius
@@ -367,7 +374,7 @@ void BallKeyPointExtractor::calculateKeyPointsFull(const ImageType& integralImag
   for(point.y = minY/FACTOR; point.y < (int)integralImage.getHeight(); ++point.y)
   {
     double estimatedRadius = CameraGeometry::estimatedBallRadius(
-      getCameraMatrix(), getImage().cameraInfo, getFieldInfo().ballRadius,
+      getCameraMatrix(), getCameraInfo(), getFieldInfo().ballRadius,
       getImage().width()/2, point.y*FACTOR);
     
     
@@ -446,4 +453,4 @@ void BallKeyPointExtractor::calculateKeyPointsFull(const ImageType& integralImag
   }
 }
 
-#endif // _BallKeyPointExtractor_H_-
+#endif // BALLKEYPOINTEXTRACTOR_H

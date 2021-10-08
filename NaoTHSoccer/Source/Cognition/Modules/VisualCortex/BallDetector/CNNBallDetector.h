@@ -1,5 +1,10 @@
-#ifndef _CNNBallDetector_H_
-#define _CNNBallDetector_H_
+/**
+* @file CNNBallDetector.h
+* 
+*/
+
+#ifndef CNNBALLDETECTOR_H
+#define CNNBALLDETECTOR_H
 
 #include <ModuleFramework/Module.h>
 #include <ModuleFramework/ModuleManager.h>
@@ -8,8 +13,10 @@
 #include <Tools/ColorClasses.h>
 #include <Tools/Math/Vector2.h>
 
-#include <Representations/Infrastructure/Image.h>
 #include <Representations/Infrastructure/FrameInfo.h>
+
+#include <Representations/Infrastructure/CameraInfo.h>
+#include <Representations/Infrastructure/Image.h>
 
 #include "Representations/Perception/CameraMatrix.h"
 #include "Representations/Perception/FieldPercept.h"
@@ -55,6 +62,9 @@ BEGIN_DECLARE_MODULE(CNNBallDetector)
   PROVIDE(StopwatchManager)
 
   REQUIRE(FrameInfo)
+
+  REQUIRE(CameraInfo)
+  REQUIRE(CameraInfoTop)
 
   REQUIRE(Image)
   REQUIRE(ImageTop)
@@ -219,6 +229,7 @@ private:
   DOUBLE_CAM_PROVIDE(CNNBallDetector, DebugImageDrawings);
 
   // double cam stuff
+  DOUBLE_CAM_REQUIRE(CNNBallDetector, CameraInfo);
   DOUBLE_CAM_REQUIRE(CNNBallDetector, Image);
   DOUBLE_CAM_REQUIRE(CNNBallDetector, CameraMatrix);
   DOUBLE_CAM_REQUIRE(CNNBallDetector, FieldPercept);
@@ -229,4 +240,4 @@ private:
   DOUBLE_CAM_PROVIDE(CNNBallDetector, BallCandidates);
 };//end class CNNBallDetector
 
-#endif // _CNNBallDetector_H_
+#endif // CNNBALLDETECTOR_H

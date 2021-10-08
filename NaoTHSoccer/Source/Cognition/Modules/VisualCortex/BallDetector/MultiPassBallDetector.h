@@ -1,5 +1,10 @@
-#ifndef _MultiPassBallDetector_H_
-#define _MultiPassBallDetector_H_
+/**
+* @file MultiPassBallDetector.h
+* 
+*/
+
+#ifndef MULTIPASSBALLDETECTOR_H
+#define MULTIPASSBALLDETECTOR_H
 
 #include <ModuleFramework/Module.h>
 #include <ModuleFramework/ModuleManager.h>
@@ -8,6 +13,7 @@
 #include <Tools/ColorClasses.h>
 #include <Tools/Math/Vector2.h>
 
+#include <Representations/Infrastructure/CameraInfo.h>
 #include <Representations/Infrastructure/Image.h>
 #include <Representations/Infrastructure/FrameInfo.h>
 
@@ -55,6 +61,9 @@ BEGIN_DECLARE_MODULE(MultiPassBallDetector)
   PROVIDE(StopwatchManager)
 
   REQUIRE(FrameInfo)
+
+  REQUIRE(CameraInfo)
+  REQUIRE(CameraInfoTop)
 
   REQUIRE(Image)
   REQUIRE(ImageTop)
@@ -230,6 +239,7 @@ private:
   DOUBLE_CAM_PROVIDE(MultiPassBallDetector, DebugImageDrawings);
 
   // double cam stuff
+  DOUBLE_CAM_REQUIRE(MultiPassBallDetector, CameraInfo);
   DOUBLE_CAM_REQUIRE(MultiPassBallDetector, Image);
   DOUBLE_CAM_REQUIRE(MultiPassBallDetector, CameraMatrix);
   DOUBLE_CAM_REQUIRE(MultiPassBallDetector, FieldPercept);
@@ -240,4 +250,4 @@ private:
   DOUBLE_CAM_PROVIDE(MultiPassBallDetector, BallCandidates);
 };//end class MultiPassBallDetector
 
-#endif // _MultiPassBallDetector_H_
+#endif // MultiPassBallDetector_H
