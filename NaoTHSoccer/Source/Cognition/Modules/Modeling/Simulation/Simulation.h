@@ -4,8 +4,8 @@
 * Declaration of class Simulation
 */
 
-#ifndef _Simulation_H
-#define _Simulation_H
+#ifndef Simulation_H
+#define Simulation_H
 
 #include <ModuleFramework/Module.h>
 #include <ModuleFramework/ModuleManager.h>
@@ -17,7 +17,6 @@
 #include "Representations/Modeling/GoalModel.h"
 #include "Representations/Modeling/RobotPose.h"
 #include "Representations/Modeling/KickActionModel.h"
-#include "Representations/Modeling/ObstacleModel.h"
 
 //Tools
 #include <Tools/Math/Vector2.h>
@@ -44,7 +43,6 @@ PROVIDE(StopwatchManager)
 
 REQUIRE(FrameInfo)
 REQUIRE(FieldInfo)
-REQUIRE(ObstacleModel)
 REQUIRE(BallModel)
 REQUIRE(RobotPose)
 //REQUIRE(SelfLocGoalModel)
@@ -134,4 +132,4 @@ private:
 
 };
 
-#endif  /* _Simulation_H */
+#endif  /* Simulation_H */

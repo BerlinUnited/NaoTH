@@ -40,10 +40,8 @@ BEGIN_DECLARE_MODULE(ActionSimulator)
   
   REQUIRE(FrameInfo)
   REQUIRE(FieldInfo)
-//  REQUIRE(ObstacleModel)
   REQUIRE(BallModel)
   REQUIRE(RobotPose)
-  //REQUIRE(SelfLocGoalModel)
 
   PROVIDE(KickActionModel)
 END_DECLARE_MODULE(ActionSimulator)
