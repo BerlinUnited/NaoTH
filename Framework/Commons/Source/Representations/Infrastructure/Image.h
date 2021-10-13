@@ -4,8 +4,8 @@
  * Declaration of class Image
  */
 
-#ifndef _Image_h_
-#define _Image_h_
+#ifndef IMAGE_H
+#define IMAGE_H
 
 #include <cstring>
 #include <iostream>
@@ -42,6 +42,9 @@ private:
   /** raw image data in YUV422 format */
   unsigned char* yuv422;
 
+  // TODO: remove it
+  CameraInfo cameraInfo;
+
 public:
   Image();
   virtual ~Image();
@@ -59,8 +62,6 @@ public:
   static const unsigned int PIXEL_SIZE_YUV444 = 3;
 
 public: // data members
-  // TODO: remove it
-  CameraInfo cameraInfo;
 
   /** The time relative to the start of the programm when the image was recorded in ms */
   unsigned int timestamp;
@@ -223,4 +224,4 @@ class Serializer<ImageTop> : public Serializer<Image>
 
 } // end namespace naoth
 
-#endif //_Image_h_
+#endif // IMAGE_H

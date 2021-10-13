@@ -67,5 +67,9 @@ void CameraDebug::execute()
     }
   }
   
+  // A sanity check, just in case ... 
+  if(getCameraInfo().resolutionWidth != naoth::IMAGE_WIDTH || getCameraInfo().resolutionHeight != naoth::IMAGE_HEIGHT) {
+    THROW("Image size of the CameraInfo doesn't correspond to the static values IMAGE_WIDTH and IMAGE_HEIGHT.");
+  }
 }//end execute
 

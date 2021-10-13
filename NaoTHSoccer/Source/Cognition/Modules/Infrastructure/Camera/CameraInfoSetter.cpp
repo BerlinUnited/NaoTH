@@ -31,7 +31,7 @@ void CameraInfoSetter::execute()
   //getCameraInfo().cameraID = CameraInfo::Bottom;
 
   // set param for image
-  getImage().cameraInfo = getCameraInfo();
+  //getImage().cameraInfo = getCameraInfo();
 
   //const CameraSettings camSettingsTop = getCameraSettingsRequestTop().getCameraSettings();
   // copy parameter based representation to the "pure" one
@@ -40,7 +40,7 @@ void CameraInfoSetter::execute()
   // check if the camera settings actually changed something in the CameraInfo
   // uses
   // set param for image
-  getImageTop().cameraInfo = getCameraInfoTop();
+  //getImageTop().cameraInfo = getCameraInfoTop();
 
   if(getCameraInfo().resolutionWidth != naoth::IMAGE_WIDTH || getCameraInfo().resolutionHeight != naoth::IMAGE_HEIGHT) {
     THROW("Image size of the CameraInfo doesn't correspond to the static values IMAGE_WIDTH and IMAGE_HEIGHT.");
