@@ -1,12 +1,12 @@
 /**
- * @file UltraSoundObstacleLocator.h
+ * @file UltraSoundObstacleDetector.h
  *
  * @author <a href="mailto:kaptur@informatik.hu-berlin.de">Christian Kaptur</a>
- * Declaration of class ObstacleLocator
+ * Declaration of class ObstacleDetector
  */
 
-#ifndef _UltraSoundObstacleLocator_h_
-#define _UltraSoundObstacleLocator_h_
+#ifndef _UltraSoundObstacleDetector_h_
+#define _UltraSoundObstacleDetector_h_
 
 #include <ModuleFramework/Module.h>
 
@@ -36,7 +36,7 @@
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
-BEGIN_DECLARE_MODULE(UltraSoundObstacleLocator)
+BEGIN_DECLARE_MODULE(UltraSoundObstacleDetector)
   PROVIDE(DebugModify)
   PROVIDE(DebugRequest)
   PROVIDE(DebugParameterList)
@@ -48,15 +48,15 @@ BEGIN_DECLARE_MODULE(UltraSoundObstacleLocator)
   REQUIRE(UltraSoundReceiveData)
 
   PROVIDE(ObstacleModel)
-END_DECLARE_MODULE(UltraSoundObstacleLocator)
+END_DECLARE_MODULE(UltraSoundObstacleDetector)
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////
 
-class UltraSoundObstacleLocator : private UltraSoundObstacleLocatorBase
+class UltraSoundObstacleDetector : private UltraSoundObstacleDetectorBase
 {
 public:
-  UltraSoundObstacleLocator();
-  ~UltraSoundObstacleLocator();
+  UltraSoundObstacleDetector();
+  ~UltraSoundObstacleDetector();
 
   virtual void execute();
 
@@ -97,6 +97,6 @@ private:
   void drawObstacleModel();
 };
 
-#endif //_UltraSoundObstacleLocator_h_
+#endif //_UltraSoundObstacleDetector_h_
 
 

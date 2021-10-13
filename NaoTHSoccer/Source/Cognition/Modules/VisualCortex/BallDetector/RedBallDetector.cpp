@@ -63,7 +63,7 @@ void RedBallDetector::execute(CameraInfo::CameraID id)
 
     // estimate the ball radius based on the projected distance of the center point
     double estimatedRadius = CameraGeometry::estimatedBallRadius(
-      getCameraMatrix(), getImage().cameraInfo,
+      getCameraMatrix(), getCameraInfo(),
       getFieldInfo().ballRadius, point.x, point.y);
 
     DEBUG_REQUEST("Vision:RedBallDetector:draw_ball_estimated",
@@ -201,7 +201,7 @@ bool RedBallDetector::spiderScan(const Vector2i& start, std::vector<Vector2i>& e
 bool RedBallDetector::scanForEdges(const Vector2i& start, const Vector2d& direction, std::vector<Vector2i>& points) const
 {
   Vector2i point(start);
-  BresenhamLineScan scanner(point, direction, getImage().cameraInfo);
+  BresenhamLineScan scanner(point, direction, getImage().width(), getImage().height());
 
   // initialize the scanner
   Vector2i peak_point_min(start);
@@ -255,7 +255,7 @@ void RedBallDetector::calculateBallPercept(const Vector2i& center, double radius
   // calculate the ball
   bool ballOK = CameraGeometry::imagePixelToFieldCoord(
         getCameraMatrix(),
-        getImage().cameraInfo,
+        getCameraInfo(),
         center.x,
         center.y,
         getFieldInfo().ballRadius,

@@ -83,8 +83,8 @@
 // modeling
 #include "Modules/Modeling/BodyStateProvider/BodyStateProvider.h"
 #include "Modules/Modeling/FieldCompass/FieldCompass.h"
-#include "Modules/Modeling/ObstacleLocator/UltraSoundObstacleLocator.h"
-#include "Modules/Modeling/ObstacleLocator/UltrasonicObstacleLocator2020.h"
+#include "Modules/Perception/UltrasonicObstacleDetector/UltraSoundObstacleDetector.h"
+#include "Modules/Perception/UltrasonicObstacleDetector/UltrasonicObstacleDetector2020.h"
 #include "Modules/Infrastructure/TeamCommunicator/TeamCommReceiveEmulator.h"
 #include "Modules/Modeling/TeamMessageStatistics/TeamMessageStatisticsModule.h"
 #include "Modules/Modeling/TeamMessageStatistics/TeamMessagePlayersStateModule.h"
@@ -218,19 +218,21 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(CompassProvider);
 
   // modeling
-  REGISTER_MODULE(SituationPriorProvider);
   REGISTER_MODULE(BodyStateProvider);
   REGISTER_MODULE(FieldCompass);
-  REGISTER_MODULE(UltraSoundObstacleLocator);
-  REGISTER_MODULE(UltrasonicObstacleLocator2020);
+  REGISTER_MODULE(UltraSoundObstacleDetector);
+  REGISTER_MODULE(UltrasonicDetector2020);
   REGISTER_MODULE(TeamCommReceiveEmulator);
   REGISTER_MODULE(TeamMessageStatisticsModule);
   REGISTER_MODULE(TeamMessagePlayersStateModule);
   REGISTER_MODULE(SoccerStrategyProvider);
   REGISTER_MODULE(PotentialFieldProvider);
+  REGISTER_MODULE(SituationPriorProvider);
+  
   REGISTER_MODULE(GPS_SelfLocator);
   REGISTER_MODULE(MonteCarloSelfLocator);
   REGISTER_MODULE(OdometrySelfLocator);
+  
   REGISTER_MODULE(WholeGoalLocator);
   REGISTER_MODULE(DummyActiveGoalLocator);
   REGISTER_MODULE(MultiKalmanBallLocator);

@@ -10,15 +10,11 @@
 * @author <a href="mailto:oberlies@sim.tu-darmstadt.de">Tobias Oberlies</a> (revised constructors and commenting) 
 */
 
-#ifndef _BresenhamLineScan_h_
-#define _BresenhamLineScan_h_
+#ifndef BRESENHAMLINESCAN_H
+#define BRESENHAMLINESCAN_H
 
-//#include "Tools/CameraGeometry.h"
-//#include "Tools/Math/Common.h"
 #include "Tools/Math/Line.h"
 #include "Tools/Math/Vector2.h"
-
-#include "Representations/Infrastructure/CameraInfo.h"
 
 class BresenhamLineScan
 {
@@ -49,16 +45,17 @@ public:
    * Constructs a scanline with the given direction.
    * @param direction The direction (angle) of the line, expressed in radians.
    */
-  BresenhamLineScan(const double& direction);
+  BresenhamLineScan(const double direction);
 
   /**
    * Constructs a scanline with the given direction starting at start and ending at the 
    * image boundary. numberOfPixels can be used.
    * @param start The start point of the line.
    * @param direction The direction (angle) of the line, expressed in radians.
-   * @param cameraInfo The cameraInfo object of the camera that captured the image.
+   * @param width image width
+   * @param height image height
    */
-  BresenhamLineScan(const Vector2i& start, const double& direction, const naoth::CameraInfo& cameraInfo);
+  BresenhamLineScan(const Vector2i& start, const double direction, const unsigned int width, const unsigned int height);
   
   /** 
    * Constructs a scanline with the given direction starting at start and ending at the 
@@ -69,16 +66,16 @@ public:
    * @param cameraInfo The cameraInfo object of the camera that captured the image.
    * @author Tobias Oberlies
    */
-  BresenhamLineScan(const Vector2i& start, const Vector2d& direction, const naoth::CameraInfo& cameraInfo);
+  BresenhamLineScan(const Vector2i& start, const Vector2d& direction, const unsigned int width, const unsigned int height);
 
-  BresenhamLineScan(const Math::Line& line, const naoth::CameraInfo& cameraInfo);
+  BresenhamLineScan(const Math::Line& line, const unsigned int width, const unsigned int height);
   
   void setup(const Vector2i& start, const Vector2i& end);
-  void setup(const double& direction);
+  void setup(const double direction);
   void setup(const Vector2d& direction);
-  void setup(const Vector2i& start, const double& direction, const naoth::CameraInfo& cameraInfo);
-  void setup(const Vector2i& start, const Vector2d& direction, const naoth::CameraInfo& cameraInfo);
-  void setup(const Math::Line& line, const naoth::CameraInfo& cameraInfo);
+  void setup(const Vector2i& start, const double direction, const unsigned int width, const unsigned int height);
+  void setup(const Vector2i& start, const Vector2d& direction, const unsigned int width, const unsigned int height);
+  void setup(const Math::Line& line, const unsigned int width, const unsigned int height);
 
 
   /** Resets the error counter */
@@ -163,4 +160,4 @@ private:
 };
 
 
-#endif //_BresenhamLineScan_h_
+#endif // BRESENHAMLINESCAN_H

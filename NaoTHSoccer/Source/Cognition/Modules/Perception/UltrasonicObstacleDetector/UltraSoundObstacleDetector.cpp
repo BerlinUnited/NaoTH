@@ -1,34 +1,34 @@
 /**
- * @file ObstacleLocator.h
+ * @file ObstacleDetector.h
  *
  * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
  * @author <a href="mailto:borisov@informatik.hu-berlin.de">Alexander Borisov</a>
  * @author <a href="mailto:krienelk@informatik.hu-berlin.de">Dominik Krienelke</a>
- * Implementation of class ObstacleLocator
+ * Implementation of class ObstacleDetector
  */
 
-#include "UltraSoundObstacleLocator.h"
+#include "UltraSoundObstacleDetector.h"
 
 // in accordance to the Aldeberan documentation and the raw values
-const double UltraSoundObstacleLocator::invalidDistanceValue =  2550.0;
-const double UltraSoundObstacleLocator::maxValidDistance = 500.0;
+const double UltraSoundObstacleDetector::invalidDistanceValue =  2550.0;
+const double UltraSoundObstacleDetector::maxValidDistance = 500.0;
 
-UltraSoundObstacleLocator::UltraSoundObstacleLocator()
+UltraSoundObstacleDetector::UltraSoundObstacleDetector()
   : wasFrontBlockedInLastFrame(false)
 {
-  DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:drawObstacle", "draw the modelled Obstacle on the field", false);
-  DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:drawSensorData", "draw the measured echos", false);
-  DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:drawBuffer", "draw buffer of measurements", false);
+  DEBUG_REQUEST_REGISTER("UltraSoundObstacleDetector:drawObstacle", "draw the modelled Obstacle on the field", false);
+  DEBUG_REQUEST_REGISTER("UltraSoundObstacleDetector:drawSensorData", "draw the measured echos", false);
+  DEBUG_REQUEST_REGISTER("UltraSoundObstacleDetector:drawBuffer", "draw buffer of measurements", false);
 
   getDebugParameterList().add(&params);
 }
 
-UltraSoundObstacleLocator::~UltraSoundObstacleLocator() 
+UltraSoundObstacleDetector::~UltraSoundObstacleDetector() 
 {
   getDebugParameterList().remove(&params);
 }
 
-void UltraSoundObstacleLocator::execute()
+void UltraSoundObstacleDetector::execute()
 {
   getObstacleModel().leftDistance = invalidDistanceValue;
   getObstacleModel().rightDistance = invalidDistanceValue;
@@ -44,10 +44,10 @@ void UltraSoundObstacleLocator::execute()
   drawObstacleModel();
 }//end execute
 
-void UltraSoundObstacleLocator::drawObstacleModel()
+void UltraSoundObstacleDetector::drawObstacleModel()
 {
   
-  DEBUG_REQUEST("UltraSoundObstacleLocator:drawBuffer",
+  DEBUG_REQUEST("UltraSoundObstacleDetector:drawBuffer",
     FIELD_DRAWING_CONTEXT;
     
     PEN("FF0000", 25);
@@ -64,7 +64,7 @@ void UltraSoundObstacleLocator::drawObstacleModel()
   );
 
 
-  DEBUG_REQUEST("UltraSoundObstacleLocator:drawSensorData",
+  DEBUG_REQUEST("UltraSoundObstacleDetector:drawSensorData",
     FIELD_DRAWING_CONTEXT;
     Color colorLeft(Color::blue);
     Color colorRight(Color::red);
@@ -92,7 +92,7 @@ void UltraSoundObstacleLocator::drawObstacleModel()
   );
   
   // draw model
-  DEBUG_REQUEST("UltraSoundObstacleLocator:drawObstacle",
+  DEBUG_REQUEST("UltraSoundObstacleDetector:drawObstacle",
 	FIELD_DRAWING_CONTEXT;
     PEN("FF0000", 50);
     CIRCLE(
@@ -111,7 +111,7 @@ void UltraSoundObstacleLocator::drawObstacleModel()
   );
 } //end drawObstacleMode
 
-bool UltraSoundObstacleLocator::isNewDataAvaliable() const
+bool UltraSoundObstacleDetector::isNewDataAvaliable() const
 {
   // NOTE: this can lead to unexpected/undesired behavior, if the sensor - for whatever reson -
   //       returns the same data for some time!
@@ -125,7 +125,7 @@ bool UltraSoundObstacleLocator::isNewDataAvaliable() const
   return false;
 }
 
-void UltraSoundObstacleLocator::fillBuffer()
+void UltraSoundObstacleDetector::fillBuffer()
 {
   if(!isNewDataAvaliable()) {
     return;
@@ -152,7 +152,7 @@ void UltraSoundObstacleLocator::fillBuffer()
   bufferLeft.add(leftMeasurement);
 }
 
-void UltraSoundObstacleLocator::provideToLocalObstacleModel()
+void UltraSoundObstacleDetector::provideToLocalObstacleModel()
 {
   
   ObstacleModel& model = getObstacleModel();
