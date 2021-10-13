@@ -66,7 +66,8 @@ public: // data members
   /** The time relative to the start of the programm when the image was recorded in ms */
   unsigned int timestamp;
 
-  // TODO: comments: what is it and how to use it?
+  // NOTE: this is used for debugging the V4lCameraHandler
+  // TODO: move it to a separate debug representation
   unsigned int currentBuffer;
   unsigned int bufferCount;
   unsigned int wrongBufferSizeCount;
