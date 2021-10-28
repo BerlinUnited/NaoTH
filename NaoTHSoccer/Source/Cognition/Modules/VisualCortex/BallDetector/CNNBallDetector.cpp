@@ -317,7 +317,7 @@ void CNNBallDetector::addBallPercept(const Vector2d& center, double radius)
   
   if(CameraGeometry::imagePixelToFieldCoord(
 		  getCameraMatrix(), 
-		  getImage().cameraInfo,
+		  getCameraInfo(),
 		  center.x, 
 		  center.y, 
 		  ballRadius,
@@ -342,11 +342,11 @@ void CNNBallDetector::addPatchByLastBall()
     ballInField.z = getFieldInfo().ballRadius;
 
     Vector2i ballInImage;
-    if (CameraGeometry::relativePointToImage(getCameraMatrix(), getImage().cameraInfo, ballInField, ballInImage))
+    if (CameraGeometry::relativePointToImage(getCameraMatrix(), getCameraInfo(), ballInField, ballInImage))
     {
 
       double estimatedRadius = CameraGeometry::estimatedBallRadius(
-          getCameraMatrix(), getImage().cameraInfo, getFieldInfo().ballRadius,
+          getCameraMatrix(), getCameraInfo(), getFieldInfo().ballRadius,
           ballInImage.x, ballInImage.y);
 
       int border = static_cast<int>((estimatedRadius * 1.1) + 0.5);

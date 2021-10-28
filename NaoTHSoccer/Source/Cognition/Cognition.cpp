@@ -218,7 +218,6 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(CompassProvider);
 
   // modeling
-  REGISTER_MODULE(SituationPriorProvider);
   REGISTER_MODULE(BodyStateProvider);
   REGISTER_MODULE(FieldCompass);
   REGISTER_MODULE(UltraSoundObstacleDetector);
@@ -228,9 +227,12 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(TeamMessagePlayersStateModule);
   REGISTER_MODULE(SoccerStrategyProvider);
   REGISTER_MODULE(PotentialFieldProvider);
+  REGISTER_MODULE(SituationPriorProvider);
+  
   REGISTER_MODULE(GPS_SelfLocator);
   REGISTER_MODULE(MonteCarloSelfLocator);
   REGISTER_MODULE(OdometrySelfLocator);
+  
   REGISTER_MODULE(WholeGoalLocator);
   REGISTER_MODULE(DummyActiveGoalLocator);
   REGISTER_MODULE(MultiKalmanBallLocator);

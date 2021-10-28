@@ -6,11 +6,12 @@
 * Definition of class GoalDetectorV2
 */
 
-#ifndef _GoalDetectorV2_H_
-#define _GoalDetectorV2_H_
+#ifndef GOALDETECTORV2_H
+#define GOALDETECTORV2_H
 
 #include <ModuleFramework/Module.h>
 
+#include <Representations/Infrastructure/CameraInfo.h>
 #include <Representations/Infrastructure/Image.h>
 #include <Representations/Infrastructure/FrameInfo.h>
 #include <Representations/Infrastructure/FieldInfo.h>
@@ -42,6 +43,9 @@ BEGIN_DECLARE_MODULE(GoalDetectorV2)
   PROVIDE(DebugParameterList)
 
   REQUIRE(FrameInfo)
+
+  REQUIRE(CameraInfo)
+  REQUIRE(CameraInfoTop)
   REQUIRE(Image)
   REQUIRE(ImageTop)
   REQUIRE(CameraMatrix)
@@ -194,6 +198,7 @@ private:
   DOUBLE_CAM_PROVIDE(GoalDetectorV2, DebugImageDrawings);
 
   // double cam stuff
+  DOUBLE_CAM_REQUIRE(GoalDetectorV2, CameraInfo);
   DOUBLE_CAM_REQUIRE(GoalDetectorV2, Image);
   DOUBLE_CAM_REQUIRE(GoalDetectorV2, CameraMatrix);
   DOUBLE_CAM_REQUIRE(GoalDetectorV2, FieldPercept);
@@ -203,4 +208,4 @@ private:
 
 };//end class GoalDetectorV2
 
-#endif // _GoalDetectorV2_H_
+#endif // GOALDETECTORV2_H
