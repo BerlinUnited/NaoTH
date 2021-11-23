@@ -186,8 +186,9 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(BodyContourProvider);	
 
   REGISTER_MODULE(HistogramProvider);
-  REGISTER_MODULE(IntegralImageProvider);
   REGISTER_MODULE(FieldColorClassifier);
+  
+  REGISTER_MODULE(IntegralImageProvider);
   REGISTER_MODULE(IntegralFieldDetector);
   REGISTER_MODULE(ScanGridProvider);
   REGISTER_MODULE(ScanGridEdgelDetector);
