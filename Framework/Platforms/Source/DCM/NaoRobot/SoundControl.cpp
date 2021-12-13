@@ -63,7 +63,7 @@ void SoundControl::play()
 
     if(filename[0] == ':') {
       std::cout << "[SoundControl] say " << filename << std::endl;
-      std::string cmd = "/home/nao/bin/flite_cmu_us_slt \"" + filename.substr(1) + "\"";
+      std::string cmd = "/home/nao/bin/flite_cmu_us_slt -t \"" + filename.substr(1) + "\"";
       std::system(cmd.c_str());
     } else {
       std::cout << "[SoundControl] play " << filename << std::endl;
