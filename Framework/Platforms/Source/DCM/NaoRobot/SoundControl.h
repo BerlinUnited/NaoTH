@@ -16,6 +16,8 @@
 
 #include "Representations/Infrastructure/SoundData.h"
 
+#include "flite/flite.h"
+
 namespace naoth
 {
 
@@ -37,6 +39,8 @@ private:
   
   std::condition_variable new_data_avaliable;
   std::mutex dataMutex;
+  
+  cst_voice *voice;
 };
 
 } // end namespace naoth
