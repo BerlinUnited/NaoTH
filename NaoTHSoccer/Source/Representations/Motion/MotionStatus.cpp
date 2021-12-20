@@ -34,6 +34,7 @@ void Serializer<MotionStatus>::serialize(const MotionStatus& representation, std
 
   message.set_target_reached(representation.target_reached);
   message.set_head_target_reached(representation.head_target_reached);
+  message.set_head_at_rest(representation.head_at_rest);
   message.set_head_got_stuck(representation.head_got_stuck);
 
   message.set_walk_emergency_stop(representation.walk_emergency_stop);
@@ -65,6 +66,7 @@ void Serializer<MotionStatus>::deserialize(std::istream& stream, MotionStatus& r
 
     representation.target_reached = message.target_reached();
     representation.head_target_reached = message.head_target_reached();
+    representation.head_at_rest = message.head_at_rest();
     representation.head_got_stuck = message.head_got_stuck();
 
     representation.walk_emergency_stop = message.walk_emergency_stop();
