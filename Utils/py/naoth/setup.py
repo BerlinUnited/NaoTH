@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import os
 from setuptools import setup, find_packages
+
 version_file = open(os.path.join(".", 'VERSION'))
 
 setup(name='naoth',

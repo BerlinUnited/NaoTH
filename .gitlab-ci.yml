@@ -128,7 +128,7 @@ publish_naoth_docker:
     - docker commit temp_container scm.cms.hu-berlin.de:4567/berlinunited/naoth-2020:$branchname
     - docker push scm.cms.hu-berlin.de:4567/berlinunited/naoth-2020:$branchname
 
-publish_naoth_python:
+.publish_naoth_python_gitlab:
   # run the publish command if the PUBLISH_NAOTH flag is set or the commit changes the develop with changes in the naoth package
   stage: deploy
   rules:
@@ -142,3 +142,18 @@ publish_naoth_python:
   - premake5 gmake2 --protoc
   - cd ../../Utils/py/naoth
   - ./package_naoth.sh
+
+publish_naoth_python_pypi:
+  # run the publish command if the PUBLISH_NAOTH flag is set or the commit changes the develop with changes in the naoth package
+  stage: deploy
+  rules:
+    - if: '$PUBLISH_NAOTH'
+    - if: $CI_COMMIT_BRANCH == "develop"
+      changes:
+      - Utils/py/naoth/**/*
+  dependencies: []  # don't download any artifacts to this job for speed
+  script:
+  - cd NaoTHSoccer/Make
+  - premake5 gmake2 --protoc
+  - cd ../../Utils/py/naoth
+  - ./package_naoth_pypi.sh
