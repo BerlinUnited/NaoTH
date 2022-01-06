@@ -37,6 +37,7 @@ private:
   
   std::condition_variable new_data_avaliable;
   std::mutex dataMutex;
+  
 };
 
 } // end namespace naoth
