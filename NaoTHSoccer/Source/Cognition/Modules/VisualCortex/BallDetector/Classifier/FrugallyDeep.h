@@ -1,7 +1,7 @@
 #ifndef _FRUGALLY_DEEP_H
 #define _FRUGALLY_DEEP_H
 
-#ifndef WIN32
+
 
 # include <emmintrin.h>
 
@@ -27,6 +27,5 @@ private:
     std::vector<fdeep::tensor5> result;
 
 };
-# endif
 
 #endif
