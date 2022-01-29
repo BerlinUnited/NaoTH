@@ -311,10 +311,8 @@ std::map<string, std::shared_ptr<AbstractCNNFinder> > MultiPassBallDetector::cre
   result.insert({ "fy1500_conf", std::make_shared<Fy1500_Conf>() });
   result.insert({ "model1", std::make_shared<Model1>() });
 
-#ifndef WIN32
   result.insert({ "fdeep_fy1300", std::make_shared<FrugallyDeep>("fy1300.json")});
   result.insert({ "fdeep_fy1500", std::make_shared<FrugallyDeep>("fy1500.json")});
-#endif
 
   return result;
 }
