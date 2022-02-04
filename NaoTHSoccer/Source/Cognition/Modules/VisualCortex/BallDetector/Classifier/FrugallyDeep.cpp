@@ -1,5 +1,7 @@
 #include "FrugallyDeep.h"
 
+// NOTE: assumes frugally 0.7.8-p0 is used
+
 FrugallyDeep::FrugallyDeep(std::string file)
 {
     model = std::make_shared<fdeep::model>(fdeep::load_model("Config/" + file));
