@@ -42,6 +42,7 @@ private:
   /** raw image data in YUV422 format */
   unsigned char* yuv422;
 
+public:
   // TODO: remove it
   CameraInfo cameraInfo;
 
