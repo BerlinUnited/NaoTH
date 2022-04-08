@@ -469,7 +469,6 @@ void BasicTestBehavior::testAudio()
   );
 
   DEBUG_REQUEST("BasicTestBehavior:audio:capture",
-  	  getAudioControl().numChannels = 4;
-	  getAudioControl().capture = true;
+    getAudioControl().capture = true;
   );
 }
