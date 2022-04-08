@@ -5,16 +5,16 @@
 * Declaration of class CameraDebug
 */
 
-#ifndef _CameraDebug_h_
-#define _CameraDebug_h_
+#ifndef CAMERADEBUG_H
+#define CAMERADEBUG_H
 
 #include <ModuleFramework/Module.h>
 
 // Representations
-#include "Representations/Motion/Request/HeadMotionRequest.h"
-#include "Representations/Infrastructure/CameraSettings.h"
+#include <Representations/Infrastructure/CameraInfo.h>
+#include <Representations/Infrastructure/CameraSettings.h>
 
-#include "Representations/Infrastructure/FrameInfo.h"
+//#include "Representations/Infrastructure/FrameInfo.h"
 
 //Debug
 //#include <Tools/Debug/DebugRequest.h>
@@ -26,15 +26,18 @@ BEGIN_DECLARE_MODULE(CameraDebug)
   //PROVIDE(DebugRequest)
   PROVIDE(DebugParameterList)
 
-  REQUIRE(HeadMotionRequest)
+  //REQUIRE(FrameInfo)
+
   REQUIRE(CurrentCameraSettings)
   REQUIRE(CurrentCameraSettingsTop)
-  REQUIRE(FrameInfo)
 
   PROVIDE(CameraSettingsRequest)
   PROVIDE(CameraSettingsRequestTop)
 
   PROVIDE(CommonCameraSettingsRequest)
+
+  PROVIDE(CameraInfo)
+  PROVIDE(CameraInfoTop)
 END_DECLARE_MODULE(CameraDebug)
 
 
@@ -64,6 +67,6 @@ private:
 
 };
 
-#endif //_CameraDebug_h_
+#endif // CAMERADEBUG_H
 
 
