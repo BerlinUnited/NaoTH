@@ -17,6 +17,7 @@
 #include <Representations/Infrastructure/Image.h>
 #include <Representations/Infrastructure/ImageJPEG.h>
 
+#include <Representations/Infrastructure/AudioControl.h>
 
 #include <Representations/Infrastructure/JointData.h>
 #include <Representations/Infrastructure/InertialSensorData.h>
@@ -71,6 +72,8 @@ BEGIN_DECLARE_MODULE(Debug)
 
   PROVIDE(ImageJPEG)
   PROVIDE(ImageJPEGTop)
+
+  PROVIDE(AudioControl)
 
   // 3D drawings
   REQUIRE(RobotPose)
