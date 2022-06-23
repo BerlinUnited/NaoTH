@@ -71,8 +71,11 @@ std::string GameData::toString(CompetitionType value)
   switch (value)
   {
     RETURN_VALUE_TO_STR(competition_normal);
-    RETURN_VALUE_TO_STR(competition_1v1);
-    RETURN_VALUE_TO_STR(competition_passing);
+    RETURN_VALUE_TO_STR(COMPETITION_TYPE_CHALLENGE_SHIELD);
+    RETURN_VALUE_TO_STR(COMPETITION_TYPE_7V7);
+    RETURN_VALUE_TO_STR(COMPETITION_TYPE_DYNAMIC_BALL_HANDLING);
+    //RETURN_VALUE_TO_STR(competition_1v1); // deprecated since 2022
+    //RETURN_VALUE_TO_STR(competition_passing); // deprecated since 2022
     //RETURN_VALUE_TO_STR(competition_mixed); // deprecated since 2021
   }
   
@@ -283,12 +286,12 @@ void GameData::print(ostream& stream) const
 }
 
 
-std::string GameReturnData::toString(Message value)
+std::string GameReturnData::toString(FallenState value)
 {
   switch (value)
   {
-    RETURN_VALUE_TO_STR(alive);
-    RETURN_VALUE_TO_STR(dead);
+    RETURN_VALUE_TO_STR(ROBOT_CAN_PLAY);
+    RETURN_VALUE_TO_STR(ROBOT_FALLEN);
   }
   
   ASSERT(false);
