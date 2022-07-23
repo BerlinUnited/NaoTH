@@ -52,7 +52,7 @@ void LolaAdaptor::writeNaoInfo(const std::string& theBodyID, const std::string& 
     // save the value to file
     // FIXME: fixed path "Config/nao.info"
     {
-        std::string staticMemberPath("Config/nao.info");
+        std::string staticMemberPath("/home/nao/Config/nao.info");
         std::ofstream os(staticMemberPath.c_str());
         ASSERT(os.good());
         os << theBodyID << "\n" << theBodyNickName << std::endl;
