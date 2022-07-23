@@ -30,20 +30,7 @@ project "NaoRobot"
     -- Whistledetector stuff
     "fftw3",
     "pulse-simple",
-    "pulse",
-    "pulsecommon-3.99",
-    "json",
-    "dbus-1",
-    "sndfile",
-    "asyncns",
-    "FLAC",
-    "gdbm",
-    "vorbis",
-    "vorbisenc",
-    "ogg",
-    "cap",
-    "attr",
-    "wrap"
+    "pulse"
 
     -- at the moment we run flite as a separate binary
     -- in hte future is would be good to include it as a lib
