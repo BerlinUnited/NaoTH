@@ -110,8 +110,9 @@ publish_naoth_docker:
     - docker:dind
   dependencies:
     - compile_nao_gcc
-    - compile_local_gcc
-    # - compile_nao_clang  # this would overwrite the gcc binaries
+    # you can either export the gcc or the clang binaries for now
+    #- compile_local_gcc
+    - compile_nao_clang  
   rules:
     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop"'
     - if: '$CI_PIPELINE_SOURCE == "web"'
