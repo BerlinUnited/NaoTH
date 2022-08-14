@@ -1,7 +1,7 @@
 /**
 * @file WhistleDetectorV1.h
 *
-* @author <a href="mailto:schlottb@informatik.hu-berlin.de">Benjamin Schlotter</a>
+* @author <a href="mailto:schlottb@informatik.hu-berlin.de">Stella Alice Schlotter</a>
 * Implementation of class WhistleDetectorV1
 * Implements a basic Peak Detection as whistle detector. This is only to show how a whistle detection fits in the overall infrastructure
 */
