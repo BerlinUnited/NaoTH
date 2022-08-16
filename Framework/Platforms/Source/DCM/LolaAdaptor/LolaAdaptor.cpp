@@ -337,7 +337,7 @@ void LolaAdaptor::notify()
 void LolaAdaptor::shutdownCallback()
 {
     // play a sound that the user knows we recognized his shutdown request
-    system("paplay /opt/aldebaran/share/naoqi/wav/bip_power_off.wav");
+    system("paplay /home/nao/Media/bip_power_off.wav");
 
     // stop the user program
     std::cout << "[LolaAdaptor] stopping naoth" << std::endl;

@@ -99,7 +99,7 @@ int main(int /*argc*/, char **/*argv[]*/)
   std::cout << "=========================================="  << std::endl;
   std::cout << "LoalAdaptor compiled on: " << __DATE__ << " at " << __TIME__ << std::endl;
 
-  system("paplay /opt/aldebaran/share/naoqi/wav/bip_power_on.wav");
+  system("paplay /home/nao/Media/bip_power_on.wav");
 
   #ifdef REVISION
   std::cout << "Revision number: " << TO_STRING(REVISION) << std::endl;
