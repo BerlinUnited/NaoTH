@@ -350,7 +350,10 @@ void LolaAdaptor::shutdownCallback()
 
     // we are the child process, do a blocking call to shutdown
     std::cout << "[LolaAdaptor] System shutdown requested" << std::endl;
-    system("/sbin/shutdown -h now");
+    // the system is setup that in this case no password is required
+    // we need to use sudo here for ubuntu systems since the usual way of setting chmod +s /sbin/shutdown
+    // breaks systemd for users
+    system("sudo /sbin/shutdown -h now");
 
     // await termination
     while(true) {
