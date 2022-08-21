@@ -1,0 +1,9 @@
+[Unit]
+Description=Monitor the file for changes
+
+[Path]
+PathExists=/home/nao/Config/nao.info
+Unit=naoth.service
+
+[Install]
+WantedBy=multi-user.target

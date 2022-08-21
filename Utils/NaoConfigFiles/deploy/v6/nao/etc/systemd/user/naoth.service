@@ -7,8 +7,6 @@ ConditionPathExists=/home/nao/bin/naoth
 
 [Service]
 Type=idle
-#we need to wait a bit for lola_adaptor to create Config/nao.info
-ExecStartPre=/bin/sleep 0.5
 ExecStart = /home/nao/bin/naoth
 EnvironmentFile=/etc/conf.d/naoth
 #CPUAccounting=true
