@@ -169,6 +169,7 @@ public class SPLMessage
         if(user != null &&
             ((user.hasIsPenalized() && user.getIsPenalized()) || (user.hasRobotState() && user.getRobotState() == TeamMessageOuterClass.RobotState.penalized)))
         {
+            // HACK: MAGICNUMBER - we assume fixed fiald size here
             Pose2D robotPose = mirror ? new Pose2D(4600 - (playerNum * 500), -3300, Math.PI/2) : new Pose2D(-4600 + (playerNum * 500), 3300, -Math.PI/2);
             // robot
             drawings.add(new Pen(1.0f, robotColor));
@@ -214,7 +215,8 @@ public class SPLMessage
         }
         
         // ball
-        if (ballAge >= 0 && ballAge < 3) {
+        if (ballAge >= 0 && ballAge < 3) 
+        {
             drawings.add(new Pen(1, Color.orange));
 
             drawings.add(new FillOval((int) globalBall.x, (int) globalBall.y, 65, 65));
@@ -223,8 +225,8 @@ public class SPLMessage
             drawings.add(new Pen(1, robotColor));
             drawings.add(new Circle((int) globalBall.x, (int) globalBall.y, 65));
             
+            // show the time since the ball was last seen
             {
-                // show the time since the ball was last seen
                 drawings.add(new Pen(1, robotColor));
                 double t = ballAge;
 
@@ -237,7 +239,7 @@ public class SPLMessage
 
             // draw a line between robot and ball
             {
-                drawings.add(new Pen(5, Color.darkGray));
+                drawings.add(new Pen(5, Color.gray, 100)); // dashed line
                 Line ballLine = new Line(
                     (int) robotPose.translation.x, (int) robotPose.translation.y,
                     (int) globalBall.x, (int) globalBall.y);
