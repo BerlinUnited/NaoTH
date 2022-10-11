@@ -47,8 +47,7 @@ KeyFrameMotionFactory::~KeyFrameMotionFactory()
 
 void KeyFrameMotionFactory::loadAvailableMotionNets(std::string dirlocation)
 {
-  if (!g_str_has_suffix(dirlocation.c_str(), "/"))
-  {
+  if (!g_str_has_suffix(dirlocation.c_str(), "/")) {
     dirlocation = dirlocation + "/";
   }
 
@@ -67,10 +66,10 @@ void KeyFrameMotionFactory::loadAvailableMotionNets(std::string dirlocation)
 
         g_free(group);
       }
-    }//end while
+    }// end while
 
     g_dir_close(dir);
-  }//end if
+  }
 }//end loadAvailableMotionNets
 
 
@@ -78,10 +77,9 @@ void KeyFrameMotionFactory::loadMotionNetFromFile(const std::string& fileName, M
 {
   ifstream inputFileStream ( fileName.c_str() , ifstream::in );
 
-  if(inputFileStream.fail())
-  {
+  if(inputFileStream.fail()) {
     throw std::string("Could not open MotionNet file.");
-  }//end if
+  }
 
   Scanner scanner(inputFileStream);
   MotionNetParser parser(scanner);
@@ -90,10 +88,9 @@ void KeyFrameMotionFactory::loadMotionNetFromFile(const std::string& fileName, M
 
   inputFileStream.close();
 
-  if(motionNet.isEmpty())
-  {
+  if(motionNet.isEmpty()) {
     throw std::string("MotionNet file is empty.");
-  }//end if
+  }
 }//end loadMotionNetFromFile
 
 
