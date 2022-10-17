@@ -50,6 +50,14 @@ NaoController::NaoController(bool nao6)
 
   // read the theBodyID and the theBodyNickName from file "nao.info"
   const std::string naoInfoPath = Platform::getInstance().theConfigDirectory + "nao.info";
+  while(true){
+    if (!fileExists(naoInfoPath)){        
+      std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    }
+    else{
+      break;
+    }
+  }
   ifstream is(naoInfoPath.c_str());
   if(!is.good())
   {
@@ -190,4 +198,10 @@ void NaoController::set(const CameraSettingsRequestTop &request)
 {
   CameraSettings settings = request.getCameraSettings();
   theTopCameraHandler.setAllCameraParams(settings);
+}
+
+bool NaoController::fileExists(const std::string& filename)
+{
+    struct stat buffer;
+    return (stat (filename.c_str(), &buffer) == 0);
 }
