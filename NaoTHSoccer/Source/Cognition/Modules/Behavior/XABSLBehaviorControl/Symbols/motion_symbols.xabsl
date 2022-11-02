@@ -154,6 +154,8 @@ namespace motion_symbols("Motion Symbols") {
   /* the height of stand motion, -1 means the same height as walk */
   float output motion.standHeight;
 
+  bool output motion.stand.disable_relax;
+
   /** The walk coordinate */
   enum motion.walk.coordinate output motion.walk.coordinate;
   
