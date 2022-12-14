@@ -83,6 +83,7 @@ setEtc(){
 	deployFile "/etc/udev/rules.d/brainwashing.rules" "root" "644" "v6"
 	
 	# logstick udev rule
+	# Heinrich says it was only used for remote games in 2021 - it has nothing to do with our log stick
 	deployFile "/etc/udev/rules.d/logstick.rules" "root" "644" "v6"
 
 	# ====================  host stuff ====================
