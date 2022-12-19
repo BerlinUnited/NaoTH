@@ -4,8 +4,8 @@
  * Declaration of class Image
  */
 
-#ifndef _Image_h_
-#define _Image_h_
+#ifndef IMAGE_H
+#define IMAGE_H
 
 #include <cstring>
 #include <iostream>
@@ -43,6 +43,10 @@ private:
   unsigned char* yuv422;
 
 public:
+  // TODO: remove it
+  CameraInfo cameraInfo;
+
+public:
   Image();
   virtual ~Image();
 
@@ -59,13 +63,12 @@ public:
   static const unsigned int PIXEL_SIZE_YUV444 = 3;
 
 public: // data members
-  // TODO: remove it
-  CameraInfo cameraInfo;
 
   /** The time relative to the start of the programm when the image was recorded in ms */
   unsigned int timestamp;
 
-  // TODO: comments: what is it and how to use it?
+  // NOTE: this is used for debugging the V4lCameraHandler
+  // TODO: move it to a separate debug representation
   unsigned int currentBuffer;
   unsigned int bufferCount;
   unsigned int wrongBufferSizeCount;
@@ -223,4 +226,4 @@ class Serializer<ImageTop> : public Serializer<Image>
 
 } // end namespace naoth
 
-#endif //_Image_h_
+#endif // IMAGE_H

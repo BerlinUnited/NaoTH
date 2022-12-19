@@ -1,7 +1,7 @@
 /**
 * @file WhistleDetectorV2.h
 *
-* @author <a href="mailto:schlottb@informatik.hu-berlin.de">Benjamin Schlotter</a>
+* @author <a href="mailto:schlottb@informatik.hu-berlin.de">Stella Alice Schlotter</a>
 * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
 *
 * Implementation of class WhistleDetectorV2

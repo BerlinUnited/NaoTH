@@ -43,10 +43,13 @@ PerceptionsVisualizer::PerceptionsVisualizer()
 
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:field:field_info", "", false);
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:field:robot_pose", "", false);
+
+  DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:field:drawing_test", "test pattern for field drawings", false);
 }
 
 void PerceptionsVisualizer::execute()
 {
+
   DEBUG_REQUEST("PerceptionsVisualizer:CamTop",
     execute(CameraInfo::Top);
   );
@@ -63,6 +66,26 @@ void PerceptionsVisualizer::execute()
     FIELD_DRAWING_CONTEXT;
     getRobotPose().draw(getDebugDrawings());
   );
+
+  // test parretns for drawings
+  DEBUG_REQUEST("PerceptionsVisualizer:field:drawing_test",
+    testDrawingField();
+  );
+}
+
+void PerceptionsVisualizer::testDrawingField()
+{
+  FIELD_DRAWING_CONTEXT;
+
+  // test dashed visualization
+  PEN_DASHED("FF0000", 20, 100);
+  LINE(1000, 1000, 3000, 3000);
+
+  PEN_DASHED("0000FF", 50, 50);
+  LINE(1500, 1000, 3500, 3000);
+
+  PEN_DASHED("0000FF", 10, 50);
+  LINE(2000, 1000, 4000, 3000);
 }
 
 void PerceptionsVisualizer::execute(CameraInfo::CameraID id)

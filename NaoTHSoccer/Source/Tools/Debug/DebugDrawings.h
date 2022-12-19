@@ -1,12 +1,13 @@
 // 
 // File:   DebugDrawings.h
-// Author: thomas
+// Author: Thomas Krause
+// Author: Heinrich Mellmann <mellmann@informatik.hu-berlin.de>
 //
 // Created on 19. march 2008, 21:51
 //
 
-#ifndef _DebugDrawings_H
-#define _DebugDrawings_H
+#ifndef DEBUG_DRAWINGS_H
+#define DEBUG_DRAWINGS_H
 
 #include <cstring>
 #include <sstream>
@@ -112,6 +113,7 @@ template<> class Serializer<DebugDrawings> : public Serializer<DrawingCanvas2D> 
 #define FIELD_DRAWING_CONTEXT getDebugDrawings().out() << "DrawingOnField" << '\n'
 
 #define PEN(color, width) getDebugDrawings().out() << "Pen:" << color << ":" << width << '\n'
+#define PEN_DASHED(color, width, dash_length) getDebugDrawings().out() << "Pen:" << color << ":" << width << ":" << dash_length << '\n'
 #define ROTATION(angle) getDebugDrawings().out() << "Rotation:" << angle << '\n'
 #define TRANSLATION(x,y) getDebugDrawings().out() << "Translation:" << x << ":" << y << '\n'
 
@@ -144,6 +146,7 @@ template<> class Serializer<DebugDrawings> : public Serializer<DrawingCanvas2D> 
 #define IMAGE_DRAWING_CONTEXT ((void)0)
 #define FIELD_DRAWING_CONTEXT ((void)0)
 #define PEN(color, width) ((void)0)
+#define PEN_DASHED(color, width, dash_length) ((void)0)
 #define ROTATION(angle) ((void)0)
 #define TRANSLATION(x,y) ((void)0)
 
@@ -163,5 +166,5 @@ template<> class Serializer<DebugDrawings> : public Serializer<DrawingCanvas2D> 
 #define ROBOT(x,y,rotation) ((void)0)
 #endif //DEBUG
 
-#endif  /* _DebugDrawings_H */
+#endif  /* DEBUG_DRAWINGS_H */
 

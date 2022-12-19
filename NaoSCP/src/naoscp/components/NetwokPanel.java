@@ -147,9 +147,9 @@ public class NetwokPanel extends javax.swing.JPanel {
             }
         });
 
-        netmaskFieldWLAN.setText("255.255.255.0");
+        netmaskFieldWLAN.setText("255.255.0.0");
 
-        broadcastFieldWLAN.setText("10.0.4.255");
+        broadcastFieldWLAN.setText("10.0.255.255");
 
         jLabel5.setText("SSID");
 

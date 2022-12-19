@@ -38,12 +38,12 @@ class MixedTeamMessage(_Struct):
 
     def pack(self):
         return _Struct.pack(self,
-                           self.timestamp,
-                           self.teamID,
-                           self.isPenalized,
-                           self.whistleDetected,
-                           self.dummy
-        )
+                            self.timestamp,
+                            self.teamID,
+                            self.isPenalized,
+                            self.whistleDetected,
+                            self.dummy
+                            )
 
     def __str__(self):
         return str(self.__dict__)
@@ -57,7 +57,7 @@ class SPLMessage(_Struct):
     SPL_STANDARD_MESSAGE_DATA_SIZE = 474
     SPL_STANDARD_MESSAGE_MAX_NUM_OF_PLAYERS = 6
 
-    def __init__(self, teamnumber:int=0, playernumber:int=0, data=None):
+    def __init__(self, teamnumber: int = 0, playernumber: int = 0, data=None):
         """Constructor."""
         # 4s    header +
         # 3b    version + playernumber + teamnumber
@@ -77,17 +77,17 @@ class SPLMessage(_Struct):
         self.teamNumber = teamnumber
         self.fallen = False
         self.pose = _p2(_v2(0.0, 0.0), 0.0)  # x, y, r | +/-4500, +/-3000
-        #self.walkingTo = _v2(0.0, 0.0)
-        #self.shootingTo = _v2(0.0, 0.0)
+        # self.walkingTo = _v2(0.0, 0.0)
+        # self.shootingTo = _v2(0.0, 0.0)
         self.ballAge = -1
         self.ballPosition = _v2(0.0, 0.0)
-        #self.ballVelocity = _v2(0.0, 0.0)
-        #self.suggestion = [0 for x in range(self.SPL_STANDARD_MESSAGE_MAX_NUM_OF_PLAYERS)]
-        #self.intention = 0
-        #self.averageWalkSpeed = 200  # see TeamCommSender
-        #self.maxKickDistance = 3000  # see TeamCommSender
-        #self.currentPositionConfidence = 100
-        #self.currentSideConfidence = 100
+        # self.ballVelocity = _v2(0.0, 0.0)
+        # self.suggestion = [0 for x in range(self.SPL_STANDARD_MESSAGE_MAX_NUM_OF_PLAYERS)]
+        # self.intention = 0
+        # self.averageWalkSpeed = 200  # see TeamCommSender
+        # self.maxKickDistance = 3000  # see TeamCommSender
+        # self.currentPositionConfidence = 100
+        # self.currentSideConfidence = 100
 
         self._mixed = MixedTeamMessage()
 
@@ -103,28 +103,28 @@ class SPLMessage(_Struct):
     def pack(self):
 
         return _Struct.pack(self,
-                           self.SPL_STANDARD_MESSAGE_STRUCT_HEADER,
-                           self.SPL_STANDARD_MESSAGE_STRUCT_VERSION,
-                           self.playerNumber,
-                           self.teamNumber,
-                           self.fallen,
-                           self.pose.translation.x, self.pose.translation.y, self.pose.rotation,
-                           #*self.walkingTo.__dict__.values(),
-                           #*self.shootingTo.__dict__.values(),
-                           self.ballAge,
-                           #*self.ballPosition.__dict__.values(),
-                           self.ballPosition.x,
-                           self.ballPosition.y,
-                           #*self.ballVelocity.__dict__.values(),
-                           #*self.suggestion,
-                           #self.intention,
-                           #self.averageWalkSpeed,
-                           #self.maxKickDistance,
-                           #self.currentPositionConfidence,
-                           #self.currentSideConfidence,
-                           (self.data.ByteSize() + self._mixed.size)
-                           ) + self._mixed.pack()\
-                             + self.data.SerializeToString()
+                            self.SPL_STANDARD_MESSAGE_STRUCT_HEADER,
+                            self.SPL_STANDARD_MESSAGE_STRUCT_VERSION,
+                            self.playerNumber,
+                            self.teamNumber,
+                            self.fallen,
+                            self.pose.translation.x, self.pose.translation.y, self.pose.rotation,
+                            # *self.walkingTo.__dict__.values(),
+                            # *self.shootingTo.__dict__.values(),
+                            self.ballAge,
+                            # *self.ballPosition.__dict__.values(),
+                            self.ballPosition.x,
+                            self.ballPosition.y,
+                            # *self.ballVelocity.__dict__.values(),
+                            # *self.suggestion,
+                            # self.intention,
+                            # self.averageWalkSpeed,
+                            # self.maxKickDistance,
+                            # self.currentPositionConfidence,
+                            # self.currentSideConfidence,
+                            (self.data.ByteSize() + self._mixed.size)
+                            ) + self._mixed.pack() \
+               + self.data.SerializeToString()
 
     def unpack(self, data):
         # check 'data' length
@@ -139,27 +139,28 @@ class SPLMessage(_Struct):
 
         # check spl message version
         if msg[1] != self.SPL_STANDARD_MESSAGE_STRUCT_VERSION:
-            raise ErrorWrongSplMessageVersion("Wrong version: received " + str(msg[1]) + ", but expected " + str(self.SPL_STANDARD_MESSAGE_STRUCT_VERSION))
+            raise ErrorWrongSplMessageVersion("Wrong version: received " + str(msg[1]) + ", but expected " + str(
+                self.SPL_STANDARD_MESSAGE_STRUCT_VERSION))
 
         # assign data
         it = iter(msg[2:])
         self.playerNumber = next(it)
         self.teamNumber = next(it)
         self.fallen = next(it)
-        self.pose = _p2( _v2(next(it), next(it)), next(it) )
-        #self.walkingTo = _v2( next(it), next(it) )
-        #self.shootingTo = _v2( next(it), next(it) )
+        self.pose = _p2(_v2(next(it), next(it)), next(it))
+        # self.walkingTo = _v2( next(it), next(it) )
+        # self.shootingTo = _v2( next(it), next(it) )
         self.ballAge = next(it)
-        self.ballPosition = _v2( next(it), next(it) )
-        #self.ballVelocity = _v2( next(it), next(it) )
-        #self.suggestion = [ next(it) for i in range(self.SPL_STANDARD_MESSAGE_MAX_NUM_OF_PLAYERS) ]
-        #self.intention = next(it)
-        #self.averageWalkSpeed = next(it)
-        #self.maxKickDistance = next(it)
-        #self.currentPositionConfidence = next(it)
-        #self.currentSideConfidence = next(it)
+        self.ballPosition = _v2(next(it), next(it))
+        # self.ballVelocity = _v2( next(it), next(it) )
+        # self.suggestion = [ next(it) for i in range(self.SPL_STANDARD_MESSAGE_MAX_NUM_OF_PLAYERS) ]
+        # self.intention = next(it)
+        # self.averageWalkSpeed = next(it)
+        # self.maxKickDistance = next(it)
+        # self.currentPositionConfidence = next(it)
+        # self.currentSideConfidence = next(it)
         self.numOfDataBytes = next(it)
-        self.data = data[self.size:self.size+self.numOfDataBytes]
+        self.data = data[self.size:self.size + self.numOfDataBytes]
 
         # unpack mixed team part
         self._mixed = MixedTeamMessage()
@@ -171,7 +172,7 @@ class SPLMessage(_Struct):
         custom = None
         try:
             custom = _TM.BUUserTeamMessage()
-            custom.ParseFromString(data[self.size+offset:self.size+offset+self.numOfDataBytes])
+            custom.ParseFromString(data[self.size + offset:self.size + offset + self.numOfDataBytes])
         except:
             # if we can't parse custom data - it is not our message
             pass
@@ -180,23 +181,22 @@ class SPLMessage(_Struct):
             if custom is not None and custom.ByteSize() > 0 and (custom.HasField('key') and custom.key == "naoth"):
                 self.data = custom
 
-
     def parseFromLogJson(self, data):
         self.__map_json_data('playerNum', 'playerNumber', data)
         self.__map_json_data('teamNum', 'teamNumber', data)
         self.__map_json_data('fallen', 'fallen', data)
-        self.__map_json_data((self.pose,'x'), 'pose_x', data)
-        self.__map_json_data((self.pose,'y'), 'pose_y', data)
-        self.__map_json_data((self.pose,'r'), 'pose_a', data)
-        self.__map_json_data((self.walkingTo,'x'), 'walkingTo_x', data)
-        self.__map_json_data((self.walkingTo,'y'), 'walkingTo_y', data)
-        self.__map_json_data((self.shootingTo,'x'), 'shootingTo_x', data)
-        self.__map_json_data((self.shootingTo,'y'), 'shootingTo_y', data)
+        self.__map_json_data((self.pose, 'x'), 'pose_x', data)
+        self.__map_json_data((self.pose, 'y'), 'pose_y', data)
+        self.__map_json_data((self.pose, 'r'), 'pose_a', data)
+        self.__map_json_data((self.walkingTo, 'x'), 'walkingTo_x', data)
+        self.__map_json_data((self.walkingTo, 'y'), 'walkingTo_y', data)
+        self.__map_json_data((self.shootingTo, 'x'), 'shootingTo_x', data)
+        self.__map_json_data((self.shootingTo, 'y'), 'shootingTo_y', data)
         self.__map_json_data('ballAge', 'ballAge', data)
-        self.__map_json_data((self.ball,'x'), 'ball_x', data)
-        self.__map_json_data((self.ball,'y'), 'ball_y', data)
-        self.__map_json_data((self.ballVel,'x'), 'ballVel_x', data)
-        self.__map_json_data((self.ballVel,'y'), 'ballVel_y', data)
+        self.__map_json_data((self.ball, 'x'), 'ball_x', data)
+        self.__map_json_data((self.ball, 'y'), 'ball_y', data)
+        self.__map_json_data((self.ballVel, 'x'), 'ballVel_x', data)
+        self.__map_json_data((self.ballVel, 'y'), 'ballVel_y', data)
         self.__map_json_data('suggestion', 'suggestion', data)
         self.__map_json_data('intention', 'intention', data)
         self.__map_json_data('averageWalkSpeed', 'averageWalkSpeed', data)
@@ -204,7 +204,8 @@ class SPLMessage(_Struct):
         self.__map_json_data('currentPositionConfidence', 'currentPositionConfidence', data)
         self.__map_json_data('currentSideConfidence', 'currentSideConfidence', data)
         self.__map_json_data('numOfDataBytes', 'numOfDataBytes', data)
-        self.__map_json_data('data', 'data', data, lambda x: bytes(list(map(lambda i: -128*(i//128)+(i%128),x))))
+        self.__map_json_data('data', 'data', data,
+                             lambda x: bytes(list(map(lambda i: -128 * (i // 128) + (i % 128), x))))
 
     def __map_json_data(self, var, key, data, func=lambda x: x):
         if key in data:
@@ -217,7 +218,7 @@ class SPLMessage(_Struct):
         """Returns all 'active' message fields as string."""
         result = ""
         for attr in self.__dict__:
-            #print(attr, isinstance(self.__dict__[attr], bytes), self.__dict__[attr])
+            # print(attr, isinstance(self.__dict__[attr], bytes), self.__dict__[attr])
             if attr == "data" and not isinstance(self.__dict__[attr], bytes):
                 fields = self.__dict__[attr].DESCRIPTOR.fields_by_name
                 for custom_attr in fields:

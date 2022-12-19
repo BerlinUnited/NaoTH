@@ -613,6 +613,9 @@ public class NaoSCP extends javax.swing.JPanel {
                         File libDir = chooser.getSelectedFile();
                         FileUtils.copyFiles(libDir, new File(setupDir + "/deploy", "/home/nao/lib"));
 
+                        // copy binaries
+                        File sysBinDir = new File(libDir.getParentFile(), "bin");
+                        FileUtils.copyFiles(sysBinDir, new File(setupDir + "/deploy", "/home/nao/bin"));
                         
                         // adjust network configuration
                         NetwokPanel.NetworkConfig cfg = netwokPanel.getNetworkConfig();

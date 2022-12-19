@@ -56,8 +56,13 @@ public:
     //competition_mixed  = COMPETITION_TYPE_MIXEDTEAM // Deprecated since 2021
     
     // RC 2021
-    competition_1v1      = COMPETITION_TYPE_1VS1_CHALLENGE,
-    competition_passing  = COMPETITION_TYPE_PASSING_CHALLENGE
+    //competition_1v1      = COMPETITION_TYPE_1VS1_CHALLENGE,
+    //competition_passing  = COMPETITION_TYPE_PASSING_CHALLENGE
+
+    // RC 2022
+    competition_challenge_shield        = COMPETITION_TYPE_CHALLENGE_SHIELD,
+    competition_7v7                     = COMPETITION_TYPE_7V7,
+    competition_dynamic_ball_handling   = COMPETITION_TYPE_DYNAMIC_BALL_HANDLING
   };
 
   enum GamePhase
@@ -133,6 +138,7 @@ public:
 
     // NOTE: not used yet
     //uint16_t singleShots;     // bits represent penalty shot success
+    //uint16_t messageBudget;   // number of team messages the team is allowed to send for the remainder of the game
   };
 
   static std::string toString(TeamColor value);
@@ -189,28 +195,51 @@ class GameReturnData: public Printable
 public:
   GameReturnData()
     :
-    team(0),
-    player(0),
-    message(alive)
+    playerNum(0),
+    teamNum(0),
+    fallen(ROBOT_CAN_PLAY)
   {}
 
-  enum Message
+  enum FallenState
   {
-    alive             = GAMECONTROLLER_RETURN_MSG_ALIVE,
-    dead              = 100
+    ROBOT_CAN_PLAY    = 0,
+    ROBOT_FALLEN      = 1
   };
 
-  static std::string toString(Message value);
+  static std::string toString(FallenState value);
 
-  int team;
-  int player;
-  Message message;
+  int playerNum;
+  int teamNum;
+  
+  FallenState fallen;  // 1 means that the robot is fallen, 0 means that the robot can play
+
+
+  /*
+  // NOT YET implemented
+  // position and orientation of robot
+  // coordinates in millimeters
+  // 0,0 is in center of field
+  // +ve x-axis points towards the goal we are attempting to score on
+  // +ve y-axis is 90 degrees counter clockwise from the +ve x-axis
+  // angle in radians, 0 along the +x axis, increasing counter clockwise
+  float pose[3];         // x,y,theta
+
+  // ball information
+  float ballAge;         // seconds since this robot last saw the ball. -1.f if we haven't seen it
+
+  // position of ball relative to the robot
+  // coordinates in millimeters
+  // 0,0 is in center of the robot
+  // +ve x-axis points forward from the robot
+  // +ve y-axis is 90 degrees counter clockwise from the +ve x-axis
+  float ball[2];
+  */
 
   virtual void print(std::ostream& stream) const
   {
-    stream << "team:\t"     << team << std::endl;
-    stream << "player:\t"   << player << std::endl;
-    stream << "message:\t"  << toString(message) << std::endl;
+    stream << "player:\t"   << playerNum << std::endl;
+    stream << "team:\t"     << teamNum << std::endl;
+    stream << "message:\t"  << toString(fallen) << std::endl;
   }
 };
 

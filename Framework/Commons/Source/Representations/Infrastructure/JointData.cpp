@@ -129,14 +129,14 @@ JointData::JointID JointData::jointIDFromName(std::string name)
   }
 
   return numOfJoint;
-}//end getJointName
+}
 
 void JointData::mirrorFrom(const JointData& jointData)
 {
   for (int i = 0; i < numOfJoint; i++) {
     position[i] = jointData.mirrorData((JointID) i);
   }
-}//end mirror
+}
 
 void JointData::mirror()
 {
@@ -158,12 +158,12 @@ void JointData::clamp()
 
 bool JointData::isInRange(JointData::JointID id, double ang) const
 {
-    return ang <= max[id] && ang >= min[id];
+  return ang <= max[id] && ang >= min[id];
 }
 
 bool JointData::isInRange(JointData::JointID id) const
 {
-    return isInRange(id, position[id]);
+  return isInRange(id, position[id]);
 }
 
 void JointData::updateSpeed(const JointData& lastData, double dt)
@@ -199,11 +199,11 @@ bool JointData::isLegStiffnessOn() const
 
 int JointData::checkStiffness() const
 {
-  for(int i=0; i<JointData::numOfJoint; i++)
+  for(int i=0; i < JointData::numOfJoint; i++)
   {
     double v = stiffness[i];
-    if ( v > 1 || v < -1 )
-    {
+    // accepted only values are v \in [0, 1] or v == -1
+    if ( (v < 0 && v != -1) || v > 1 ) {
       return i;
       //THROW("Get ILLEGAL Stiffness: "<<getJointName(JointData::JointID(i))<<" = "<<v);
     }

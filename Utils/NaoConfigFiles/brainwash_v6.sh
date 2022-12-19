@@ -262,6 +262,9 @@ else
 fi
 
 # ==================== copy stuff ====================
+deployFile "/home/nao/bin/flite_cmu_us_slt" "nao" "755" 
+deployFile "/home/nao/bin/flite" "nao" "755"
+
 deployFile "/home/nao/robocup.conf" "nao" "644" "v6"
 deployFile "/home/nao/.profile" "nao" "644"
 

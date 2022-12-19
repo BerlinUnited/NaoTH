@@ -261,7 +261,7 @@ bool DebugCommunicator::connect(int timeout)
     g_socket_set_blocking(serverSocket, false);
   } else {
     g_socket_set_blocking(serverSocket, true);
-    g_socket_set_timeout(serverSocket, static_cast<gsize>(timeout));
+    g_socket_set_timeout(serverSocket, static_cast<guint>(timeout));
   }
 
   // try to accept an eventually pending connection request

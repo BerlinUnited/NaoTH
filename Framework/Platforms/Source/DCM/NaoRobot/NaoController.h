@@ -208,6 +208,9 @@ protected:
   DebugServer* theDebugServer;
   CPUTemperatureReader theCPUTemperatureReader;
   AudioRecorder theAudioRecorder;
+
+private:
+  static bool fileExists (const std::string& filename);
 };
 
 } // end namespace naoth

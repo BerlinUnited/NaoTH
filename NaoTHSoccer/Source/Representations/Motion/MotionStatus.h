@@ -74,8 +74,12 @@ public:
   PlannedMotion plannedMotion;
   StepControlStatus stepControl;
   bool target_reached; //TODO: which motion do set that? Maybe better stand_target reached
+  
   bool head_target_reached;
-  bool head_got_stuck;
+  bool head_at_rest;
+  // deprecated: head_got_stuck can be calculated as: !head_target_reached && head_at_rest
+  bool head_got_stuck; 
+
   bool walk_emergency_stop;
 
   virtual void print(std::ostream& stream) const
@@ -91,6 +95,7 @@ public:
     stream << "step control = "<< stepControl.stepID << " " << stepControl.moveableFoot <<"\n";
     stream << "target_reached = " << target_reached << '\n';
     stream << "head_target_reached = " << head_target_reached << '\n';
+    stream << "head_at_rest = " << head_at_rest << '\n';
     stream << "head_got_stuck = " << head_got_stuck << '\n';
     stream << "walk_emergency_stop = " << walk_emergency_stop << '\n';
   }//end print

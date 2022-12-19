@@ -121,7 +121,7 @@ workspace "NaoTHSoccer"
     defines { "DEBUG" }
     -- FatalWarnings treats compiler/linker warnings as errors
     -- in premake4 linker warnings are not enabled
-    flags { "FatalCompileWarnings" } --"LinkTimeOptimization"
+    --flags { "FatalCompileWarnings" } --"LinkTimeOptimization"
     optimize "Speed"
 
   filter { "platforms:Native" }
@@ -142,6 +142,9 @@ workspace "NaoTHSoccer"
       _TARGET_OS = "linux"
       print("NOTE: set the target OS to " .. os.target())
     end
+    
+    -- add a hard coded path for the libs on the robot
+    linkoptions { "-Wl,-rpath=/home/nao/lib" }
     
     cppdialect "c++14"
     
