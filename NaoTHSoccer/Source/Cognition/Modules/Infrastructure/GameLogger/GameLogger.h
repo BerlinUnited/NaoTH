@@ -100,8 +100,8 @@ private:
       PARAMETER_REGISTER(logAudioData) = false;
       PARAMETER_REGISTER(logBallCandidates) = false;
       PARAMETER_REGISTER(logBodyStatus) = false;
-      PARAMETER_REGISTER(logPlainImages) = false;
-      PARAMETER_REGISTER(logPlainImagesDelay) = 2000; // ms
+      PARAMETER_REGISTER(logPlainImages) = true;
+      PARAMETER_REGISTER(logPlainImagesDelay) = 1000; // ms
       PARAMETER_REGISTER(logUltraSound) = false;
       PARAMETER_REGISTER(logDirPath) = "/tmp";
       syncWithConfig();
