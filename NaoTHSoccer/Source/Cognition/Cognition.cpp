@@ -129,15 +129,6 @@
 
 using namespace std;
 
-Cognition::Cognition()
-  : ModuleManagerWithDebug("")
-{
-}
-
-Cognition::~Cognition()
-{
-}
-
 
 #define REGISTER_MODULE(module) \
   std::cout << "[Cognition] Register " << #module << std::endl;\
@@ -164,22 +155,25 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
 
   // infrastructure
   REGISTER_MODULE(ButtonEventMonitor);
-  REGISTER_MODULE(WifiModeSetter);
+  REGISTER_MODULE(WifiModeSetter); // TODO: TeamCommModeSetter
+
+  REGISTER_MODULE(GameController);
   REGISTER_MODULE(TeamCommReceiver);
   REGISTER_MODULE(SimpleNetworkTimeProtocol);
-  REGISTER_MODULE(GameController);
-  REGISTER_MODULE(BatteryAlert);
-  REGISTER_MODULE(LEDSetter);
-  REGISTER_MODULE(UltraSoundControl);
-
+  
   REGISTER_MODULE(CameraDebug);
   REGISTER_MODULE(AdaptiveAutoExposure);
+
+  /////////////////////////
+  // perception
+
+  // audio
   REGISTER_MODULE(WhistleDetectorV1);
   REGISTER_MODULE(WhistleDetectorV2);
 
-  // perception
-  REGISTER_MODULE(CameraMatrixFinder);
   REGISTER_MODULE(KinematicChainProvider);
+  REGISTER_MODULE(CameraMatrixFinder);
+  
   REGISTER_MODULE(ArtificialHorizonCalculator);
   REGISTER_MODULE(BodyContourProvider);	
 
@@ -216,30 +210,45 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
 
   REGISTER_MODULE(CompassProvider);
 
+  ////////////////////////////
   // modeling
+
+  // own body
   REGISTER_MODULE(BodyStateProvider);
-  REGISTER_MODULE(FieldCompass);
+  
+  // obstacles
   REGISTER_MODULE(UltraSoundObstacleDetector);
   REGISTER_MODULE(UltrasonicDetector2020);
+  REGISTER_MODULE(MultiUnifiedObstacleLocator);
+
+  // it's a dummy module: the direction is used in the goal locators
+  REGISTER_MODULE(FieldCompass); // TODO: needed?
+
+  // goals + ball
+  REGISTER_MODULE(WholeGoalLocator); // TODO: this might rather be a part of perception
+  REGISTER_MODULE(DummyActiveGoalLocator); // TODO: needed?
+
+  REGISTER_MODULE(MultiKalmanBallLocator);
+
+  // self localization
+  REGISTER_MODULE(OdometrySelfLocator);
+  REGISTER_MODULE(GPS_SelfLocator);
+  REGISTER_MODULE(SituationPriorProvider); // needed by the MCSL
+  REGISTER_MODULE(MonteCarloSelfLocator);
+  
+  
+  // team communication
   REGISTER_MODULE(TeamCommReceiveEmulator);
   REGISTER_MODULE(TeamMessageStatisticsModule);
   REGISTER_MODULE(TeamMessagePlayersStateModule);
-  REGISTER_MODULE(SoccerStrategyProvider);
-  REGISTER_MODULE(PotentialFieldProvider);
-  REGISTER_MODULE(SituationPriorProvider);
-  
-  REGISTER_MODULE(GPS_SelfLocator);
-  REGISTER_MODULE(MonteCarloSelfLocator);
-  REGISTER_MODULE(OdometrySelfLocator);
-  
-  REGISTER_MODULE(WholeGoalLocator);
-  REGISTER_MODULE(DummyActiveGoalLocator);
-  REGISTER_MODULE(MultiKalmanBallLocator);
 
   REGISTER_MODULE(TeamBallLocatorMedian);
   REGISTER_MODULE(TeamBallLocatorCanopyCluster);
 
-  REGISTER_MODULE(MultiUnifiedObstacleLocator);
+  // high level models needed for behavior
+  REGISTER_MODULE(PotentialFieldProvider);
+  REGISTER_MODULE(SoccerStrategyProvider);
+
   /*
    * BEGIN ROLE DECISIONS
    */
@@ -277,6 +286,12 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
 
   REGISTER_MODULE(TeamCommSender);
 
+  // actuators
+  REGISTER_MODULE(BatteryAlert);
+  REGISTER_MODULE(UltraSoundControl);
+  REGISTER_MODULE(LEDSetter);
+  
+
   // debug
   REGISTER_MODULE(GameLogger);
   REGISTER_MODULE(Debug);
@@ -292,23 +307,27 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   // use the configuration in order to set whether a module is activated or not
   const naoth::Configuration& config = Platform::getInstance().theConfiguration;
 
-  list<string>::const_iterator name = getExecutionList().begin();
-  for(;name != getExecutionList().end(); ++name)
+  for(const string& name: getExecutionList())
   {
     bool active = false;
-    if(config.hasKey("modules", *name)) {
-      active = config.getBool("modules", *name);
+    if(config.hasKey("modules", name)) {
+      active = config.getBool("modules", name);
     }
     if(active) {
-      std::cout << "[Cognition] activating module " << *name << std::endl;
+      std::cout << "[Cognition] activating module " << name << std::endl;
     }
-    setModuleEnabled(*name, active);
-  }//end for
+    setModuleEnabled(name, active);
+  }
 
   // auto-generate the execution list
   //calculateExecutionList();
 
   std::cout << "[Cognition] register end" << std::endl;
+
+  // run a self test
+  std::cout << "[Cognition] test execution order" << std::endl;
+  inspectExecutionOrder();
+  std::cout << "[Cognition] test execution order done" << std::endl;
 
   stopwatch.start();
 }//end init
