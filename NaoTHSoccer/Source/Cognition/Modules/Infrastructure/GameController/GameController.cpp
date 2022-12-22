@@ -141,9 +141,6 @@ void GameController::execute()
     updateLEDs();
   }
 
-  // set teamcomm: whistle detected!
-  getTeamMessageData().custom.whistleDetected = getWhistlePercept().whistleDetected;
-
   // provide the return message
   getGameReturnData().teamNum = getPlayerInfo().teamNumber;
   getGameReturnData().playerNum = getPlayerInfo().playerNumber;
