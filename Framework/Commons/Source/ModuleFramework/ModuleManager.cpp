@@ -52,51 +52,62 @@ const AbstractModuleCreator* ModuleManager::getModule(const std::string& name) c
 
 void ModuleManager::inspectExecutionOrder() const
 {
+  // calculate the execution index for each module
   std::map<std::string, int> moduleExecutionOrder;
   int order = 0;
   for(const std::string& name: getExecutionList()) {
     moduleExecutionOrder[name] = order++;
   }
 
-  // 
-  for(const auto& m: registeredModules) 
+  // check all registered modules: 
+  // all required representations have to be provided before the module is executed
+  //for(const auto& m: registeredModules) 
+  for(AbstractModuleCreator* module: getModuleExecutionList())
   {
     // skip disabled modules 
-    if(!m.second->isEnabled()) {
+    if(!module->isEnabled()) {
       continue;
     }
 
-    // skip the Debug module
-    if(m.first.substr(0, 5) == "Debug") {
+    // skip the Debug modules
+    const std::string name(module->getModule()->getName());
+    if(name.substr(0, 5) == "Debug") {
       continue;
     }
 
-    int orderModule = moduleExecutionOrder.at(m.first);
+    // get the execution order for the current module
+    int moduleIndex = moduleExecutionOrder.at(name);
 
-    for (auto& r: (*m.second).getModule()->getRequire()) 
+    // check all representations required by the module
+    for (auto& r: module->getModule()->getRequire()) 
     {
       // ignore debug representations
       if(r.first.substr(0, 5) == "Debug") {
         continue;
       }
 
+      // check the modules that provide required representations
       for(const Module* provider: r.second->getProvide()) 
       {
+        // the provider is not in the executon order.
         if(moduleExecutionOrder.find(provider->getName()) == moduleExecutionOrder.end()) {
+          //std::cout << "NOTE: module " << provider->getName() << " is not in the execution list" << std::endl;
           continue;
         }
 
+        // skip debug provider (those are only used for test purposes)
         if(provider->getName().substr(0, 5) == "Debug") {
           continue;
         }
 
-        int orderProviderModule = moduleExecutionOrder.at(provider->getName());
+        // get the execution order of the providing module
+        int providerModuleIndex = moduleExecutionOrder.at(provider->getName());
 
-        // a provider is executed later, than the module
-        if(orderProviderModule > orderModule) {
-          std::cout << provider->getName() << "(" << orderProviderModule << ") -> "
+        // a provider is executed later than the module
+        if(providerModuleIndex > moduleIndex) {
+          std::cout << "    " << provider->getName() << "(" << providerModuleIndex << ") -> "
                     << r.second->getName() << " -> "
-                    << m.first << "(" << orderModule << ")" << std::endl;
+                    << name << "(" << moduleIndex << ")" << std::endl;
         }
       }
     }
