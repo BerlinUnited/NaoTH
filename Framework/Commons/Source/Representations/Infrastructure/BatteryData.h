@@ -11,10 +11,10 @@ namespace naoth
   {
   public:
     // http://doc.aldebaran.com/2-8/family/nao_technical/lola/actuator_sensor_names.html#battery
-    double charge;      // Current Sensor (A)
-    // TODO: [0,1] or [0,100]?
-    double current;     // Charge Sensor (%)
-    // TODO: in % of what?!
+    double charge;  // Charge Sensor (% in [0,1])
+    double current;  // Current Sensor (A in [-2.0, 2.1])   
+    
+    // temperature seems to be always around 3.0 no matter if it's charging or not
     double temperature; // Temperature Sensor (%)
 
     BatteryData();
