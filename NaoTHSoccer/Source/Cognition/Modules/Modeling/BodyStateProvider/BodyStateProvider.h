@@ -5,8 +5,8 @@
 * Declaration of class BodyStateProvider
 */
 
-#ifndef _BodyStateProvider_h_
-#define _BodyStateProvider_h_
+#ifndef BodyStateProvider_H
+#define BodyStateProvider_H
 
 #include <ModuleFramework/Module.h>
 
@@ -73,7 +73,7 @@ private:
       PARAMETER_REGISTER(lifted_up_time) = 500; // in ms
       PARAMETER_REGISTER(lifted_up_time_walk) = 1000; // in ms
 
-      PARAMETER_REGISTER(batteryChargingThreshold) = 0.8; // in A
+      PARAMETER_REGISTER(batteryChargingThreshold) = 0.8; // current in A
       syncWithConfig();
     }
 
@@ -115,4 +115,4 @@ private:
   RingBufferWithSum<double, 1000> batteryChargeBuffer;
 };
 
-#endif //__BodyStateProvider_h_
+#endif // BodyStateProvider_H
