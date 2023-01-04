@@ -132,8 +132,6 @@ private:
   // audio data
   unsigned long lastAudioDataTimestamp;
   FrameInfo timeOfLastCapture;
-
-  CameraInfo::CameraID lastRecordedPlainImageID;
 };
 
 #endif // GAMELOGGER_H

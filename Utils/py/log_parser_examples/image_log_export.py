@@ -70,7 +70,7 @@ def parse_image_log(input_path, width, height, image_bytes, cam_bottom):
                 print("read only {0} bytes, but {1} needed.".format(len(data), width * height * image_bytes))
                 break
 
-            img_path = os.path.join(str(output_folder), "{0}.png".format(frame_number))
+            img_path = os.path.join(str(output_folder), "{0}_{1}.png".format(frame_number,cam_bottom))
             image_data += [(data, args.width, args.height, img_path, cam_bottom)]
             # switch camera id
             cam_bottom = not cam_bottom
