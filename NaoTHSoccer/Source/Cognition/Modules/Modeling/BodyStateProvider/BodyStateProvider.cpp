@@ -38,7 +38,7 @@ void BodyStateProvider::execute()
   
   // when the robot is fully charged and still plugged in the robot is neither charging nor discharging
   // so we need to define thresholds for discharging and charging separately
-  if(getBatteryData().current < -0.5) {
+  if(getBatteryData().current < params.batteryDischargingThreshold) {
     getBodyState().isDischarging = true;
   } else {
     getBodyState().isDischarging = false;

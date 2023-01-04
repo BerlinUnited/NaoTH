@@ -74,6 +74,7 @@ private:
       PARAMETER_REGISTER(lifted_up_time_walk) = 1000; // in ms
 
       PARAMETER_REGISTER(batteryChargingThreshold) = 0.8; // current in A
+      PARAMETER_REGISTER(batteryDischargingThreshold) = -0.5; // current in A
       syncWithConfig();
     }
 
@@ -83,6 +84,7 @@ private:
     double lifted_up_time;
     double lifted_up_time_walk;
     double batteryChargingThreshold;
+    double batteryDischargingThreshold;
   } params;
 
 
