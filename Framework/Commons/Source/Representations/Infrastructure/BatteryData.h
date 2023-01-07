@@ -11,11 +11,12 @@ namespace naoth
   {
   public:
     // http://doc.aldebaran.com/2-8/family/nao_technical/lola/actuator_sensor_names.html#battery
-    double charge;  // Charge Sensor (% in [0,1])
-    double current;  // Current Sensor (A in [-2.0, 2.1])   
+    double charge;  // charge of the battery (% in [0,1])
+    double current; // electric current (charging or discharging) (A in [-2.0, 2.1])   
     
-    // temperature seems to be always around 3.0 no matter if it's charging or not
-    double temperature; // Temperature Sensor (%)
+    // NOTE: on NAO6 the temperature seems to be always around 3.0 no matter if it's charging or not.
+    // TODO: docu says the temperature is measured in "%". What does it mean?
+    double temperature; // Temperature (%)
 
     BatteryData();
     virtual ~BatteryData() {}
