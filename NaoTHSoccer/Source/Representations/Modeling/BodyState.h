@@ -86,9 +86,21 @@ public:
   //Is the body lifted up
   bool isLiftedUp;
 
+  // TODO: we need a more clear representation of the charging state.
+  // IDEA (needs discussion) Perhaps, this might be better represented by an enum, e.g.,
+  /* 
+  enum ChargingState {
+    CHARGED,    // we see low charging or discharging + battery charge is 100% => battery is fully charged + cable is plugged in
+    ERROR,      // we see low charging or discharging => cable is not plugged in incorrectly
+    CHARGING,   // we see expected charging rate => cable is plugged in
+    DISCHARGING // we see expected discharging rate => cable not plugged in
+  };
+  */
+  
   // modeled battery state
   bool isDischarging;
   bool isCharging;
+
   // filtered state of the battery
   double batteryCharge;
 
