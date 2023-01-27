@@ -107,8 +107,8 @@ done
 logger "copy the config directory"
 cd /home/nao/naoqi
 zip -q -r -0 $target_path/config.zip Config
-cd -
 check_for_errors "Brainwasher:ERROR copying config"
+cd -
 
 # copy logs of naoth binary (std::out/::err) and clear them afterwards
 if [ -f "/var/log/naoth.log" ]; then
