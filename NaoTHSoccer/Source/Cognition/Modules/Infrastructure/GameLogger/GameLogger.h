@@ -98,7 +98,7 @@ private:
     Parameters() : ParameterList("GameLogger")
     {
       PARAMETER_REGISTER(logAudioData) = false;
-      PARAMETER_REGISTER(logBallCandidates) = false;
+      PARAMETER_REGISTER(logBallCandidates) = true;
       PARAMETER_REGISTER(logBodyStatus) = false;
       PARAMETER_REGISTER(logPlainImages) = true;
       PARAMETER_REGISTER(logPlainImagesDelay) = 1000; // ms
