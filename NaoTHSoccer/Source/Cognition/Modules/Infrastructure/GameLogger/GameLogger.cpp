@@ -8,8 +8,7 @@ GameLogger::GameLogger()
   lastCompleteFrameNumber(0),
   oldState(PlayerInfo::initial),
   firstRecording(true),
-  lastAudioDataTimestamp(0),
-  lastRecordedPlainImageID(CameraInfo::Bottom)
+  lastAudioDataTimestamp(0)
 {
   const std::string gameLogPath = params.logDirPath + "/game.log";
   const std::string imageLogPath = params.logDirPath + "/images.log";
@@ -133,19 +132,14 @@ void GameLogger::execute()
         LOGSTUFF(WhistlePercept);
       }
 
-      // record images every 1s
-      if(params.logPlainImages && getFrameInfo().getTimeSince(lastTimeImageRecorded) > params.logPlainImagesDelay && imageOutFile.is_open() && !imageOutFile.fail()) {
+      // record images every n seconds
+      if(params.logPlainImages && getFrameInfo().getTimeSince(lastTimeImageRecorded) > params.logPlainImagesDelay && imageOutFile.is_open() && !imageOutFile.fail()){
         unsigned int frameNumber = getFrameInfo().getFrameNumber();
         imageOutFile.write((const char*)(&frameNumber), sizeof(unsigned int));
+        imageOutFile.write((const char*)getImage().data(), getImage().data_size());
 
-        // switch camera each frame
-        if(lastRecordedPlainImageID == CameraInfo::Top) {
-          imageOutFile.write((const char*)getImage().data(), getImage().data_size());
-          lastRecordedPlainImageID = CameraInfo::Bottom;
-        } else {
-          imageOutFile.write((const char*)getImageTop().data(), getImageTop().data_size());
-          lastRecordedPlainImageID = CameraInfo::Top;
-        }
+        imageOutFile.write((const char*)(&frameNumber), sizeof(unsigned int));
+        imageOutFile.write((const char*)getImageTop().data(), getImageTop().data_size());
 
         lastTimeImageRecorded = getFrameInfo();
       }
