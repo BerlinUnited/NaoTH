@@ -108,8 +108,8 @@ CameraInfoParameter::CameraInfoParameter(const std::string& idName)
 void Serializer<CameraInfo>::serialize(const CameraInfo& representation, std::ostream& stream)
 {
   naothmessages::CameraInfo msg;
-  msg.set_resolutionwidth(static_cast<int>(representation.resolutionWidth));
-  msg.set_resolutionheight(static_cast<int>(representation.resolutionHeight));
+  msg.set_resolutionwidth(representation.resolutionWidth);
+  msg.set_resolutionheight(representation.resolutionHeight);
   msg.set_cameraid((naothmessages::CameraID) representation.cameraID);
   msg.set_openinganglediagonal(representation.params.openingAngleDiagonal);
   //msg.set_focus(representation.params.focus);
