@@ -286,6 +286,8 @@ message MotionStatus
   optional bool   head_got_stuck = 12;
   
   optional bool   walk_emergency_stop = 13;
+  
+  optional bool   head_at_rest = 14;
 }
 
 message OdometryData

@@ -121,7 +121,7 @@ workspace "NaoTHSoccer"
     defines { "DEBUG" }
     -- FatalWarnings treats compiler/linker warnings as errors
     -- in premake4 linker warnings are not enabled
-    flags { "FatalCompileWarnings" } --"LinkTimeOptimization"
+    --flags { "FatalCompileWarnings" } --"LinkTimeOptimization"
     optimize "Speed"
 
   filter { "platforms:Native" }
@@ -143,7 +143,10 @@ workspace "NaoTHSoccer"
       print("NOTE: set the target OS to " .. os.target())
     end
     
-    cppdialect "c++14"
+    -- add a hard coded path for the libs on the robot
+    linkoptions { "-Wl,-rpath=/home/nao/lib" }
+    
+    cppdialect "c++17"
     
     warnings "Extra"
     -- Wconversion is not included in Wall and Wextra
@@ -178,7 +181,7 @@ workspace "NaoTHSoccer"
     buildoptions {"/external:I " .. EXTERN_PATH .. "/include/gio-unix-2.0"}
     buildoptions {"/external:I " .. EXTERN_PATH .. "/lib/glib-2.0/include"}
     
-    cppdialect "c++14"
+    cppdialect "c++17"
     links {"ws2_32"}
     
     ignoredefaultlibraries { "MSVCRT" }
@@ -203,7 +206,7 @@ workspace "NaoTHSoccer"
   filter "system:macosx"
     defines { "BOOST_SIGNALS_NO_DEPRECATION_WARNING", "EIGEN_DONT_ALIGN" }
     --buildoptions {"-std=c++11"}
-    cppdialect "c++14"
+    cppdialect "c++17"
     -- disable some warnings
     buildoptions {"-Wno-deprecated-declarations"}
     buildoptions {"-Wno-deprecated-register"}
@@ -232,7 +235,8 @@ workspace "NaoTHSoccer"
     -- (see http://www.airs.com/blog/archives/120 for some nice explanation)
     buildoptions {"-fno-strict-overflow"}
     --buildoptions {"-std=c++11"}
-    cppdialect "c++14"
+    cppdialect "c++17"
+    toolset ("clang")
     
     --flags { "ExtraWarnings" }
     links {"pthread"}

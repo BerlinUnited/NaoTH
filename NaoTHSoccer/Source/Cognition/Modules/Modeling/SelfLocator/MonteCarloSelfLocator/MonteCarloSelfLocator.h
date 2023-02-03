@@ -283,7 +283,7 @@ private: // local types
 
     void draw(DrawingCanvas2D& canvas)
     {
-      canvas.pen("000000", 10);
+      canvas.pen("000000", 30);
       canvas.drawLine(segment.begin().x, segment.begin().y, segment.end().x, segment.end().y);
       canvas.drawArrow(
             segment.begin().x, segment.begin().y, 

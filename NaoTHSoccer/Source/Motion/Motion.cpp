@@ -8,12 +8,6 @@
 
 #include "Motion.h"
 
-#include <stdlib.h>
-
-#ifndef WIN32
-#include <unistd.h>
-#endif
-
 #include "MorphologyProcessor/ForwardKinematics.h"
 
 #include "Tools/CameraGeometry.h"
@@ -162,7 +156,7 @@ void Motion::call()
   /*
   if(getMotionRequest.calibrateFootTouchDetector)
     theFootTouchCalibrator.execute();
-    */
+  */
 
   modifyJointOffsets();
 
@@ -216,7 +210,7 @@ void Motion::processSensorData()
 
   // remove the offset from sensor joint data
   for( i = 0; i < JointData::numOfJoint; i++) {
-      getSensorJointData().position[i] = getSensorJointData().position[i] - getOffsetJointData().position[i];
+    getSensorJointData().position[i] = getSensorJointData().position[i] - getOffsetJointData().position[i];
   }
 
   theIMUModel->execute();
@@ -289,8 +283,8 @@ void Motion::postProcess()
 #endif
 
   // apply the offset to motor joint data
-  for(int i = 0; i < JointData::numOfJoint; i++){
-      mjd.position[i] = mjd.position[i] + getOffsetJointData().position[i];
+  for(int i = 0; i < JointData::numOfJoint; i++) {
+    mjd.position[i] = mjd.position[i] + getOffsetJointData().position[i];
   }
 
   mjd.clamp();
@@ -301,17 +295,17 @@ void Motion::postProcess()
 
 void Motion::modifyJointOffsets()
 {
-    MODIFY("Motion:Offsets:LHipYawPitch", getOffsetJointData().position[JointData::LHipYawPitch]);
-    MODIFY("Motion:Offsets:RHipPitch",    getOffsetJointData().position[JointData::RHipPitch]);
-    MODIFY("Motion:Offsets:LHipPitch",    getOffsetJointData().position[JointData::LHipPitch]);
-    MODIFY("Motion:Offsets:RHipRoll",     getOffsetJointData().position[JointData::RHipRoll]);
-    MODIFY("Motion:Offsets:LHipRoll",     getOffsetJointData().position[JointData::LHipRoll]);
-    MODIFY("Motion:Offsets:RKneePitch",   getOffsetJointData().position[JointData::RKneePitch]);
-    MODIFY("Motion:Offsets:LKneePitch",   getOffsetJointData().position[JointData::LKneePitch]);
-    MODIFY("Motion:Offsets:RAnklePitch",  getOffsetJointData().position[JointData::RAnklePitch]);
-    MODIFY("Motion:Offsets:LAnklePitch",  getOffsetJointData().position[JointData::LAnklePitch]);
-    MODIFY("Motion:Offsets:RAnkleRoll",   getOffsetJointData().position[JointData::RAnkleRoll]);
-    MODIFY("Motion:Offsets:LAnkleRoll",   getOffsetJointData().position[JointData::LAnkleRoll]);
+  MODIFY("Motion:Offsets:LHipYawPitch", getOffsetJointData().position[JointData::LHipYawPitch]);
+  MODIFY("Motion:Offsets:RHipPitch",    getOffsetJointData().position[JointData::RHipPitch]);
+  MODIFY("Motion:Offsets:LHipPitch",    getOffsetJointData().position[JointData::LHipPitch]);
+  MODIFY("Motion:Offsets:RHipRoll",     getOffsetJointData().position[JointData::RHipRoll]);
+  MODIFY("Motion:Offsets:LHipRoll",     getOffsetJointData().position[JointData::LHipRoll]);
+  MODIFY("Motion:Offsets:RKneePitch",   getOffsetJointData().position[JointData::RKneePitch]);
+  MODIFY("Motion:Offsets:LKneePitch",   getOffsetJointData().position[JointData::LKneePitch]);
+  MODIFY("Motion:Offsets:RAnklePitch",  getOffsetJointData().position[JointData::RAnklePitch]);
+  MODIFY("Motion:Offsets:LAnklePitch",  getOffsetJointData().position[JointData::LAnklePitch]);
+  MODIFY("Motion:Offsets:RAnkleRoll",   getOffsetJointData().position[JointData::RAnkleRoll]);
+  MODIFY("Motion:Offsets:LAnkleRoll",   getOffsetJointData().position[JointData::LAnkleRoll]);
 }
 
 
@@ -359,7 +353,7 @@ void Motion::debugPlots()
   );
 
   // add currentSum array to the ring buffer
-  for(int i = 0; i < naoth::JointData::numOfJoint; i++){
+  for(int i = 0; i < naoth::JointData::numOfJoint; i++) {
       currentsRingBuffer[i].add(getBodyStatus().currentSum[i]);
   }
 
@@ -424,7 +418,7 @@ void Motion::debugPlots()
   PLOT_JOINT(LAnkleRoll);
 
   // buffer motor joint data to determine the error to the corresponding sensor joint data (will be read in 4 cycles)
-  for(int i = 0; i < naoth::JointData::numOfJoint; i++){
+  for(int i = 0; i < naoth::JointData::numOfJoint; i++) {
       motorJointDataBuffer[i].add(getMotorJointData().position[i]);
   }
 
@@ -509,5 +503,5 @@ void Motion::drawRobot3D(const KinematicChain& kinematicChain)
     {
       ENTITY(KinematicChain::getLinkName((KinematicChain::LinkID)i), theLink[i].M);
     }
-  }//end for
+  }
 }//end drawRobot3D

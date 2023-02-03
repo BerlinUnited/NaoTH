@@ -192,12 +192,12 @@
     </Component>
     <Component class="javax.swing.JTextField" name="netmaskFieldWLAN">
       <Properties>
-        <Property name="text" type="java.lang.String" value="255.255.255.0"/>
+        <Property name="text" type="java.lang.String" value="255.255.0.0"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="broadcastFieldWLAN">
       <Properties>
-        <Property name="text" type="java.lang.String" value="10.0.4.255"/>
+        <Property name="text" type="java.lang.String" value="10.0.255.255"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel5">

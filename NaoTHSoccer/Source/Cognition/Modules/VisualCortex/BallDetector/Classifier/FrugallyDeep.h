@@ -1,7 +1,7 @@
 #ifndef _FRUGALLY_DEEP_H
 #define _FRUGALLY_DEEP_H
 
-#ifndef WIN32
+// NOTE: assumes frugally 0.7.8-p0 is used
 
 # include <emmintrin.h>
 
@@ -18,7 +18,7 @@ public:
 
 	void predict(const BallCandidates::PatchYUVClassified& p, double meanBrightness);
 
-	double getRadius();
+    double getRadius();
     Vector2d getCenter();
 
 private:
@@ -27,6 +27,5 @@ private:
     std::vector<fdeep::tensor5> result;
 
 };
-# endif
 
 #endif

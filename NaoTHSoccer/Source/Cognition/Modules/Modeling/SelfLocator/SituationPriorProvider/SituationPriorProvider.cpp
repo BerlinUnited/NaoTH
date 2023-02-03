@@ -1,7 +1,7 @@
 /**
 * @file SituationPriorProvider.h
 *
-* @author <a href="mailto:schlottb@informatik.hu-berlin.de">Benjamin Schlotter</a>
+* @author <a href="mailto:schlottb@informatik.hu-berlin.de">Stella Alice Schlotter</a>
 * Implementation of class SituationPriorProvider
 */
 
@@ -54,7 +54,7 @@ void SituationPriorProvider::execute()
   }
   
   //get BodyState
-  if(getBodyState().isLiftedUp){
+  if(getBodyState().isLiftedUp) {
     wasLiftedUp = true;
   }
 

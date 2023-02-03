@@ -17,4 +17,4 @@ LimitRTPRIO=55
 Slice=naoqi.slice
 
 [Install]
-WantedBy = multi-user.target
+WantedBy = default.target

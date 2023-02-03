@@ -12,7 +12,6 @@
 #include "Representations/Modeling/PlayerInfo.h"
 #include "Representations/Perception/WhistlePercept.h"
 #include "Representations/Infrastructure/GameData.h"
-#include "Representations/Modeling/TeamMessageData.h"
 #include "Representations/Infrastructure/WifiMode.h"
 
 using namespace naoth;
@@ -26,10 +25,9 @@ BEGIN_DECLARE_MODULE(GameController)
   REQUIRE(WifiMode)
 
   PROVIDE(GameData)
-  PROVIDE(TeamMessageData)
+  PROVIDE(PlayerInfo)
   PROVIDE(GameReturnData)
   PROVIDE(GameControllerLEDRequest)
-  PROVIDE(PlayerInfo)
   PROVIDE(SoundPlayData)
 END_DECLARE_MODULE(GameController)
 

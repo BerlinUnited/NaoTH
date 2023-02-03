@@ -3,7 +3,7 @@
  *
  * Implementation of class FieldSymbols
  *
- *@author <a href="mailto:schlottb@informatik.hu-berlin.de">Schlotter, Benjamin</a>
+ *@author <a href="mailto:schlottb@informatik.hu-berlin.de">Schlotter, Stella Alice</a>
  *Experimental feature
  *
  */

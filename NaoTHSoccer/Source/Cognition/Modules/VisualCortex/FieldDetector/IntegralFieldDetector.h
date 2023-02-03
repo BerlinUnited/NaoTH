@@ -1,6 +1,6 @@
 
-#ifndef _IntegralFieldDetector_H_
-#define _IntegralFieldDetector_H_
+#ifndef IntegralFieldDetector_H
+#define IntegralFieldDetector_H
 
 #include <ModuleFramework/Module.h>
 
@@ -11,7 +11,6 @@
 #include "Representations/Perception/MultiChannelIntegralImage.h"
 #include "Representations/Perception/FieldColorPercept.h"
 
-#include "Representations/Perception/FieldPercept.h"
 #include "Tools/Debug/DebugRequest.h"
 #include <Tools/Debug/DebugImageDrawings.h>
 #include <Tools/Debug/DebugDrawings.h>
@@ -29,8 +28,6 @@ BEGIN_DECLARE_MODULE(IntegralFieldDetector)
   PROVIDE(DebugParameterList)
 
   REQUIRE(FrameInfo)
-  // TODO: why is the image needed?
-  // getImage().width() ...
   REQUIRE(Image)
   REQUIRE(ImageTop)
   REQUIRE(ArtificialHorizon)
@@ -152,5 +149,5 @@ private:
   DOUBLE_CAM_PROVIDE(IntegralFieldDetector, FieldPercept);
 };
 
-#endif  /* _IntegralFieldDetector_H_ */
+#endif  /* IntegralFieldDetector_H */
 

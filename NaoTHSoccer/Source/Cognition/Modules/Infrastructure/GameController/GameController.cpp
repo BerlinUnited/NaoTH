@@ -141,13 +141,11 @@ void GameController::execute()
     updateLEDs();
   }
 
-  // set teamcomm: whistle detected!
-  getTeamMessageData().custom.whistleDetected = getWhistlePercept().whistleDetected;
-
   // provide the return message
-  getGameReturnData().team = getPlayerInfo().teamNumber;
-  getGameReturnData().player = getPlayerInfo().playerNumber;
-  getGameReturnData().message = getWifiMode().wifiEnabled ? GameReturnData::alive : GameReturnData::dead;
+  getGameReturnData().teamNum = getPlayerInfo().teamNumber;
+  getGameReturnData().playerNum = getPlayerInfo().playerNumber;
+  // TODO: this is not correctly set
+  getGameReturnData().fallen = getWifiMode().wifiEnabled ? GameReturnData::ROBOT_CAN_PLAY : GameReturnData::ROBOT_FALLEN;
 } // end execute
 
 

@@ -52,7 +52,7 @@ void LolaAdaptor::writeNaoInfo(const std::string& theBodyID, const std::string& 
     // save the value to file
     // FIXME: fixed path "Config/nao.info"
     {
-        std::string staticMemberPath("Config/nao.info");
+        std::string staticMemberPath("/home/nao/Config/nao.info");
         std::ofstream os(staticMemberPath.c_str());
         ASSERT(os.good());
         os << theBodyID << "\n" << theBodyNickName << std::endl;
@@ -337,7 +337,7 @@ void LolaAdaptor::notify()
 void LolaAdaptor::shutdownCallback()
 {
     // play a sound that the user knows we recognized his shutdown request
-    system("paplay /opt/aldebaran/share/naoqi/wav/bip_power_off.wav");
+    system("/usr/bin/paplay /home/nao/Media/bip_power_off.wav");
 
     // stop the user program
     std::cout << "[LolaAdaptor] stopping naoth" << std::endl;
@@ -350,7 +350,10 @@ void LolaAdaptor::shutdownCallback()
 
     // we are the child process, do a blocking call to shutdown
     std::cout << "[LolaAdaptor] System shutdown requested" << std::endl;
-    system("/sbin/shutdown -h now");
+    // the system is setup that in this case no password is required
+    // we need to use sudo here for ubuntu systems since the usual way of setting chmod +s /sbin/shutdown
+    // breaks systemd for users
+    system("sudo /sbin/shutdown -h now");
 
     // await termination
     while(true) {

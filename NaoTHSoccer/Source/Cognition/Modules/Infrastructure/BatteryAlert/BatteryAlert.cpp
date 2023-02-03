@@ -18,8 +18,8 @@ void BatteryAlert::execute()
   const double soundRepeatInterval = 22000; // 22s
 
   //if the battery is lower than 6% repeat sound every 22s
-  if(getBatteryData().charge < minimalCharge &&  
-     getBodyState().isDischarging && // only make noise it not charging
+  if(getBodyState().batteryCharge < minimalCharge &&  
+     getBodyState().isDischarging && // only make noise if it's discharging. Note this is different to not charging!
      getFrameInfo().getTime() > timeWhenLastPlayedSound + soundRepeatInterval) 
   {
     timeWhenLastPlayedSound = getFrameInfo().getTime();

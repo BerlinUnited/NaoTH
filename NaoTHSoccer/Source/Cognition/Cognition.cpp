@@ -34,7 +34,6 @@
 #include "Modules/Infrastructure/TeamCommunicator/SimpleNetworkTimeProtocol.h"
 
 #include "Modules/Infrastructure/Debug/CameraDebug.h"
-#include "Modules/Infrastructure/Camera/CameraInfoSetter.h"
 #include "Modules/Infrastructure/Camera/AdaptiveAutoExposure.h"
 #include "Modules/Infrastructure/GameLogger/GameLogger.h"
 
@@ -174,7 +173,6 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(UltraSoundControl);
 
   REGISTER_MODULE(CameraDebug);
-  REGISTER_MODULE(CameraInfoSetter);
   REGISTER_MODULE(AdaptiveAutoExposure);
   REGISTER_MODULE(WhistleDetectorV1);
   REGISTER_MODULE(WhistleDetectorV2);
@@ -186,8 +184,9 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(BodyContourProvider);	
 
   REGISTER_MODULE(HistogramProvider);
-  REGISTER_MODULE(IntegralImageProvider);
   REGISTER_MODULE(FieldColorClassifier);
+  
+  REGISTER_MODULE(IntegralImageProvider);
   REGISTER_MODULE(IntegralFieldDetector);
   REGISTER_MODULE(ScanGridProvider);
   REGISTER_MODULE(ScanGridEdgelDetector);

@@ -30,9 +30,18 @@ SPLGameController::SPLGameController()
     // init return data
     strcpy(dataOut.header, GAMECONTROLLER_RETURN_STRUCT_HEADER);
     dataOut.version = GAMECONTROLLER_RETURN_STRUCT_VERSION;
-    dataOut.team = 0;
-    dataOut.player = 0;
-    dataOut.message = GAMECONTROLLER_RETURN_MSG_ALIVE;
+    dataOut.playerNum = 0;
+    dataOut.teamNum = 0;
+    dataOut.fallen = 0;
+    
+    // new in 2022
+    dataOut.pose[0] = 0;
+    dataOut.pose[1] = 0;
+    dataOut.pose[2] = 0;
+    dataOut.ballAge = -1;
+    dataOut.ball[0] = 0;
+    dataOut.ball[1] = 0;
+    
 
     std::cout << "[INFO] SPLGameController start socket thread" << std::endl;
     socketThread = std::thread(&SPLGameController::socketLoop, this);
@@ -73,11 +82,11 @@ bool SPLGameController::update()
   if(header == GAMECONTROLLER_STRUCT_HEADER && dataIn.version == GAMECONTROLLER_STRUCT_VERSION)
   {
     // team number was set
-    if( dataOut.team > 0 && 
-       (dataIn.teams[0].teamNumber == dataOut.team || dataIn.teams[1].teamNumber == dataOut.team)
+    if( dataOut.teamNum > 0 && 
+       (dataIn.teams[0].teamNumber == dataOut.teamNum || dataIn.teams[1].teamNumber == dataOut.teamNum)
       ) 
     {
-      data.parseFrom(dataIn, dataOut.team);
+      data.parseFrom(dataIn, dataOut.teamNum);
       data.valid = true;
     }
   } // end if header correct
@@ -106,15 +115,15 @@ void SPLGameController::set(const naoth::GameReturnData& data)
   std::unique_lock<std::mutex> lock(returnDataMutex, std::try_to_lock);
   if ( lock.owns_lock() )
   {
-    if(data.message == GameReturnData::dead) {
+    if(data.fallen == GameReturnData::ROBOT_FALLEN) {
       // set to invalid data to avoid sending the message
-      dataOut.player = 0;
-      dataOut.team = 0;
-      dataOut.message = data.message;
+      dataOut.playerNum = 0;
+      dataOut.teamNum = 0;
+      dataOut.fallen = data.fallen;
     } else {
-      dataOut.player = (uint8_t)data.player;
-      dataOut.team = (uint8_t)data.team;
-      dataOut.message = data.message;
+      dataOut.playerNum = (uint8_t)data.playerNum;
+      dataOut.teamNum = (uint8_t)data.teamNum;
+      dataOut.fallen = data.fallen;
     }
   }
 

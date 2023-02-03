@@ -1,6 +1,6 @@
 /**
 * @file ActionSimulator.cpp
-* @author <a href="mailto:schlottb@informatik.hu-berlin.de">Benjamin Schlotter</a>
+* @author <a href="mailto:schlottb@informatik.hu-berlin.de">Stella Alice Schlotter</a>
 * Implementation of class ActionSimulator
 */
 

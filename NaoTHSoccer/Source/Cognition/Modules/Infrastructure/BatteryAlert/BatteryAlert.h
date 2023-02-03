@@ -5,14 +5,13 @@
  *
  */
 
-#ifndef _BATTERYALERT_H
-#define _BATTERYALERT_H
+#ifndef BATTERYALERT_H
+#define BATTERYALERT_H
 
 #include <ModuleFramework/Representation.h>
 #include <ModuleFramework/Module.h>
 
 #include "Representations/Infrastructure/FrameInfo.h"
-#include "Representations/Infrastructure/BatteryData.h"
 #include "Representations/Infrastructure/SoundData.h"
 #include "Representations/Modeling/BodyState.h"
 
@@ -20,7 +19,6 @@ using namespace naoth;
 
 BEGIN_DECLARE_MODULE(BatteryAlert)
   REQUIRE(FrameInfo)
-  REQUIRE(BatteryData)
   REQUIRE(BodyState)
 
   PROVIDE(SoundPlayData)
@@ -38,5 +36,5 @@ private:
   unsigned int timeWhenLastPlayedSound;
 };
 
-#endif  /* _BATTERYALERT_H */
+#endif  /* BATTERYALERT_H */
 

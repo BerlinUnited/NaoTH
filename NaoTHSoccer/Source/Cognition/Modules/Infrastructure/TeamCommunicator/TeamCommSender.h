@@ -20,6 +20,7 @@
 #include "Representations/Modeling/TeamBallModel.h"
 #include "Representations/Infrastructure/WifiMode.h"
 #include "Representations/Motion/MotionStatus.h"
+#include "Representations/Perception/WhistlePercept.h"
 
 #include "Tools/Debug/DebugPlot.h"
 #include "Tools/Debug/DebugRequest.h"
@@ -45,6 +46,7 @@ BEGIN_DECLARE_MODULE(TeamCommSender)
   REQUIRE(CpuData)
   REQUIRE(TeamBallModel)
   REQUIRE(WifiMode)
+  REQUIRE(WhistlePercept)
 
   PROVIDE(TeamMessageData)
   PROVIDE(TeamMessageDataOut)

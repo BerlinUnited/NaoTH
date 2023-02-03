@@ -5,8 +5,8 @@
 * Definition of class PerceptionsVizualization
 */
 
-#ifndef _PerceptionsVisualizer_h_
-#define _PerceptionsVisualizer_h_
+#ifndef PERCEPTIONS_VISUALIZER_H
+#define PERCEPTIONS_VISUALIZER_H
 
 //include section
 #include <ModuleFramework/Module.h>
@@ -88,6 +88,10 @@ public:
   virtual void execute();
   void execute(CameraInfo::CameraID id);
 
+private:
+  // patterns for testing field drawings
+  void testDrawingField();
+
 // double cam stuff
 private:
   CameraInfo::CameraID cameraID;
@@ -102,4 +106,4 @@ private:
   DOUBLE_CAM_REQUIRE(PerceptionsVisualizer,CameraInfo);
   DOUBLE_CAM_REQUIRE(PerceptionsVisualizer,CameraMatrix);
 };
-#endif // end _PerceptionsVisualizer_h_
+#endif // END PERCEPTIONS_VISUALIZER_H

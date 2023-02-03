@@ -79,6 +79,10 @@ public class FileUtils
       return;
     }
     
+    if(!src.exists()) {
+        throw new NaoSCPException("copyFiles: source path doesn't exist: " + src.getAbsolutePath());
+    }
+    
     if(src.isDirectory())
     {
       if( ! dest.exists())
