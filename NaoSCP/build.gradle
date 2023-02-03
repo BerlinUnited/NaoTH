@@ -11,42 +11,8 @@ dependencies {
     implementation 'com.jcraft:jsch:0.1.55'
 }
 
-// by default just (build and) run NaoScp
-defaultTasks 'run' // 'clean', 'build', 
-
-// define the targeted versions
-project.version = 1.1
-java.sourceCompatibility = JavaVersion.VERSION_1_8
-java.targetCompatibility = JavaVersion.VERSION_1_8
 
 // configure the application plugin
-application.mainClassName = 'Main'
-application.executableDir = '' // do not create a "bin" directory in install/zip
-application.applicationName = 'naoscp' // set the startscripts to lower case
-
-// set the source directory and disable the other dirs
-sourceSets.main.java.srcDirs = ['src']
-sourceSets.main.resources.srcDirs = []
-sourceSets.test.java.srcDirs = []
-sourceSets.test.resources.srcDirs = []
-
-// "install" the resulting application to the "dist" directory (mimic the old behavior)
-installDist.destinationDir = file("$projectDir/dist")
-
-// disable tar generation
-distTar.enabled = false
-
-// make sure the "installDist" task is executed
-build.finalizedBy(installDist)
-
-// make sure the dist directory is also cleaned (since we're moved it out of the build directory)
-task cleanDist(type: Delete) {
-    delete "$projectDir/dist"
-}
-clean.finalizedBy(cleanDist)
-
-// create a manifest for the jar
-jar.manifest {
-    attributes 'Class-Path': sourceSets.main.runtimeClasspath.collect { it.name }.join(' ')
-    attributes 'Main-Class': application.mainClassName
+application {
+	mainClass = 'Main'
 }

@@ -79,6 +79,10 @@ public class HelpDialog extends javax.swing.JDialog
         JFXPanel jfxPanel = new JFXPanel();
         this.add(jfxPanel);
 
+        System.out.println("JavaFX Version: " + System.getProperty("javafx.version"));
+        System.out.println("JavaFX Runtime Version: " + System.getProperty("javafx.runtime.version"));
+        
+        /*
         // switch to the JavaFX Application Thread
         Platform.runLater(() -> {
             webView = new WebView();
@@ -103,6 +107,7 @@ public class HelpDialog extends javax.swing.JDialog
 
             jfxPanel.setScene(new Scene(webView));
         });
+        */
     }
     
     /**
