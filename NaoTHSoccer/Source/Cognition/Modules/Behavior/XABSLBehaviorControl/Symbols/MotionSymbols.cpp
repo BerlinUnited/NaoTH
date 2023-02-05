@@ -199,7 +199,7 @@ void MotionSymbols::updateOutputSymbols()
     req.stepID = getMotionStatus().stepControl.stepID;
     req.target.translation = stepControlRequestTarget.translation;
     req.target.rotation = Math::fromDegrees(stepControlRequestTarget.rotation);
-    req.time = (int)(stepControlRequestTime);
+    req.time = static_cast<unsigned int>(stepControlRequestTime);
     req.speedDirection = Math::fromDegrees(stepControlRequestSpeedDirection);
     req.moveLeftFoot = (stepControlFoot == left);
     req.scale = stepControlScale;
@@ -394,7 +394,7 @@ void MotionSymbols::dribble(bool /*dummy*/)
     theInstance->walkStyle = fast;
 
     theInstance->getMotionRequest().id = motion::walk;
-    theInstance->actionPerformed = theInstance->getMotionStatus().stepControl.stepID;
+    theInstance->actionPerformed = static_cast<int>(theInstance->getMotionStatus().stepControl.stepID);
   }
   else
   {
