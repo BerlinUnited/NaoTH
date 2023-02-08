@@ -14,7 +14,7 @@ variables:
 
 # Note that reopen MR do not trigger pipeline execution: https://gitlab.com/gitlab-org/gitlab/-/issues/31116
 
-cppcheck:
+.cppcheck:
   stage: test
   rules:
     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop"'
@@ -32,23 +32,6 @@ cppcheck:
       - $CI_COMMIT_REF_NAME
     reports:
       codequality: cppcheck.json
-
-compile_nao_gcc:
-  stage: build
-  rules:
-    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop"'
-    - if: '$CI_PIPELINE_SOURCE == "web"'
-    - if: '$CI_PIPELINE_SOURCE == "trigger"'
-    - if: $CI_COMMIT_BRANCH == "develop"
-  script:
-  - cd NaoTHSoccer/Make
-  - ./compileGame.sh -j 4
-  - ./compileLoLaAdaptor.sh -j 4
-  artifacts:
-    expire_in: 4 weeks
-    name: "nao_gcc"
-    paths:
-      - NaoTHSoccer/dist/
 
 compile_local_gcc:
   stage: build
@@ -109,7 +92,6 @@ publish_naoth_docker:
   services:
     - docker:dind
   dependencies:
-    - compile_nao_gcc
     # you can either export the gcc or the clang binaries for now
     #- compile_local_gcc
     - compile_nao_clang  
