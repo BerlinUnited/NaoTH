@@ -61,6 +61,7 @@ compile_nao_clang:
   script:
   - cd NaoTHSoccer/Make
   - echo -en "if PLATFORM == \"Nao\" then\n    _OPTIONS[\"crosscompiler\"] = \"clang\"\nend\n" > projectconfig.user.lua
+  - clang++ --version
   - ./compileGame.sh -j 4
   - ./compileLoLaAdaptor.sh -j 4
   artifacts:
