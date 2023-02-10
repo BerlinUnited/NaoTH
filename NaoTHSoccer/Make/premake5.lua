@@ -126,7 +126,7 @@ workspace "NaoTHSoccer"
     targetdir "../dist/Nao"
     defines { "NAO" }
     system ("linux")
-    
+
     -- HACK: system() doesn't set the target system properly => set the target system manually
     if _OPTIONS["platform"] == "Nao" then
       -- include the Nao platform
@@ -139,8 +139,8 @@ workspace "NaoTHSoccer"
 
     -- add a hard coded path for the libs on the robot
     linkoptions { "-Wl,-rpath=/home/nao/lib" }
-    
-    cppdialect "c++17" 
+
+    cppdialect "c++17"
 
     -- for debugging:
     -- buildoptions {"-time"}
