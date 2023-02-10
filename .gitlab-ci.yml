@@ -33,7 +33,7 @@ variables:
     reports:
       codequality: cppcheck.json
 
-compile_local_gcc:
+compile_local_clang:
   stage: build
   rules:
     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop"'
@@ -42,6 +42,9 @@ compile_local_gcc:
     - if: $CI_COMMIT_BRANCH == "develop"
   script:
   - cd NaoTHSoccer/Make
+  - export CC=$(which clang)
+  - export CXX=$(which clang++)
+  - export LD=$(which ld.lld)
   - premake5 gmake2 --protoc
   - cd ../build/gmake2
   - make all -j 4
@@ -95,7 +98,7 @@ publish_naoth_docker:
     - docker:dind
   dependencies:
     # you can either export the gcc or the clang binaries for now
-    #- compile_local_gcc
+    - compile_local_clang
     - compile_nao_clang  
   rules:
     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop"'
