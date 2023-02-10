@@ -193,12 +193,10 @@ workspace "NaoTHSoccer"
     -- Prohibit GCC to be clever and use undefined behavior for some optimizations
     -- (see http://www.airs.com/blog/archives/120 for some nice explanation)
     buildoptions {"-fno-strict-overflow"}
-    --buildoptions {"-std=c++11"}
     cppdialect "c++17"
     toolset ("clang")
     
     links {"pthread"}
-
     
     -- Why? OpenCV is always dynamically linked and we can only garantuee that there is one version in Extern (Thomas)
     linkoptions {"-Wl,-rpath \"" .. path.getabsolute(EXTERN_PATH .. "/lib/") .. "\""}
