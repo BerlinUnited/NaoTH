@@ -136,8 +136,11 @@ workspace "NaoTHSoccer"
       _TARGET_OS = "linux"
       print("NOTE: set the target OS to " .. os.target())
     end
+
+    -- add a hard coded path for the libs on the robot
+    linkoptions { "-Wl,-rpath=/home/nao/lib" }
     
-    cppdialect "c++17"
+    cppdialect "c++17" 
 
     -- for debugging:
     -- buildoptions {"-time"}
