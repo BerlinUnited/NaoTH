@@ -53,9 +53,6 @@ filter {"platforms:Native", "action:gmake or gmake2", "system:linux"}
   -- may be needed for newer glib2 versions, remove if not needed
   buildoptions {"-Wno-deprecated-declarations"}
   buildoptions {"-Wno-deprecated"}
-  -- Prohibit GCC to be clever and use undefined behavior for some optimizations
-  -- (see http://www.airs.com/blog/archives/120 for some nice explanation)
-  buildoptions {"-fno-strict-overflow"}
   
   if _OPTIONS["Wno-conversion"] == nil then
     buildoptions {"-Wconversion"}
