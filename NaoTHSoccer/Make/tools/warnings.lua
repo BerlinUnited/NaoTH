@@ -9,21 +9,21 @@ filter "configurations:OptDebug"
   --flags { "FatalCompileWarnings" } --"LinkTimeOptimization"
 
 -- special defines for the Nao robot
-  filter { "platforms:Nao" }   
-    warnings "Extra"
-    -- Wconversion is not included in Wall and Wextra
-    buildoptions {"-Wconversion"}
-    -- These are a lot of warnings that should be fixed, but currently this is not the highest priority
-    buildoptions {"-Wno-sign-conversion"}
-    -- clang - allow unused functions in cpp files
-    buildoptions {"-Wno-unused-function"}
+filter { "platforms:Nao" }   
+  warnings "Extra"
+  -- Wconversion is not included in Wall and Wextra
+  buildoptions {"-Wconversion"}
+  -- These are a lot of warnings that should be fixed, but currently this is not the highest priority
+  buildoptions {"-Wno-sign-conversion"}
+  -- clang - allow unused functions in cpp files
+  buildoptions {"-Wno-unused-function"}
 
-    -- TODO do we really want this only for nao? maybe its enough because only clang complains
-    filter "files:../Source/Tools/DataStructures/Spline.cpp"
-      warnings "Off"
 
-    filter "files:../Source/Cognition/Modules/VisualCortex/BallDetector/Classifier/*"
-      warnings "Off"
+filter "files:../Source/Tools/DataStructures/Spline.cpp"
+  warnings "Off"
+
+filter "files:../Source/Cognition/Modules/VisualCortex/BallDetector/Classifier/*"
+  warnings "Off"
 
 -- additional defines for visual studio   
 filter {"system:windows", "action:vs*"}
