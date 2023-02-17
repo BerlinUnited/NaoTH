@@ -132,13 +132,13 @@ public:
     {
     }
 
-    void setSegments(int segOne, int segTwo)
+    void setSegments(unsigned int segOne, unsigned int segTwo)
     {
       segmentIndices[0] = segOne;
       segmentIndices[1] = segTwo;
     }
 
-    void setSegments(int segOne, int segTwo, double distOne, double distTwo)
+    void setSegments(unsigned int segOne, unsigned int segTwo, double distOne, double distTwo)
     {
       segmentIndices[0] = segOne;
       segmentsDistanceToIntersection[0] = distOne;
