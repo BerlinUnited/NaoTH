@@ -8,6 +8,7 @@
 #define _Histogram_H_
 
 #include <vector>
+#include <limits>
 #include "Tools/Debug/NaoTHAssert.h"
 
 namespace Statistics
@@ -15,19 +16,21 @@ namespace Statistics
   class HistogramX
   {
     public:
-      static const int maxInt = (int)((unsigned) -1 / 2);
-      int size;
+      const unsigned int maxInt = std::numeric_limits<unsigned int>::max()/2;
+      unsigned int size;
 
-      std::vector<int> rawData;
+      std::vector<unsigned int> rawData;
+
       std::vector<double> normalizedData;
       std::vector<double> cumulativeData;
      
-      int maxTotalSum;
-      int median;
-      int min;
-      int max;
-      int common;
-      int spanWidth;
+      unsigned int maxTotalSum;
+      unsigned int median;
+      unsigned int min;
+      unsigned int max;
+      unsigned int common;
+      unsigned int spanWidth;
+
       double sum;
       double mean;
       double variance;
@@ -43,7 +46,7 @@ namespace Statistics
         clear();
       }
       
-      HistogramX(int newSize)
+      HistogramX(unsigned int newSize)
       {
         maxTotalSum = maxInt;
         size = newSize;
@@ -60,6 +63,7 @@ namespace Statistics
         max = 0;
         common = 0;
         spanWidth = 0;
+
         sum = 0.0;
         mean = 0.0;
         variance = 0.0;
@@ -68,7 +72,8 @@ namespace Statistics
         skewness = 0.0;
         kurtosis = 0.0;
         calculated = false;
-        for(int i = 0; i < size; i++)
+
+        for(unsigned int i = 0; i < size; i++)
         {
           rawData[i] = 0;
           normalizedData[i] = 0.0;
@@ -77,7 +82,7 @@ namespace Statistics
       }
 
       //resize histogram to newSize bins
-      void resize(int newSize)
+      void resize(unsigned int newSize)
       {
         size = newSize;
         rawData.resize(size, 0);
@@ -87,25 +92,25 @@ namespace Statistics
       }
 
       //add 1 to the bin for value
-      void add(int value)
+      void add(unsigned int value)
       {
         rawData[value]++;
       }
 
       //add value to the bin at index idx
-      void add(int idx, int value)
+      void add(unsigned int idx, unsigned int value)
       {
         rawData[idx] += value;
       }
 
       //set value of bin at index idx
-      void set(int idx, int value)
+      void set(unsigned int idx, unsigned int value)
       {
         rawData[idx] = value;
       }
 
       //set maximal total sum for recalulation of bins
-      void setMaxTotalSum(int maxSum)
+      void setMaxTotalSum(unsigned int maxSum)
       {
         maxTotalSum = maxSum < maxInt / 2 ? maxSum * 2 : maxInt;// > 10 * size ? maxSum : 10 * size;
       }
@@ -121,7 +126,7 @@ namespace Statistics
       {
         sum = 0.0;
         mean = 0.0;
-        for(int i = 0; i < size; i++)
+        for(unsigned int i = 0; i < size; i++)
         {
           sum += rawData[i];
           mean += i * rawData[i];
@@ -142,15 +147,15 @@ namespace Statistics
         //can only be true if accumulation behaviour is used and total sum is about to reach max value of int
         bool reachingMaxSum = sum >= maxTotalSum;
         double newSum = 0.0;
-        int maxRate = 0;
-        for(int i = 0; i < size; i++)
+        unsigned int maxRate = 0;
+        for(unsigned int i = 0; i < size; i++)
         {
           normalizedData[i] = rawData[i] / sum;
           //if accumulation behaviour is used and total sum is about to reach max value of int,
           //recalculate bin values by use of normalized bin value and the total sum of first run
           //we do loose some accuracy here and total sum of bins is not equal to the one from first run because of rounding doubles to ints
           if(reachingMaxSum) 
-            rawData[i] = (int) Math::round(normalizedData[i] *maxTotalSum * 0.5); 
+            rawData[i] = (unsigned int) Math::round(normalizedData[i] * maxTotalSum * 0.5);
           newSum += rawData[i];
           
           if(maxRate < rawData[i])
@@ -173,7 +178,7 @@ namespace Statistics
           {
             cumulativeData[i] = cumulativeData[i - 1] + normalizedData[i];
           }
-          if(median == 0.0 && cumulativeData[i] >= 0.5)
+          if(median == 0 && cumulativeData[i] >= 0.5)
           {
             median = i;
           }
@@ -196,22 +201,19 @@ namespace Statistics
         calculated = true;
       }
 
-    bool isCalculated()
-    {
-      return calculated;
-    };
+      bool isCalculated()
+      {
+        return calculated;
+      }
 
-  protected:
-    bool calculated;
-
+    protected:
+      bool calculated;
   };
 
   template <int SIZE> class Histogram : public HistogramX
   {
-  public:
-    Histogram() : HistogramX(SIZE) {}
+    public:
+      Histogram() : HistogramX(SIZE) {}
   };
-
 }
 #endif  /* _Histogram_H */
-
