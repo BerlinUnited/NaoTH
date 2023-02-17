@@ -179,12 +179,12 @@ template <class T> class Array
     * Note that the function crashes if the required position is bigger than the 
     * size of the array.
     */
-    const T& operator[](int pos) const
+    const T& operator[](unsigned int pos) const
     {
       return data[pos];
     }
 
-    T& operator[](int pos)
+    T& operator[](unsigned int pos)
     {
       while (pos >= usedSize) append(T());
       return data[pos];
