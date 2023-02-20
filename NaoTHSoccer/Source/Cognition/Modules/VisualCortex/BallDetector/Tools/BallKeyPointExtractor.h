@@ -119,6 +119,7 @@ private:
 
     if (inner*2 > size*size && greenBelow > 0.3)
     {
+      // TODO should it be point.y-border in the second argument????
       unsigned int outer = integralImage.getSumForRect(point.x-border, point.y+size, point.x+size+border, point.y+size+border, 0);
       double value = (double)(inner - (outer - inner))/((double)(size+border)*(size+border));
 
@@ -140,6 +141,7 @@ private:
 
     if (inner*2 > size*size && greenBelow > 0.3 && greeInner <= params.maxInnerGreenDensitiy)
     {
+	  // TODO should it be point.y-border in the second argument????
       unsigned int outer = integralImage.getSumForRect(point.x-border, point.y+size, point.x+size+border, point.y+size+border, 0);
       double value = (double)(inner - (outer - inner))/((double)(size+border)*(size+border));
 
