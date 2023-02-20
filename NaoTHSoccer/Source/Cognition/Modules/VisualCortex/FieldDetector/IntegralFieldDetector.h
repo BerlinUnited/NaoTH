@@ -7,7 +7,6 @@
 #include "Representations/Infrastructure/Image.h"
 #include "Representations/Perception/FieldPercept.h"
 #include "Representations/Perception/ArtificialHorizon.h"
-#include "Representations/Perception/BodyContour.h"
 #include "Representations/Perception/MultiChannelIntegralImage.h"
 #include "Representations/Perception/FieldColorPercept.h"
 
