@@ -19,10 +19,10 @@ filter { "platforms:Nao" }
   buildoptions {"-Wno-unused-function"}
 
 
-filter "files:../Source/Tools/DataStructures/Spline.cpp"
+filter "files:../../Source/Tools/DataStructures/Spline.cpp"
   warnings "Off"
 
-filter "files:../Source/Cognition/Modules/VisualCortex/BallDetector/Classifier/*"
+filter "files:../../Source/Cognition/Modules/VisualCortex/BallDetector/Classifier/*"
   warnings "Off"
 
 -- additional defines for visual studio   
