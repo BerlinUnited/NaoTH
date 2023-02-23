@@ -201,7 +201,7 @@ void ScanGridEdgelDetector::scan_vertical(MaxPeakScan& maximumPeak,
       continue;
     }
 
-    int end_of_body = getBodyContour().getFirstFreeCell(Vector2i(scanline.x, y)).y;
+    int end_of_body = getBodyContour().getImageCoordsOfFirstFreeCell(Vector2i(scanline.x, y)).y;
 
     DEBUG_REQUEST("Vision:ScanGridEdgelDetector:scanlines:vertical",
       IMAGE_DRAWING_CONTEXT;
