@@ -483,11 +483,13 @@ public:
     // matrix has triangle form
     // calculate solutions
     b[ranking[N-1]] /= m[ranking[N-1]][N-1];
-    for (r = N-2; r >= 0; --r)
+    for (unsigned int j = 0; j <= N-2; ++j)
     {
+      r = N-2 - j;
       T sum = T();
-      for (c = r+1; c < (int)N; ++c)
+      for (c = r+1; c < N; ++c) {
         sum += m[ranking[r]][c] * b[ranking[c]];
+      }
       if (MVTools::isNearInf(sum))
       {
         if (MVTools::isNearPosInf(sum))

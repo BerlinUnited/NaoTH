@@ -632,8 +632,9 @@ namespace Math
       // matrix has triangle form
       // calculate solutions
       b[ranking[0][n - 1]][0] /= matrix[ranking[0][n - 1]][n - 1];
-      for (r = n - 2; r >= 0; r--)
+      for (unsigned int j = 0; j <= n-2; ++j)
       {
+        r = n-2 - j;
         T sum = T();
         for (c = r + 1; c < n; c++)
         {
