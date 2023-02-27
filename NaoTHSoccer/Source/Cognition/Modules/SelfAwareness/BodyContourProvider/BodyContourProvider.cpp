@@ -239,8 +239,8 @@ void BodyContourProvider::debug() const
       for (unsigned int j = 0; j < getBodyContour().gridHeight(); j++) {
         if (getBodyContour().getGrid()[i][j].occupied) {
           RECT_PX(ColorClasses::black,
-                static_cast<int>(i*getBodyContour().cellSize()),     static_cast<int>(j*getBodyContour().cellSize()),
-            static_cast<int>((i+1)*getBodyContour().cellSize()), static_cast<int>((j+1)*getBodyContour().cellSize()));
+                i*getBodyContour().cellSize(),     j*getBodyContour().cellSize(),
+            (i+1)*getBodyContour().cellSize(), (j+1)*getBodyContour().cellSize());
         }
       }
     }
