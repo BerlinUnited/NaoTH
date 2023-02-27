@@ -99,6 +99,8 @@ public:
   }
 
   CellCoord getCellCoordFromImageCoords(const Vector2i& point) const {
+    ASSERT(static_cast<unsigned>(point.x) < cameraResolution.x
+           && static_cast<unsigned>(point.y) < cameraResolution.y);
     return getCellCoordFromImageCoords(static_cast<unsigned>(point.x),
                                        static_cast<unsigned>(point.y));
   }
@@ -117,11 +119,13 @@ public:
   }
 
   const Cell& getCell(const unsigned x, const unsigned y) const {
-    return grid.at(x).at(y);
+    ASSERT(x < xDensity && y < yDensity);
+    return grid[x][y];
   }
 
   void setCell(unsigned int x, unsigned int y, BodyPartID id, bool occupied) {
-    grid.at(x).at(y).id = id;
+    ASSERT(x < xDensity && y < yDensity);
+    grid[x][y].id = id;
     grid[x][y].occupied = occupied;
   }
 
@@ -130,19 +134,21 @@ public:
       return false;
     }
 
-    return grid.at(x/stepSize).at(y/stepSize).occupied;
+    ASSERT(x < cameraResolution.x && y < cameraResolution.y);
+    return grid[x/stepSize][y/stepSize].occupied;
   }
 
-  bool isOccupied(const CellCoord& coord) const {
-    return isOccupied(coord.x, coord.y);
+  bool isOccupied(const Vector2i& point) const {
+    return isOccupied(point.x, point.y);
   }
 
   Vector2i getImageCoordsOfFirstFreeCell(const Vector2i& start) const {
+    ASSERT(start.x >= 0 && start.y >= 0);
     CellCoord cell_coord(static_cast<unsigned int>(start.x)/stepSize,
                          static_cast<unsigned int>(start.y)/stepSize);
     
     // do nothing if the cell is free
-    if(!grid.at(cell_coord.x).at(cell_coord.y).occupied) {
+    if(!grid[cell_coord.x][cell_coord.y].occupied) {
       return start;
     }
 
