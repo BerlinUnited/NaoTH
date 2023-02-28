@@ -61,6 +61,7 @@
 #include "Modules/VisualCortex/BallDetector/CNNBallDetector.h"
 #include "Modules/VisualCortex/BallDetector/MultiPassBallDetector.h"
 #include "Modules/VisualCortex/IntegralImageProvider.h"
+#include "Modules/VisualCortex/IntegralSubsamplingTest/IntegralSubsamplingTest.h"
 
 #include "Modules/VisualCortex/ObstacleDetector/NoGreenObstacleDetector.h"
 
@@ -187,6 +188,8 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(FieldColorClassifier);
   
   REGISTER_MODULE(IntegralImageProvider);
+  REGISTER_MODULE(IntegralSubsamplingTest);
+
   REGISTER_MODULE(IntegralFieldDetector);
   REGISTER_MODULE(ScanGridProvider);
   REGISTER_MODULE(ScanGridEdgelDetector);
