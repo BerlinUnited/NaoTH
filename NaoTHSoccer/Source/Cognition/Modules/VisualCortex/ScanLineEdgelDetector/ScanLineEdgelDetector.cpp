@@ -12,6 +12,7 @@
 #include "Tools/ImageProcessing/BresenhamLineScan.h"
 #include "Tools/CameraGeometry.h"
 #include "Tools/DataStructures/RingBufferWithSum.h"
+#include "Tools/ImageProcessing/MaximumScan.h"
 
 ScanLineEdgelDetector::ScanLineEdgelDetector()
 :
