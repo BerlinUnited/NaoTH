@@ -71,8 +71,8 @@ std::string GameData::toString(CompetitionType value)
   switch (value)
   {
     RETURN_VALUE_TO_STR(competition_normal);
-    RETURN_VALUE_TO_STR(COMPETITION_TYPE_CHALLENGE_SHIELD);
-    RETURN_VALUE_TO_STR(COMPETITION_TYPE_7V7);
+    //RETURN_VALUE_TO_STR(COMPETITION_TYPE_CHALLENGE_SHIELD); // deprecated since 2023
+    //RETURN_VALUE_TO_STR(COMPETITION_TYPE_7V7); // deprecated since 2023
     RETURN_VALUE_TO_STR(COMPETITION_TYPE_DYNAMIC_BALL_HANDLING);
     //RETURN_VALUE_TO_STR(competition_1v1); // deprecated since 2022
     //RETURN_VALUE_TO_STR(competition_passing); // deprecated since 2022
@@ -144,6 +144,9 @@ std::string GameData::toString(Penalty value)
     RETURN_VALUE_TO_STR(request_for_pickup);
     RETURN_VALUE_TO_STR(local_game_stuck);
     RETURN_VALUE_TO_STR(illegal_positioning);
+    RETURN_VALUE_TO_STR(illegal_position);
+    RETURN_VALUE_TO_STR(illegal_position_in_set);
+    RETURN_VALUE_TO_STR(player_stance);
     RETURN_VALUE_TO_STR(substitute);
     RETURN_VALUE_TO_STR(manual);
   }
@@ -194,6 +197,9 @@ GameData::Penalty GameData::penaltyFromString(const std::string& str)
   RETURN_STING_TO_VALUE(request_for_pickup, str);
   RETURN_STING_TO_VALUE(local_game_stuck, str);
   RETURN_STING_TO_VALUE(illegal_positioning, str);
+  RETURN_STING_TO_VALUE(illegal_position, str);
+  RETURN_STING_TO_VALUE(illegal_position_in_set, str);
+  RETURN_STING_TO_VALUE(player_stance, str);
   RETURN_STING_TO_VALUE(substitute, str);
   RETURN_STING_TO_VALUE(manual, str);
 
@@ -234,7 +240,7 @@ void GameData::parseTeamInfo(TeamInfo& teamInfoDst, const spl::TeamInfo& teamInf
 {
   teamInfoDst.penaltyShot = teamInfoSrc.penaltyShot;
   teamInfoDst.score = teamInfoSrc.score;
-  teamInfoDst.teamColor = (TeamColor)teamInfoSrc.teamColour;
+  teamInfoDst.teamColor = (TeamColor)teamInfoSrc.fieldPlayerColour;
   teamInfoDst.teamNumber = teamInfoSrc.teamNumber;
 
   teamInfoDst.players.resize(playersPerTeam);
