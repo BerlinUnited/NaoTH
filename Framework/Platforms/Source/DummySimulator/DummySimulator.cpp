@@ -17,7 +17,7 @@
 using namespace std;
 using namespace naoth;
 
-DummySimulator::DummySimulator(bool backendMode, bool realTime, unsigned short port)
+DummySimulator::DummySimulator(bool backendMode, unsigned short port, bool useGameController)
   :
   backendMode(backendMode)
 {
@@ -32,11 +32,29 @@ DummySimulator::DummySimulator(bool backendMode, bool realTime, unsigned short p
   registerInput<SensorJointData>(*this);
   registerInput<FSRData>(*this);
   registerInput<AccelerometerData>(*this);
-  
+
+  // gamecontroller
+  if (useGameController)
+  {
+    // start gamecontroller listener thread
+    theGameController = new SPLGameController();
+    // register gamecontroller data
+    registerInput<GameData>(*this);
+    registerOutput<const GameReturnData>(*this);
+  }
+
   theDebugServer.start(port);
   theDebugServer.setTimeOut(0);
 }
 
+
+DummySimulator::~DummySimulator()
+{
+  if (theGameController != nullptr)
+  {
+    delete theGameController;
+  }
+}
 
 void DummySimulator::printHelp()
 {

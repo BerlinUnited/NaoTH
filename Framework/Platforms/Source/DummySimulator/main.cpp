@@ -5,6 +5,7 @@
  * Created on 2017.05.21
  */
 
+#include <getopt.h>
 #include <glib.h>
 #include <glib-object.h>
 
@@ -44,6 +45,44 @@ void print_info()
   std::cout << "==========================================\n"  << std::endl;
 }
 
+void print_help()
+{
+  std::cout <<
+      "USAGE: ./dummysimulator [options]\n\n"
+      "OPTIONS:\n"
+      "-b|--backend:        Use DummySimulator with RobotControl\n"
+      "-g|--gamecontroller: Listen to the GameController\n"
+      "-p|--port <n>:       Debug port, default = 5401\n"
+      "-h|--help:           Show help\n";
+  exit(EXIT_FAILURE);
+}
+
+void parse_arguments(int argc, char** argv, bool& backendMode, unsigned short& port, bool& useGameController)
+{
+  const char* const short_opts = "bgp:h";
+  const option long_opts[] = {
+      {"backend",        no_argument,       nullptr, 'b'},
+      {"gamecontroller", no_argument,       nullptr, 'g'},
+      {"port",           required_argument, nullptr, 'p'},
+      {"help",           no_argument,       nullptr, 'h'},
+      {nullptr,          0,                 nullptr,  0 }
+  };
+
+  int opt;
+  while ((opt = getopt_long(argc, argv, short_opts, long_opts, nullptr)) != -1) {
+      switch (opt) {
+          case 'b': backendMode = true; break;
+          case 'g': useGameController = true; break;
+          case 'p': port = atoi(optarg); break;
+          case 'h': // -h or --help
+          case '?': // Unrecognized option
+          default:
+              print_help();
+              break;
+      }
+  }
+}
+
 int main(int argc, char** argv)
 {
   print_info();
@@ -51,11 +90,13 @@ int main(int argc, char** argv)
   g_type_init();
 
   bool backendMode = false;
-  bool realTime = false;
   unsigned short port = 5401;
+  bool useGameController = false;
+
+  parse_arguments(argc, argv, backendMode, port, useGameController);
 
   // create the simulator instance
-  DummySimulator sim(backendMode, realTime, port);
+  DummySimulator sim(backendMode, port, useGameController);
   
   // init the platform
   Platform::getInstance().init(&sim);

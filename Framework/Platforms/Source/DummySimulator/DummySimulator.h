@@ -16,6 +16,7 @@
 #include "DebugCommunication/DebugServer.h"
 #include "PlatformInterface/PlatformInterface.h"
 #include <ModuleFramework/ModuleManager.h>
+#include <Tools/GameController/SPLGameController.h>
 
 // simple robot
 #include <Representations/Infrastructure/JointData.h>
@@ -27,8 +28,8 @@ extern ModuleManager* getModuleManager(Cognition* c);
 class DummySimulator : public naoth::PlatformInterface
 {
 public:
-  DummySimulator(bool backendMode, bool realTime, unsigned short port);
-  virtual ~DummySimulator(){}
+  DummySimulator(bool backendMode, unsigned short port, bool useGameController);
+  virtual ~DummySimulator();
 
   virtual std::string getBodyID() const { return "dummy-simulator"; }
   virtual std::string getBodyNickName() const { return "naoth"; }
@@ -107,6 +108,10 @@ public: // a dummy robot simulator
     data.rawData.z = Math::g;
   }
 
+  // gamecontroller stuff
+  void get(GameData& data){ theGameController->get(data); }
+  void set(const GameReturnData& data) { theGameController->set(data); }
+
   /*
   void get(BatteryData& data);
   void get(FSRData& data);
@@ -135,6 +140,7 @@ public:
 private:
   DebugServer theDebugServer;
   naoth::FrameInfo theFrameInfo;
+  SPLGameController* theGameController = nullptr;
 };
 
 #endif  /* _DUMMY_SIMULATOR_H */
