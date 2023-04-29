@@ -92,11 +92,10 @@ bool SPLGameController::update()
   } // end if header correct
   else
   {
-    std::cerr << "[SPLGameController] Invalid version ("
+    std::cerr << "[SPLGameController] Invalid header and/or version ("
               << " header: " << header << " != " << GAMECONTROLLER_STRUCT_HEADER
-              << " expected: " << GAMECONTROLLER_STRUCT_VERSION
-              << " got: " << dataIn.version << ")!"
-              << std::endl;
+              << " ; version: " << GAMECONTROLLER_STRUCT_VERSION << " != " << dataIn.version
+              << ")!" << std::endl;
   }
 
   return data.valid;
