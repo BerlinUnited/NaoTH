@@ -52,18 +52,27 @@ void print_help()
       "OPTIONS:\n"
       "-b|--backend:        Use DummySimulator with RobotControl\n"
       "-g|--gamecontroller: Listen to the GameController\n"
-      "-p|--port <n>:       Debug port, default = 5401\n"
+      "-t|--teamcomm:       Use TeamComm\n"
+      "-i|--interface <n>:  The TeamComm interface, default = wifi0\n"
+      "-d|--debug <n>:      Debug port, default = 5401\n"
       "-h|--help:           Show help\n";
   exit(EXIT_FAILURE);
 }
 
-void parse_arguments(int argc, char** argv, bool& backendMode, unsigned short& port, bool& useGameController)
+void parse_arguments(int argc, char** argv,
+                     bool& backendMode,
+                     unsigned short& port,
+                     bool& useGameController,
+                     bool& useTeamComms,
+                     string& teamcommInterface)
 {
-  const char* const short_opts = "bgp:h";
+  const char* const short_opts = "bgti:d:h";
   const option long_opts[] = {
       {"backend",        no_argument,       nullptr, 'b'},
       {"gamecontroller", no_argument,       nullptr, 'g'},
-      {"port",           required_argument, nullptr, 'p'},
+      {"teamcomm",       no_argument,       nullptr, 't'},
+      {"interface",      required_argument, nullptr, 'i'},
+      {"debug",          required_argument, nullptr, 'd'},
       {"help",           no_argument,       nullptr, 'h'},
       {nullptr,          0,                 nullptr,  0 }
   };
@@ -73,7 +82,9 @@ void parse_arguments(int argc, char** argv, bool& backendMode, unsigned short& p
       switch (opt) {
           case 'b': backendMode = true; break;
           case 'g': useGameController = true; break;
-          case 'p': port = atoi(optarg); break;
+          case 't': useTeamComms = true; break;
+          case 'i': teamcommInterface.assign(optarg); break;
+          case 'd': port = atoi(optarg); break; // debug port
           case 'h': // -h or --help
           case '?': // Unrecognized option
           default:
@@ -92,14 +103,19 @@ int main(int argc, char** argv)
   bool backendMode = false;
   unsigned short port = 5401;
   bool useGameController = false;
+  bool useTeamComms = false;
+  string teamcommInterface = "wlan0";
 
-  parse_arguments(argc, argv, backendMode, port, useGameController);
+  parse_arguments(argc, argv, backendMode, port, useGameController, useTeamComms, teamcommInterface);
 
   // create the simulator instance
-  DummySimulator sim(backendMode, port, useGameController);
+  DummySimulator sim(backendMode, port);
   
   // init the platform
   Platform::getInstance().init(&sim);
+
+  if (useGameController) { sim.enableGameController(); }
+  if (useTeamComms) { sim.enableTeamComm(teamcommInterface); }
 
   //init_agent(sim);
   Cognition* theCognition = createCognition();
