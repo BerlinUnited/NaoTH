@@ -74,6 +74,8 @@ bool BroadCaster::queryBroadcastAddress()
     g_object_unref(address);
     std::cout << "[INFO] BroadCaster configured (" << interfaceName << ", " << broadcast << ", " << port << ")" << std::endl;
     return true;
+  } else {
+    std::cerr << "[BroadCaster] WARNING: unable to get broadcast address (" << interfaceName << ", " << broadcast << ", " << port << ")" << std::endl;
   }
   return false;
 }

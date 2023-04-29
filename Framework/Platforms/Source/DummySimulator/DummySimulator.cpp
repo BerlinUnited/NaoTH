@@ -17,7 +17,9 @@
 using namespace std;
 using namespace naoth;
 
-DummySimulator::DummySimulator(bool backendMode, unsigned short port, bool useGameController)
+#define TEAMCOMM_MAX_MSG_SIZE 4096
+
+DummySimulator::DummySimulator(bool backendMode, unsigned short port)
   :
   backendMode(backendMode)
 {
@@ -33,26 +35,25 @@ DummySimulator::DummySimulator(bool backendMode, unsigned short port, bool useGa
   registerInput<FSRData>(*this);
   registerInput<AccelerometerData>(*this);
 
-  // gamecontroller
-  if (useGameController)
-  {
-    // start gamecontroller listener thread
-    theGameController = new SPLGameController();
-    // register gamecontroller data
-    registerInput<GameData>(*this);
-    registerOutput<const GameReturnData>(*this);
-  }
-
   theDebugServer.start(port);
   theDebugServer.setTimeOut(0);
 }
-
 
 DummySimulator::~DummySimulator()
 {
   if (theGameController != nullptr)
   {
     delete theGameController;
+  }
+
+  if (theTeamCommSender != nullptr)
+  {
+    delete theTeamCommSender;
+  }
+
+  if (theTeamCommListener != nullptr)
+  {
+    delete theTeamCommListener;
   }
 }
 
@@ -131,4 +132,34 @@ void DummySimulator::executeFrame()
 {
   runCognition();
   runMotion();
+}
+
+void DummySimulator::enableGameController()
+{
+  // start gamecontroller listener thread
+  theGameController = new SPLGameController();
+  // register gamecontroller data
+  registerInput<GameData>(*this);
+  registerOutput<const GameReturnData>(*this);
+}
+
+void DummySimulator::enableTeamComm(string interface)
+{
+    string interfaceName = "";
+    int teamcomm_port = 10700;
+
+    // load from config
+    naoth::Platform::getInstance().theConfiguration.get("teamcomm", "interface", interfaceName);
+    naoth::Platform::getInstance().theConfiguration.get("teamcomm", "port", teamcomm_port);
+
+    // parameter get precedence
+    if (!interface.empty()) { interfaceName.assign(interface); }
+
+    // start sender/receiver threads
+    theTeamCommSender = new BroadCaster(interfaceName, teamcomm_port);
+    theTeamCommListener = new UDPReceiver(teamcomm_port, TEAMCOMM_MAX_MSG_SIZE);
+
+    // register teamcomm
+    registerInput<TeamMessageDataIn>(*this);
+    registerOutput<const TeamMessageDataOut>(*this);
 }
