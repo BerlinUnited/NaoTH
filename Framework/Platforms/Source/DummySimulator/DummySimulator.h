@@ -16,7 +16,7 @@
 #include "DebugCommunication/DebugServer.h"
 #include "PlatformInterface/PlatformInterface.h"
 #include <ModuleFramework/ModuleManager.h>
-#include <Tools/GameController/SPLGameController.h>
+#include <Tools/Communication/Network/SPLGameController.h>
 #include <Tools/Communication/Network/BroadCaster.h>
 #include <Tools/Communication/Network/UDPReceiver.h>
 
