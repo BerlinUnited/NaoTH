@@ -139,13 +139,13 @@ public:
     TeamColor teamColor;            // colour of the team
     unsigned int score;             // team's score
     unsigned int penaltyShot;       // penalty shot counter
+    unsigned int messageBudget;     // number of team messages the team is allowed to send for the remainder of the game
     std::vector<RobotInfo> players; // the team's players
 
     // NOTE: not used yet
     //unsigned int goalieNumber;      // unique goalie number
     //TeamColor goalieColor;          // colour of the goalie
     //uint16_t singleShots;     // bits represent penalty shot success
-    //uint16_t messageBudget;   // number of team messages the team is allowed to send for the remainder of the game
   };
 
   static std::string toString(TeamColor value);

@@ -242,6 +242,7 @@ void GameData::parseTeamInfo(TeamInfo& teamInfoDst, const spl::TeamInfo& teamInf
   teamInfoDst.score = teamInfoSrc.score;
   teamInfoDst.teamColor = (TeamColor)teamInfoSrc.fieldPlayerColour;
   teamInfoDst.teamNumber = teamInfoSrc.teamNumber;
+  teamInfoDst.messageBudget = teamInfoSrc.messageBudget;
 
   teamInfoDst.players.resize(playersPerTeam);
   for(unsigned int i = 0; i < playersPerTeam; i++) {
@@ -274,6 +275,7 @@ void GameData::print(ostream& stream) const
   stream << " |- color = " << toString(ownTeam.teamColor) << std::endl;
   stream << " |- score = " << ownTeam.score << std::endl;
   stream << " |- penaltyShot = " << ownTeam.penaltyShot << std::endl;
+  stream << " |- messageBudget = " << ownTeam.messageBudget << std::endl;
   stream << " |- players (penalty, time until unpenalize in s):" << std::endl;
   for(size_t i = 0; i < ownTeam.players.size(); ++i) {
     stream << "      |- " << (i+1) << ": " << toString(ownTeam.players[i].penalty) << " - " << ownTeam.players[i].secsTillUnpenalised << std::endl;
@@ -285,6 +287,7 @@ void GameData::print(ostream& stream) const
   stream << " |- color = " << toString(oppTeam.teamColor) << std::endl;
   stream << " |- score = " << oppTeam.score << std::endl;
   stream << " |- penaltyShot = " << oppTeam.penaltyShot << std::endl;
+  stream << " |- messageBudget = " << ownTeam.messageBudget << std::endl;
   stream << " |- players (penalty, time until unpenalize in s):" << std::endl;
   for(size_t i = 0; i < oppTeam.players.size(); ++i) {
     stream << "      |- " << (i+1) << ": " << toString(oppTeam.players[i].penalty) << " - " << oppTeam.players[i].secsTillUnpenalised << std::endl;
