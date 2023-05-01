@@ -60,8 +60,10 @@ public:
     //competition_passing  = COMPETITION_TYPE_PASSING_CHALLENGE
 
     // RC 2022
-    competition_challenge_shield        = COMPETITION_TYPE_CHALLENGE_SHIELD,
-    competition_7v7                     = COMPETITION_TYPE_7V7,
+    //competition_challenge_shield        = COMPETITION_TYPE_CHALLENGE_SHIELD,
+    //competition_7v7                     = COMPETITION_TYPE_7V7,
+
+    // RC 2023
     competition_dynamic_ball_handling   = COMPETITION_TYPE_DYNAMIC_BALL_HANDLING
   };
 
@@ -94,19 +96,22 @@ public:
 
   enum Penalty
   {
-    penalty_none          = PENALTY_NONE,
-    illegal_ball_contact  = PENALTY_SPL_ILLEGAL_BALL_CONTACT,
-    player_pushing        = PENALTY_SPL_PLAYER_PUSHING,
-    illegal_motion_in_set = PENALTY_SPL_ILLEGAL_MOTION_IN_SET,
-    inactive_player       = PENALTY_SPL_INACTIVE_PLAYER,
-    illegal_defender      = 97, //PENALTY_SPL_ILLEGAL_DEFENDER, // Deprecated since 2021
-    leaving_the_field     = PENALTY_SPL_LEAVING_THE_FIELD,
-    kick_off_goal         = 98, //PENALTY_SPL_KICK_OFF_GOAL, // Deprecated since 2021
-    request_for_pickup    = PENALTY_SPL_REQUEST_FOR_PICKUP,
-    local_game_stuck      = PENALTY_SPL_LOCAL_GAME_STUCK,
-    illegal_positioning   = 99, //PENALTY_SPL_ILLEGAL_POSITIONING, // Deprecated since 2021
-    substitute            = PENALTY_SUBSTITUTE,
-    manual                = PENALTY_MANUAL
+    penalty_none            = PENALTY_NONE,
+    illegal_ball_contact    = PENALTY_SPL_ILLEGAL_BALL_CONTACT,
+    player_pushing          = PENALTY_SPL_PLAYER_PUSHING,
+    illegal_motion_in_set   = PENALTY_SPL_ILLEGAL_MOTION_IN_SET,
+    inactive_player         = PENALTY_SPL_INACTIVE_PLAYER,
+    illegal_defender        = 97, //PENALTY_SPL_ILLEGAL_DEFENDER, // Deprecated since 2021
+    leaving_the_field       = PENALTY_SPL_LEAVING_THE_FIELD,
+    kick_off_goal           = 98, //PENALTY_SPL_KICK_OFF_GOAL, // Deprecated since 2021
+    request_for_pickup      = PENALTY_SPL_REQUEST_FOR_PICKUP,
+    local_game_stuck        = PENALTY_SPL_LOCAL_GAME_STUCK,
+    illegal_positioning     = 99, //PENALTY_SPL_ILLEGAL_POSITIONING, // Deprecated since 2021
+    illegal_position        = PENALTY_SPL_ILLEGAL_POSITION,
+    illegal_position_in_set = PENALTY_SPL_ILLEGAL_POSITION_IN_SET,
+    player_stance           = PENALTY_SPL_PLAYER_STANCE,
+    substitute              = PENALTY_SUBSTITUTE,
+    manual                  = PENALTY_MANUAL
   };
 
 
@@ -134,11 +139,13 @@ public:
     TeamColor teamColor;            // colour of the team
     unsigned int score;             // team's score
     unsigned int penaltyShot;       // penalty shot counter
+    unsigned int messageBudget;     // number of team messages the team is allowed to send for the remainder of the game
     std::vector<RobotInfo> players; // the team's players
 
     // NOTE: not used yet
+    //unsigned int goalieNumber;      // unique goalie number
+    //TeamColor goalieColor;          // colour of the goalie
     //uint16_t singleShots;     // bits represent penalty shot success
-    //uint16_t messageBudget;   // number of team messages the team is allowed to send for the remainder of the game
   };
 
   static std::string toString(TeamColor value);
