@@ -218,7 +218,8 @@ class RotationState : public Eigen::Matrix<double,dim,1> //public RotationState<
             return_val << this->getRotationAsQuaternion().inverse()._transformVector(Eigen::Vector3d(0,0,1)), this->rotational_velocity();
             return return_val;
         }
-        static const int size = dim;
+
+        static const size_t size = dim;
 };
 
 // state for acceleration in "global" reference frame
