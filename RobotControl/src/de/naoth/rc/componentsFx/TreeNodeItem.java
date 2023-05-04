@@ -36,19 +36,22 @@ public class TreeNodeItem<T extends Object> extends CheckBoxTreeItem<T>
     private final HashMap<T, TreeNodeItem> mapping = new HashMap<>();
     /** The tooltip for this tree node. */
     private final String tooltip;
+    
+    private final String path;
 
     public TreeNodeItem() {
-        this(null, null);
+        this(null, null, null);
     }
     
     public TreeNodeItem(T name) {
-        this(name, null);
+        this(name, null, null);
     }
     
-    public TreeNodeItem(T name, String tooltip) {
+    public TreeNodeItem(T name, String tooltip, String path) {
         super(name);
         
         this.tooltip = tooltip;
+        this.path = path;
        
         // sync the children: source -> filtered -> children
         Bindings.bindContent(getChildren(), filteredList);
@@ -103,12 +106,14 @@ public class TreeNodeItem<T extends Object> extends CheckBoxTreeItem<T>
                     return true;
                 }
                 // Intermediate nodes are not matched and hidden by default 
-                // if they doesn't have visible children
+                // if they do not have visible children
                 if (((TreeNodeItem)child).getSourceChildren().size() > 0) {
                     return false;
                 }
                 // Otherwise ask the TreeNodeItemPredicate
-                return this.predicate.get().test(this, child.getValue());
+                // HACK
+                TreeNodeItem<T> tmp = new TreeNodeItem(((TreeNodeItem)child).getPath(), "", "");
+                return this.predicate.get().test(this, tmp.getValue());
             };
             return p;
         }, this.predicate);
@@ -163,6 +168,10 @@ public class TreeNodeItem<T extends Object> extends CheckBoxTreeItem<T>
         return tooltip;
     }
 
+    public String getPath() {
+        return path;
+    }
+    
     /**
      * Returns the child node of the given name.
      * @param name  the name of the child
