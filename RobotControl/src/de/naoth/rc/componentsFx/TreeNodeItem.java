@@ -111,9 +111,7 @@ public class TreeNodeItem<T extends Object> extends CheckBoxTreeItem<T>
                     return false;
                 }
                 // Otherwise ask the TreeNodeItemPredicate
-                // HACK
-                TreeNodeItem<T> tmp = new TreeNodeItem(((TreeNodeItem)child).getPath(), "", "");
-                return this.predicate.get().test(this, tmp.getValue());
+                return this.predicate.get().test(this, child);
             };
             return p;
         }, this.predicate);
@@ -168,6 +166,10 @@ public class TreeNodeItem<T extends Object> extends CheckBoxTreeItem<T>
         return tooltip;
     }
 
+    /**
+     * Returns the path of this node
+     * @return the path of this node
+     */
     public String getPath() {
         return path;
     }

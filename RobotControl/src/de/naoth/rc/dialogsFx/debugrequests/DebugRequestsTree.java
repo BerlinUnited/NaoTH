@@ -100,8 +100,9 @@ public class DebugRequestsTree implements ResponseListener
                 return null; 
             }
             return TreeItemPredicate.create(item -> { 
-                System.out.println(item.toLowerCase());
-                return item.toLowerCase().contains(search.getText().toLowerCase()); 
+                String text = ((TreeNodeItem<String>)item).getPath();
+                System.out.println(text);
+                return text.toLowerCase().contains(search.getText().toLowerCase()); 
             } );
         }, search.textProperty()));
         

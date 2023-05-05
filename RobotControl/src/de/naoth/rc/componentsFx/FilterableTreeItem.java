@@ -103,7 +103,7 @@ public class FilterableTreeItem<T> extends CheckBoxTreeItem<T>
                     return false;
                 }
                 // Otherwise ask the TreeItemPredicate
-                return this.predicate.get().test(this, child.getValue());
+                return this.predicate.get().test(this, child);
             };
             return p;
         }, this.predicate);
