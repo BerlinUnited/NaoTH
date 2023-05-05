@@ -32,6 +32,7 @@
 #include <google/protobuf/unknown_field_set.h>
 #include "CommonTypes.pb.h"
 #include "Framework-Representations.pb.h"
+#include <google/protobuf/any.pb.h>
 // @@protoc_insertion_point(includes)
 namespace naothmessages {
 class BUUserTeamMessage;
@@ -52,6 +53,9 @@ extern RobotRoleDefaultTypeInternal _RobotRole_default_instance_;
 class TeamMessage;
 class TeamMessageDefaultTypeInternal;
 extern TeamMessageDefaultTypeInternal _TeamMessage_default_instance_;
+class TeamMessageEvent;
+class TeamMessageEventDefaultTypeInternal;
+extern TeamMessageEventDefaultTypeInternal _TeamMessageEvent_default_instance_;
 class TeamMessage_Data;
 class TeamMessage_DataDefaultTypeInternal;
 extern TeamMessage_DataDefaultTypeInternal _TeamMessage_Data_default_instance_;
@@ -1351,6 +1355,127 @@ class TeamMessage : public ::google::protobuf::Message /* @@protoc_insertion_poi
   mutable int _cached_size_;
   ::google::protobuf::RepeatedPtrField< ::naothmessages::TeamMessage_Data > data_;
   ::naothmessages::Drops* messagedrop_;
+  friend struct protobuf_TeamMessage_2eproto::TableStruct;
+};
+// -------------------------------------------------------------------
+
+class TeamMessageEvent : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:naothmessages.TeamMessageEvent) */ {
+ public:
+  TeamMessageEvent();
+  virtual ~TeamMessageEvent();
+
+  TeamMessageEvent(const TeamMessageEvent& from);
+
+  inline TeamMessageEvent& operator=(const TeamMessageEvent& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  #if LANG_CXX11
+  TeamMessageEvent(TeamMessageEvent&& from) noexcept
+    : TeamMessageEvent() {
+    *this = ::std::move(from);
+  }
+
+  inline TeamMessageEvent& operator=(TeamMessageEvent&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+  #endif
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _internal_metadata_.unknown_fields();
+  }
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return _internal_metadata_.mutable_unknown_fields();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const TeamMessageEvent& default_instance();
+
+  static inline const TeamMessageEvent* internal_default_instance() {
+    return reinterpret_cast<const TeamMessageEvent*>(
+               &_TeamMessageEvent_default_instance_);
+  }
+  static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
+    7;
+
+  void Swap(TeamMessageEvent* other);
+  friend void swap(TeamMessageEvent& a, TeamMessageEvent& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline TeamMessageEvent* New() const PROTOBUF_FINAL { return New(NULL); }
+
+  TeamMessageEvent* New(::google::protobuf::Arena* arena) const PROTOBUF_FINAL;
+  void CopyFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void MergeFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void CopyFrom(const TeamMessageEvent& from);
+  void MergeFrom(const TeamMessageEvent& from);
+  void Clear() PROTOBUF_FINAL;
+  bool IsInitialized() const PROTOBUF_FINAL;
+
+  size_t ByteSizeLong() const PROTOBUF_FINAL;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) PROTOBUF_FINAL;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const PROTOBUF_FINAL;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const PROTOBUF_FINAL;
+  int GetCachedSize() const PROTOBUF_FINAL { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const PROTOBUF_FINAL;
+  void InternalSwap(TeamMessageEvent* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const PROTOBUF_FINAL;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // repeated .google.protobuf.Any details = 2;
+  int details_size() const;
+  void clear_details();
+  static const int kDetailsFieldNumber = 2;
+  const ::google::protobuf::Any& details(int index) const;
+  ::google::protobuf::Any* mutable_details(int index);
+  ::google::protobuf::Any* add_details();
+  ::google::protobuf::RepeatedPtrField< ::google::protobuf::Any >*
+      mutable_details();
+  const ::google::protobuf::RepeatedPtrField< ::google::protobuf::Any >&
+      details() const;
+
+  // optional uint32 playerNum = 1 [default = 0];
+  bool has_playernum() const;
+  void clear_playernum();
+  static const int kPlayerNumFieldNumber = 1;
+  ::google::protobuf::uint32 playernum() const;
+  void set_playernum(::google::protobuf::uint32 value);
+
+  // @@protoc_insertion_point(class_scope:naothmessages.TeamMessageEvent)
+ private:
+  void set_has_playernum();
+  void clear_has_playernum();
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::internal::HasBits<1> _has_bits_;
+  mutable int _cached_size_;
+  ::google::protobuf::RepeatedPtrField< ::google::protobuf::Any > details_;
+  ::google::protobuf::uint32 playernum_;
   friend struct protobuf_TeamMessage_2eproto::TableStruct;
 };
 // ===================================================================
@@ -2765,10 +2890,70 @@ inline void TeamMessage::set_allocated_messagedrop(::naothmessages::Drops* messa
   // @@protoc_insertion_point(field_set_allocated:naothmessages.TeamMessage.messageDrop)
 }
 
+// -------------------------------------------------------------------
+
+// TeamMessageEvent
+
+// optional uint32 playerNum = 1 [default = 0];
+inline bool TeamMessageEvent::has_playernum() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void TeamMessageEvent::set_has_playernum() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void TeamMessageEvent::clear_has_playernum() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void TeamMessageEvent::clear_playernum() {
+  playernum_ = 0u;
+  clear_has_playernum();
+}
+inline ::google::protobuf::uint32 TeamMessageEvent::playernum() const {
+  // @@protoc_insertion_point(field_get:naothmessages.TeamMessageEvent.playerNum)
+  return playernum_;
+}
+inline void TeamMessageEvent::set_playernum(::google::protobuf::uint32 value) {
+  set_has_playernum();
+  playernum_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.TeamMessageEvent.playerNum)
+}
+
+// repeated .google.protobuf.Any details = 2;
+inline int TeamMessageEvent::details_size() const {
+  return details_.size();
+}
+inline void TeamMessageEvent::clear_details() {
+  details_.Clear();
+}
+inline const ::google::protobuf::Any& TeamMessageEvent::details(int index) const {
+  // @@protoc_insertion_point(field_get:naothmessages.TeamMessageEvent.details)
+  return details_.Get(index);
+}
+inline ::google::protobuf::Any* TeamMessageEvent::mutable_details(int index) {
+  // @@protoc_insertion_point(field_mutable:naothmessages.TeamMessageEvent.details)
+  return details_.Mutable(index);
+}
+inline ::google::protobuf::Any* TeamMessageEvent::add_details() {
+  // @@protoc_insertion_point(field_add:naothmessages.TeamMessageEvent.details)
+  return details_.Add();
+}
+inline ::google::protobuf::RepeatedPtrField< ::google::protobuf::Any >*
+TeamMessageEvent::mutable_details() {
+  // @@protoc_insertion_point(field_mutable_list:naothmessages.TeamMessageEvent.details)
+  return &details_;
+}
+inline const ::google::protobuf::RepeatedPtrField< ::google::protobuf::Any >&
+TeamMessageEvent::details() const {
+  // @@protoc_insertion_point(field_list:naothmessages.TeamMessageEvent.details)
+  return details_;
+}
+
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
 #endif  // !PROTOBUF_INLINE_NOT_IN_HEADERS
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------

@@ -9611,6 +9611,850 @@ public final class TeamMessageOuterClass {
 
   }
 
+  public interface TeamMessageEventOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:naothmessages.TeamMessageEvent)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>optional uint32 playerNum = 1 [default = 0];</code>
+     */
+    boolean hasPlayerNum();
+    /**
+     * <code>optional uint32 playerNum = 1 [default = 0];</code>
+     */
+    int getPlayerNum();
+
+    /**
+     * <code>repeated .google.protobuf.Any details = 2;</code>
+     */
+    java.util.List<com.google.protobuf.Any> 
+        getDetailsList();
+    /**
+     * <code>repeated .google.protobuf.Any details = 2;</code>
+     */
+    com.google.protobuf.Any getDetails(int index);
+    /**
+     * <code>repeated .google.protobuf.Any details = 2;</code>
+     */
+    int getDetailsCount();
+    /**
+     * <code>repeated .google.protobuf.Any details = 2;</code>
+     */
+    java.util.List<? extends com.google.protobuf.AnyOrBuilder> 
+        getDetailsOrBuilderList();
+    /**
+     * <code>repeated .google.protobuf.Any details = 2;</code>
+     */
+    com.google.protobuf.AnyOrBuilder getDetailsOrBuilder(
+        int index);
+  }
+  /**
+   * Protobuf type {@code naothmessages.TeamMessageEvent}
+   */
+  public  static final class TeamMessageEvent extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:naothmessages.TeamMessageEvent)
+      TeamMessageEventOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use TeamMessageEvent.newBuilder() to construct.
+    private TeamMessageEvent(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private TeamMessageEvent() {
+      playerNum_ = 0;
+      details_ = java.util.Collections.emptyList();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private TeamMessageEvent(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 8: {
+              bitField0_ |= 0x00000001;
+              playerNum_ = input.readUInt32();
+              break;
+            }
+            case 18: {
+              if (!((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
+                details_ = new java.util.ArrayList<com.google.protobuf.Any>();
+                mutable_bitField0_ |= 0x00000002;
+              }
+              details_.add(
+                  input.readMessage(com.google.protobuf.Any.parser(), extensionRegistry));
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
+          details_ = java.util.Collections.unmodifiableList(details_);
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return de.naoth.rc.core.messages.TeamMessageOuterClass.internal_static_naothmessages_TeamMessageEvent_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return de.naoth.rc.core.messages.TeamMessageOuterClass.internal_static_naothmessages_TeamMessageEvent_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageEvent.class, de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageEvent.Builder.class);
+    }
+
+    private int bitField0_;
+    public static final int PLAYERNUM_FIELD_NUMBER = 1;
+    private int playerNum_;
+    /**
+     * <code>optional uint32 playerNum = 1 [default = 0];</code>
+     */
+    public boolean hasPlayerNum() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>optional uint32 playerNum = 1 [default = 0];</code>
+     */
+    public int getPlayerNum() {
+      return playerNum_;
+    }
+
+    public static final int DETAILS_FIELD_NUMBER = 2;
+    private java.util.List<com.google.protobuf.Any> details_;
+    /**
+     * <code>repeated .google.protobuf.Any details = 2;</code>
+     */
+    public java.util.List<com.google.protobuf.Any> getDetailsList() {
+      return details_;
+    }
+    /**
+     * <code>repeated .google.protobuf.Any details = 2;</code>
+     */
+    public java.util.List<? extends com.google.protobuf.AnyOrBuilder> 
+        getDetailsOrBuilderList() {
+      return details_;
+    }
+    /**
+     * <code>repeated .google.protobuf.Any details = 2;</code>
+     */
+    public int getDetailsCount() {
+      return details_.size();
+    }
+    /**
+     * <code>repeated .google.protobuf.Any details = 2;</code>
+     */
+    public com.google.protobuf.Any getDetails(int index) {
+      return details_.get(index);
+    }
+    /**
+     * <code>repeated .google.protobuf.Any details = 2;</code>
+     */
+    public com.google.protobuf.AnyOrBuilder getDetailsOrBuilder(
+        int index) {
+      return details_.get(index);
+    }
+
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeUInt32(1, playerNum_);
+      }
+      for (int i = 0; i < details_.size(); i++) {
+        output.writeMessage(2, details_.get(i));
+      }
+      unknownFields.writeTo(output);
+    }
+
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(1, playerNum_);
+      }
+      for (int i = 0; i < details_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(2, details_.get(i));
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageEvent)) {
+        return super.equals(obj);
+      }
+      de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageEvent other = (de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageEvent) obj;
+
+      boolean result = true;
+      result = result && (hasPlayerNum() == other.hasPlayerNum());
+      if (hasPlayerNum()) {
+        result = result && (getPlayerNum()
+            == other.getPlayerNum());
+      }
+      result = result && getDetailsList()
+          .equals(other.getDetailsList());
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (hasPlayerNum()) {
+        hash = (37 * hash) + PLAYERNUM_FIELD_NUMBER;
+        hash = (53 * hash) + getPlayerNum();
+      }
+      if (getDetailsCount() > 0) {
+        hash = (37 * hash) + DETAILS_FIELD_NUMBER;
+        hash = (53 * hash) + getDetailsList().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageEvent parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageEvent parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageEvent parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageEvent parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageEvent parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageEvent parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageEvent parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageEvent parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageEvent parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageEvent parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageEvent parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageEvent parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageEvent prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code naothmessages.TeamMessageEvent}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:naothmessages.TeamMessageEvent)
+        de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageEventOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return de.naoth.rc.core.messages.TeamMessageOuterClass.internal_static_naothmessages_TeamMessageEvent_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return de.naoth.rc.core.messages.TeamMessageOuterClass.internal_static_naothmessages_TeamMessageEvent_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageEvent.class, de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageEvent.Builder.class);
+      }
+
+      // Construct using de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageEvent.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+          getDetailsFieldBuilder();
+        }
+      }
+      public Builder clear() {
+        super.clear();
+        playerNum_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        if (detailsBuilder_ == null) {
+          details_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000002);
+        } else {
+          detailsBuilder_.clear();
+        }
+        return this;
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return de.naoth.rc.core.messages.TeamMessageOuterClass.internal_static_naothmessages_TeamMessageEvent_descriptor;
+      }
+
+      public de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageEvent getDefaultInstanceForType() {
+        return de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageEvent.getDefaultInstance();
+      }
+
+      public de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageEvent build() {
+        de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageEvent result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageEvent buildPartial() {
+        de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageEvent result = new de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageEvent(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.playerNum_ = playerNum_;
+        if (detailsBuilder_ == null) {
+          if (((bitField0_ & 0x00000002) == 0x00000002)) {
+            details_ = java.util.Collections.unmodifiableList(details_);
+            bitField0_ = (bitField0_ & ~0x00000002);
+          }
+          result.details_ = details_;
+        } else {
+          result.details_ = detailsBuilder_.build();
+        }
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageEvent) {
+          return mergeFrom((de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageEvent)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageEvent other) {
+        if (other == de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageEvent.getDefaultInstance()) return this;
+        if (other.hasPlayerNum()) {
+          setPlayerNum(other.getPlayerNum());
+        }
+        if (detailsBuilder_ == null) {
+          if (!other.details_.isEmpty()) {
+            if (details_.isEmpty()) {
+              details_ = other.details_;
+              bitField0_ = (bitField0_ & ~0x00000002);
+            } else {
+              ensureDetailsIsMutable();
+              details_.addAll(other.details_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.details_.isEmpty()) {
+            if (detailsBuilder_.isEmpty()) {
+              detailsBuilder_.dispose();
+              detailsBuilder_ = null;
+              details_ = other.details_;
+              bitField0_ = (bitField0_ & ~0x00000002);
+              detailsBuilder_ = 
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                   getDetailsFieldBuilder() : null;
+            } else {
+              detailsBuilder_.addAllMessages(other.details_);
+            }
+          }
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageEvent parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageEvent) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      private int playerNum_ ;
+      /**
+       * <code>optional uint32 playerNum = 1 [default = 0];</code>
+       */
+      public boolean hasPlayerNum() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>optional uint32 playerNum = 1 [default = 0];</code>
+       */
+      public int getPlayerNum() {
+        return playerNum_;
+      }
+      /**
+       * <code>optional uint32 playerNum = 1 [default = 0];</code>
+       */
+      public Builder setPlayerNum(int value) {
+        bitField0_ |= 0x00000001;
+        playerNum_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional uint32 playerNum = 1 [default = 0];</code>
+       */
+      public Builder clearPlayerNum() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        playerNum_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private java.util.List<com.google.protobuf.Any> details_ =
+        java.util.Collections.emptyList();
+      private void ensureDetailsIsMutable() {
+        if (!((bitField0_ & 0x00000002) == 0x00000002)) {
+          details_ = new java.util.ArrayList<com.google.protobuf.Any>(details_);
+          bitField0_ |= 0x00000002;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          com.google.protobuf.Any, com.google.protobuf.Any.Builder, com.google.protobuf.AnyOrBuilder> detailsBuilder_;
+
+      /**
+       * <code>repeated .google.protobuf.Any details = 2;</code>
+       */
+      public java.util.List<com.google.protobuf.Any> getDetailsList() {
+        if (detailsBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(details_);
+        } else {
+          return detailsBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <code>repeated .google.protobuf.Any details = 2;</code>
+       */
+      public int getDetailsCount() {
+        if (detailsBuilder_ == null) {
+          return details_.size();
+        } else {
+          return detailsBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .google.protobuf.Any details = 2;</code>
+       */
+      public com.google.protobuf.Any getDetails(int index) {
+        if (detailsBuilder_ == null) {
+          return details_.get(index);
+        } else {
+          return detailsBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .google.protobuf.Any details = 2;</code>
+       */
+      public Builder setDetails(
+          int index, com.google.protobuf.Any value) {
+        if (detailsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureDetailsIsMutable();
+          details_.set(index, value);
+          onChanged();
+        } else {
+          detailsBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .google.protobuf.Any details = 2;</code>
+       */
+      public Builder setDetails(
+          int index, com.google.protobuf.Any.Builder builderForValue) {
+        if (detailsBuilder_ == null) {
+          ensureDetailsIsMutable();
+          details_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          detailsBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .google.protobuf.Any details = 2;</code>
+       */
+      public Builder addDetails(com.google.protobuf.Any value) {
+        if (detailsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureDetailsIsMutable();
+          details_.add(value);
+          onChanged();
+        } else {
+          detailsBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .google.protobuf.Any details = 2;</code>
+       */
+      public Builder addDetails(
+          int index, com.google.protobuf.Any value) {
+        if (detailsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureDetailsIsMutable();
+          details_.add(index, value);
+          onChanged();
+        } else {
+          detailsBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .google.protobuf.Any details = 2;</code>
+       */
+      public Builder addDetails(
+          com.google.protobuf.Any.Builder builderForValue) {
+        if (detailsBuilder_ == null) {
+          ensureDetailsIsMutable();
+          details_.add(builderForValue.build());
+          onChanged();
+        } else {
+          detailsBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .google.protobuf.Any details = 2;</code>
+       */
+      public Builder addDetails(
+          int index, com.google.protobuf.Any.Builder builderForValue) {
+        if (detailsBuilder_ == null) {
+          ensureDetailsIsMutable();
+          details_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          detailsBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .google.protobuf.Any details = 2;</code>
+       */
+      public Builder addAllDetails(
+          java.lang.Iterable<? extends com.google.protobuf.Any> values) {
+        if (detailsBuilder_ == null) {
+          ensureDetailsIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, details_);
+          onChanged();
+        } else {
+          detailsBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .google.protobuf.Any details = 2;</code>
+       */
+      public Builder clearDetails() {
+        if (detailsBuilder_ == null) {
+          details_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000002);
+          onChanged();
+        } else {
+          detailsBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .google.protobuf.Any details = 2;</code>
+       */
+      public Builder removeDetails(int index) {
+        if (detailsBuilder_ == null) {
+          ensureDetailsIsMutable();
+          details_.remove(index);
+          onChanged();
+        } else {
+          detailsBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .google.protobuf.Any details = 2;</code>
+       */
+      public com.google.protobuf.Any.Builder getDetailsBuilder(
+          int index) {
+        return getDetailsFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .google.protobuf.Any details = 2;</code>
+       */
+      public com.google.protobuf.AnyOrBuilder getDetailsOrBuilder(
+          int index) {
+        if (detailsBuilder_ == null) {
+          return details_.get(index);  } else {
+          return detailsBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .google.protobuf.Any details = 2;</code>
+       */
+      public java.util.List<? extends com.google.protobuf.AnyOrBuilder> 
+           getDetailsOrBuilderList() {
+        if (detailsBuilder_ != null) {
+          return detailsBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(details_);
+        }
+      }
+      /**
+       * <code>repeated .google.protobuf.Any details = 2;</code>
+       */
+      public com.google.protobuf.Any.Builder addDetailsBuilder() {
+        return getDetailsFieldBuilder().addBuilder(
+            com.google.protobuf.Any.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .google.protobuf.Any details = 2;</code>
+       */
+      public com.google.protobuf.Any.Builder addDetailsBuilder(
+          int index) {
+        return getDetailsFieldBuilder().addBuilder(
+            index, com.google.protobuf.Any.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .google.protobuf.Any details = 2;</code>
+       */
+      public java.util.List<com.google.protobuf.Any.Builder> 
+           getDetailsBuilderList() {
+        return getDetailsFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          com.google.protobuf.Any, com.google.protobuf.Any.Builder, com.google.protobuf.AnyOrBuilder> 
+          getDetailsFieldBuilder() {
+        if (detailsBuilder_ == null) {
+          detailsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+              com.google.protobuf.Any, com.google.protobuf.Any.Builder, com.google.protobuf.AnyOrBuilder>(
+                  details_,
+                  ((bitField0_ & 0x00000002) == 0x00000002),
+                  getParentForChildren(),
+                  isClean());
+          details_ = null;
+        }
+        return detailsBuilder_;
+      }
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:naothmessages.TeamMessageEvent)
+    }
+
+    // @@protoc_insertion_point(class_scope:naothmessages.TeamMessageEvent)
+    private static final de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageEvent DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageEvent();
+    }
+
+    public static de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageEvent getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    @java.lang.Deprecated public static final com.google.protobuf.Parser<TeamMessageEvent>
+        PARSER = new com.google.protobuf.AbstractParser<TeamMessageEvent>() {
+      public TeamMessageEvent parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+          return new TeamMessageEvent(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<TeamMessageEvent> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<TeamMessageEvent> getParserForType() {
+      return PARSER;
+    }
+
+    public de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageEvent getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_naothmessages_RobotRole_descriptor;
   private static final 
@@ -9646,6 +10490,11 @@ public final class TeamMessageOuterClass {
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_naothmessages_TeamMessage_Data_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_naothmessages_TeamMessageEvent_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_naothmessages_TeamMessageEvent_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -9657,64 +10506,67 @@ public final class TeamMessageOuterClass {
     java.lang.String[] descriptorData = {
       "\n\021TeamMessage.proto\022\rnaothmessages\032\021Comm" +
       "onTypes.proto\032\037Framework-Representations" +
-      ".proto\"\220\001\n\tRobotRole\022A\n\013role_static\030\001 \002(" +
-      "\0162\036.naothmessages.RobotRoleStatic:\014role_" +
-      "unknown\022@\n\014role_dynamic\030\002 \002(\0162\037.naothmes" +
-      "sages.RobotRoleDynamic:\trole_none\"L\n\010Opp" +
-      "onent\022\024\n\tplayerNum\030\001 \002(\005:\0010\022*\n\013poseOnFie" +
-      "ld\030\002 \001(\0132\025.naothmessages.Pose2D\"A\n\003Ntp\022\024" +
-      "\n\tplayerNum\030\001 \002(\005:\0010\022\017\n\004sent\030\002 \001(\004:\0010\022\023\n" +
-      "\010received\030\003 \001(\004:\0010\"\216\001\n\005Drops\022\033\n\020dropNoSp",
-      "lMessage\030\001 \001(\r:\0010\022\031\n\016dropNotOurTeam\030\002 \001(" +
-      "\r:\0010\022\033\n\020dropNotParseable\030\003 \001(\r:\0010\022\026\n\013dro" +
-      "pKeyFail\030\004 \001(\r:\0010\022\030\n\rdropMonotonic\030\005 \001(\r" +
-      ":\0010\"\230\005\n\021BUUserTeamMessage\022\027\n\006bodyID\030\001 \001(" +
-      "\t:\007unknown\022\022\n\ntimeToBall\030\002 \001(\r\022\031\n\nwasStr" +
-      "iker\030\003 \001(\010:\005false\022\036\n\013isPenalized\030\004 \001(\010:\005" +
-      "falseB\002\030\001\022*\n\topponents\030\005 \003(\0132\027.naothmess" +
-      "ages.Opponent\022\031\n\nteamNumber\030\006 \001(\r:\0010B\002\030\001" +
-      "\022\030\n\rbatteryCharge\030\007 \001(\002:\0011\022\026\n\013temperatur" +
-      "e\030\010 \001(\002:\0010\022\024\n\ttimestamp\030\t \001(\004:\0010\022\037\n\020want",
-      "sToBeStriker\030\n \001(\010:\005false\022\031\n\016cpuTemperat" +
-      "ure\030\013 \001(\002:\0010\022\036\n\017whistleDetected\030\014 \001(\010:\005f" +
-      "alse\022\027\n\014whistleCount\030\r \001(\005:\0010\022.\n\010teamBal" +
-      "l\030\016 \001(\0132\034.naothmessages.DoubleVector2\022&\n" +
-      "\nntpRequest\030\017 \003(\0132\022.naothmessages.Ntp\0222\n" +
-      "\014ballVelocity\030\020 \001(\0132\034.naothmessages.Doub" +
-      "leVector2\0226\n\nrobotState\030\021 \001(\0162\031.naothmes" +
-      "sages.RobotState:\007initial\022+\n\trobotRole\030\022" +
-      " \001(\0132\030.naothmessages.RobotRole\022\023\n\013readyT" +
-      "oWalk\030\023 \001(\010\022\021\n\003key\030d \001(\t:\004none\"\356\003\n\013TeamM",
-      "essage\022-\n\004data\030\001 \003(\0132\037.naothmessages.Tea" +
-      "mMessage.Data\022)\n\013messageDrop\030\002 \001(\0132\024.nao" +
-      "thmessages.Drops\032\204\003\n\004Data\022\024\n\tplayerNum\030\001" +
-      " \001(\r:\0010\0229\n\tteamColor\030\013 \001(\0162\030.naothmessag" +
-      "es.TeamColor:\010blueTeamB\002\030\001\022#\n\004pose\030\003 \001(\013" +
-      "2\025.naothmessages.Pose2D\022\023\n\007ballAge\030\004 \001(\005" +
-      ":\002-1\0222\n\014ballPosition\030\005 \001(\0132\034.naothmessag" +
-      "es.DoubleVector2\0222\n\014ballVelocity\030\006 \001(\0132\034" +
-      ".naothmessages.DoubleVector2\022\025\n\006fallen\030\n" +
-      " \001(\010:\005false\022.\n\004user\030\010 \001(\0132 .naothmessage",
-      "s.BUUserTeamMessage\022+\n\tframeInfo\030\t \001(\0132\030" +
-      ".naothmessages.FrameInfo\022\025\n\nteamNumber\030\014" +
-      " \001(\r:\0010*\262\001\n\tTeamColor\022\014\n\010blueTeam\020\000\022\013\n\007r" +
-      "edTeam\020\001\022\016\n\nyellowTeam\020\002\022\r\n\tblackTeam\020\003\022" +
-      "\r\n\twhiteTeam\020\004\022\r\n\tgreenTeam\020\005\022\016\n\norangeT" +
-      "eam\020\006\022\016\n\npurpleTeam\020\007\022\r\n\tbrownTeam\020\010\022\014\n\010" +
-      "grayTeam\020\t\022\020\n\013invalidTeam\020\377\001*d\n\nRobotSta" +
-      "te\022\013\n\007initial\020\000\022\t\n\005ready\020\001\022\007\n\003set\020\002\022\013\n\007p" +
-      "laying\020\003\022\014\n\010finished\020\004\022\r\n\tpenalized\020\005\022\013\n" +
-      "\007unstiff\020\006*\230\002\n\017RobotRoleStatic\022\026\n\022role_d",
-      "efender_left\020\000\022\030\n\024role_defender_center\020\001" +
-      "\022\027\n\023role_defender_right\020\002\022\030\n\024role_midfie" +
-      "lder_left\020\003\022\032\n\026role_midfielder_center\020\004\022" +
-      "\031\n\025role_midfielder_right\020\005\022\025\n\021role_forwa" +
-      "rd_left\020\006\022\027\n\023role_forward_center\020\007\022\026\n\022ro" +
-      "le_forward_right\020\010\022\017\n\013role_goalie\020\t\022\020\n\014r" +
-      "ole_unknown\020\n*b\n\020RobotRoleDynamic\022\r\n\trol" +
-      "e_none\020\000\022\022\n\016role_supporter\020\001\022\031\n\025role_goa" +
-      "lie_supporter\020\002\022\020\n\014role_striker\020\003B\033\n\031de." +
-      "naoth.rc.core.messages"
+      ".proto\032\031google/protobuf/any.proto\"\220\001\n\tRo" +
+      "botRole\022A\n\013role_static\030\001 \002(\0162\036.naothmess" +
+      "ages.RobotRoleStatic:\014role_unknown\022@\n\014ro" +
+      "le_dynamic\030\002 \002(\0162\037.naothmessages.RobotRo" +
+      "leDynamic:\trole_none\"L\n\010Opponent\022\024\n\tplay" +
+      "erNum\030\001 \002(\005:\0010\022*\n\013poseOnField\030\002 \001(\0132\025.na" +
+      "othmessages.Pose2D\"A\n\003Ntp\022\024\n\tplayerNum\030\001" +
+      " \002(\005:\0010\022\017\n\004sent\030\002 \001(\004:\0010\022\023\n\010received\030\003 \001",
+      "(\004:\0010\"\216\001\n\005Drops\022\033\n\020dropNoSplMessage\030\001 \001(" +
+      "\r:\0010\022\031\n\016dropNotOurTeam\030\002 \001(\r:\0010\022\033\n\020dropN" +
+      "otParseable\030\003 \001(\r:\0010\022\026\n\013dropKeyFail\030\004 \001(" +
+      "\r:\0010\022\030\n\rdropMonotonic\030\005 \001(\r:\0010\"\230\005\n\021BUUse" +
+      "rTeamMessage\022\027\n\006bodyID\030\001 \001(\t:\007unknown\022\022\n" +
+      "\ntimeToBall\030\002 \001(\r\022\031\n\nwasStriker\030\003 \001(\010:\005f" +
+      "alse\022\036\n\013isPenalized\030\004 \001(\010:\005falseB\002\030\001\022*\n\t" +
+      "opponents\030\005 \003(\0132\027.naothmessages.Opponent" +
+      "\022\031\n\nteamNumber\030\006 \001(\r:\0010B\002\030\001\022\030\n\rbatteryCh" +
+      "arge\030\007 \001(\002:\0011\022\026\n\013temperature\030\010 \001(\002:\0010\022\024\n",
+      "\ttimestamp\030\t \001(\004:\0010\022\037\n\020wantsToBeStriker\030" +
+      "\n \001(\010:\005false\022\031\n\016cpuTemperature\030\013 \001(\002:\0010\022" +
+      "\036\n\017whistleDetected\030\014 \001(\010:\005false\022\027\n\014whist" +
+      "leCount\030\r \001(\005:\0010\022.\n\010teamBall\030\016 \001(\0132\034.nao" +
+      "thmessages.DoubleVector2\022&\n\nntpRequest\030\017" +
+      " \003(\0132\022.naothmessages.Ntp\0222\n\014ballVelocity" +
+      "\030\020 \001(\0132\034.naothmessages.DoubleVector2\0226\n\n" +
+      "robotState\030\021 \001(\0162\031.naothmessages.RobotSt" +
+      "ate:\007initial\022+\n\trobotRole\030\022 \001(\0132\030.naothm" +
+      "essages.RobotRole\022\023\n\013readyToWalk\030\023 \001(\010\022\021",
+      "\n\003key\030d \001(\t:\004none\"\356\003\n\013TeamMessage\022-\n\004dat" +
+      "a\030\001 \003(\0132\037.naothmessages.TeamMessage.Data" +
+      "\022)\n\013messageDrop\030\002 \001(\0132\024.naothmessages.Dr" +
+      "ops\032\204\003\n\004Data\022\024\n\tplayerNum\030\001 \001(\r:\0010\0229\n\tte" +
+      "amColor\030\013 \001(\0162\030.naothmessages.TeamColor:" +
+      "\010blueTeamB\002\030\001\022#\n\004pose\030\003 \001(\0132\025.naothmessa" +
+      "ges.Pose2D\022\023\n\007ballAge\030\004 \001(\005:\002-1\0222\n\014ballP" +
+      "osition\030\005 \001(\0132\034.naothmessages.DoubleVect" +
+      "or2\0222\n\014ballVelocity\030\006 \001(\0132\034.naothmessage" +
+      "s.DoubleVector2\022\025\n\006fallen\030\n \001(\010:\005false\022.",
+      "\n\004user\030\010 \001(\0132 .naothmessages.BUUserTeamM" +
+      "essage\022+\n\tframeInfo\030\t \001(\0132\030.naothmessage" +
+      "s.FrameInfo\022\025\n\nteamNumber\030\014 \001(\r:\0010\"O\n\020Te" +
+      "amMessageEvent\022\024\n\tplayerNum\030\001 \001(\r:\0010\022%\n\007" +
+      "details\030\002 \003(\0132\024.google.protobuf.Any*\262\001\n\t" +
+      "TeamColor\022\014\n\010blueTeam\020\000\022\013\n\007redTeam\020\001\022\016\n\n" +
+      "yellowTeam\020\002\022\r\n\tblackTeam\020\003\022\r\n\twhiteTeam" +
+      "\020\004\022\r\n\tgreenTeam\020\005\022\016\n\norangeTeam\020\006\022\016\n\npur" +
+      "pleTeam\020\007\022\r\n\tbrownTeam\020\010\022\014\n\010grayTeam\020\t\022\020" +
+      "\n\013invalidTeam\020\377\001*d\n\nRobotState\022\013\n\007initia",
+      "l\020\000\022\t\n\005ready\020\001\022\007\n\003set\020\002\022\013\n\007playing\020\003\022\014\n\010" +
+      "finished\020\004\022\r\n\tpenalized\020\005\022\013\n\007unstiff\020\006*\230" +
+      "\002\n\017RobotRoleStatic\022\026\n\022role_defender_left" +
+      "\020\000\022\030\n\024role_defender_center\020\001\022\027\n\023role_def" +
+      "ender_right\020\002\022\030\n\024role_midfielder_left\020\003\022" +
+      "\032\n\026role_midfielder_center\020\004\022\031\n\025role_midf" +
+      "ielder_right\020\005\022\025\n\021role_forward_left\020\006\022\027\n" +
+      "\023role_forward_center\020\007\022\026\n\022role_forward_r" +
+      "ight\020\010\022\017\n\013role_goalie\020\t\022\020\n\014role_unknown\020" +
+      "\n*b\n\020RobotRoleDynamic\022\r\n\trole_none\020\000\022\022\n\016",
+      "role_supporter\020\001\022\031\n\025role_goalie_supporte" +
+      "r\020\002\022\020\n\014role_striker\020\003B\033\n\031de.naoth.rc.cor" +
+      "e.messages"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -9729,6 +10581,7 @@ public final class TeamMessageOuterClass {
         new com.google.protobuf.Descriptors.FileDescriptor[] {
           de.naoth.rc.core.messages.CommonTypes.getDescriptor(),
           de.naoth.rc.core.messages.FrameworkRepresentations.getDescriptor(),
+          com.google.protobuf.AnyProto.getDescriptor(),
         }, assigner);
     internal_static_naothmessages_RobotRole_descriptor =
       getDescriptor().getMessageTypes().get(0);
@@ -9772,8 +10625,15 @@ public final class TeamMessageOuterClass {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_naothmessages_TeamMessage_Data_descriptor,
         new java.lang.String[] { "PlayerNum", "TeamColor", "Pose", "BallAge", "BallPosition", "BallVelocity", "Fallen", "User", "FrameInfo", "TeamNumber", });
+    internal_static_naothmessages_TeamMessageEvent_descriptor =
+      getDescriptor().getMessageTypes().get(6);
+    internal_static_naothmessages_TeamMessageEvent_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_naothmessages_TeamMessageEvent_descriptor,
+        new java.lang.String[] { "PlayerNum", "Details", });
     de.naoth.rc.core.messages.CommonTypes.getDescriptor();
     de.naoth.rc.core.messages.FrameworkRepresentations.getDescriptor();
+    com.google.protobuf.AnyProto.getDescriptor();
   }
 
   // @@protoc_insertion_point(outer_class_scope)

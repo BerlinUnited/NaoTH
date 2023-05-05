@@ -5050,12 +5050,12 @@ class MotionStatus : public ::google::protobuf::Message /* @@protoc_insertion_po
   bool head_target_reached() const;
   void set_head_target_reached(bool value);
 
-  // optional bool head_got_stuck = 12 [deprecated = true];
-  GOOGLE_PROTOBUF_DEPRECATED_ATTR bool has_head_got_stuck() const;
-  GOOGLE_PROTOBUF_DEPRECATED_ATTR void clear_head_got_stuck();
-  GOOGLE_PROTOBUF_DEPRECATED_ATTR static const int kHeadGotStuckFieldNumber = 12;
-  GOOGLE_PROTOBUF_DEPRECATED_ATTR bool head_got_stuck() const;
-  GOOGLE_PROTOBUF_DEPRECATED_ATTR void set_head_got_stuck(bool value);
+  // optional bool head_got_stuck = 12;
+  bool has_head_got_stuck() const;
+  void clear_head_got_stuck();
+  static const int kHeadGotStuckFieldNumber = 12;
+  bool head_got_stuck() const;
+  void set_head_got_stuck(bool value);
 
   // optional bool walk_emergency_stop = 13;
   bool has_walk_emergency_stop() const;
@@ -13120,7 +13120,7 @@ inline void MotionStatus::set_head_target_reached(bool value) {
   // @@protoc_insertion_point(field_set:naothmessages.MotionStatus.head_target_reached)
 }
 
-// optional bool head_got_stuck = 12 [deprecated = true];
+// optional bool head_got_stuck = 12;
 inline bool MotionStatus::has_head_got_stuck() const {
   return (_has_bits_[0] & 0x00000800u) != 0;
 }
