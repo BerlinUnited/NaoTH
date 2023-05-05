@@ -31,6 +31,8 @@
 
 #include "Modules/Infrastructure/TeamCommunicator/TeamCommReceiver.h"
 #include "Modules/Infrastructure/TeamCommunicator/TeamCommSender.h"
+#include "Modules/Infrastructure/TeamCommunicator/TeamCommEventReceiver.h"
+#include "Modules/Infrastructure/TeamCommunicator/TeamCommEventSender.h"
 #include "Modules/Infrastructure/TeamCommunicator/SimpleNetworkTimeProtocol.h"
 
 #include "Modules/Infrastructure/Debug/CameraDebug.h"
@@ -167,6 +169,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(ButtonEventMonitor);
   REGISTER_MODULE(WifiModeSetter);
   REGISTER_MODULE(TeamCommReceiver);
+  REGISTER_MODULE(TeamCommEventReceiver);
   REGISTER_MODULE(SimpleNetworkTimeProtocol);
   REGISTER_MODULE(GameController);
   REGISTER_MODULE(BatteryAlert);
@@ -279,6 +282,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(CameraMatrixCorrectorV3);
 
   REGISTER_MODULE(TeamCommSender);
+  REGISTER_MODULE(TeamCommEventSender);
 
   // debug
   REGISTER_MODULE(GameLogger);
