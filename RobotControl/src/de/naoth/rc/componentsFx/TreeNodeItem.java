@@ -92,26 +92,43 @@ public class TreeNodeItem<T extends Object> extends CheckBoxTreeItem<T>
     {
         return Bindings.createObjectBinding(() -> {
             Predicate<TreeItem<T>> p = child -> {
+                
+                // If there is no predicate, keep this tree item
+                if (this.predicate.get() == null) {
+                    return true;
+                }
+                
+                // if the child confirms to the predicate, 
+                // keep this node and all it's children
+                if ( this.predicate.get().test(this, child.getValue()) ) {
+                    return true;
+                }
+                
                 // Set the predicate of child items to trigger filtering
                 if (child instanceof TreeNodeItem) {
                     TreeNodeItem<T> filterableChild = (TreeNodeItem<T>) child;
                     filterableChild.setPredicate(this.predicate.get());
                 }
-                // If there is no predicate, keep this tree item
-                if (this.predicate.get() == null) {
-                    return true;
-                }
-                // If there are children, keep this tree item
-                if (child.getChildren().size() > 0) {
+                
+                // If there are children left after filtering, 
+                // keep this tree item
+                if (!child.getChildren().isEmpty()) {
                     return true;
                 }
                 // Intermediate nodes are not matched and hidden by default 
                 // if they do not have visible children
-                if (((TreeNodeItem)child).getSourceChildren().size() > 0) {
-                    return false;
-                }
-                // Otherwise ask the TreeNodeItemPredicate
-                return this.predicate.get().test(this, child);
+                //if (((TreeNodeItem)child).getSourceChildren().size() > 0) {
+                //    return false;
+                //}
+                
+                // DEBUG: check if the testing the path yields the same result
+                //String path = ((TreeNodeItem<T>)child).getPath();
+                //if(path != null && this.predicate.get().test(this, (T)path)) {
+                //    System.out.println("Error: " + path);
+                //}
+                
+                // othervise hide the node
+                return false;
             };
             return p;
         }, this.predicate);

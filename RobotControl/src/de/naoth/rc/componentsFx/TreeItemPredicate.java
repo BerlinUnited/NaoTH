@@ -19,7 +19,7 @@ public interface TreeItemPredicate<T> {
      * @return {@code true} if the input argument matches the
      * predicate,otherwise {@code false}
      */
-    boolean test(TreeItem<T> parent, TreeItem<T> node);
+    boolean test(TreeItem<T> parent, T value);
 
     /**
      * Utility method to create a TreeItemPredicate from a given
@@ -29,7 +29,7 @@ public interface TreeItemPredicate<T> {
      * @param <T> the element type
      * @return new TreeItemPredicate
      */
-    static <T> TreeItemPredicate<T> create(Predicate<TreeItem<T>> predicate) {
-        return (parent, node) -> predicate.test(node);
+    static <T> TreeItemPredicate<T> create(Predicate<T> predicate) {
+        return (parent, value) -> predicate.test(value);
     }
 }
