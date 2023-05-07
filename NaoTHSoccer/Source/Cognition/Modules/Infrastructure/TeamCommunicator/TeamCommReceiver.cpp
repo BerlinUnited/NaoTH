@@ -107,6 +107,16 @@ void TeamCommReceiver::handleMessage(const std::string& data)
   getTeamMessage().data[msg.playerNumber] = msg;
 }
 
+void TeamCommReceiver::updateTeamState(const TeamMessageData& msg)
+{
+  auto player = getTeamState().getPlayer(msg.playerNumber);
+  player.messageTimestamp = msg.custom.timestamp;
+  player.ntpRequests      = msg.custom.ntpRequests;
+  player.ballAge          = msg.ballAge;
+  player.ballPosition = msg.ballPosition;
+  player.pose         = msg.pose;
+}
+
 bool TeamCommReceiver::parseFromSplMessageString(const std::string &data, SPLStandardMessage& spl)
 {
   // invalid message size
