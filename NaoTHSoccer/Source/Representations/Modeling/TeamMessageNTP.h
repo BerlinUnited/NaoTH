@@ -19,7 +19,7 @@ public:
         /** the playernumber */
         unsigned int number;
         /** last ntp update of this player */
-        FrameInfo lastNtpUpdate;
+        unsigned long long lastNtpUpdate = 0;
         /** the fastesst round trip time / latency and the resulting time offset (difference) */
         long long rtt = 0;
         long long latency = 0;
@@ -39,7 +39,7 @@ public:
          * @brief Determines, whether or not a ntp module is enabled and this player was updated.
          * @return true, if the player has valid ntp infos, false otherwise
          */
-        bool isNtpActive() const { return lastNtpUpdate.getFrameNumber() > 0; }
+        bool isNtpActive() const { return lastNtpUpdate > 0; }
 
         /**
          * @brief Prints some information to the stream
@@ -49,7 +49,7 @@ public:
         {
             stream << "player: " << number << ",\n";
 
-            if(lastNtpUpdate.getFrameNumber() > 0) {
+            if(lastNtpUpdate > 0) {
                 stream << "  - rtt: "       << rtt << "ms,\n"
                        << "  - latency: "   << latency << "ms,\n"
                        << "  - offset: "    << offset << "ms,\n"
@@ -62,6 +62,9 @@ public:
 
     /** Collection for storing the various player time measure infos */
     std::map<unsigned int, Player> data;
+
+    /** Stores the new ntp requests for the next round */
+    std::vector<NtpRequest> requests;
 
     /**
      * @brief Prints the available time measure infos to the given stream.
