@@ -400,10 +400,9 @@ void StrategySymbols::retrieveFreeKickPosition() {
             for(unsigned int i = 0; i < getGameData().ownTeam.players.size(); ++i) {
                 // player is now penalized, but wasn't before
                 if(getGameData().ownTeam.players[i].penalty == naoth::GameData::player_pushing && penalties[i+1] == naoth::GameData::penalty_none) {
-                    // find his last position from his message
-                    const auto& player = getTeamMessage().data.find(i+1);
-                    if(player != getTeamMessage().data.cend()) {
-                        freeKickPosition = player->second.pose.translation;
+                    // get his last position
+                    if(getTeamState().hasPlayer(i+1)) {
+                        freeKickPosition = getTeamState().getPlayer(i+1).pose().translation;
                     }
                 }
             }
