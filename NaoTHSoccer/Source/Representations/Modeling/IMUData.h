@@ -31,9 +31,19 @@ public:
   Vector3d orientation_rotvec; // rotation vector representation (angle * unit_length_axis_vector) of rotation considering only rotation around x and y axis,
                                // it rotates body coordinates into the "global" inertial frame neglecting any rotation around the global z axis
 
+  bool has_been_reset;
+
   void reset(){
       location = Vector3d();
       velocity = Vector3d();
+      acceleration = Vector3d();
+      acceleration_sensor = Vector3d();
+      rotation = Vector3d();
+      rotational_velocity = Vector3d();
+      rotational_velocity_sensor = Vector3d();
+      orientation = Vector2d();
+      orientation_rotvec = Vector3d();
+      has_been_reset = true;
   }
 
   virtual void print(std::ostream& stream) const {
@@ -41,6 +51,7 @@ public:
       stream << std::fixed << std::setprecision(4);
 
       stream << "all values in the local robot coordinate frame" << std::endl;
+      stream << "has been reset: " << has_been_reset << std::endl;
       stream << "----location-----------------------" << std::endl;
       stream << "x   : " << std::setw(9) << location.x << " m"<< std::endl;
       stream << "y   : " << std::setw(9) << location.y << " m"<< std::endl;
