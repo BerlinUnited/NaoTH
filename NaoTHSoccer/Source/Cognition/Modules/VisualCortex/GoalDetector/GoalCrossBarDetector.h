@@ -155,7 +155,7 @@ private:
 
       // estimate the line
       cv::Vec4f line;
-      cv::fitLine(cv::Mat(points), line, CV_DIST_L2, 0, 0.01, 0.01);
+      cv::fitLine(cv::Mat(points), line, cv::DIST_L2, 0, 0.01, 0.01);
 
       Vector2d x(line[2], line[3]);
       Vector2d v(line[0], line[1]);
