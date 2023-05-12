@@ -103,7 +103,7 @@ void DummySimulator::play()
     
     unsigned int calculationTime = NaoTime::getNaoTimeInMilliSeconds() - startTime;
     // wait at least 5ms but max 1s
-    unsigned int waitTime = Math::clamp((int)frameExecutionTime - (int)calculationTime, 5, 1000);
+    unsigned int waitTime = Math::clamp(frameExecutionTime - calculationTime, 5u, 1000u);
 
     ThreadUtil::sleep(waitTime);
   }
