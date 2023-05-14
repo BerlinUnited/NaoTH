@@ -123,6 +123,7 @@ void TeamCommReceiver::updateTeamState(const TeamMessageData& msg)
   player.timeToBall       = msg.custom.timeToBall;
   player.wantsToBeStriker = msg.custom.wantsToBeStriker;
   player.wasStriker       = msg.custom.wasStriker;
+  player.robotRole        = msg.custom.robotRole;
 }
 
 bool TeamCommReceiver::parseFromSplMessageString(const std::string &data, SPLStandardMessage& spl)

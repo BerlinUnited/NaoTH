@@ -65,6 +65,8 @@ public:
         TimestampedData<bool> wantsToBeStriker;
         /** the player decided to be striker */
         TimestampedData<bool> wasStriker;
+        /** role of the robot (static & dynamic) */
+        TimestampedData<Roles::Role> robotRole;
 
         /* Methods **************************************************************/
         /************************************************************************/
