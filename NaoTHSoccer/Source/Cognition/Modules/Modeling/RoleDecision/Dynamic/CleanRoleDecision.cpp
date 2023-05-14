@@ -46,45 +46,45 @@ void CleanRoleDecision::execute() {
 void CleanRoleDecision::computeStrikers()
 {
     // skip "first frame"! (until i add myself to teamcomm)
-    if(getTeamMessage().data.find(getPlayerInfo().playerNumber) == getTeamMessage().data.end()) { return; }
+    if(!getTeamState().hasPlayer(getPlayerInfo().playerNumber)) { return; }
 
     // container storing robots, which want to be striker, sorted by their playernumber and their time to ball
     std::map<unsigned int, unsigned int> possible_striker;
 
     // iterate over all robots(messages)
-    for (auto const& i : getTeamMessage().data) {
+    for (const auto& i: getTeamState().players) {
         unsigned int robotNumber = i.first;
-        const TeamMessageData& msg = i.second;
+        const auto& player = i.second;
 
         // if striker lost the ball, he gets a time bonus before he lost the ball completely ...
-        double loose_ball_bonus = msg.playerNumber == getRoleDecisionModel().firstStriker?params.strikerBonusTime:0.0;
+        double loose_ball_bonus = player.number == getRoleDecisionModel().firstStriker?params.strikerBonusTime:0.0;
 
         // check if the robot is able to play and sees the ball
         bool isRobotInactive = !getTeamMessagePlayersState().isPlaying(robotNumber)
-                || msg.ballAge < 0 //Ball was never seen
-                || (msg.ballAge + getFrameInfo().getTimeSince(msg.frameInfo.getTime()) > params.maxBallLostTime + loose_ball_bonus); //Ball isn't fresh
+                || player.ballAge() < 0 //Ball was never seen
+                || (player.ballAge() + getFrameInfo().getTimeSince(player.messageFrameInfo.getTime()) > params.maxBallLostTime + loose_ball_bonus); //Ball isn't fresh
 
         // ignore inactive robots
         if(robotNumber != getPlayerInfo().playerNumber && isRobotInactive) { continue; }
 
         // for all active robots, which sees the ball AND previously announced to want to be striker OR is striker ...
-        if (msg.custom.wantsToBeStriker || msg.custom.wasStriker) {
+        if (player.wantsToBeStriker() || player.wasStriker()) {
             // ... remember them as possible striker with their time to ball
-            possible_striker[robotNumber] = msg.custom.timeToBall;
+            possible_striker[robotNumber] = player.timeToBall();
         }
     }//end for
 
     // get my own message
-    auto ownMessage = getTeamMessage().data.at(getPlayerInfo().playerNumber);
+    auto ownMessage = getTeamState().getPlayer(getPlayerInfo().playerNumber);
     // i want to be striker, if i'm not the goalie and i'm "active" (not fallen/penalized, see the ball)!!!
-    getRoleDecisionModel().wantsToBeStriker = ownMessage.playerNumber != 1
+    getRoleDecisionModel().wantsToBeStriker = ownMessage.number != 1
                                               && getTeamMessagePlayersState().isPlaying(getPlayerInfo().playerNumber)
-                                              && !(ownMessage.ballAge < 0
-                                                   || (ownMessage.ballAge + getFrameInfo().getTimeSince(ownMessage.frameInfo.getTime()) > params.maxBallLostTime + (getPlayerInfo().playerNumber==getRoleDecisionModel().firstStriker?params.strikerBonusTime:0.0)));
+                                              && !(ownMessage.ballAge() < 0
+                                                   || (ownMessage.ballAge() + getFrameInfo().getTimeSince(ownMessage.messageFrameInfo.getTime()) > params.maxBallLostTime + (getPlayerInfo().playerNumber==getRoleDecisionModel().firstStriker?params.strikerBonusTime:0.0)));
 
     // if i'm striker, i get a time bonus!
     // NOTE: ownTimeToBall can be negative if the robot is close to ball (!)
-    double ownTimeToBall = static_cast<double>(ownMessage.custom.timeToBall) - (ownMessage.custom.wasStriker ? 300.0 : 0.0);
+    double ownTimeToBall = static_cast<double>(ownMessage.timeToBall()) - (ownMessage.wasStriker() ? 300.0 : 0.0);
 
     // clear for new striker decision
     getRoleDecisionModel().resetStriker();
@@ -212,13 +212,13 @@ void CleanRoleDecision::strikerSelectionByTimeExceptGoalieWithBallCompare(std::m
 
 bool CleanRoleDecision::isSecondStrikerDifferentFromFirst(unsigned int firstNumber, unsigned int secondNumber) {
     // retrieve the message of the players
-    const auto& first = getTeamMessage().data.at(firstNumber);
-    const auto& second = getTeamMessage().data.at(secondNumber);
+    const auto& first = getTeamState().getPlayer(firstNumber);
+    const auto& second = getTeamState().getPlayer(secondNumber);
     // get the global ball position
-    Vector2d firstBall = first.pose * first.ballPosition;
-    Vector2d secondBall = second.pose * second.ballPosition;
+    Vector2d firstBall = first.pose() * first.ballPosition();
+    Vector2d secondBall = second.pose() * second.ballPosition();
     // check if the ball distance is greater than the given parameter distance radius
-    double r = (this->*params.ballDifferenceRadius)(second.ballPosition.abs());
+    double r = (this->*params.ballDifferenceRadius)(second.ballPosition().abs());
 
     DEBUG_REQUEST("RoleDecision:min_ball_distance",
       FIELD_DRAWING_CONTEXT;
