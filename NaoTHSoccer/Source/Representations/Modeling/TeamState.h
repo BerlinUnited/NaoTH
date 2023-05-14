@@ -5,12 +5,12 @@
 #include <iomanip>
 
 #include <Tools/NaoTime.h>
+#include "Tools/Math/Pose2D.h"
 #include "Tools/DataStructures/Printable.h"
+#include "Representations/Modeling/PlayerInfo.h"
 #include "Representations/Infrastructure/FrameInfo.h"
+#include "Representations/Infrastructure/Roles.h"
 #include "Representations/Modeling/TeamMessageData.h"
-
-typedef unsigned int PlayerNumber;
-typedef unsigned long long NaoTimestamp;
 
 using namespace naoth;
 
