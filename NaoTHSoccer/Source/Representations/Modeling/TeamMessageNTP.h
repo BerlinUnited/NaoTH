@@ -6,26 +6,37 @@
 #include "Tools/NaoTime.h"
 #include "Tools/DataStructures/Printable.h"
 #include "Representations/Infrastructure/FrameInfo.h"
-#include "Representations/Modeling/TeamMessageData.h"
+#include "Representations/Modeling/PlayerInfo.h"
 
 using namespace naoth;
 
 class TeamMessageNTP : public naoth::Printable
 {
 public:
-    /** Stores message time inforamtions. */
+    /** Contains data for a NTP request. */
+    struct Request
+    {
+        Request(PlayerNumber p = 0, NaoTimestamp s = 0, NaoTimestamp r = 0)
+            : playerNumber(p), sent(s), received(r)
+        {}
+        PlayerNumber playerNumber;
+        NaoTimestamp sent;
+        NaoTimestamp received;
+    };
+
+    /** Stores message time informations. */
     struct Player
     {
         /** the playernumber */
-        unsigned int number;
+        PlayerNumber number;
         /** last ntp update of this player */
-        unsigned long long lastNtpUpdate = 0;
+        NaoTimestamp lastNtpUpdate = 0;
         /** the fastesst round trip time / latency and the resulting time offset (difference) */
         long long rtt = 0;
         long long latency = 0;
         long long offset = 0;
 
-        Player(unsigned int n = 0) : number(n) {}
+        Player(PlayerNumber n = 0) : number(n) {}
 
         /**
          * @brief Returns the (estimated) timestamp of the player
@@ -61,10 +72,10 @@ public:
     };
 
     /** Collection for storing the various player time measure infos */
-    std::map<unsigned int, Player> data;
+    std::map<PlayerNumber, Player> data;
 
     /** Stores the new ntp requests for the next round */
-    std::vector<NtpRequest> requests;
+    std::vector<Request> requests;
 
     /**
      * @brief Prints the available time measure infos to the given stream.

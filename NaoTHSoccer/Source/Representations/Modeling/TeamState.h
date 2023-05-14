@@ -11,6 +11,7 @@
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Infrastructure/Roles.h"
 #include "Representations/Modeling/TeamMessageData.h"
+#include "Representations/Modeling/TeamMessageNTP.h"
 
 using namespace naoth;
 
@@ -43,7 +44,7 @@ public:
         NaoTimestamp messageTimestamp;
 
         /** ntp requests from teammates */
-        TimestampedData<std::vector<NtpRequest>> ntpRequests;
+        TimestampedData<std::vector<TeamMessageNTP::Request>> ntpRequests;
 
         /** state of the robot (initial, ready, set, play, finish, penalized) */
         TimestampedData<PlayerInfo::RobotState> state;

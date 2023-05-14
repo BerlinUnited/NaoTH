@@ -63,7 +63,7 @@ void SimpleNetworkTimeProtocol::updateMessageStatistics()
             auto response = std::find_if(
                         player.ntpRequests().cbegin(),
                         player.ntpRequests().cend(),
-                        [&](const NtpRequest& r) {return r.playerNumber == getPlayerInfo().playerNumber;}
+                        [&](const TeamMessageNTP::Request& r) {return r.playerNumber == getPlayerInfo().playerNumber;}
             );
             // got my 'new' synchronization message from teammate back ...
             if (response != player.ntpRequests().cend())
