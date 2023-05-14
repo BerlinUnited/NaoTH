@@ -37,44 +37,44 @@ void StableRoleDecision::execute()
     ownTimeToBall -= 300;
   }
 
-  for (auto const& i : getTeamMessage().data)
+  for (const auto& i: getTeamState().players)
   {
-    unsigned int robotNumber = i.first;
-    const TeamMessageData& msg = i.second;
+    unsigned int playerNumber = i.first;
+    const auto& player = i.second;
 
-    if (msg.playerNumber != getPlayerInfo().playerNumber && !getTeamMessagePlayersState().isPlaying(robotNumber)) {
+    if (player.number != getPlayerInfo().playerNumber && !getTeamMessagePlayersState().isPlaying(playerNumber)) {
       continue;
     }
 
     double time_bonus = 0;
-    if (msg.playerNumber == getRoleDecisionModel().firstStriker) {
+    if (player.number == getRoleDecisionModel().firstStriker) {
       time_bonus = params.strikerBonusTime;
     }
 
-    if (robotNumber == getPlayerInfo().playerNumber && (!getTeamMessagePlayersState().isPlaying(robotNumber) ||
+    if (playerNumber == getPlayerInfo().playerNumber && (!getTeamMessagePlayersState().isPlaying(playerNumber) ||
       // ball was seen (> -1) and ball isn't too old
-      msg.ballAge < 0 || msg.ballAge > params.maxBallLostTime + time_bonus)) 
+      player.ballAge() < 0 || player.ballAge() > params.maxBallLostTime + time_bonus)) 
     {
       wantsToBeStriker = false;
     }
 
-    if (getTeamMessagePlayersState().isPlaying(robotNumber)
-      && msg.ballAge >= 0 // Ball was seen some time ago ...
-      && msg.ballAge + getFrameInfo().getTimeSince(msg.frameInfo.getTime()) < params.maxBallLostTime + time_bonus) //Ball is fresh
+    if (getTeamMessagePlayersState().isPlaying(playerNumber)
+      && player.ballAge() >= 0 // Ball was seen some time ago ...
+      && player.ballAge() + getFrameInfo().getTimeSince(player.messageFrameInfo.getTime()) < params.maxBallLostTime + time_bonus) //Ball is fresh
     { 
-      if (msg.custom.wantsToBeStriker) { //Decision of the current round
+      if (player.wantsToBeStriker()) { //Decision of the current round
         // If two robots want to be striker, the one with a smaller number is favoured
         // NOTE: goalie is always favoured for the first striker
-        if (robotNumber < firstStriker) {
-          firstStriker = robotNumber;
+        if (playerNumber < firstStriker) {
+          firstStriker = playerNumber;
         }
-        else if (robotNumber < secondStriker) {
-          secondStriker = robotNumber;
+        else if (playerNumber < secondStriker) {
+          secondStriker = playerNumber;
         }
       }
 
       // another player is closer than me
-      if (robotNumber != getPlayerInfo().playerNumber && msg.custom.timeToBall < ownTimeToBall) {
+      if (playerNumber != getPlayerInfo().playerNumber && player.timeToBall() < ownTimeToBall) {
         wantsToBeStriker = false; //Preparation for next round's decision
       }
     }

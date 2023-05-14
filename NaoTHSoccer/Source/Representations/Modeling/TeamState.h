@@ -58,6 +58,11 @@ public:
         TimestampedData<double> ballAge;
         /** position of ball relative to the robot coordinates in millimeters; 0,0 is in centre of the robot */
         TimestampedData<Vector2d> ballPosition;
+        /** the shorest time, in which the robot can reach the ball [ms] */
+        TimestampedData<unsigned int> timeToBall;
+
+        /** announcement that the player wants to be striker */
+        TimestampedData<bool> wantsToBeStriker;
 
         /* Methods **************************************************************/
         /************************************************************************/
