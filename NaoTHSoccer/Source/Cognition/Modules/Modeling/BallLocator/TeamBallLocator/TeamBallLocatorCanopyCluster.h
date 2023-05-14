@@ -11,8 +11,8 @@
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Infrastructure/FieldInfo.h"
 #include "Representations/Modeling/TeamBallModel.h"
-#include "Representations/Modeling/TeamMessage.h"
 #include "Representations/Modeling/RobotPose.h"
+#include "Representations/Modeling/TeamState.h"
 #include "Representations/Modeling/TeamMessageNTP.h"
 #include "Representations/Modeling/TeamMessagePlayersState.h"
 
@@ -25,8 +25,8 @@ BEGIN_DECLARE_MODULE(TeamBallLocatorCanopyCluster)
 
   REQUIRE(FrameInfo)
   REQUIRE(FieldInfo)
-  REQUIRE(TeamMessage)
   REQUIRE(RobotPose)
+  REQUIRE(TeamState)
   REQUIRE(TeamMessageNTP)
   REQUIRE(TeamMessagePlayersState)
 
