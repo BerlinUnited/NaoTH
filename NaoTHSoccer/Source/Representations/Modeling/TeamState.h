@@ -35,6 +35,8 @@ public:
     {
         /** the playernumber */
         const PlayerNumber number;
+        /** the frameinfo when the last message was parsed/received */
+        FrameInfo messageFrameInfo;
         /** timestamp in ms when the last message was parsed/received */
         NaoTimestamp messageParsed;
         /** timestamp in ms when the message was send; 0 if it wasn't send */

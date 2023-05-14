@@ -110,6 +110,7 @@ void TeamCommReceiver::handleMessage(const std::string& data)
 void TeamCommReceiver::updateTeamState(const TeamMessageData& msg)
 {
   auto player = getTeamState().getPlayer(msg.playerNumber);
+  player.messageFrameInfo = msg.frameInfo;
   player.messageParsed    = msg.timestampParsed;
   player.messageTimestamp = msg.custom.timestamp;
   player.state            = msg.custom.robotState;
