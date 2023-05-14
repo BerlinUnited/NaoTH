@@ -63,6 +63,8 @@ public:
 
         /** announcement that the player wants to be striker */
         TimestampedData<bool> wantsToBeStriker;
+        /** the player decided to be striker */
+        TimestampedData<bool> wasStriker;
 
         /* Methods **************************************************************/
         /************************************************************************/
