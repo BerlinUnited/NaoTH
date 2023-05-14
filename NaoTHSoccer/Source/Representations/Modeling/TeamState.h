@@ -10,6 +10,7 @@
 #include "Representations/Modeling/TeamMessageData.h"
 
 typedef unsigned int PlayerNumber;
+typedef unsigned long long NaoTimestamp;
 
 using namespace naoth;
 
@@ -22,11 +23,11 @@ public:
         public:
             const T& operator()() const { return data; }
             TimestampedData& operator=(const T& data) { this->data = data; this->lastUpdate = naoth::NaoTime::getSystemTimeInMilliSeconds(); }
-            const unsigned long long& time() const { return lastUpdate; }
+            const NaoTimestamp& time() const { return lastUpdate; }
 
         private:
             T data;
-            unsigned long long lastUpdate = naoth::NaoTime::getSystemTimeInMilliSeconds();
+            NaoTimestamp lastUpdate = naoth::NaoTime::getSystemTimeInMilliSeconds();
     };
 
     /** Stores timestamped (message) data of a player. */
@@ -34,12 +35,26 @@ public:
     {
         /** the playernumber */
         const PlayerNumber number;
+        /** timestamp in ms when the last message was parsed/received */
+        NaoTimestamp messageParsed;
         /** timestamp in ms when the message was send; 0 if it wasn't send */
-        unsigned long long messageTimestamp;
+        NaoTimestamp messageTimestamp;
 
+        /** ntp requests from teammates */
         TimestampedData<std::vector<NtpRequest>> ntpRequests;
+
+        /** state of the robot (initial, ready, set, play, finish, penalized) */
+        TimestampedData<PlayerInfo::RobotState> state;
+        /** true means that the robot is fallen, false means that the robot can play */
+        TimestampedData<bool> fallen;
+        /** indicates, whether the robot is ready to walk */
+        TimestampedData<bool> readyToWalk;
+        /** the robot pose */
         TimestampedData<Pose2D> pose;
+
+        /** ms since this robot last saw the ball. -1 if we haven't seen it */
         TimestampedData<double> ballAge;
+        /** position of ball relative to the robot coordinates in millimeters; 0,0 is in centre of the robot */
         TimestampedData<Vector2d> ballPosition;
 
         /* Methods **************************************************************/
@@ -53,6 +68,7 @@ public:
          */
         void print(std::ostream &stream) const
         {
+            // TODO: add all other infos
             stream << "player: " << number << ",\n";
             stream << " - " << "Pos (x; y; rotation) = "
                    << pose().translation.x << "; "

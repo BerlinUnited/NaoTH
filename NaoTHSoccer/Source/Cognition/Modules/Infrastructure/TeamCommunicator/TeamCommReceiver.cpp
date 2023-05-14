@@ -110,11 +110,15 @@ void TeamCommReceiver::handleMessage(const std::string& data)
 void TeamCommReceiver::updateTeamState(const TeamMessageData& msg)
 {
   auto player = getTeamState().getPlayer(msg.playerNumber);
+  player.messageParsed    = msg.timestampParsed;
   player.messageTimestamp = msg.custom.timestamp;
+  player.state            = msg.custom.robotState;
   player.ntpRequests      = msg.custom.ntpRequests;
   player.ballAge          = msg.ballAge;
-  player.ballPosition = msg.ballPosition;
-  player.pose         = msg.pose;
+  player.ballPosition     = msg.ballPosition;
+  player.pose             = msg.pose;
+  player.fallen           = msg.fallen;
+  player.readyToWalk      = msg.custom.readyToWalk;
 }
 
 bool TeamCommReceiver::parseFromSplMessageString(const std::string &data, SPLStandardMessage& spl)
