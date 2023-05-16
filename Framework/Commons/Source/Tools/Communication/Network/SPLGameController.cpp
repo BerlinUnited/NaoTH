@@ -1,9 +1,15 @@
+
 #include "SPLGameController.h"
-#include <cstdlib>
+
 #include <PlatformInterface/Platform.h>
-#include <sys/socket.h>
 #include "Tools/Communication/NetAddr.h"
 #include <Tools/ThreadUtil.h>
+
+#include <cstdlib>
+
+#ifndef WIN32
+#include <sys/socket.h>
+#endif
 
 using namespace naoth;
 using namespace std;
@@ -28,6 +34,12 @@ SPLGameController::SPLGameController()
     cancelable = g_cancellable_new();
 
     // init return data
+    // 
+    // NOTE: subtle harmless "bug": copy zero terminated c-string (4+1 chars) 
+    //       but header is only 4 chars long. 
+    //       The terminal '\0' is copied into 'version' and is then overwritten
+    // 
+    // Is there a more elegant+safer way of doing this?
     strcpy(dataOut.header, GAMECONTROLLER_RETURN_STRUCT_HEADER);
     dataOut.version = GAMECONTROLLER_RETURN_STRUCT_VERSION;
     dataOut.playerNum = 0;
@@ -57,8 +69,18 @@ GError* SPLGameController::bindAndListen(unsigned int port)
   if(err) return err;
   g_socket_set_blocking(socket, true);
 
+  // TODO: check, this might be the same for linux and windows
+#ifdef WIN32
+  char broadcast = 1;
+  setsockopt(g_socket_get_fd(socket), SOL_SOCKET, SO_BROADCAST, &broadcast, sizeof(broadcast));
+#elif
   int broadcast = 1;
   setsockopt(g_socket_get_fd(socket), SOL_SOCKET, SO_BROADCAST, &broadcast, sizeof(int));
+#endif
+
+  // NOTE: needs newer glib
+  //g_socket_set_broadcast(socket, true);
+  //g_socket_set_option (...);
 
   GInetAddress* inetAddress = g_inet_address_new_any(G_SOCKET_FAMILY_IPV4);
   GSocketAddress* socketAddress = g_inet_socket_address_new(inetAddress, static_cast<guint16>(port));
