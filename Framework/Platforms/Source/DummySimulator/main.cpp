@@ -5,7 +5,6 @@
  * Created on 2017.05.21
  */
 
-#include <getopt.h>
 #include <glib.h>
 #include <glib-object.h>
 
@@ -45,20 +44,6 @@ void print_info()
   std::cout << "==========================================\n"  << std::endl;
 }
 
-void print_help()
-{
-  std::cout <<
-      "USAGE: ./dummysimulator [options]\n\n"
-      "OPTIONS:\n"
-      "-b|--backend:        Use DummySimulator with RobotControl\n"
-      "-g|--gamecontroller: Listen to the GameController\n"
-      "-t|--teamcomm:       Use TeamComm\n"
-      "-i|--interface <n>:  The TeamComm interface, default = wifi0\n"
-      "-d|--debug <n>:      Debug port, default = 5401\n"
-      "-h|--help:           Show help\n";
-  exit(EXIT_FAILURE);
-}
-
 void parse_arguments(int argc, char** argv,
                      bool& backendMode,
                      unsigned short& port,
@@ -66,31 +51,22 @@ void parse_arguments(int argc, char** argv,
                      bool& useTeamComms,
                      string& teamcommInterface)
 {
-  const char* const short_opts = "bgti:d:h";
-  const option long_opts[] = {
-      {"backend",        no_argument,       nullptr, 'b'},
-      {"gamecontroller", no_argument,       nullptr, 'g'},
-      {"teamcomm",       no_argument,       nullptr, 't'},
-      {"interface",      required_argument, nullptr, 'i'},
-      {"debug",          required_argument, nullptr, 'd'},
-      {"help",           no_argument,       nullptr, 'h'},
-      {nullptr,          0,                 nullptr,  0 }
+  GOptionEntry entries[] = {
+    {"backend",       'b', 0, G_OPTION_ARG_NONE,   &backendMode,       "Use DummySimulator with RobotControl", NULL},
+    {"gamecontroller",'g', 0, G_OPTION_ARG_NONE,   &useGameController, "Listen to the GameController", NULL},
+    {"teamcomm",      't', 0, G_OPTION_ARG_NONE,   &useTeamComms,      "Use TeamComm", NULL},
+    {"interface",     'i', 0, G_OPTION_ARG_STRING, &teamcommInterface, "The TeamComm interface, default = wlan0", "wlan0"},
+    {"debug",         'd', 0, G_OPTION_ARG_INT,    &port,              "Debug port, default = 5401", "5401"},
+    {NULL,0,0,G_OPTION_ARG_NONE, NULL, NULL, NULL} // This NULL is very important!!!
   };
 
-  int opt;
-  while ((opt = getopt_long(argc, argv, short_opts, long_opts, nullptr)) != -1) {
-      switch (opt) {
-          case 'b': backendMode = true; break;
-          case 'g': useGameController = true; break;
-          case 't': useTeamComms = true; break;
-          case 'i': teamcommInterface.assign(optarg); break;
-          case 'd': port = atoi(optarg); break; // debug port
-          case 'h': // -h or --help
-          case '?': // Unrecognized option
-          default:
-              print_help();
-              break;
-      }
+  GError *error = NULL;
+  GOptionContext *context = g_option_context_new(NULL);
+  g_option_context_add_main_entries (context, entries, NULL);
+  if (!g_option_context_parse (context, &argc, &argv, &error))
+  {
+    g_print ("option parsing failed: %s\n", error->message);
+    exit(EXIT_FAILURE);
   }
 }
 
