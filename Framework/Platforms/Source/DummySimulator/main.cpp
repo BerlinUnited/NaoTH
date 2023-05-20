@@ -95,7 +95,7 @@ int main(int argc, char** argv)
 
   if (useGameController) { sim.enableGameController(); }
   if (useTeamComms) { sim.enableTeamComm(teamcommInterface); }
-  if (playerNumber != 0) { Platform::getInstance().theConfiguration.setInt("player", "PlayerNumber", playerNumber); }
+  if (playerNumber != 0) { Platform::getInstance().theConfiguration.setInt("player", "PlayerNumber", (int)playerNumber); }
 
   //init_agent(sim);
   Cognition* theCognition = createCognition();
