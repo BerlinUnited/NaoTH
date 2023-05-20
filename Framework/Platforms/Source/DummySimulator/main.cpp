@@ -49,7 +49,8 @@ void parse_arguments(int argc, char** argv,
                      unsigned short& port,
                      bool& useGameController,
                      bool& useTeamComms,
-                     string& teamcommInterface)
+                     string& teamcommInterface,
+                     unsigned int& playerNumber)
 {
   GOptionEntry entries[] = {
     {"backend",       'b', 0, G_OPTION_ARG_NONE,   &backendMode,       "Use DummySimulator with RobotControl", NULL},
@@ -57,6 +58,7 @@ void parse_arguments(int argc, char** argv,
     {"teamcomm",      't', 0, G_OPTION_ARG_NONE,   &useTeamComms,      "Use TeamComm", NULL},
     {"interface",     'i', 0, G_OPTION_ARG_STRING, &teamcommInterface, "The TeamComm interface, default = wlan0", "wlan0"},
     {"debug",         'd', 0, G_OPTION_ARG_INT,    &port,              "Debug port, default = 5401", "5401"},
+    {"num",           'n', 0, G_OPTION_ARG_INT,    &playerNumber,      "Player number", "0"},
     {NULL,0,0,G_OPTION_ARG_NONE, NULL, NULL, NULL} // This NULL is very important!!!
   };
 
@@ -81,8 +83,9 @@ int main(int argc, char** argv)
   bool useGameController = false;
   bool useTeamComms = false;
   string teamcommInterface = "wlan0";
+  unsigned int playerNumber = 0; // zero means read from config
 
-  parse_arguments(argc, argv, backendMode, port, useGameController, useTeamComms, teamcommInterface);
+  parse_arguments(argc, argv, backendMode, port, useGameController, useTeamComms, teamcommInterface, playerNumber);
 
   // create the simulator instance
   DummySimulator sim(backendMode, port);
@@ -92,6 +95,7 @@ int main(int argc, char** argv)
 
   if (useGameController) { sim.enableGameController(); }
   if (useTeamComms) { sim.enableTeamComm(teamcommInterface); }
+  if (playerNumber != 0) { Platform::getInstance().theConfiguration.setInt("player", "PlayerNumber", playerNumber); }
 
   //init_agent(sim);
   Cognition* theCognition = createCognition();
