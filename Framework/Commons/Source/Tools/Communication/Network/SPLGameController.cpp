@@ -69,17 +69,17 @@ GError* SPLGameController::bindAndListen(unsigned int port)
   if(err) return err;
   g_socket_set_blocking(socket, true);
 
-  // TODO: check, this might be the same for linux and windows
-#ifdef WIN32
+  // NOTE:
+  // Set the broadcast option directly. GLib spoorts it starting version 2.36.
+  // Linux and Windows let you set a single-byte value from an int,
+  // but most other platforms don't.
+  // https://github.com/GNOME/glib/blob/main/gio/gsocket.c#L6340
   char broadcast = 1;
   setsockopt(g_socket_get_fd(socket), SOL_SOCKET, SO_BROADCAST, &broadcast, sizeof(broadcast));
-#elif
-  int broadcast = 1;
-  setsockopt(g_socket_get_fd(socket), SOL_SOCKET, SO_BROADCAST, &broadcast, sizeof(int));
-#endif
 
-  // NOTE: needs newer glib
+  // NOTE: needs newer glib 2.36
   //g_socket_set_broadcast(socket, true);
+  // or ...
   //g_socket_set_option (...);
 
   GInetAddress* inetAddress = g_inet_address_new_any(G_SOCKET_FAMILY_IPV4);
