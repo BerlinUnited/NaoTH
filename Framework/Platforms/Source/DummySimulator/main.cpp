@@ -49,7 +49,7 @@ void parse_arguments(int argc, char** argv,
                      gint& port,
                      gboolean& useGameController,
                      gboolean& useTeamComms,
-                     gchar* teamcommInterface,
+                     gchar*& teamcommInterface,
                      gint& playerNumber)
 {
   GOptionEntry entries[] = {
