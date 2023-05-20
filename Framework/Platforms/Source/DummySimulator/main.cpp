@@ -45,12 +45,12 @@ void print_info()
 }
 
 void parse_arguments(int argc, char** argv,
-                     bool& backendMode,
-                     unsigned short& port,
-                     bool& useGameController,
-                     bool& useTeamComms,
-                     string& teamcommInterface,
-                     unsigned int& playerNumber)
+                     gboolean& backendMode,
+                     gint& port,
+                     gboolean& useGameController,
+                     gboolean& useTeamComms,
+                     gchar* teamcommInterface,
+                     gint& playerNumber)
 {
   GOptionEntry entries[] = {
     {"backend",       'b', 0, G_OPTION_ARG_NONE,   &backendMode,       "Use DummySimulator with RobotControl", NULL},
@@ -78,17 +78,18 @@ int main(int argc, char** argv)
 
   g_type_init();
 
-  bool backendMode = false;
-  unsigned short port = 5401;
-  bool useGameController = false;
-  bool useTeamComms = false;
-  string teamcommInterface = "wlan0";
-  unsigned int playerNumber = 0; // zero means read from config
+  gboolean backendMode = false;
+  gint port = 5401;
+  gboolean useGameController = false;
+  gboolean useTeamComms = false;
+  gchar* teamcommInterface = "wlan0";
+  gint playerNumber = 0; // zero means read from config
 
   parse_arguments(argc, argv, backendMode, port, useGameController, useTeamComms, teamcommInterface, playerNumber);
 
   // create the simulator instance
-  DummySimulator sim(backendMode, port);
+  // TODO: why is it unsigned short?
+  DummySimulator sim(backendMode, static_cast<unsigned short>(port));
   
   // init the platform
   Platform::getInstance().init(&sim);
