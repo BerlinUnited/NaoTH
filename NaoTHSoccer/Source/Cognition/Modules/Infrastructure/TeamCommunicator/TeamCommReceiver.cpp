@@ -51,6 +51,7 @@ void TeamCommReceiver::execute()
   {
     // copying our own (old) message to the inbox
     getTeamMessage().data[getPlayerInfo().playerNumber] = getTeamMessageData();
+    updateTeamState(getTeamMessageData());
   }
 
   // marking the begin of the outgoing message
@@ -105,11 +106,12 @@ void TeamCommReceiver::handleMessage(const std::string& data)
 
   // copy the message to the blackboard
   getTeamMessage().data[msg.playerNumber] = msg;
+  updateTeamState(msg);
 }
 
 void TeamCommReceiver::updateTeamState(const TeamMessageData& msg)
 {
-  auto player = getTeamState().getPlayer(msg.playerNumber);
+  auto& player            = getTeamState().getPlayer(msg.playerNumber);
   player.messageFrameInfo = msg.frameInfo;
   player.messageParsed    = msg.timestampParsed;
   player.messageTimestamp = msg.custom.timestamp;
