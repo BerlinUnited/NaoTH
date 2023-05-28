@@ -414,6 +414,8 @@ message IMUData
  optional DoubleVector3 rotational_velocity_sensor = 7;
  required DoubleVector2 orientation = 8;
  required DoubleVector3 orientation_rotvec = 9;
+
+ optional bool has_been_reset = 10;
 }
 
 message CentreOfPressure {

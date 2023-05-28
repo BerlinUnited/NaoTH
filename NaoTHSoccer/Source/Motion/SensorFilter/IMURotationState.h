@@ -13,15 +13,13 @@
 #include <Eigen/Geometry>
 
 // state for rotation and rotational velocity
-template <class M1,/* class M2,*/ int dim, int dim_cov = dim, int rotation_index = 0>
+template <class M1, class M2, class M3, int dim, int dim_cov = dim, int rotation_index = 0>
 class RotationState : public Eigen::Matrix<double,dim,1> //public RotationState<RotationState<M1,/* M2,*/ dim, dim_cov>, rotation_index, dim>
 {
     public: // constructors
         // This constructor allows you to construct MyVectorType from Eigen expressions
         template<typename OtherDerived>
-        RotationState(const Eigen::MatrixBase<OtherDerived>& other)
-            : Eigen::Matrix<double,dim,1>(other)
-        { }
+        RotationState(const Eigen::MatrixBase<OtherDerived>& other) : Eigen::Matrix<double,dim,1>(other) {}
 
         // This method allows you to assign Eigen expressions to MyVectorType
         template<typename OtherDerived>
@@ -32,8 +30,7 @@ class RotationState : public Eigen::Matrix<double,dim,1> //public RotationState<
         }
 
         // inital state (zero rotation, zero angular velocity)
-        RotationState(): Eigen::Matrix<double,dim,1>(Eigen::Matrix<double,dim,1>::Zero()){
-        }
+        RotationState(): Eigen::Matrix<double,dim,1>(Eigen::Matrix<double,dim,1>::Zero()){}
 
     public: // accessors
         Eigen::Block<Eigen::Matrix<double,dim,1>, 3, 1> rotation(){
@@ -136,6 +133,7 @@ class RotationState : public Eigen::Matrix<double,dim,1> //public RotationState<
 
             std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > rotational_differences;
 
+            // does not make sense
             for(int i = 0; i < 10; ++i) {
                 // calculate difference between the mean and the sigma points rotation by means of a rotation
                 rotational_differences.clear();
@@ -200,8 +198,7 @@ class RotationState : public Eigen::Matrix<double,dim,1> //public RotationState<
                           -rot_vel(1),  rot_vel(0),           1;
             Eigen::Quaterniond rotation_increment(rot_vel_mat);
 
-            // TODO: compare with rotation_increment*rotation which sounds more reasonable
-            Eigen::Quaterniond new_rotation = this->getRotationAsQuaternion() * rotation_increment; // follows paper
+            Eigen::Quaterniond new_rotation = this->getRotationAsQuaternion() * rotation_increment;
             Eigen::AngleAxisd  new_angle_axis(new_rotation); 
             this->rotation() = new_angle_axis.angle() * new_angle_axis.axis();
         }
@@ -209,12 +206,20 @@ class RotationState : public Eigen::Matrix<double,dim,1> //public RotationState<
         // state to measurement transformation function
         // HACK: add return type as parameter to enable overloading...
         M1 asMeasurement(const M1& /*z*/) const {
-            M1 return_val;
+            return this->getRotationAsQuaternion().inverse()._transformVector(Eigen::Vector3d(0,0,1));
+        }
+
+        M2 asMeasurement(const M2& /*z*/) const {
+            return this->rotational_velocity();
+        }
+
+        M3 asMeasurement(const M3& /*z*/) const {
+            M3 return_val;
             return_val << this->getRotationAsQuaternion().inverse()._transformVector(Eigen::Vector3d(0,0,1)), this->rotational_velocity();
             return return_val;
         }
 
-        static const int size = dim;
+        static const size_t size = dim;
 };
 
 // state for acceleration in "global" reference frame
