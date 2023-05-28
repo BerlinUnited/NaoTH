@@ -55,6 +55,12 @@ extern TeamMessageDefaultTypeInternal _TeamMessage_default_instance_;
 class TeamMessage_Data;
 class TeamMessage_DataDefaultTypeInternal;
 extern TeamMessage_DataDefaultTypeInternal _TeamMessage_Data_default_instance_;
+class TeamState;
+class TeamStateDefaultTypeInternal;
+extern TeamStateDefaultTypeInternal _TeamState_default_instance_;
+class TeamState_Player;
+class TeamState_PlayerDefaultTypeInternal;
+extern TeamState_PlayerDefaultTypeInternal _TeamState_Player_default_instance_;
 }  // namespace naothmessages
 
 namespace naothmessages {
@@ -1351,6 +1357,488 @@ class TeamMessage : public ::google::protobuf::Message /* @@protoc_insertion_poi
   mutable int _cached_size_;
   ::google::protobuf::RepeatedPtrField< ::naothmessages::TeamMessage_Data > data_;
   ::naothmessages::Drops* messagedrop_;
+  friend struct protobuf_TeamMessage_2eproto::TableStruct;
+};
+// -------------------------------------------------------------------
+
+class TeamState_Player : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:naothmessages.TeamState.Player) */ {
+ public:
+  TeamState_Player();
+  virtual ~TeamState_Player();
+
+  TeamState_Player(const TeamState_Player& from);
+
+  inline TeamState_Player& operator=(const TeamState_Player& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  #if LANG_CXX11
+  TeamState_Player(TeamState_Player&& from) noexcept
+    : TeamState_Player() {
+    *this = ::std::move(from);
+  }
+
+  inline TeamState_Player& operator=(TeamState_Player&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+  #endif
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _internal_metadata_.unknown_fields();
+  }
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return _internal_metadata_.mutable_unknown_fields();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const TeamState_Player& default_instance();
+
+  static inline const TeamState_Player* internal_default_instance() {
+    return reinterpret_cast<const TeamState_Player*>(
+               &_TeamState_Player_default_instance_);
+  }
+  static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
+    7;
+
+  void Swap(TeamState_Player* other);
+  friend void swap(TeamState_Player& a, TeamState_Player& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline TeamState_Player* New() const PROTOBUF_FINAL { return New(NULL); }
+
+  TeamState_Player* New(::google::protobuf::Arena* arena) const PROTOBUF_FINAL;
+  void CopyFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void MergeFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void CopyFrom(const TeamState_Player& from);
+  void MergeFrom(const TeamState_Player& from);
+  void Clear() PROTOBUF_FINAL;
+  bool IsInitialized() const PROTOBUF_FINAL;
+
+  size_t ByteSizeLong() const PROTOBUF_FINAL;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) PROTOBUF_FINAL;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const PROTOBUF_FINAL;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const PROTOBUF_FINAL;
+  int GetCachedSize() const PROTOBUF_FINAL { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const PROTOBUF_FINAL;
+  void InternalSwap(TeamState_Player* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const PROTOBUF_FINAL;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // repeated .naothmessages.Ntp ntpRequest = 5;
+  int ntprequest_size() const;
+  void clear_ntprequest();
+  static const int kNtpRequestFieldNumber = 5;
+  const ::naothmessages::Ntp& ntprequest(int index) const;
+  ::naothmessages::Ntp* mutable_ntprequest(int index);
+  ::naothmessages::Ntp* add_ntprequest();
+  ::google::protobuf::RepeatedPtrField< ::naothmessages::Ntp >*
+      mutable_ntprequest();
+  const ::google::protobuf::RepeatedPtrField< ::naothmessages::Ntp >&
+      ntprequest() const;
+
+  // optional .naothmessages.FrameInfo messageFrameInfo = 2;
+  bool has_messageframeinfo() const;
+  void clear_messageframeinfo();
+  static const int kMessageFrameInfoFieldNumber = 2;
+  const ::naothmessages::FrameInfo& messageframeinfo() const;
+  ::naothmessages::FrameInfo* mutable_messageframeinfo();
+  ::naothmessages::FrameInfo* release_messageframeinfo();
+  void set_allocated_messageframeinfo(::naothmessages::FrameInfo* messageframeinfo);
+
+  // optional .naothmessages.Pose2D pose = 13;
+  bool has_pose() const;
+  void clear_pose();
+  static const int kPoseFieldNumber = 13;
+  const ::naothmessages::Pose2D& pose() const;
+  ::naothmessages::Pose2D* mutable_pose();
+  ::naothmessages::Pose2D* release_pose();
+  void set_allocated_pose(::naothmessages::Pose2D* pose);
+
+  // optional .naothmessages.DoubleVector2 ballPosition = 17;
+  bool has_ballposition() const;
+  void clear_ballposition();
+  static const int kBallPositionFieldNumber = 17;
+  const ::naothmessages::DoubleVector2& ballposition() const;
+  ::naothmessages::DoubleVector2* mutable_ballposition();
+  ::naothmessages::DoubleVector2* release_ballposition();
+  void set_allocated_ballposition(::naothmessages::DoubleVector2* ballposition);
+
+  // optional .naothmessages.RobotRole robotRole = 25;
+  bool has_robotrole() const;
+  void clear_robotrole();
+  static const int kRobotRoleFieldNumber = 25;
+  const ::naothmessages::RobotRole& robotrole() const;
+  ::naothmessages::RobotRole* mutable_robotrole();
+  ::naothmessages::RobotRole* release_robotrole();
+  void set_allocated_robotrole(::naothmessages::RobotRole* robotrole);
+
+  // optional uint64 messageParsed = 3;
+  bool has_messageparsed() const;
+  void clear_messageparsed();
+  static const int kMessageParsedFieldNumber = 3;
+  ::google::protobuf::uint64 messageparsed() const;
+  void set_messageparsed(::google::protobuf::uint64 value);
+
+  // optional uint64 messageTimestamp = 4;
+  bool has_messagetimestamp() const;
+  void clear_messagetimestamp();
+  static const int kMessageTimestampFieldNumber = 4;
+  ::google::protobuf::uint64 messagetimestamp() const;
+  void set_messagetimestamp(::google::protobuf::uint64 value);
+
+  // optional uint32 number = 1 [default = 0];
+  bool has_number() const;
+  void clear_number();
+  static const int kNumberFieldNumber = 1;
+  ::google::protobuf::uint32 number() const;
+  void set_number(::google::protobuf::uint32 value);
+
+  // optional .naothmessages.RobotState robotState = 7 [default = initial];
+  bool has_robotstate() const;
+  void clear_robotstate();
+  static const int kRobotStateFieldNumber = 7;
+  ::naothmessages::RobotState robotstate() const;
+  void set_robotstate(::naothmessages::RobotState value);
+
+  // optional uint64 ntpRequestUpdate = 6;
+  bool has_ntprequestupdate() const;
+  void clear_ntprequestupdate();
+  static const int kNtpRequestUpdateFieldNumber = 6;
+  ::google::protobuf::uint64 ntprequestupdate() const;
+  void set_ntprequestupdate(::google::protobuf::uint64 value);
+
+  // optional uint64 robotStateUpdate = 8;
+  bool has_robotstateupdate() const;
+  void clear_robotstateupdate();
+  static const int kRobotStateUpdateFieldNumber = 8;
+  ::google::protobuf::uint64 robotstateupdate() const;
+  void set_robotstateupdate(::google::protobuf::uint64 value);
+
+  // optional uint64 fallenUpdate = 10;
+  bool has_fallenupdate() const;
+  void clear_fallenupdate();
+  static const int kFallenUpdateFieldNumber = 10;
+  ::google::protobuf::uint64 fallenupdate() const;
+  void set_fallenupdate(::google::protobuf::uint64 value);
+
+  // optional uint64 readyToWalkUpdate = 12;
+  bool has_readytowalkupdate() const;
+  void clear_readytowalkupdate();
+  static const int kReadyToWalkUpdateFieldNumber = 12;
+  ::google::protobuf::uint64 readytowalkupdate() const;
+  void set_readytowalkupdate(::google::protobuf::uint64 value);
+
+  // optional uint64 poseUpdate = 14;
+  bool has_poseupdate() const;
+  void clear_poseupdate();
+  static const int kPoseUpdateFieldNumber = 14;
+  ::google::protobuf::uint64 poseupdate() const;
+  void set_poseupdate(::google::protobuf::uint64 value);
+
+  // optional uint64 ballAgeUpdate = 16;
+  bool has_ballageupdate() const;
+  void clear_ballageupdate();
+  static const int kBallAgeUpdateFieldNumber = 16;
+  ::google::protobuf::uint64 ballageupdate() const;
+  void set_ballageupdate(::google::protobuf::uint64 value);
+
+  // optional bool fallen = 9 [default = false];
+  bool has_fallen() const;
+  void clear_fallen();
+  static const int kFallenFieldNumber = 9;
+  bool fallen() const;
+  void set_fallen(bool value);
+
+  // optional bool readyToWalk = 11;
+  bool has_readytowalk() const;
+  void clear_readytowalk();
+  static const int kReadyToWalkFieldNumber = 11;
+  bool readytowalk() const;
+  void set_readytowalk(bool value);
+
+  // optional bool wantsToBeStriker = 21 [default = false];
+  bool has_wantstobestriker() const;
+  void clear_wantstobestriker();
+  static const int kWantsToBeStrikerFieldNumber = 21;
+  bool wantstobestriker() const;
+  void set_wantstobestriker(bool value);
+
+  // optional bool wasStriker = 23 [default = false];
+  bool has_wasstriker() const;
+  void clear_wasstriker();
+  static const int kWasStrikerFieldNumber = 23;
+  bool wasstriker() const;
+  void set_wasstriker(bool value);
+
+  // optional uint32 timeToBall = 19;
+  bool has_timetoball() const;
+  void clear_timetoball();
+  static const int kTimeToBallFieldNumber = 19;
+  ::google::protobuf::uint32 timetoball() const;
+  void set_timetoball(::google::protobuf::uint32 value);
+
+  // optional uint64 ballPositionUpdate = 18;
+  bool has_ballpositionupdate() const;
+  void clear_ballpositionupdate();
+  static const int kBallPositionUpdateFieldNumber = 18;
+  ::google::protobuf::uint64 ballpositionupdate() const;
+  void set_ballpositionupdate(::google::protobuf::uint64 value);
+
+  // optional uint64 timeToBallUpdate = 20;
+  bool has_timetoballupdate() const;
+  void clear_timetoballupdate();
+  static const int kTimeToBallUpdateFieldNumber = 20;
+  ::google::protobuf::uint64 timetoballupdate() const;
+  void set_timetoballupdate(::google::protobuf::uint64 value);
+
+  // optional uint64 wantsToBeStrikerUpdate = 22;
+  bool has_wantstobestrikerupdate() const;
+  void clear_wantstobestrikerupdate();
+  static const int kWantsToBeStrikerUpdateFieldNumber = 22;
+  ::google::protobuf::uint64 wantstobestrikerupdate() const;
+  void set_wantstobestrikerupdate(::google::protobuf::uint64 value);
+
+  // optional uint64 wasStrikerUpdate = 24;
+  bool has_wasstrikerupdate() const;
+  void clear_wasstrikerupdate();
+  static const int kWasStrikerUpdateFieldNumber = 24;
+  ::google::protobuf::uint64 wasstrikerupdate() const;
+  void set_wasstrikerupdate(::google::protobuf::uint64 value);
+
+  // optional uint64 robotRoleUpdate = 26;
+  bool has_robotroleupdate() const;
+  void clear_robotroleupdate();
+  static const int kRobotRoleUpdateFieldNumber = 26;
+  ::google::protobuf::uint64 robotroleupdate() const;
+  void set_robotroleupdate(::google::protobuf::uint64 value);
+
+  // optional int32 ballAge = 15 [default = -1];
+  bool has_ballage() const;
+  void clear_ballage();
+  static const int kBallAgeFieldNumber = 15;
+  ::google::protobuf::int32 ballage() const;
+  void set_ballage(::google::protobuf::int32 value);
+
+  // @@protoc_insertion_point(class_scope:naothmessages.TeamState.Player)
+ private:
+  void set_has_number();
+  void clear_has_number();
+  void set_has_messageframeinfo();
+  void clear_has_messageframeinfo();
+  void set_has_messageparsed();
+  void clear_has_messageparsed();
+  void set_has_messagetimestamp();
+  void clear_has_messagetimestamp();
+  void set_has_ntprequestupdate();
+  void clear_has_ntprequestupdate();
+  void set_has_robotstate();
+  void clear_has_robotstate();
+  void set_has_robotstateupdate();
+  void clear_has_robotstateupdate();
+  void set_has_fallen();
+  void clear_has_fallen();
+  void set_has_fallenupdate();
+  void clear_has_fallenupdate();
+  void set_has_readytowalk();
+  void clear_has_readytowalk();
+  void set_has_readytowalkupdate();
+  void clear_has_readytowalkupdate();
+  void set_has_pose();
+  void clear_has_pose();
+  void set_has_poseupdate();
+  void clear_has_poseupdate();
+  void set_has_ballage();
+  void clear_has_ballage();
+  void set_has_ballageupdate();
+  void clear_has_ballageupdate();
+  void set_has_ballposition();
+  void clear_has_ballposition();
+  void set_has_ballpositionupdate();
+  void clear_has_ballpositionupdate();
+  void set_has_timetoball();
+  void clear_has_timetoball();
+  void set_has_timetoballupdate();
+  void clear_has_timetoballupdate();
+  void set_has_wantstobestriker();
+  void clear_has_wantstobestriker();
+  void set_has_wantstobestrikerupdate();
+  void clear_has_wantstobestrikerupdate();
+  void set_has_wasstriker();
+  void clear_has_wasstriker();
+  void set_has_wasstrikerupdate();
+  void clear_has_wasstrikerupdate();
+  void set_has_robotrole();
+  void clear_has_robotrole();
+  void set_has_robotroleupdate();
+  void clear_has_robotroleupdate();
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::internal::HasBits<1> _has_bits_;
+  mutable int _cached_size_;
+  ::google::protobuf::RepeatedPtrField< ::naothmessages::Ntp > ntprequest_;
+  ::naothmessages::FrameInfo* messageframeinfo_;
+  ::naothmessages::Pose2D* pose_;
+  ::naothmessages::DoubleVector2* ballposition_;
+  ::naothmessages::RobotRole* robotrole_;
+  ::google::protobuf::uint64 messageparsed_;
+  ::google::protobuf::uint64 messagetimestamp_;
+  ::google::protobuf::uint32 number_;
+  int robotstate_;
+  ::google::protobuf::uint64 ntprequestupdate_;
+  ::google::protobuf::uint64 robotstateupdate_;
+  ::google::protobuf::uint64 fallenupdate_;
+  ::google::protobuf::uint64 readytowalkupdate_;
+  ::google::protobuf::uint64 poseupdate_;
+  ::google::protobuf::uint64 ballageupdate_;
+  bool fallen_;
+  bool readytowalk_;
+  bool wantstobestriker_;
+  bool wasstriker_;
+  ::google::protobuf::uint32 timetoball_;
+  ::google::protobuf::uint64 ballpositionupdate_;
+  ::google::protobuf::uint64 timetoballupdate_;
+  ::google::protobuf::uint64 wantstobestrikerupdate_;
+  ::google::protobuf::uint64 wasstrikerupdate_;
+  ::google::protobuf::uint64 robotroleupdate_;
+  ::google::protobuf::int32 ballage_;
+  friend struct protobuf_TeamMessage_2eproto::TableStruct;
+};
+// -------------------------------------------------------------------
+
+class TeamState : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:naothmessages.TeamState) */ {
+ public:
+  TeamState();
+  virtual ~TeamState();
+
+  TeamState(const TeamState& from);
+
+  inline TeamState& operator=(const TeamState& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  #if LANG_CXX11
+  TeamState(TeamState&& from) noexcept
+    : TeamState() {
+    *this = ::std::move(from);
+  }
+
+  inline TeamState& operator=(TeamState&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+  #endif
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _internal_metadata_.unknown_fields();
+  }
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return _internal_metadata_.mutable_unknown_fields();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const TeamState& default_instance();
+
+  static inline const TeamState* internal_default_instance() {
+    return reinterpret_cast<const TeamState*>(
+               &_TeamState_default_instance_);
+  }
+  static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
+    8;
+
+  void Swap(TeamState* other);
+  friend void swap(TeamState& a, TeamState& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline TeamState* New() const PROTOBUF_FINAL { return New(NULL); }
+
+  TeamState* New(::google::protobuf::Arena* arena) const PROTOBUF_FINAL;
+  void CopyFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void MergeFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void CopyFrom(const TeamState& from);
+  void MergeFrom(const TeamState& from);
+  void Clear() PROTOBUF_FINAL;
+  bool IsInitialized() const PROTOBUF_FINAL;
+
+  size_t ByteSizeLong() const PROTOBUF_FINAL;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) PROTOBUF_FINAL;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const PROTOBUF_FINAL;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const PROTOBUF_FINAL;
+  int GetCachedSize() const PROTOBUF_FINAL { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const PROTOBUF_FINAL;
+  void InternalSwap(TeamState* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const PROTOBUF_FINAL;
+
+  // nested types ----------------------------------------------------
+
+  typedef TeamState_Player Player;
+
+  // accessors -------------------------------------------------------
+
+  // repeated .naothmessages.TeamState.Player players = 1;
+  int players_size() const;
+  void clear_players();
+  static const int kPlayersFieldNumber = 1;
+  const ::naothmessages::TeamState_Player& players(int index) const;
+  ::naothmessages::TeamState_Player* mutable_players(int index);
+  ::naothmessages::TeamState_Player* add_players();
+  ::google::protobuf::RepeatedPtrField< ::naothmessages::TeamState_Player >*
+      mutable_players();
+  const ::google::protobuf::RepeatedPtrField< ::naothmessages::TeamState_Player >&
+      players() const;
+
+  // @@protoc_insertion_point(class_scope:naothmessages.TeamState)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::internal::HasBits<1> _has_bits_;
+  mutable int _cached_size_;
+  ::google::protobuf::RepeatedPtrField< ::naothmessages::TeamState_Player > players_;
   friend struct protobuf_TeamMessage_2eproto::TableStruct;
 };
 // ===================================================================
@@ -2765,10 +3253,771 @@ inline void TeamMessage::set_allocated_messagedrop(::naothmessages::Drops* messa
   // @@protoc_insertion_point(field_set_allocated:naothmessages.TeamMessage.messageDrop)
 }
 
+// -------------------------------------------------------------------
+
+// TeamState_Player
+
+// optional uint32 number = 1 [default = 0];
+inline bool TeamState_Player::has_number() const {
+  return (_has_bits_[0] & 0x00000040u) != 0;
+}
+inline void TeamState_Player::set_has_number() {
+  _has_bits_[0] |= 0x00000040u;
+}
+inline void TeamState_Player::clear_has_number() {
+  _has_bits_[0] &= ~0x00000040u;
+}
+inline void TeamState_Player::clear_number() {
+  number_ = 0u;
+  clear_has_number();
+}
+inline ::google::protobuf::uint32 TeamState_Player::number() const {
+  // @@protoc_insertion_point(field_get:naothmessages.TeamState.Player.number)
+  return number_;
+}
+inline void TeamState_Player::set_number(::google::protobuf::uint32 value) {
+  set_has_number();
+  number_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.TeamState.Player.number)
+}
+
+// optional .naothmessages.FrameInfo messageFrameInfo = 2;
+inline bool TeamState_Player::has_messageframeinfo() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void TeamState_Player::set_has_messageframeinfo() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void TeamState_Player::clear_has_messageframeinfo() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void TeamState_Player::clear_messageframeinfo() {
+  if (messageframeinfo_ != NULL) messageframeinfo_->::naothmessages::FrameInfo::Clear();
+  clear_has_messageframeinfo();
+}
+inline const ::naothmessages::FrameInfo& TeamState_Player::messageframeinfo() const {
+  const ::naothmessages::FrameInfo* p = messageframeinfo_;
+  // @@protoc_insertion_point(field_get:naothmessages.TeamState.Player.messageFrameInfo)
+  return p != NULL ? *p : *reinterpret_cast<const ::naothmessages::FrameInfo*>(
+      &::naothmessages::_FrameInfo_default_instance_);
+}
+inline ::naothmessages::FrameInfo* TeamState_Player::mutable_messageframeinfo() {
+  set_has_messageframeinfo();
+  if (messageframeinfo_ == NULL) {
+    messageframeinfo_ = new ::naothmessages::FrameInfo;
+  }
+  // @@protoc_insertion_point(field_mutable:naothmessages.TeamState.Player.messageFrameInfo)
+  return messageframeinfo_;
+}
+inline ::naothmessages::FrameInfo* TeamState_Player::release_messageframeinfo() {
+  // @@protoc_insertion_point(field_release:naothmessages.TeamState.Player.messageFrameInfo)
+  clear_has_messageframeinfo();
+  ::naothmessages::FrameInfo* temp = messageframeinfo_;
+  messageframeinfo_ = NULL;
+  return temp;
+}
+inline void TeamState_Player::set_allocated_messageframeinfo(::naothmessages::FrameInfo* messageframeinfo) {
+  delete messageframeinfo_;
+  messageframeinfo_ = messageframeinfo;
+  if (messageframeinfo) {
+    set_has_messageframeinfo();
+  } else {
+    clear_has_messageframeinfo();
+  }
+  // @@protoc_insertion_point(field_set_allocated:naothmessages.TeamState.Player.messageFrameInfo)
+}
+
+// optional uint64 messageParsed = 3;
+inline bool TeamState_Player::has_messageparsed() const {
+  return (_has_bits_[0] & 0x00000010u) != 0;
+}
+inline void TeamState_Player::set_has_messageparsed() {
+  _has_bits_[0] |= 0x00000010u;
+}
+inline void TeamState_Player::clear_has_messageparsed() {
+  _has_bits_[0] &= ~0x00000010u;
+}
+inline void TeamState_Player::clear_messageparsed() {
+  messageparsed_ = GOOGLE_ULONGLONG(0);
+  clear_has_messageparsed();
+}
+inline ::google::protobuf::uint64 TeamState_Player::messageparsed() const {
+  // @@protoc_insertion_point(field_get:naothmessages.TeamState.Player.messageParsed)
+  return messageparsed_;
+}
+inline void TeamState_Player::set_messageparsed(::google::protobuf::uint64 value) {
+  set_has_messageparsed();
+  messageparsed_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.TeamState.Player.messageParsed)
+}
+
+// optional uint64 messageTimestamp = 4;
+inline bool TeamState_Player::has_messagetimestamp() const {
+  return (_has_bits_[0] & 0x00000020u) != 0;
+}
+inline void TeamState_Player::set_has_messagetimestamp() {
+  _has_bits_[0] |= 0x00000020u;
+}
+inline void TeamState_Player::clear_has_messagetimestamp() {
+  _has_bits_[0] &= ~0x00000020u;
+}
+inline void TeamState_Player::clear_messagetimestamp() {
+  messagetimestamp_ = GOOGLE_ULONGLONG(0);
+  clear_has_messagetimestamp();
+}
+inline ::google::protobuf::uint64 TeamState_Player::messagetimestamp() const {
+  // @@protoc_insertion_point(field_get:naothmessages.TeamState.Player.messageTimestamp)
+  return messagetimestamp_;
+}
+inline void TeamState_Player::set_messagetimestamp(::google::protobuf::uint64 value) {
+  set_has_messagetimestamp();
+  messagetimestamp_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.TeamState.Player.messageTimestamp)
+}
+
+// repeated .naothmessages.Ntp ntpRequest = 5;
+inline int TeamState_Player::ntprequest_size() const {
+  return ntprequest_.size();
+}
+inline void TeamState_Player::clear_ntprequest() {
+  ntprequest_.Clear();
+}
+inline const ::naothmessages::Ntp& TeamState_Player::ntprequest(int index) const {
+  // @@protoc_insertion_point(field_get:naothmessages.TeamState.Player.ntpRequest)
+  return ntprequest_.Get(index);
+}
+inline ::naothmessages::Ntp* TeamState_Player::mutable_ntprequest(int index) {
+  // @@protoc_insertion_point(field_mutable:naothmessages.TeamState.Player.ntpRequest)
+  return ntprequest_.Mutable(index);
+}
+inline ::naothmessages::Ntp* TeamState_Player::add_ntprequest() {
+  // @@protoc_insertion_point(field_add:naothmessages.TeamState.Player.ntpRequest)
+  return ntprequest_.Add();
+}
+inline ::google::protobuf::RepeatedPtrField< ::naothmessages::Ntp >*
+TeamState_Player::mutable_ntprequest() {
+  // @@protoc_insertion_point(field_mutable_list:naothmessages.TeamState.Player.ntpRequest)
+  return &ntprequest_;
+}
+inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::Ntp >&
+TeamState_Player::ntprequest() const {
+  // @@protoc_insertion_point(field_list:naothmessages.TeamState.Player.ntpRequest)
+  return ntprequest_;
+}
+
+// optional uint64 ntpRequestUpdate = 6;
+inline bool TeamState_Player::has_ntprequestupdate() const {
+  return (_has_bits_[0] & 0x00000100u) != 0;
+}
+inline void TeamState_Player::set_has_ntprequestupdate() {
+  _has_bits_[0] |= 0x00000100u;
+}
+inline void TeamState_Player::clear_has_ntprequestupdate() {
+  _has_bits_[0] &= ~0x00000100u;
+}
+inline void TeamState_Player::clear_ntprequestupdate() {
+  ntprequestupdate_ = GOOGLE_ULONGLONG(0);
+  clear_has_ntprequestupdate();
+}
+inline ::google::protobuf::uint64 TeamState_Player::ntprequestupdate() const {
+  // @@protoc_insertion_point(field_get:naothmessages.TeamState.Player.ntpRequestUpdate)
+  return ntprequestupdate_;
+}
+inline void TeamState_Player::set_ntprequestupdate(::google::protobuf::uint64 value) {
+  set_has_ntprequestupdate();
+  ntprequestupdate_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.TeamState.Player.ntpRequestUpdate)
+}
+
+// optional .naothmessages.RobotState robotState = 7 [default = initial];
+inline bool TeamState_Player::has_robotstate() const {
+  return (_has_bits_[0] & 0x00000080u) != 0;
+}
+inline void TeamState_Player::set_has_robotstate() {
+  _has_bits_[0] |= 0x00000080u;
+}
+inline void TeamState_Player::clear_has_robotstate() {
+  _has_bits_[0] &= ~0x00000080u;
+}
+inline void TeamState_Player::clear_robotstate() {
+  robotstate_ = 0;
+  clear_has_robotstate();
+}
+inline ::naothmessages::RobotState TeamState_Player::robotstate() const {
+  // @@protoc_insertion_point(field_get:naothmessages.TeamState.Player.robotState)
+  return static_cast< ::naothmessages::RobotState >(robotstate_);
+}
+inline void TeamState_Player::set_robotstate(::naothmessages::RobotState value) {
+  assert(::naothmessages::RobotState_IsValid(value));
+  set_has_robotstate();
+  robotstate_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.TeamState.Player.robotState)
+}
+
+// optional uint64 robotStateUpdate = 8;
+inline bool TeamState_Player::has_robotstateupdate() const {
+  return (_has_bits_[0] & 0x00000200u) != 0;
+}
+inline void TeamState_Player::set_has_robotstateupdate() {
+  _has_bits_[0] |= 0x00000200u;
+}
+inline void TeamState_Player::clear_has_robotstateupdate() {
+  _has_bits_[0] &= ~0x00000200u;
+}
+inline void TeamState_Player::clear_robotstateupdate() {
+  robotstateupdate_ = GOOGLE_ULONGLONG(0);
+  clear_has_robotstateupdate();
+}
+inline ::google::protobuf::uint64 TeamState_Player::robotstateupdate() const {
+  // @@protoc_insertion_point(field_get:naothmessages.TeamState.Player.robotStateUpdate)
+  return robotstateupdate_;
+}
+inline void TeamState_Player::set_robotstateupdate(::google::protobuf::uint64 value) {
+  set_has_robotstateupdate();
+  robotstateupdate_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.TeamState.Player.robotStateUpdate)
+}
+
+// optional bool fallen = 9 [default = false];
+inline bool TeamState_Player::has_fallen() const {
+  return (_has_bits_[0] & 0x00004000u) != 0;
+}
+inline void TeamState_Player::set_has_fallen() {
+  _has_bits_[0] |= 0x00004000u;
+}
+inline void TeamState_Player::clear_has_fallen() {
+  _has_bits_[0] &= ~0x00004000u;
+}
+inline void TeamState_Player::clear_fallen() {
+  fallen_ = false;
+  clear_has_fallen();
+}
+inline bool TeamState_Player::fallen() const {
+  // @@protoc_insertion_point(field_get:naothmessages.TeamState.Player.fallen)
+  return fallen_;
+}
+inline void TeamState_Player::set_fallen(bool value) {
+  set_has_fallen();
+  fallen_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.TeamState.Player.fallen)
+}
+
+// optional uint64 fallenUpdate = 10;
+inline bool TeamState_Player::has_fallenupdate() const {
+  return (_has_bits_[0] & 0x00000400u) != 0;
+}
+inline void TeamState_Player::set_has_fallenupdate() {
+  _has_bits_[0] |= 0x00000400u;
+}
+inline void TeamState_Player::clear_has_fallenupdate() {
+  _has_bits_[0] &= ~0x00000400u;
+}
+inline void TeamState_Player::clear_fallenupdate() {
+  fallenupdate_ = GOOGLE_ULONGLONG(0);
+  clear_has_fallenupdate();
+}
+inline ::google::protobuf::uint64 TeamState_Player::fallenupdate() const {
+  // @@protoc_insertion_point(field_get:naothmessages.TeamState.Player.fallenUpdate)
+  return fallenupdate_;
+}
+inline void TeamState_Player::set_fallenupdate(::google::protobuf::uint64 value) {
+  set_has_fallenupdate();
+  fallenupdate_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.TeamState.Player.fallenUpdate)
+}
+
+// optional bool readyToWalk = 11;
+inline bool TeamState_Player::has_readytowalk() const {
+  return (_has_bits_[0] & 0x00008000u) != 0;
+}
+inline void TeamState_Player::set_has_readytowalk() {
+  _has_bits_[0] |= 0x00008000u;
+}
+inline void TeamState_Player::clear_has_readytowalk() {
+  _has_bits_[0] &= ~0x00008000u;
+}
+inline void TeamState_Player::clear_readytowalk() {
+  readytowalk_ = false;
+  clear_has_readytowalk();
+}
+inline bool TeamState_Player::readytowalk() const {
+  // @@protoc_insertion_point(field_get:naothmessages.TeamState.Player.readyToWalk)
+  return readytowalk_;
+}
+inline void TeamState_Player::set_readytowalk(bool value) {
+  set_has_readytowalk();
+  readytowalk_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.TeamState.Player.readyToWalk)
+}
+
+// optional uint64 readyToWalkUpdate = 12;
+inline bool TeamState_Player::has_readytowalkupdate() const {
+  return (_has_bits_[0] & 0x00000800u) != 0;
+}
+inline void TeamState_Player::set_has_readytowalkupdate() {
+  _has_bits_[0] |= 0x00000800u;
+}
+inline void TeamState_Player::clear_has_readytowalkupdate() {
+  _has_bits_[0] &= ~0x00000800u;
+}
+inline void TeamState_Player::clear_readytowalkupdate() {
+  readytowalkupdate_ = GOOGLE_ULONGLONG(0);
+  clear_has_readytowalkupdate();
+}
+inline ::google::protobuf::uint64 TeamState_Player::readytowalkupdate() const {
+  // @@protoc_insertion_point(field_get:naothmessages.TeamState.Player.readyToWalkUpdate)
+  return readytowalkupdate_;
+}
+inline void TeamState_Player::set_readytowalkupdate(::google::protobuf::uint64 value) {
+  set_has_readytowalkupdate();
+  readytowalkupdate_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.TeamState.Player.readyToWalkUpdate)
+}
+
+// optional .naothmessages.Pose2D pose = 13;
+inline bool TeamState_Player::has_pose() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void TeamState_Player::set_has_pose() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void TeamState_Player::clear_has_pose() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void TeamState_Player::clear_pose() {
+  if (pose_ != NULL) pose_->::naothmessages::Pose2D::Clear();
+  clear_has_pose();
+}
+inline const ::naothmessages::Pose2D& TeamState_Player::pose() const {
+  const ::naothmessages::Pose2D* p = pose_;
+  // @@protoc_insertion_point(field_get:naothmessages.TeamState.Player.pose)
+  return p != NULL ? *p : *reinterpret_cast<const ::naothmessages::Pose2D*>(
+      &::naothmessages::_Pose2D_default_instance_);
+}
+inline ::naothmessages::Pose2D* TeamState_Player::mutable_pose() {
+  set_has_pose();
+  if (pose_ == NULL) {
+    pose_ = new ::naothmessages::Pose2D;
+  }
+  // @@protoc_insertion_point(field_mutable:naothmessages.TeamState.Player.pose)
+  return pose_;
+}
+inline ::naothmessages::Pose2D* TeamState_Player::release_pose() {
+  // @@protoc_insertion_point(field_release:naothmessages.TeamState.Player.pose)
+  clear_has_pose();
+  ::naothmessages::Pose2D* temp = pose_;
+  pose_ = NULL;
+  return temp;
+}
+inline void TeamState_Player::set_allocated_pose(::naothmessages::Pose2D* pose) {
+  delete pose_;
+  pose_ = pose;
+  if (pose) {
+    set_has_pose();
+  } else {
+    clear_has_pose();
+  }
+  // @@protoc_insertion_point(field_set_allocated:naothmessages.TeamState.Player.pose)
+}
+
+// optional uint64 poseUpdate = 14;
+inline bool TeamState_Player::has_poseupdate() const {
+  return (_has_bits_[0] & 0x00001000u) != 0;
+}
+inline void TeamState_Player::set_has_poseupdate() {
+  _has_bits_[0] |= 0x00001000u;
+}
+inline void TeamState_Player::clear_has_poseupdate() {
+  _has_bits_[0] &= ~0x00001000u;
+}
+inline void TeamState_Player::clear_poseupdate() {
+  poseupdate_ = GOOGLE_ULONGLONG(0);
+  clear_has_poseupdate();
+}
+inline ::google::protobuf::uint64 TeamState_Player::poseupdate() const {
+  // @@protoc_insertion_point(field_get:naothmessages.TeamState.Player.poseUpdate)
+  return poseupdate_;
+}
+inline void TeamState_Player::set_poseupdate(::google::protobuf::uint64 value) {
+  set_has_poseupdate();
+  poseupdate_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.TeamState.Player.poseUpdate)
+}
+
+// optional int32 ballAge = 15 [default = -1];
+inline bool TeamState_Player::has_ballage() const {
+  return (_has_bits_[0] & 0x01000000u) != 0;
+}
+inline void TeamState_Player::set_has_ballage() {
+  _has_bits_[0] |= 0x01000000u;
+}
+inline void TeamState_Player::clear_has_ballage() {
+  _has_bits_[0] &= ~0x01000000u;
+}
+inline void TeamState_Player::clear_ballage() {
+  ballage_ = -1;
+  clear_has_ballage();
+}
+inline ::google::protobuf::int32 TeamState_Player::ballage() const {
+  // @@protoc_insertion_point(field_get:naothmessages.TeamState.Player.ballAge)
+  return ballage_;
+}
+inline void TeamState_Player::set_ballage(::google::protobuf::int32 value) {
+  set_has_ballage();
+  ballage_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.TeamState.Player.ballAge)
+}
+
+// optional uint64 ballAgeUpdate = 16;
+inline bool TeamState_Player::has_ballageupdate() const {
+  return (_has_bits_[0] & 0x00002000u) != 0;
+}
+inline void TeamState_Player::set_has_ballageupdate() {
+  _has_bits_[0] |= 0x00002000u;
+}
+inline void TeamState_Player::clear_has_ballageupdate() {
+  _has_bits_[0] &= ~0x00002000u;
+}
+inline void TeamState_Player::clear_ballageupdate() {
+  ballageupdate_ = GOOGLE_ULONGLONG(0);
+  clear_has_ballageupdate();
+}
+inline ::google::protobuf::uint64 TeamState_Player::ballageupdate() const {
+  // @@protoc_insertion_point(field_get:naothmessages.TeamState.Player.ballAgeUpdate)
+  return ballageupdate_;
+}
+inline void TeamState_Player::set_ballageupdate(::google::protobuf::uint64 value) {
+  set_has_ballageupdate();
+  ballageupdate_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.TeamState.Player.ballAgeUpdate)
+}
+
+// optional .naothmessages.DoubleVector2 ballPosition = 17;
+inline bool TeamState_Player::has_ballposition() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void TeamState_Player::set_has_ballposition() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void TeamState_Player::clear_has_ballposition() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void TeamState_Player::clear_ballposition() {
+  if (ballposition_ != NULL) ballposition_->::naothmessages::DoubleVector2::Clear();
+  clear_has_ballposition();
+}
+inline const ::naothmessages::DoubleVector2& TeamState_Player::ballposition() const {
+  const ::naothmessages::DoubleVector2* p = ballposition_;
+  // @@protoc_insertion_point(field_get:naothmessages.TeamState.Player.ballPosition)
+  return p != NULL ? *p : *reinterpret_cast<const ::naothmessages::DoubleVector2*>(
+      &::naothmessages::_DoubleVector2_default_instance_);
+}
+inline ::naothmessages::DoubleVector2* TeamState_Player::mutable_ballposition() {
+  set_has_ballposition();
+  if (ballposition_ == NULL) {
+    ballposition_ = new ::naothmessages::DoubleVector2;
+  }
+  // @@protoc_insertion_point(field_mutable:naothmessages.TeamState.Player.ballPosition)
+  return ballposition_;
+}
+inline ::naothmessages::DoubleVector2* TeamState_Player::release_ballposition() {
+  // @@protoc_insertion_point(field_release:naothmessages.TeamState.Player.ballPosition)
+  clear_has_ballposition();
+  ::naothmessages::DoubleVector2* temp = ballposition_;
+  ballposition_ = NULL;
+  return temp;
+}
+inline void TeamState_Player::set_allocated_ballposition(::naothmessages::DoubleVector2* ballposition) {
+  delete ballposition_;
+  ballposition_ = ballposition;
+  if (ballposition) {
+    set_has_ballposition();
+  } else {
+    clear_has_ballposition();
+  }
+  // @@protoc_insertion_point(field_set_allocated:naothmessages.TeamState.Player.ballPosition)
+}
+
+// optional uint64 ballPositionUpdate = 18;
+inline bool TeamState_Player::has_ballpositionupdate() const {
+  return (_has_bits_[0] & 0x00080000u) != 0;
+}
+inline void TeamState_Player::set_has_ballpositionupdate() {
+  _has_bits_[0] |= 0x00080000u;
+}
+inline void TeamState_Player::clear_has_ballpositionupdate() {
+  _has_bits_[0] &= ~0x00080000u;
+}
+inline void TeamState_Player::clear_ballpositionupdate() {
+  ballpositionupdate_ = GOOGLE_ULONGLONG(0);
+  clear_has_ballpositionupdate();
+}
+inline ::google::protobuf::uint64 TeamState_Player::ballpositionupdate() const {
+  // @@protoc_insertion_point(field_get:naothmessages.TeamState.Player.ballPositionUpdate)
+  return ballpositionupdate_;
+}
+inline void TeamState_Player::set_ballpositionupdate(::google::protobuf::uint64 value) {
+  set_has_ballpositionupdate();
+  ballpositionupdate_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.TeamState.Player.ballPositionUpdate)
+}
+
+// optional uint32 timeToBall = 19;
+inline bool TeamState_Player::has_timetoball() const {
+  return (_has_bits_[0] & 0x00040000u) != 0;
+}
+inline void TeamState_Player::set_has_timetoball() {
+  _has_bits_[0] |= 0x00040000u;
+}
+inline void TeamState_Player::clear_has_timetoball() {
+  _has_bits_[0] &= ~0x00040000u;
+}
+inline void TeamState_Player::clear_timetoball() {
+  timetoball_ = 0u;
+  clear_has_timetoball();
+}
+inline ::google::protobuf::uint32 TeamState_Player::timetoball() const {
+  // @@protoc_insertion_point(field_get:naothmessages.TeamState.Player.timeToBall)
+  return timetoball_;
+}
+inline void TeamState_Player::set_timetoball(::google::protobuf::uint32 value) {
+  set_has_timetoball();
+  timetoball_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.TeamState.Player.timeToBall)
+}
+
+// optional uint64 timeToBallUpdate = 20;
+inline bool TeamState_Player::has_timetoballupdate() const {
+  return (_has_bits_[0] & 0x00100000u) != 0;
+}
+inline void TeamState_Player::set_has_timetoballupdate() {
+  _has_bits_[0] |= 0x00100000u;
+}
+inline void TeamState_Player::clear_has_timetoballupdate() {
+  _has_bits_[0] &= ~0x00100000u;
+}
+inline void TeamState_Player::clear_timetoballupdate() {
+  timetoballupdate_ = GOOGLE_ULONGLONG(0);
+  clear_has_timetoballupdate();
+}
+inline ::google::protobuf::uint64 TeamState_Player::timetoballupdate() const {
+  // @@protoc_insertion_point(field_get:naothmessages.TeamState.Player.timeToBallUpdate)
+  return timetoballupdate_;
+}
+inline void TeamState_Player::set_timetoballupdate(::google::protobuf::uint64 value) {
+  set_has_timetoballupdate();
+  timetoballupdate_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.TeamState.Player.timeToBallUpdate)
+}
+
+// optional bool wantsToBeStriker = 21 [default = false];
+inline bool TeamState_Player::has_wantstobestriker() const {
+  return (_has_bits_[0] & 0x00010000u) != 0;
+}
+inline void TeamState_Player::set_has_wantstobestriker() {
+  _has_bits_[0] |= 0x00010000u;
+}
+inline void TeamState_Player::clear_has_wantstobestriker() {
+  _has_bits_[0] &= ~0x00010000u;
+}
+inline void TeamState_Player::clear_wantstobestriker() {
+  wantstobestriker_ = false;
+  clear_has_wantstobestriker();
+}
+inline bool TeamState_Player::wantstobestriker() const {
+  // @@protoc_insertion_point(field_get:naothmessages.TeamState.Player.wantsToBeStriker)
+  return wantstobestriker_;
+}
+inline void TeamState_Player::set_wantstobestriker(bool value) {
+  set_has_wantstobestriker();
+  wantstobestriker_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.TeamState.Player.wantsToBeStriker)
+}
+
+// optional uint64 wantsToBeStrikerUpdate = 22;
+inline bool TeamState_Player::has_wantstobestrikerupdate() const {
+  return (_has_bits_[0] & 0x00200000u) != 0;
+}
+inline void TeamState_Player::set_has_wantstobestrikerupdate() {
+  _has_bits_[0] |= 0x00200000u;
+}
+inline void TeamState_Player::clear_has_wantstobestrikerupdate() {
+  _has_bits_[0] &= ~0x00200000u;
+}
+inline void TeamState_Player::clear_wantstobestrikerupdate() {
+  wantstobestrikerupdate_ = GOOGLE_ULONGLONG(0);
+  clear_has_wantstobestrikerupdate();
+}
+inline ::google::protobuf::uint64 TeamState_Player::wantstobestrikerupdate() const {
+  // @@protoc_insertion_point(field_get:naothmessages.TeamState.Player.wantsToBeStrikerUpdate)
+  return wantstobestrikerupdate_;
+}
+inline void TeamState_Player::set_wantstobestrikerupdate(::google::protobuf::uint64 value) {
+  set_has_wantstobestrikerupdate();
+  wantstobestrikerupdate_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.TeamState.Player.wantsToBeStrikerUpdate)
+}
+
+// optional bool wasStriker = 23 [default = false];
+inline bool TeamState_Player::has_wasstriker() const {
+  return (_has_bits_[0] & 0x00020000u) != 0;
+}
+inline void TeamState_Player::set_has_wasstriker() {
+  _has_bits_[0] |= 0x00020000u;
+}
+inline void TeamState_Player::clear_has_wasstriker() {
+  _has_bits_[0] &= ~0x00020000u;
+}
+inline void TeamState_Player::clear_wasstriker() {
+  wasstriker_ = false;
+  clear_has_wasstriker();
+}
+inline bool TeamState_Player::wasstriker() const {
+  // @@protoc_insertion_point(field_get:naothmessages.TeamState.Player.wasStriker)
+  return wasstriker_;
+}
+inline void TeamState_Player::set_wasstriker(bool value) {
+  set_has_wasstriker();
+  wasstriker_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.TeamState.Player.wasStriker)
+}
+
+// optional uint64 wasStrikerUpdate = 24;
+inline bool TeamState_Player::has_wasstrikerupdate() const {
+  return (_has_bits_[0] & 0x00400000u) != 0;
+}
+inline void TeamState_Player::set_has_wasstrikerupdate() {
+  _has_bits_[0] |= 0x00400000u;
+}
+inline void TeamState_Player::clear_has_wasstrikerupdate() {
+  _has_bits_[0] &= ~0x00400000u;
+}
+inline void TeamState_Player::clear_wasstrikerupdate() {
+  wasstrikerupdate_ = GOOGLE_ULONGLONG(0);
+  clear_has_wasstrikerupdate();
+}
+inline ::google::protobuf::uint64 TeamState_Player::wasstrikerupdate() const {
+  // @@protoc_insertion_point(field_get:naothmessages.TeamState.Player.wasStrikerUpdate)
+  return wasstrikerupdate_;
+}
+inline void TeamState_Player::set_wasstrikerupdate(::google::protobuf::uint64 value) {
+  set_has_wasstrikerupdate();
+  wasstrikerupdate_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.TeamState.Player.wasStrikerUpdate)
+}
+
+// optional .naothmessages.RobotRole robotRole = 25;
+inline bool TeamState_Player::has_robotrole() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void TeamState_Player::set_has_robotrole() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void TeamState_Player::clear_has_robotrole() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline void TeamState_Player::clear_robotrole() {
+  if (robotrole_ != NULL) robotrole_->::naothmessages::RobotRole::Clear();
+  clear_has_robotrole();
+}
+inline const ::naothmessages::RobotRole& TeamState_Player::robotrole() const {
+  const ::naothmessages::RobotRole* p = robotrole_;
+  // @@protoc_insertion_point(field_get:naothmessages.TeamState.Player.robotRole)
+  return p != NULL ? *p : *reinterpret_cast<const ::naothmessages::RobotRole*>(
+      &::naothmessages::_RobotRole_default_instance_);
+}
+inline ::naothmessages::RobotRole* TeamState_Player::mutable_robotrole() {
+  set_has_robotrole();
+  if (robotrole_ == NULL) {
+    robotrole_ = new ::naothmessages::RobotRole;
+  }
+  // @@protoc_insertion_point(field_mutable:naothmessages.TeamState.Player.robotRole)
+  return robotrole_;
+}
+inline ::naothmessages::RobotRole* TeamState_Player::release_robotrole() {
+  // @@protoc_insertion_point(field_release:naothmessages.TeamState.Player.robotRole)
+  clear_has_robotrole();
+  ::naothmessages::RobotRole* temp = robotrole_;
+  robotrole_ = NULL;
+  return temp;
+}
+inline void TeamState_Player::set_allocated_robotrole(::naothmessages::RobotRole* robotrole) {
+  delete robotrole_;
+  robotrole_ = robotrole;
+  if (robotrole) {
+    set_has_robotrole();
+  } else {
+    clear_has_robotrole();
+  }
+  // @@protoc_insertion_point(field_set_allocated:naothmessages.TeamState.Player.robotRole)
+}
+
+// optional uint64 robotRoleUpdate = 26;
+inline bool TeamState_Player::has_robotroleupdate() const {
+  return (_has_bits_[0] & 0x00800000u) != 0;
+}
+inline void TeamState_Player::set_has_robotroleupdate() {
+  _has_bits_[0] |= 0x00800000u;
+}
+inline void TeamState_Player::clear_has_robotroleupdate() {
+  _has_bits_[0] &= ~0x00800000u;
+}
+inline void TeamState_Player::clear_robotroleupdate() {
+  robotroleupdate_ = GOOGLE_ULONGLONG(0);
+  clear_has_robotroleupdate();
+}
+inline ::google::protobuf::uint64 TeamState_Player::robotroleupdate() const {
+  // @@protoc_insertion_point(field_get:naothmessages.TeamState.Player.robotRoleUpdate)
+  return robotroleupdate_;
+}
+inline void TeamState_Player::set_robotroleupdate(::google::protobuf::uint64 value) {
+  set_has_robotroleupdate();
+  robotroleupdate_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.TeamState.Player.robotRoleUpdate)
+}
+
+// -------------------------------------------------------------------
+
+// TeamState
+
+// repeated .naothmessages.TeamState.Player players = 1;
+inline int TeamState::players_size() const {
+  return players_.size();
+}
+inline void TeamState::clear_players() {
+  players_.Clear();
+}
+inline const ::naothmessages::TeamState_Player& TeamState::players(int index) const {
+  // @@protoc_insertion_point(field_get:naothmessages.TeamState.players)
+  return players_.Get(index);
+}
+inline ::naothmessages::TeamState_Player* TeamState::mutable_players(int index) {
+  // @@protoc_insertion_point(field_mutable:naothmessages.TeamState.players)
+  return players_.Mutable(index);
+}
+inline ::naothmessages::TeamState_Player* TeamState::add_players() {
+  // @@protoc_insertion_point(field_add:naothmessages.TeamState.players)
+  return players_.Add();
+}
+inline ::google::protobuf::RepeatedPtrField< ::naothmessages::TeamState_Player >*
+TeamState::mutable_players() {
+  // @@protoc_insertion_point(field_mutable_list:naothmessages.TeamState.players)
+  return &players_;
+}
+inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::TeamState_Player >&
+TeamState::players() const {
+  // @@protoc_insertion_point(field_list:naothmessages.TeamState.players)
+  return players_;
+}
+
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
 #endif  // !PROTOBUF_INLINE_NOT_IN_HEADERS
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------

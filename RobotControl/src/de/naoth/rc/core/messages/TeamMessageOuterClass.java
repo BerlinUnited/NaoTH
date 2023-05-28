@@ -9611,6 +9611,4233 @@ public final class TeamMessageOuterClass {
 
   }
 
+  public interface TeamStateOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:naothmessages.TeamState)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>repeated .naothmessages.TeamState.Player players = 1;</code>
+     */
+    java.util.List<de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player> 
+        getPlayersList();
+    /**
+     * <code>repeated .naothmessages.TeamState.Player players = 1;</code>
+     */
+    de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player getPlayers(int index);
+    /**
+     * <code>repeated .naothmessages.TeamState.Player players = 1;</code>
+     */
+    int getPlayersCount();
+    /**
+     * <code>repeated .naothmessages.TeamState.Player players = 1;</code>
+     */
+    java.util.List<? extends de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.PlayerOrBuilder> 
+        getPlayersOrBuilderList();
+    /**
+     * <code>repeated .naothmessages.TeamState.Player players = 1;</code>
+     */
+    de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.PlayerOrBuilder getPlayersOrBuilder(
+        int index);
+  }
+  /**
+   * Protobuf type {@code naothmessages.TeamState}
+   */
+  public  static final class TeamState extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:naothmessages.TeamState)
+      TeamStateOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use TeamState.newBuilder() to construct.
+    private TeamState(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private TeamState() {
+      players_ = java.util.Collections.emptyList();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private TeamState(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+                players_ = new java.util.ArrayList<de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player>();
+                mutable_bitField0_ |= 0x00000001;
+              }
+              players_.add(
+                  input.readMessage(de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player.PARSER, extensionRegistry));
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+          players_ = java.util.Collections.unmodifiableList(players_);
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return de.naoth.rc.core.messages.TeamMessageOuterClass.internal_static_naothmessages_TeamState_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return de.naoth.rc.core.messages.TeamMessageOuterClass.internal_static_naothmessages_TeamState_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.class, de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Builder.class);
+    }
+
+    public interface PlayerOrBuilder extends
+        // @@protoc_insertion_point(interface_extends:naothmessages.TeamState.Player)
+        com.google.protobuf.MessageOrBuilder {
+
+      /**
+       * <code>optional uint32 number = 1 [default = 0];</code>
+       */
+      boolean hasNumber();
+      /**
+       * <code>optional uint32 number = 1 [default = 0];</code>
+       */
+      int getNumber();
+
+      /**
+       * <code>optional .naothmessages.FrameInfo messageFrameInfo = 2;</code>
+       */
+      boolean hasMessageFrameInfo();
+      /**
+       * <code>optional .naothmessages.FrameInfo messageFrameInfo = 2;</code>
+       */
+      de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfo getMessageFrameInfo();
+      /**
+       * <code>optional .naothmessages.FrameInfo messageFrameInfo = 2;</code>
+       */
+      de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfoOrBuilder getMessageFrameInfoOrBuilder();
+
+      /**
+       * <code>optional uint64 messageParsed = 3;</code>
+       */
+      boolean hasMessageParsed();
+      /**
+       * <code>optional uint64 messageParsed = 3;</code>
+       */
+      long getMessageParsed();
+
+      /**
+       * <code>optional uint64 messageTimestamp = 4;</code>
+       */
+      boolean hasMessageTimestamp();
+      /**
+       * <code>optional uint64 messageTimestamp = 4;</code>
+       */
+      long getMessageTimestamp();
+
+      /**
+       * <code>repeated .naothmessages.Ntp ntpRequest = 5;</code>
+       */
+      java.util.List<de.naoth.rc.core.messages.TeamMessageOuterClass.Ntp> 
+          getNtpRequestList();
+      /**
+       * <code>repeated .naothmessages.Ntp ntpRequest = 5;</code>
+       */
+      de.naoth.rc.core.messages.TeamMessageOuterClass.Ntp getNtpRequest(int index);
+      /**
+       * <code>repeated .naothmessages.Ntp ntpRequest = 5;</code>
+       */
+      int getNtpRequestCount();
+      /**
+       * <code>repeated .naothmessages.Ntp ntpRequest = 5;</code>
+       */
+      java.util.List<? extends de.naoth.rc.core.messages.TeamMessageOuterClass.NtpOrBuilder> 
+          getNtpRequestOrBuilderList();
+      /**
+       * <code>repeated .naothmessages.Ntp ntpRequest = 5;</code>
+       */
+      de.naoth.rc.core.messages.TeamMessageOuterClass.NtpOrBuilder getNtpRequestOrBuilder(
+          int index);
+
+      /**
+       * <code>optional uint64 ntpRequestUpdate = 6;</code>
+       */
+      boolean hasNtpRequestUpdate();
+      /**
+       * <code>optional uint64 ntpRequestUpdate = 6;</code>
+       */
+      long getNtpRequestUpdate();
+
+      /**
+       * <code>optional .naothmessages.RobotState robotState = 7 [default = initial];</code>
+       */
+      boolean hasRobotState();
+      /**
+       * <code>optional .naothmessages.RobotState robotState = 7 [default = initial];</code>
+       */
+      de.naoth.rc.core.messages.TeamMessageOuterClass.RobotState getRobotState();
+
+      /**
+       * <code>optional uint64 robotStateUpdate = 8;</code>
+       */
+      boolean hasRobotStateUpdate();
+      /**
+       * <code>optional uint64 robotStateUpdate = 8;</code>
+       */
+      long getRobotStateUpdate();
+
+      /**
+       * <code>optional bool fallen = 9 [default = false];</code>
+       */
+      boolean hasFallen();
+      /**
+       * <code>optional bool fallen = 9 [default = false];</code>
+       */
+      boolean getFallen();
+
+      /**
+       * <code>optional uint64 fallenUpdate = 10;</code>
+       */
+      boolean hasFallenUpdate();
+      /**
+       * <code>optional uint64 fallenUpdate = 10;</code>
+       */
+      long getFallenUpdate();
+
+      /**
+       * <code>optional bool readyToWalk = 11;</code>
+       */
+      boolean hasReadyToWalk();
+      /**
+       * <code>optional bool readyToWalk = 11;</code>
+       */
+      boolean getReadyToWalk();
+
+      /**
+       * <code>optional uint64 readyToWalkUpdate = 12;</code>
+       */
+      boolean hasReadyToWalkUpdate();
+      /**
+       * <code>optional uint64 readyToWalkUpdate = 12;</code>
+       */
+      long getReadyToWalkUpdate();
+
+      /**
+       * <code>optional .naothmessages.Pose2D pose = 13;</code>
+       */
+      boolean hasPose();
+      /**
+       * <code>optional .naothmessages.Pose2D pose = 13;</code>
+       */
+      de.naoth.rc.core.messages.CommonTypes.Pose2D getPose();
+      /**
+       * <code>optional .naothmessages.Pose2D pose = 13;</code>
+       */
+      de.naoth.rc.core.messages.CommonTypes.Pose2DOrBuilder getPoseOrBuilder();
+
+      /**
+       * <code>optional uint64 poseUpdate = 14;</code>
+       */
+      boolean hasPoseUpdate();
+      /**
+       * <code>optional uint64 poseUpdate = 14;</code>
+       */
+      long getPoseUpdate();
+
+      /**
+       * <code>optional int32 ballAge = 15 [default = -1];</code>
+       */
+      boolean hasBallAge();
+      /**
+       * <code>optional int32 ballAge = 15 [default = -1];</code>
+       */
+      int getBallAge();
+
+      /**
+       * <code>optional uint64 ballAgeUpdate = 16;</code>
+       */
+      boolean hasBallAgeUpdate();
+      /**
+       * <code>optional uint64 ballAgeUpdate = 16;</code>
+       */
+      long getBallAgeUpdate();
+
+      /**
+       * <code>optional .naothmessages.DoubleVector2 ballPosition = 17;</code>
+       */
+      boolean hasBallPosition();
+      /**
+       * <code>optional .naothmessages.DoubleVector2 ballPosition = 17;</code>
+       */
+      de.naoth.rc.core.messages.CommonTypes.DoubleVector2 getBallPosition();
+      /**
+       * <code>optional .naothmessages.DoubleVector2 ballPosition = 17;</code>
+       */
+      de.naoth.rc.core.messages.CommonTypes.DoubleVector2OrBuilder getBallPositionOrBuilder();
+
+      /**
+       * <code>optional uint64 ballPositionUpdate = 18;</code>
+       */
+      boolean hasBallPositionUpdate();
+      /**
+       * <code>optional uint64 ballPositionUpdate = 18;</code>
+       */
+      long getBallPositionUpdate();
+
+      /**
+       * <code>optional uint32 timeToBall = 19;</code>
+       */
+      boolean hasTimeToBall();
+      /**
+       * <code>optional uint32 timeToBall = 19;</code>
+       */
+      int getTimeToBall();
+
+      /**
+       * <code>optional uint64 timeToBallUpdate = 20;</code>
+       */
+      boolean hasTimeToBallUpdate();
+      /**
+       * <code>optional uint64 timeToBallUpdate = 20;</code>
+       */
+      long getTimeToBallUpdate();
+
+      /**
+       * <code>optional bool wantsToBeStriker = 21 [default = false];</code>
+       */
+      boolean hasWantsToBeStriker();
+      /**
+       * <code>optional bool wantsToBeStriker = 21 [default = false];</code>
+       */
+      boolean getWantsToBeStriker();
+
+      /**
+       * <code>optional uint64 wantsToBeStrikerUpdate = 22;</code>
+       */
+      boolean hasWantsToBeStrikerUpdate();
+      /**
+       * <code>optional uint64 wantsToBeStrikerUpdate = 22;</code>
+       */
+      long getWantsToBeStrikerUpdate();
+
+      /**
+       * <code>optional bool wasStriker = 23 [default = false];</code>
+       */
+      boolean hasWasStriker();
+      /**
+       * <code>optional bool wasStriker = 23 [default = false];</code>
+       */
+      boolean getWasStriker();
+
+      /**
+       * <code>optional uint64 wasStrikerUpdate = 24;</code>
+       */
+      boolean hasWasStrikerUpdate();
+      /**
+       * <code>optional uint64 wasStrikerUpdate = 24;</code>
+       */
+      long getWasStrikerUpdate();
+
+      /**
+       * <code>optional .naothmessages.RobotRole robotRole = 25;</code>
+       */
+      boolean hasRobotRole();
+      /**
+       * <code>optional .naothmessages.RobotRole robotRole = 25;</code>
+       */
+      de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole getRobotRole();
+      /**
+       * <code>optional .naothmessages.RobotRole robotRole = 25;</code>
+       */
+      de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRoleOrBuilder getRobotRoleOrBuilder();
+
+      /**
+       * <code>optional uint64 robotRoleUpdate = 26;</code>
+       */
+      boolean hasRobotRoleUpdate();
+      /**
+       * <code>optional uint64 robotRoleUpdate = 26;</code>
+       */
+      long getRobotRoleUpdate();
+    }
+    /**
+     * Protobuf type {@code naothmessages.TeamState.Player}
+     */
+    public  static final class Player extends
+        com.google.protobuf.GeneratedMessageV3 implements
+        // @@protoc_insertion_point(message_implements:naothmessages.TeamState.Player)
+        PlayerOrBuilder {
+    private static final long serialVersionUID = 0L;
+      // Use Player.newBuilder() to construct.
+      private Player(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+        super(builder);
+      }
+      private Player() {
+        number_ = 0;
+        messageParsed_ = 0L;
+        messageTimestamp_ = 0L;
+        ntpRequest_ = java.util.Collections.emptyList();
+        ntpRequestUpdate_ = 0L;
+        robotState_ = 0;
+        robotStateUpdate_ = 0L;
+        fallen_ = false;
+        fallenUpdate_ = 0L;
+        readyToWalk_ = false;
+        readyToWalkUpdate_ = 0L;
+        poseUpdate_ = 0L;
+        ballAge_ = -1;
+        ballAgeUpdate_ = 0L;
+        ballPositionUpdate_ = 0L;
+        timeToBall_ = 0;
+        timeToBallUpdate_ = 0L;
+        wantsToBeStriker_ = false;
+        wantsToBeStrikerUpdate_ = 0L;
+        wasStriker_ = false;
+        wasStrikerUpdate_ = 0L;
+        robotRoleUpdate_ = 0L;
+      }
+
+      @java.lang.Override
+      public final com.google.protobuf.UnknownFieldSet
+      getUnknownFields() {
+        return this.unknownFields;
+      }
+      private Player(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        this();
+        int mutable_bitField0_ = 0;
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+            com.google.protobuf.UnknownFieldSet.newBuilder();
+        try {
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              default: {
+                if (!parseUnknownField(
+                    input, unknownFields, extensionRegistry, tag)) {
+                  done = true;
+                }
+                break;
+              }
+              case 8: {
+                bitField0_ |= 0x00000001;
+                number_ = input.readUInt32();
+                break;
+              }
+              case 18: {
+                de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfo.Builder subBuilder = null;
+                if (((bitField0_ & 0x00000002) == 0x00000002)) {
+                  subBuilder = messageFrameInfo_.toBuilder();
+                }
+                messageFrameInfo_ = input.readMessage(de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfo.PARSER, extensionRegistry);
+                if (subBuilder != null) {
+                  subBuilder.mergeFrom(messageFrameInfo_);
+                  messageFrameInfo_ = subBuilder.buildPartial();
+                }
+                bitField0_ |= 0x00000002;
+                break;
+              }
+              case 24: {
+                bitField0_ |= 0x00000004;
+                messageParsed_ = input.readUInt64();
+                break;
+              }
+              case 32: {
+                bitField0_ |= 0x00000008;
+                messageTimestamp_ = input.readUInt64();
+                break;
+              }
+              case 42: {
+                if (!((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
+                  ntpRequest_ = new java.util.ArrayList<de.naoth.rc.core.messages.TeamMessageOuterClass.Ntp>();
+                  mutable_bitField0_ |= 0x00000010;
+                }
+                ntpRequest_.add(
+                    input.readMessage(de.naoth.rc.core.messages.TeamMessageOuterClass.Ntp.PARSER, extensionRegistry));
+                break;
+              }
+              case 48: {
+                bitField0_ |= 0x00000010;
+                ntpRequestUpdate_ = input.readUInt64();
+                break;
+              }
+              case 56: {
+                int rawValue = input.readEnum();
+                de.naoth.rc.core.messages.TeamMessageOuterClass.RobotState value = de.naoth.rc.core.messages.TeamMessageOuterClass.RobotState.valueOf(rawValue);
+                if (value == null) {
+                  unknownFields.mergeVarintField(7, rawValue);
+                } else {
+                  bitField0_ |= 0x00000020;
+                  robotState_ = rawValue;
+                }
+                break;
+              }
+              case 64: {
+                bitField0_ |= 0x00000040;
+                robotStateUpdate_ = input.readUInt64();
+                break;
+              }
+              case 72: {
+                bitField0_ |= 0x00000080;
+                fallen_ = input.readBool();
+                break;
+              }
+              case 80: {
+                bitField0_ |= 0x00000100;
+                fallenUpdate_ = input.readUInt64();
+                break;
+              }
+              case 88: {
+                bitField0_ |= 0x00000200;
+                readyToWalk_ = input.readBool();
+                break;
+              }
+              case 96: {
+                bitField0_ |= 0x00000400;
+                readyToWalkUpdate_ = input.readUInt64();
+                break;
+              }
+              case 106: {
+                de.naoth.rc.core.messages.CommonTypes.Pose2D.Builder subBuilder = null;
+                if (((bitField0_ & 0x00000800) == 0x00000800)) {
+                  subBuilder = pose_.toBuilder();
+                }
+                pose_ = input.readMessage(de.naoth.rc.core.messages.CommonTypes.Pose2D.PARSER, extensionRegistry);
+                if (subBuilder != null) {
+                  subBuilder.mergeFrom(pose_);
+                  pose_ = subBuilder.buildPartial();
+                }
+                bitField0_ |= 0x00000800;
+                break;
+              }
+              case 112: {
+                bitField0_ |= 0x00001000;
+                poseUpdate_ = input.readUInt64();
+                break;
+              }
+              case 120: {
+                bitField0_ |= 0x00002000;
+                ballAge_ = input.readInt32();
+                break;
+              }
+              case 128: {
+                bitField0_ |= 0x00004000;
+                ballAgeUpdate_ = input.readUInt64();
+                break;
+              }
+              case 138: {
+                de.naoth.rc.core.messages.CommonTypes.DoubleVector2.Builder subBuilder = null;
+                if (((bitField0_ & 0x00008000) == 0x00008000)) {
+                  subBuilder = ballPosition_.toBuilder();
+                }
+                ballPosition_ = input.readMessage(de.naoth.rc.core.messages.CommonTypes.DoubleVector2.PARSER, extensionRegistry);
+                if (subBuilder != null) {
+                  subBuilder.mergeFrom(ballPosition_);
+                  ballPosition_ = subBuilder.buildPartial();
+                }
+                bitField0_ |= 0x00008000;
+                break;
+              }
+              case 144: {
+                bitField0_ |= 0x00010000;
+                ballPositionUpdate_ = input.readUInt64();
+                break;
+              }
+              case 152: {
+                bitField0_ |= 0x00020000;
+                timeToBall_ = input.readUInt32();
+                break;
+              }
+              case 160: {
+                bitField0_ |= 0x00040000;
+                timeToBallUpdate_ = input.readUInt64();
+                break;
+              }
+              case 168: {
+                bitField0_ |= 0x00080000;
+                wantsToBeStriker_ = input.readBool();
+                break;
+              }
+              case 176: {
+                bitField0_ |= 0x00100000;
+                wantsToBeStrikerUpdate_ = input.readUInt64();
+                break;
+              }
+              case 184: {
+                bitField0_ |= 0x00200000;
+                wasStriker_ = input.readBool();
+                break;
+              }
+              case 192: {
+                bitField0_ |= 0x00400000;
+                wasStrikerUpdate_ = input.readUInt64();
+                break;
+              }
+              case 202: {
+                de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole.Builder subBuilder = null;
+                if (((bitField0_ & 0x00800000) == 0x00800000)) {
+                  subBuilder = robotRole_.toBuilder();
+                }
+                robotRole_ = input.readMessage(de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole.PARSER, extensionRegistry);
+                if (subBuilder != null) {
+                  subBuilder.mergeFrom(robotRole_);
+                  robotRole_ = subBuilder.buildPartial();
+                }
+                bitField0_ |= 0x00800000;
+                break;
+              }
+              case 208: {
+                bitField0_ |= 0x01000000;
+                robotRoleUpdate_ = input.readUInt64();
+                break;
+              }
+            }
+          }
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(this);
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(
+              e).setUnfinishedMessage(this);
+        } finally {
+          if (((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
+            ntpRequest_ = java.util.Collections.unmodifiableList(ntpRequest_);
+          }
+          this.unknownFields = unknownFields.build();
+          makeExtensionsImmutable();
+        }
+      }
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return de.naoth.rc.core.messages.TeamMessageOuterClass.internal_static_naothmessages_TeamState_Player_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return de.naoth.rc.core.messages.TeamMessageOuterClass.internal_static_naothmessages_TeamState_Player_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player.class, de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player.Builder.class);
+      }
+
+      private int bitField0_;
+      public static final int NUMBER_FIELD_NUMBER = 1;
+      private int number_;
+      /**
+       * <code>optional uint32 number = 1 [default = 0];</code>
+       */
+      public boolean hasNumber() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>optional uint32 number = 1 [default = 0];</code>
+       */
+      public int getNumber() {
+        return number_;
+      }
+
+      public static final int MESSAGEFRAMEINFO_FIELD_NUMBER = 2;
+      private de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfo messageFrameInfo_;
+      /**
+       * <code>optional .naothmessages.FrameInfo messageFrameInfo = 2;</code>
+       */
+      public boolean hasMessageFrameInfo() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>optional .naothmessages.FrameInfo messageFrameInfo = 2;</code>
+       */
+      public de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfo getMessageFrameInfo() {
+        return messageFrameInfo_ == null ? de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfo.getDefaultInstance() : messageFrameInfo_;
+      }
+      /**
+       * <code>optional .naothmessages.FrameInfo messageFrameInfo = 2;</code>
+       */
+      public de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfoOrBuilder getMessageFrameInfoOrBuilder() {
+        return messageFrameInfo_ == null ? de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfo.getDefaultInstance() : messageFrameInfo_;
+      }
+
+      public static final int MESSAGEPARSED_FIELD_NUMBER = 3;
+      private long messageParsed_;
+      /**
+       * <code>optional uint64 messageParsed = 3;</code>
+       */
+      public boolean hasMessageParsed() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>optional uint64 messageParsed = 3;</code>
+       */
+      public long getMessageParsed() {
+        return messageParsed_;
+      }
+
+      public static final int MESSAGETIMESTAMP_FIELD_NUMBER = 4;
+      private long messageTimestamp_;
+      /**
+       * <code>optional uint64 messageTimestamp = 4;</code>
+       */
+      public boolean hasMessageTimestamp() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      /**
+       * <code>optional uint64 messageTimestamp = 4;</code>
+       */
+      public long getMessageTimestamp() {
+        return messageTimestamp_;
+      }
+
+      public static final int NTPREQUEST_FIELD_NUMBER = 5;
+      private java.util.List<de.naoth.rc.core.messages.TeamMessageOuterClass.Ntp> ntpRequest_;
+      /**
+       * <code>repeated .naothmessages.Ntp ntpRequest = 5;</code>
+       */
+      public java.util.List<de.naoth.rc.core.messages.TeamMessageOuterClass.Ntp> getNtpRequestList() {
+        return ntpRequest_;
+      }
+      /**
+       * <code>repeated .naothmessages.Ntp ntpRequest = 5;</code>
+       */
+      public java.util.List<? extends de.naoth.rc.core.messages.TeamMessageOuterClass.NtpOrBuilder> 
+          getNtpRequestOrBuilderList() {
+        return ntpRequest_;
+      }
+      /**
+       * <code>repeated .naothmessages.Ntp ntpRequest = 5;</code>
+       */
+      public int getNtpRequestCount() {
+        return ntpRequest_.size();
+      }
+      /**
+       * <code>repeated .naothmessages.Ntp ntpRequest = 5;</code>
+       */
+      public de.naoth.rc.core.messages.TeamMessageOuterClass.Ntp getNtpRequest(int index) {
+        return ntpRequest_.get(index);
+      }
+      /**
+       * <code>repeated .naothmessages.Ntp ntpRequest = 5;</code>
+       */
+      public de.naoth.rc.core.messages.TeamMessageOuterClass.NtpOrBuilder getNtpRequestOrBuilder(
+          int index) {
+        return ntpRequest_.get(index);
+      }
+
+      public static final int NTPREQUESTUPDATE_FIELD_NUMBER = 6;
+      private long ntpRequestUpdate_;
+      /**
+       * <code>optional uint64 ntpRequestUpdate = 6;</code>
+       */
+      public boolean hasNtpRequestUpdate() {
+        return ((bitField0_ & 0x00000010) == 0x00000010);
+      }
+      /**
+       * <code>optional uint64 ntpRequestUpdate = 6;</code>
+       */
+      public long getNtpRequestUpdate() {
+        return ntpRequestUpdate_;
+      }
+
+      public static final int ROBOTSTATE_FIELD_NUMBER = 7;
+      private int robotState_;
+      /**
+       * <code>optional .naothmessages.RobotState robotState = 7 [default = initial];</code>
+       */
+      public boolean hasRobotState() {
+        return ((bitField0_ & 0x00000020) == 0x00000020);
+      }
+      /**
+       * <code>optional .naothmessages.RobotState robotState = 7 [default = initial];</code>
+       */
+      public de.naoth.rc.core.messages.TeamMessageOuterClass.RobotState getRobotState() {
+        de.naoth.rc.core.messages.TeamMessageOuterClass.RobotState result = de.naoth.rc.core.messages.TeamMessageOuterClass.RobotState.valueOf(robotState_);
+        return result == null ? de.naoth.rc.core.messages.TeamMessageOuterClass.RobotState.initial : result;
+      }
+
+      public static final int ROBOTSTATEUPDATE_FIELD_NUMBER = 8;
+      private long robotStateUpdate_;
+      /**
+       * <code>optional uint64 robotStateUpdate = 8;</code>
+       */
+      public boolean hasRobotStateUpdate() {
+        return ((bitField0_ & 0x00000040) == 0x00000040);
+      }
+      /**
+       * <code>optional uint64 robotStateUpdate = 8;</code>
+       */
+      public long getRobotStateUpdate() {
+        return robotStateUpdate_;
+      }
+
+      public static final int FALLEN_FIELD_NUMBER = 9;
+      private boolean fallen_;
+      /**
+       * <code>optional bool fallen = 9 [default = false];</code>
+       */
+      public boolean hasFallen() {
+        return ((bitField0_ & 0x00000080) == 0x00000080);
+      }
+      /**
+       * <code>optional bool fallen = 9 [default = false];</code>
+       */
+      public boolean getFallen() {
+        return fallen_;
+      }
+
+      public static final int FALLENUPDATE_FIELD_NUMBER = 10;
+      private long fallenUpdate_;
+      /**
+       * <code>optional uint64 fallenUpdate = 10;</code>
+       */
+      public boolean hasFallenUpdate() {
+        return ((bitField0_ & 0x00000100) == 0x00000100);
+      }
+      /**
+       * <code>optional uint64 fallenUpdate = 10;</code>
+       */
+      public long getFallenUpdate() {
+        return fallenUpdate_;
+      }
+
+      public static final int READYTOWALK_FIELD_NUMBER = 11;
+      private boolean readyToWalk_;
+      /**
+       * <code>optional bool readyToWalk = 11;</code>
+       */
+      public boolean hasReadyToWalk() {
+        return ((bitField0_ & 0x00000200) == 0x00000200);
+      }
+      /**
+       * <code>optional bool readyToWalk = 11;</code>
+       */
+      public boolean getReadyToWalk() {
+        return readyToWalk_;
+      }
+
+      public static final int READYTOWALKUPDATE_FIELD_NUMBER = 12;
+      private long readyToWalkUpdate_;
+      /**
+       * <code>optional uint64 readyToWalkUpdate = 12;</code>
+       */
+      public boolean hasReadyToWalkUpdate() {
+        return ((bitField0_ & 0x00000400) == 0x00000400);
+      }
+      /**
+       * <code>optional uint64 readyToWalkUpdate = 12;</code>
+       */
+      public long getReadyToWalkUpdate() {
+        return readyToWalkUpdate_;
+      }
+
+      public static final int POSE_FIELD_NUMBER = 13;
+      private de.naoth.rc.core.messages.CommonTypes.Pose2D pose_;
+      /**
+       * <code>optional .naothmessages.Pose2D pose = 13;</code>
+       */
+      public boolean hasPose() {
+        return ((bitField0_ & 0x00000800) == 0x00000800);
+      }
+      /**
+       * <code>optional .naothmessages.Pose2D pose = 13;</code>
+       */
+      public de.naoth.rc.core.messages.CommonTypes.Pose2D getPose() {
+        return pose_ == null ? de.naoth.rc.core.messages.CommonTypes.Pose2D.getDefaultInstance() : pose_;
+      }
+      /**
+       * <code>optional .naothmessages.Pose2D pose = 13;</code>
+       */
+      public de.naoth.rc.core.messages.CommonTypes.Pose2DOrBuilder getPoseOrBuilder() {
+        return pose_ == null ? de.naoth.rc.core.messages.CommonTypes.Pose2D.getDefaultInstance() : pose_;
+      }
+
+      public static final int POSEUPDATE_FIELD_NUMBER = 14;
+      private long poseUpdate_;
+      /**
+       * <code>optional uint64 poseUpdate = 14;</code>
+       */
+      public boolean hasPoseUpdate() {
+        return ((bitField0_ & 0x00001000) == 0x00001000);
+      }
+      /**
+       * <code>optional uint64 poseUpdate = 14;</code>
+       */
+      public long getPoseUpdate() {
+        return poseUpdate_;
+      }
+
+      public static final int BALLAGE_FIELD_NUMBER = 15;
+      private int ballAge_;
+      /**
+       * <code>optional int32 ballAge = 15 [default = -1];</code>
+       */
+      public boolean hasBallAge() {
+        return ((bitField0_ & 0x00002000) == 0x00002000);
+      }
+      /**
+       * <code>optional int32 ballAge = 15 [default = -1];</code>
+       */
+      public int getBallAge() {
+        return ballAge_;
+      }
+
+      public static final int BALLAGEUPDATE_FIELD_NUMBER = 16;
+      private long ballAgeUpdate_;
+      /**
+       * <code>optional uint64 ballAgeUpdate = 16;</code>
+       */
+      public boolean hasBallAgeUpdate() {
+        return ((bitField0_ & 0x00004000) == 0x00004000);
+      }
+      /**
+       * <code>optional uint64 ballAgeUpdate = 16;</code>
+       */
+      public long getBallAgeUpdate() {
+        return ballAgeUpdate_;
+      }
+
+      public static final int BALLPOSITION_FIELD_NUMBER = 17;
+      private de.naoth.rc.core.messages.CommonTypes.DoubleVector2 ballPosition_;
+      /**
+       * <code>optional .naothmessages.DoubleVector2 ballPosition = 17;</code>
+       */
+      public boolean hasBallPosition() {
+        return ((bitField0_ & 0x00008000) == 0x00008000);
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector2 ballPosition = 17;</code>
+       */
+      public de.naoth.rc.core.messages.CommonTypes.DoubleVector2 getBallPosition() {
+        return ballPosition_ == null ? de.naoth.rc.core.messages.CommonTypes.DoubleVector2.getDefaultInstance() : ballPosition_;
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector2 ballPosition = 17;</code>
+       */
+      public de.naoth.rc.core.messages.CommonTypes.DoubleVector2OrBuilder getBallPositionOrBuilder() {
+        return ballPosition_ == null ? de.naoth.rc.core.messages.CommonTypes.DoubleVector2.getDefaultInstance() : ballPosition_;
+      }
+
+      public static final int BALLPOSITIONUPDATE_FIELD_NUMBER = 18;
+      private long ballPositionUpdate_;
+      /**
+       * <code>optional uint64 ballPositionUpdate = 18;</code>
+       */
+      public boolean hasBallPositionUpdate() {
+        return ((bitField0_ & 0x00010000) == 0x00010000);
+      }
+      /**
+       * <code>optional uint64 ballPositionUpdate = 18;</code>
+       */
+      public long getBallPositionUpdate() {
+        return ballPositionUpdate_;
+      }
+
+      public static final int TIMETOBALL_FIELD_NUMBER = 19;
+      private int timeToBall_;
+      /**
+       * <code>optional uint32 timeToBall = 19;</code>
+       */
+      public boolean hasTimeToBall() {
+        return ((bitField0_ & 0x00020000) == 0x00020000);
+      }
+      /**
+       * <code>optional uint32 timeToBall = 19;</code>
+       */
+      public int getTimeToBall() {
+        return timeToBall_;
+      }
+
+      public static final int TIMETOBALLUPDATE_FIELD_NUMBER = 20;
+      private long timeToBallUpdate_;
+      /**
+       * <code>optional uint64 timeToBallUpdate = 20;</code>
+       */
+      public boolean hasTimeToBallUpdate() {
+        return ((bitField0_ & 0x00040000) == 0x00040000);
+      }
+      /**
+       * <code>optional uint64 timeToBallUpdate = 20;</code>
+       */
+      public long getTimeToBallUpdate() {
+        return timeToBallUpdate_;
+      }
+
+      public static final int WANTSTOBESTRIKER_FIELD_NUMBER = 21;
+      private boolean wantsToBeStriker_;
+      /**
+       * <code>optional bool wantsToBeStriker = 21 [default = false];</code>
+       */
+      public boolean hasWantsToBeStriker() {
+        return ((bitField0_ & 0x00080000) == 0x00080000);
+      }
+      /**
+       * <code>optional bool wantsToBeStriker = 21 [default = false];</code>
+       */
+      public boolean getWantsToBeStriker() {
+        return wantsToBeStriker_;
+      }
+
+      public static final int WANTSTOBESTRIKERUPDATE_FIELD_NUMBER = 22;
+      private long wantsToBeStrikerUpdate_;
+      /**
+       * <code>optional uint64 wantsToBeStrikerUpdate = 22;</code>
+       */
+      public boolean hasWantsToBeStrikerUpdate() {
+        return ((bitField0_ & 0x00100000) == 0x00100000);
+      }
+      /**
+       * <code>optional uint64 wantsToBeStrikerUpdate = 22;</code>
+       */
+      public long getWantsToBeStrikerUpdate() {
+        return wantsToBeStrikerUpdate_;
+      }
+
+      public static final int WASSTRIKER_FIELD_NUMBER = 23;
+      private boolean wasStriker_;
+      /**
+       * <code>optional bool wasStriker = 23 [default = false];</code>
+       */
+      public boolean hasWasStriker() {
+        return ((bitField0_ & 0x00200000) == 0x00200000);
+      }
+      /**
+       * <code>optional bool wasStriker = 23 [default = false];</code>
+       */
+      public boolean getWasStriker() {
+        return wasStriker_;
+      }
+
+      public static final int WASSTRIKERUPDATE_FIELD_NUMBER = 24;
+      private long wasStrikerUpdate_;
+      /**
+       * <code>optional uint64 wasStrikerUpdate = 24;</code>
+       */
+      public boolean hasWasStrikerUpdate() {
+        return ((bitField0_ & 0x00400000) == 0x00400000);
+      }
+      /**
+       * <code>optional uint64 wasStrikerUpdate = 24;</code>
+       */
+      public long getWasStrikerUpdate() {
+        return wasStrikerUpdate_;
+      }
+
+      public static final int ROBOTROLE_FIELD_NUMBER = 25;
+      private de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole robotRole_;
+      /**
+       * <code>optional .naothmessages.RobotRole robotRole = 25;</code>
+       */
+      public boolean hasRobotRole() {
+        return ((bitField0_ & 0x00800000) == 0x00800000);
+      }
+      /**
+       * <code>optional .naothmessages.RobotRole robotRole = 25;</code>
+       */
+      public de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole getRobotRole() {
+        return robotRole_ == null ? de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole.getDefaultInstance() : robotRole_;
+      }
+      /**
+       * <code>optional .naothmessages.RobotRole robotRole = 25;</code>
+       */
+      public de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRoleOrBuilder getRobotRoleOrBuilder() {
+        return robotRole_ == null ? de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole.getDefaultInstance() : robotRole_;
+      }
+
+      public static final int ROBOTROLEUPDATE_FIELD_NUMBER = 26;
+      private long robotRoleUpdate_;
+      /**
+       * <code>optional uint64 robotRoleUpdate = 26;</code>
+       */
+      public boolean hasRobotRoleUpdate() {
+        return ((bitField0_ & 0x01000000) == 0x01000000);
+      }
+      /**
+       * <code>optional uint64 robotRoleUpdate = 26;</code>
+       */
+      public long getRobotRoleUpdate() {
+        return robotRoleUpdate_;
+      }
+
+      private byte memoizedIsInitialized = -1;
+      public final boolean isInitialized() {
+        byte isInitialized = memoizedIsInitialized;
+        if (isInitialized == 1) return true;
+        if (isInitialized == 0) return false;
+
+        if (hasMessageFrameInfo()) {
+          if (!getMessageFrameInfo().isInitialized()) {
+            memoizedIsInitialized = 0;
+            return false;
+          }
+        }
+        for (int i = 0; i < getNtpRequestCount(); i++) {
+          if (!getNtpRequest(i).isInitialized()) {
+            memoizedIsInitialized = 0;
+            return false;
+          }
+        }
+        if (hasPose()) {
+          if (!getPose().isInitialized()) {
+            memoizedIsInitialized = 0;
+            return false;
+          }
+        }
+        if (hasBallPosition()) {
+          if (!getBallPosition().isInitialized()) {
+            memoizedIsInitialized = 0;
+            return false;
+          }
+        }
+        if (hasRobotRole()) {
+          if (!getRobotRole().isInitialized()) {
+            memoizedIsInitialized = 0;
+            return false;
+          }
+        }
+        memoizedIsInitialized = 1;
+        return true;
+      }
+
+      public void writeTo(com.google.protobuf.CodedOutputStream output)
+                          throws java.io.IOException {
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          output.writeUInt32(1, number_);
+        }
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          output.writeMessage(2, getMessageFrameInfo());
+        }
+        if (((bitField0_ & 0x00000004) == 0x00000004)) {
+          output.writeUInt64(3, messageParsed_);
+        }
+        if (((bitField0_ & 0x00000008) == 0x00000008)) {
+          output.writeUInt64(4, messageTimestamp_);
+        }
+        for (int i = 0; i < ntpRequest_.size(); i++) {
+          output.writeMessage(5, ntpRequest_.get(i));
+        }
+        if (((bitField0_ & 0x00000010) == 0x00000010)) {
+          output.writeUInt64(6, ntpRequestUpdate_);
+        }
+        if (((bitField0_ & 0x00000020) == 0x00000020)) {
+          output.writeEnum(7, robotState_);
+        }
+        if (((bitField0_ & 0x00000040) == 0x00000040)) {
+          output.writeUInt64(8, robotStateUpdate_);
+        }
+        if (((bitField0_ & 0x00000080) == 0x00000080)) {
+          output.writeBool(9, fallen_);
+        }
+        if (((bitField0_ & 0x00000100) == 0x00000100)) {
+          output.writeUInt64(10, fallenUpdate_);
+        }
+        if (((bitField0_ & 0x00000200) == 0x00000200)) {
+          output.writeBool(11, readyToWalk_);
+        }
+        if (((bitField0_ & 0x00000400) == 0x00000400)) {
+          output.writeUInt64(12, readyToWalkUpdate_);
+        }
+        if (((bitField0_ & 0x00000800) == 0x00000800)) {
+          output.writeMessage(13, getPose());
+        }
+        if (((bitField0_ & 0x00001000) == 0x00001000)) {
+          output.writeUInt64(14, poseUpdate_);
+        }
+        if (((bitField0_ & 0x00002000) == 0x00002000)) {
+          output.writeInt32(15, ballAge_);
+        }
+        if (((bitField0_ & 0x00004000) == 0x00004000)) {
+          output.writeUInt64(16, ballAgeUpdate_);
+        }
+        if (((bitField0_ & 0x00008000) == 0x00008000)) {
+          output.writeMessage(17, getBallPosition());
+        }
+        if (((bitField0_ & 0x00010000) == 0x00010000)) {
+          output.writeUInt64(18, ballPositionUpdate_);
+        }
+        if (((bitField0_ & 0x00020000) == 0x00020000)) {
+          output.writeUInt32(19, timeToBall_);
+        }
+        if (((bitField0_ & 0x00040000) == 0x00040000)) {
+          output.writeUInt64(20, timeToBallUpdate_);
+        }
+        if (((bitField0_ & 0x00080000) == 0x00080000)) {
+          output.writeBool(21, wantsToBeStriker_);
+        }
+        if (((bitField0_ & 0x00100000) == 0x00100000)) {
+          output.writeUInt64(22, wantsToBeStrikerUpdate_);
+        }
+        if (((bitField0_ & 0x00200000) == 0x00200000)) {
+          output.writeBool(23, wasStriker_);
+        }
+        if (((bitField0_ & 0x00400000) == 0x00400000)) {
+          output.writeUInt64(24, wasStrikerUpdate_);
+        }
+        if (((bitField0_ & 0x00800000) == 0x00800000)) {
+          output.writeMessage(25, getRobotRole());
+        }
+        if (((bitField0_ & 0x01000000) == 0x01000000)) {
+          output.writeUInt64(26, robotRoleUpdate_);
+        }
+        unknownFields.writeTo(output);
+      }
+
+      public int getSerializedSize() {
+        int size = memoizedSize;
+        if (size != -1) return size;
+
+        size = 0;
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeUInt32Size(1, number_);
+        }
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeMessageSize(2, getMessageFrameInfo());
+        }
+        if (((bitField0_ & 0x00000004) == 0x00000004)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeUInt64Size(3, messageParsed_);
+        }
+        if (((bitField0_ & 0x00000008) == 0x00000008)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeUInt64Size(4, messageTimestamp_);
+        }
+        for (int i = 0; i < ntpRequest_.size(); i++) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeMessageSize(5, ntpRequest_.get(i));
+        }
+        if (((bitField0_ & 0x00000010) == 0x00000010)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeUInt64Size(6, ntpRequestUpdate_);
+        }
+        if (((bitField0_ & 0x00000020) == 0x00000020)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeEnumSize(7, robotState_);
+        }
+        if (((bitField0_ & 0x00000040) == 0x00000040)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeUInt64Size(8, robotStateUpdate_);
+        }
+        if (((bitField0_ & 0x00000080) == 0x00000080)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeBoolSize(9, fallen_);
+        }
+        if (((bitField0_ & 0x00000100) == 0x00000100)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeUInt64Size(10, fallenUpdate_);
+        }
+        if (((bitField0_ & 0x00000200) == 0x00000200)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeBoolSize(11, readyToWalk_);
+        }
+        if (((bitField0_ & 0x00000400) == 0x00000400)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeUInt64Size(12, readyToWalkUpdate_);
+        }
+        if (((bitField0_ & 0x00000800) == 0x00000800)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeMessageSize(13, getPose());
+        }
+        if (((bitField0_ & 0x00001000) == 0x00001000)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeUInt64Size(14, poseUpdate_);
+        }
+        if (((bitField0_ & 0x00002000) == 0x00002000)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeInt32Size(15, ballAge_);
+        }
+        if (((bitField0_ & 0x00004000) == 0x00004000)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeUInt64Size(16, ballAgeUpdate_);
+        }
+        if (((bitField0_ & 0x00008000) == 0x00008000)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeMessageSize(17, getBallPosition());
+        }
+        if (((bitField0_ & 0x00010000) == 0x00010000)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeUInt64Size(18, ballPositionUpdate_);
+        }
+        if (((bitField0_ & 0x00020000) == 0x00020000)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeUInt32Size(19, timeToBall_);
+        }
+        if (((bitField0_ & 0x00040000) == 0x00040000)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeUInt64Size(20, timeToBallUpdate_);
+        }
+        if (((bitField0_ & 0x00080000) == 0x00080000)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeBoolSize(21, wantsToBeStriker_);
+        }
+        if (((bitField0_ & 0x00100000) == 0x00100000)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeUInt64Size(22, wantsToBeStrikerUpdate_);
+        }
+        if (((bitField0_ & 0x00200000) == 0x00200000)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeBoolSize(23, wasStriker_);
+        }
+        if (((bitField0_ & 0x00400000) == 0x00400000)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeUInt64Size(24, wasStrikerUpdate_);
+        }
+        if (((bitField0_ & 0x00800000) == 0x00800000)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeMessageSize(25, getRobotRole());
+        }
+        if (((bitField0_ & 0x01000000) == 0x01000000)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeUInt64Size(26, robotRoleUpdate_);
+        }
+        size += unknownFields.getSerializedSize();
+        memoizedSize = size;
+        return size;
+      }
+
+      @java.lang.Override
+      public boolean equals(final java.lang.Object obj) {
+        if (obj == this) {
+         return true;
+        }
+        if (!(obj instanceof de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player)) {
+          return super.equals(obj);
+        }
+        de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player other = (de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player) obj;
+
+        boolean result = true;
+        result = result && (hasNumber() == other.hasNumber());
+        if (hasNumber()) {
+          result = result && (getNumber()
+              == other.getNumber());
+        }
+        result = result && (hasMessageFrameInfo() == other.hasMessageFrameInfo());
+        if (hasMessageFrameInfo()) {
+          result = result && getMessageFrameInfo()
+              .equals(other.getMessageFrameInfo());
+        }
+        result = result && (hasMessageParsed() == other.hasMessageParsed());
+        if (hasMessageParsed()) {
+          result = result && (getMessageParsed()
+              == other.getMessageParsed());
+        }
+        result = result && (hasMessageTimestamp() == other.hasMessageTimestamp());
+        if (hasMessageTimestamp()) {
+          result = result && (getMessageTimestamp()
+              == other.getMessageTimestamp());
+        }
+        result = result && getNtpRequestList()
+            .equals(other.getNtpRequestList());
+        result = result && (hasNtpRequestUpdate() == other.hasNtpRequestUpdate());
+        if (hasNtpRequestUpdate()) {
+          result = result && (getNtpRequestUpdate()
+              == other.getNtpRequestUpdate());
+        }
+        result = result && (hasRobotState() == other.hasRobotState());
+        if (hasRobotState()) {
+          result = result && robotState_ == other.robotState_;
+        }
+        result = result && (hasRobotStateUpdate() == other.hasRobotStateUpdate());
+        if (hasRobotStateUpdate()) {
+          result = result && (getRobotStateUpdate()
+              == other.getRobotStateUpdate());
+        }
+        result = result && (hasFallen() == other.hasFallen());
+        if (hasFallen()) {
+          result = result && (getFallen()
+              == other.getFallen());
+        }
+        result = result && (hasFallenUpdate() == other.hasFallenUpdate());
+        if (hasFallenUpdate()) {
+          result = result && (getFallenUpdate()
+              == other.getFallenUpdate());
+        }
+        result = result && (hasReadyToWalk() == other.hasReadyToWalk());
+        if (hasReadyToWalk()) {
+          result = result && (getReadyToWalk()
+              == other.getReadyToWalk());
+        }
+        result = result && (hasReadyToWalkUpdate() == other.hasReadyToWalkUpdate());
+        if (hasReadyToWalkUpdate()) {
+          result = result && (getReadyToWalkUpdate()
+              == other.getReadyToWalkUpdate());
+        }
+        result = result && (hasPose() == other.hasPose());
+        if (hasPose()) {
+          result = result && getPose()
+              .equals(other.getPose());
+        }
+        result = result && (hasPoseUpdate() == other.hasPoseUpdate());
+        if (hasPoseUpdate()) {
+          result = result && (getPoseUpdate()
+              == other.getPoseUpdate());
+        }
+        result = result && (hasBallAge() == other.hasBallAge());
+        if (hasBallAge()) {
+          result = result && (getBallAge()
+              == other.getBallAge());
+        }
+        result = result && (hasBallAgeUpdate() == other.hasBallAgeUpdate());
+        if (hasBallAgeUpdate()) {
+          result = result && (getBallAgeUpdate()
+              == other.getBallAgeUpdate());
+        }
+        result = result && (hasBallPosition() == other.hasBallPosition());
+        if (hasBallPosition()) {
+          result = result && getBallPosition()
+              .equals(other.getBallPosition());
+        }
+        result = result && (hasBallPositionUpdate() == other.hasBallPositionUpdate());
+        if (hasBallPositionUpdate()) {
+          result = result && (getBallPositionUpdate()
+              == other.getBallPositionUpdate());
+        }
+        result = result && (hasTimeToBall() == other.hasTimeToBall());
+        if (hasTimeToBall()) {
+          result = result && (getTimeToBall()
+              == other.getTimeToBall());
+        }
+        result = result && (hasTimeToBallUpdate() == other.hasTimeToBallUpdate());
+        if (hasTimeToBallUpdate()) {
+          result = result && (getTimeToBallUpdate()
+              == other.getTimeToBallUpdate());
+        }
+        result = result && (hasWantsToBeStriker() == other.hasWantsToBeStriker());
+        if (hasWantsToBeStriker()) {
+          result = result && (getWantsToBeStriker()
+              == other.getWantsToBeStriker());
+        }
+        result = result && (hasWantsToBeStrikerUpdate() == other.hasWantsToBeStrikerUpdate());
+        if (hasWantsToBeStrikerUpdate()) {
+          result = result && (getWantsToBeStrikerUpdate()
+              == other.getWantsToBeStrikerUpdate());
+        }
+        result = result && (hasWasStriker() == other.hasWasStriker());
+        if (hasWasStriker()) {
+          result = result && (getWasStriker()
+              == other.getWasStriker());
+        }
+        result = result && (hasWasStrikerUpdate() == other.hasWasStrikerUpdate());
+        if (hasWasStrikerUpdate()) {
+          result = result && (getWasStrikerUpdate()
+              == other.getWasStrikerUpdate());
+        }
+        result = result && (hasRobotRole() == other.hasRobotRole());
+        if (hasRobotRole()) {
+          result = result && getRobotRole()
+              .equals(other.getRobotRole());
+        }
+        result = result && (hasRobotRoleUpdate() == other.hasRobotRoleUpdate());
+        if (hasRobotRoleUpdate()) {
+          result = result && (getRobotRoleUpdate()
+              == other.getRobotRoleUpdate());
+        }
+        result = result && unknownFields.equals(other.unknownFields);
+        return result;
+      }
+
+      @java.lang.Override
+      public int hashCode() {
+        if (memoizedHashCode != 0) {
+          return memoizedHashCode;
+        }
+        int hash = 41;
+        hash = (19 * hash) + getDescriptor().hashCode();
+        if (hasNumber()) {
+          hash = (37 * hash) + NUMBER_FIELD_NUMBER;
+          hash = (53 * hash) + getNumber();
+        }
+        if (hasMessageFrameInfo()) {
+          hash = (37 * hash) + MESSAGEFRAMEINFO_FIELD_NUMBER;
+          hash = (53 * hash) + getMessageFrameInfo().hashCode();
+        }
+        if (hasMessageParsed()) {
+          hash = (37 * hash) + MESSAGEPARSED_FIELD_NUMBER;
+          hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+              getMessageParsed());
+        }
+        if (hasMessageTimestamp()) {
+          hash = (37 * hash) + MESSAGETIMESTAMP_FIELD_NUMBER;
+          hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+              getMessageTimestamp());
+        }
+        if (getNtpRequestCount() > 0) {
+          hash = (37 * hash) + NTPREQUEST_FIELD_NUMBER;
+          hash = (53 * hash) + getNtpRequestList().hashCode();
+        }
+        if (hasNtpRequestUpdate()) {
+          hash = (37 * hash) + NTPREQUESTUPDATE_FIELD_NUMBER;
+          hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+              getNtpRequestUpdate());
+        }
+        if (hasRobotState()) {
+          hash = (37 * hash) + ROBOTSTATE_FIELD_NUMBER;
+          hash = (53 * hash) + robotState_;
+        }
+        if (hasRobotStateUpdate()) {
+          hash = (37 * hash) + ROBOTSTATEUPDATE_FIELD_NUMBER;
+          hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+              getRobotStateUpdate());
+        }
+        if (hasFallen()) {
+          hash = (37 * hash) + FALLEN_FIELD_NUMBER;
+          hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+              getFallen());
+        }
+        if (hasFallenUpdate()) {
+          hash = (37 * hash) + FALLENUPDATE_FIELD_NUMBER;
+          hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+              getFallenUpdate());
+        }
+        if (hasReadyToWalk()) {
+          hash = (37 * hash) + READYTOWALK_FIELD_NUMBER;
+          hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+              getReadyToWalk());
+        }
+        if (hasReadyToWalkUpdate()) {
+          hash = (37 * hash) + READYTOWALKUPDATE_FIELD_NUMBER;
+          hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+              getReadyToWalkUpdate());
+        }
+        if (hasPose()) {
+          hash = (37 * hash) + POSE_FIELD_NUMBER;
+          hash = (53 * hash) + getPose().hashCode();
+        }
+        if (hasPoseUpdate()) {
+          hash = (37 * hash) + POSEUPDATE_FIELD_NUMBER;
+          hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+              getPoseUpdate());
+        }
+        if (hasBallAge()) {
+          hash = (37 * hash) + BALLAGE_FIELD_NUMBER;
+          hash = (53 * hash) + getBallAge();
+        }
+        if (hasBallAgeUpdate()) {
+          hash = (37 * hash) + BALLAGEUPDATE_FIELD_NUMBER;
+          hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+              getBallAgeUpdate());
+        }
+        if (hasBallPosition()) {
+          hash = (37 * hash) + BALLPOSITION_FIELD_NUMBER;
+          hash = (53 * hash) + getBallPosition().hashCode();
+        }
+        if (hasBallPositionUpdate()) {
+          hash = (37 * hash) + BALLPOSITIONUPDATE_FIELD_NUMBER;
+          hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+              getBallPositionUpdate());
+        }
+        if (hasTimeToBall()) {
+          hash = (37 * hash) + TIMETOBALL_FIELD_NUMBER;
+          hash = (53 * hash) + getTimeToBall();
+        }
+        if (hasTimeToBallUpdate()) {
+          hash = (37 * hash) + TIMETOBALLUPDATE_FIELD_NUMBER;
+          hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+              getTimeToBallUpdate());
+        }
+        if (hasWantsToBeStriker()) {
+          hash = (37 * hash) + WANTSTOBESTRIKER_FIELD_NUMBER;
+          hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+              getWantsToBeStriker());
+        }
+        if (hasWantsToBeStrikerUpdate()) {
+          hash = (37 * hash) + WANTSTOBESTRIKERUPDATE_FIELD_NUMBER;
+          hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+              getWantsToBeStrikerUpdate());
+        }
+        if (hasWasStriker()) {
+          hash = (37 * hash) + WASSTRIKER_FIELD_NUMBER;
+          hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+              getWasStriker());
+        }
+        if (hasWasStrikerUpdate()) {
+          hash = (37 * hash) + WASSTRIKERUPDATE_FIELD_NUMBER;
+          hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+              getWasStrikerUpdate());
+        }
+        if (hasRobotRole()) {
+          hash = (37 * hash) + ROBOTROLE_FIELD_NUMBER;
+          hash = (53 * hash) + getRobotRole().hashCode();
+        }
+        if (hasRobotRoleUpdate()) {
+          hash = (37 * hash) + ROBOTROLEUPDATE_FIELD_NUMBER;
+          hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+              getRobotRoleUpdate());
+        }
+        hash = (29 * hash) + unknownFields.hashCode();
+        memoizedHashCode = hash;
+        return hash;
+      }
+
+      public static de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player parseFrom(
+          java.nio.ByteBuffer data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player parseFrom(
+          java.nio.ByteBuffer data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player parseFrom(
+          com.google.protobuf.ByteString data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player parseFrom(
+          com.google.protobuf.ByteString data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player parseFrom(byte[] data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player parseFrom(
+          byte[] data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player parseFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input);
+      }
+      public static de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player parseFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input, extensionRegistry);
+      }
+      public static de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player parseDelimitedFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseDelimitedWithIOException(PARSER, input);
+      }
+      public static de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player parseDelimitedFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+      }
+      public static de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player parseFrom(
+          com.google.protobuf.CodedInputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input);
+      }
+      public static de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player parseFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input, extensionRegistry);
+      }
+
+      public Builder newBuilderForType() { return newBuilder(); }
+      public static Builder newBuilder() {
+        return DEFAULT_INSTANCE.toBuilder();
+      }
+      public static Builder newBuilder(de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player prototype) {
+        return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+      }
+      public Builder toBuilder() {
+        return this == DEFAULT_INSTANCE
+            ? new Builder() : new Builder().mergeFrom(this);
+      }
+
+      @java.lang.Override
+      protected Builder newBuilderForType(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        Builder builder = new Builder(parent);
+        return builder;
+      }
+      /**
+       * Protobuf type {@code naothmessages.TeamState.Player}
+       */
+      public static final class Builder extends
+          com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+          // @@protoc_insertion_point(builder_implements:naothmessages.TeamState.Player)
+          de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.PlayerOrBuilder {
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return de.naoth.rc.core.messages.TeamMessageOuterClass.internal_static_naothmessages_TeamState_Player_descriptor;
+        }
+
+        protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return de.naoth.rc.core.messages.TeamMessageOuterClass.internal_static_naothmessages_TeamState_Player_fieldAccessorTable
+              .ensureFieldAccessorsInitialized(
+                  de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player.class, de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player.Builder.class);
+        }
+
+        // Construct using de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player.newBuilder()
+        private Builder() {
+          maybeForceBuilderInitialization();
+        }
+
+        private Builder(
+            com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+          super(parent);
+          maybeForceBuilderInitialization();
+        }
+        private void maybeForceBuilderInitialization() {
+          if (com.google.protobuf.GeneratedMessageV3
+                  .alwaysUseFieldBuilders) {
+            getMessageFrameInfoFieldBuilder();
+            getNtpRequestFieldBuilder();
+            getPoseFieldBuilder();
+            getBallPositionFieldBuilder();
+            getRobotRoleFieldBuilder();
+          }
+        }
+        public Builder clear() {
+          super.clear();
+          number_ = 0;
+          bitField0_ = (bitField0_ & ~0x00000001);
+          if (messageFrameInfoBuilder_ == null) {
+            messageFrameInfo_ = null;
+          } else {
+            messageFrameInfoBuilder_.clear();
+          }
+          bitField0_ = (bitField0_ & ~0x00000002);
+          messageParsed_ = 0L;
+          bitField0_ = (bitField0_ & ~0x00000004);
+          messageTimestamp_ = 0L;
+          bitField0_ = (bitField0_ & ~0x00000008);
+          if (ntpRequestBuilder_ == null) {
+            ntpRequest_ = java.util.Collections.emptyList();
+            bitField0_ = (bitField0_ & ~0x00000010);
+          } else {
+            ntpRequestBuilder_.clear();
+          }
+          ntpRequestUpdate_ = 0L;
+          bitField0_ = (bitField0_ & ~0x00000020);
+          robotState_ = 0;
+          bitField0_ = (bitField0_ & ~0x00000040);
+          robotStateUpdate_ = 0L;
+          bitField0_ = (bitField0_ & ~0x00000080);
+          fallen_ = false;
+          bitField0_ = (bitField0_ & ~0x00000100);
+          fallenUpdate_ = 0L;
+          bitField0_ = (bitField0_ & ~0x00000200);
+          readyToWalk_ = false;
+          bitField0_ = (bitField0_ & ~0x00000400);
+          readyToWalkUpdate_ = 0L;
+          bitField0_ = (bitField0_ & ~0x00000800);
+          if (poseBuilder_ == null) {
+            pose_ = null;
+          } else {
+            poseBuilder_.clear();
+          }
+          bitField0_ = (bitField0_ & ~0x00001000);
+          poseUpdate_ = 0L;
+          bitField0_ = (bitField0_ & ~0x00002000);
+          ballAge_ = -1;
+          bitField0_ = (bitField0_ & ~0x00004000);
+          ballAgeUpdate_ = 0L;
+          bitField0_ = (bitField0_ & ~0x00008000);
+          if (ballPositionBuilder_ == null) {
+            ballPosition_ = null;
+          } else {
+            ballPositionBuilder_.clear();
+          }
+          bitField0_ = (bitField0_ & ~0x00010000);
+          ballPositionUpdate_ = 0L;
+          bitField0_ = (bitField0_ & ~0x00020000);
+          timeToBall_ = 0;
+          bitField0_ = (bitField0_ & ~0x00040000);
+          timeToBallUpdate_ = 0L;
+          bitField0_ = (bitField0_ & ~0x00080000);
+          wantsToBeStriker_ = false;
+          bitField0_ = (bitField0_ & ~0x00100000);
+          wantsToBeStrikerUpdate_ = 0L;
+          bitField0_ = (bitField0_ & ~0x00200000);
+          wasStriker_ = false;
+          bitField0_ = (bitField0_ & ~0x00400000);
+          wasStrikerUpdate_ = 0L;
+          bitField0_ = (bitField0_ & ~0x00800000);
+          if (robotRoleBuilder_ == null) {
+            robotRole_ = null;
+          } else {
+            robotRoleBuilder_.clear();
+          }
+          bitField0_ = (bitField0_ & ~0x01000000);
+          robotRoleUpdate_ = 0L;
+          bitField0_ = (bitField0_ & ~0x02000000);
+          return this;
+        }
+
+        public com.google.protobuf.Descriptors.Descriptor
+            getDescriptorForType() {
+          return de.naoth.rc.core.messages.TeamMessageOuterClass.internal_static_naothmessages_TeamState_Player_descriptor;
+        }
+
+        public de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player getDefaultInstanceForType() {
+          return de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player.getDefaultInstance();
+        }
+
+        public de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player build() {
+          de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player result = buildPartial();
+          if (!result.isInitialized()) {
+            throw newUninitializedMessageException(result);
+          }
+          return result;
+        }
+
+        public de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player buildPartial() {
+          de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player result = new de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player(this);
+          int from_bitField0_ = bitField0_;
+          int to_bitField0_ = 0;
+          if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+            to_bitField0_ |= 0x00000001;
+          }
+          result.number_ = number_;
+          if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+            to_bitField0_ |= 0x00000002;
+          }
+          if (messageFrameInfoBuilder_ == null) {
+            result.messageFrameInfo_ = messageFrameInfo_;
+          } else {
+            result.messageFrameInfo_ = messageFrameInfoBuilder_.build();
+          }
+          if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+            to_bitField0_ |= 0x00000004;
+          }
+          result.messageParsed_ = messageParsed_;
+          if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+            to_bitField0_ |= 0x00000008;
+          }
+          result.messageTimestamp_ = messageTimestamp_;
+          if (ntpRequestBuilder_ == null) {
+            if (((bitField0_ & 0x00000010) == 0x00000010)) {
+              ntpRequest_ = java.util.Collections.unmodifiableList(ntpRequest_);
+              bitField0_ = (bitField0_ & ~0x00000010);
+            }
+            result.ntpRequest_ = ntpRequest_;
+          } else {
+            result.ntpRequest_ = ntpRequestBuilder_.build();
+          }
+          if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
+            to_bitField0_ |= 0x00000010;
+          }
+          result.ntpRequestUpdate_ = ntpRequestUpdate_;
+          if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
+            to_bitField0_ |= 0x00000020;
+          }
+          result.robotState_ = robotState_;
+          if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
+            to_bitField0_ |= 0x00000040;
+          }
+          result.robotStateUpdate_ = robotStateUpdate_;
+          if (((from_bitField0_ & 0x00000100) == 0x00000100)) {
+            to_bitField0_ |= 0x00000080;
+          }
+          result.fallen_ = fallen_;
+          if (((from_bitField0_ & 0x00000200) == 0x00000200)) {
+            to_bitField0_ |= 0x00000100;
+          }
+          result.fallenUpdate_ = fallenUpdate_;
+          if (((from_bitField0_ & 0x00000400) == 0x00000400)) {
+            to_bitField0_ |= 0x00000200;
+          }
+          result.readyToWalk_ = readyToWalk_;
+          if (((from_bitField0_ & 0x00000800) == 0x00000800)) {
+            to_bitField0_ |= 0x00000400;
+          }
+          result.readyToWalkUpdate_ = readyToWalkUpdate_;
+          if (((from_bitField0_ & 0x00001000) == 0x00001000)) {
+            to_bitField0_ |= 0x00000800;
+          }
+          if (poseBuilder_ == null) {
+            result.pose_ = pose_;
+          } else {
+            result.pose_ = poseBuilder_.build();
+          }
+          if (((from_bitField0_ & 0x00002000) == 0x00002000)) {
+            to_bitField0_ |= 0x00001000;
+          }
+          result.poseUpdate_ = poseUpdate_;
+          if (((from_bitField0_ & 0x00004000) == 0x00004000)) {
+            to_bitField0_ |= 0x00002000;
+          }
+          result.ballAge_ = ballAge_;
+          if (((from_bitField0_ & 0x00008000) == 0x00008000)) {
+            to_bitField0_ |= 0x00004000;
+          }
+          result.ballAgeUpdate_ = ballAgeUpdate_;
+          if (((from_bitField0_ & 0x00010000) == 0x00010000)) {
+            to_bitField0_ |= 0x00008000;
+          }
+          if (ballPositionBuilder_ == null) {
+            result.ballPosition_ = ballPosition_;
+          } else {
+            result.ballPosition_ = ballPositionBuilder_.build();
+          }
+          if (((from_bitField0_ & 0x00020000) == 0x00020000)) {
+            to_bitField0_ |= 0x00010000;
+          }
+          result.ballPositionUpdate_ = ballPositionUpdate_;
+          if (((from_bitField0_ & 0x00040000) == 0x00040000)) {
+            to_bitField0_ |= 0x00020000;
+          }
+          result.timeToBall_ = timeToBall_;
+          if (((from_bitField0_ & 0x00080000) == 0x00080000)) {
+            to_bitField0_ |= 0x00040000;
+          }
+          result.timeToBallUpdate_ = timeToBallUpdate_;
+          if (((from_bitField0_ & 0x00100000) == 0x00100000)) {
+            to_bitField0_ |= 0x00080000;
+          }
+          result.wantsToBeStriker_ = wantsToBeStriker_;
+          if (((from_bitField0_ & 0x00200000) == 0x00200000)) {
+            to_bitField0_ |= 0x00100000;
+          }
+          result.wantsToBeStrikerUpdate_ = wantsToBeStrikerUpdate_;
+          if (((from_bitField0_ & 0x00400000) == 0x00400000)) {
+            to_bitField0_ |= 0x00200000;
+          }
+          result.wasStriker_ = wasStriker_;
+          if (((from_bitField0_ & 0x00800000) == 0x00800000)) {
+            to_bitField0_ |= 0x00400000;
+          }
+          result.wasStrikerUpdate_ = wasStrikerUpdate_;
+          if (((from_bitField0_ & 0x01000000) == 0x01000000)) {
+            to_bitField0_ |= 0x00800000;
+          }
+          if (robotRoleBuilder_ == null) {
+            result.robotRole_ = robotRole_;
+          } else {
+            result.robotRole_ = robotRoleBuilder_.build();
+          }
+          if (((from_bitField0_ & 0x02000000) == 0x02000000)) {
+            to_bitField0_ |= 0x01000000;
+          }
+          result.robotRoleUpdate_ = robotRoleUpdate_;
+          result.bitField0_ = to_bitField0_;
+          onBuilt();
+          return result;
+        }
+
+        public Builder clone() {
+          return (Builder) super.clone();
+        }
+        public Builder setField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            java.lang.Object value) {
+          return (Builder) super.setField(field, value);
+        }
+        public Builder clearField(
+            com.google.protobuf.Descriptors.FieldDescriptor field) {
+          return (Builder) super.clearField(field);
+        }
+        public Builder clearOneof(
+            com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+          return (Builder) super.clearOneof(oneof);
+        }
+        public Builder setRepeatedField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            int index, java.lang.Object value) {
+          return (Builder) super.setRepeatedField(field, index, value);
+        }
+        public Builder addRepeatedField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            java.lang.Object value) {
+          return (Builder) super.addRepeatedField(field, value);
+        }
+        public Builder mergeFrom(com.google.protobuf.Message other) {
+          if (other instanceof de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player) {
+            return mergeFrom((de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player)other);
+          } else {
+            super.mergeFrom(other);
+            return this;
+          }
+        }
+
+        public Builder mergeFrom(de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player other) {
+          if (other == de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player.getDefaultInstance()) return this;
+          if (other.hasNumber()) {
+            setNumber(other.getNumber());
+          }
+          if (other.hasMessageFrameInfo()) {
+            mergeMessageFrameInfo(other.getMessageFrameInfo());
+          }
+          if (other.hasMessageParsed()) {
+            setMessageParsed(other.getMessageParsed());
+          }
+          if (other.hasMessageTimestamp()) {
+            setMessageTimestamp(other.getMessageTimestamp());
+          }
+          if (ntpRequestBuilder_ == null) {
+            if (!other.ntpRequest_.isEmpty()) {
+              if (ntpRequest_.isEmpty()) {
+                ntpRequest_ = other.ntpRequest_;
+                bitField0_ = (bitField0_ & ~0x00000010);
+              } else {
+                ensureNtpRequestIsMutable();
+                ntpRequest_.addAll(other.ntpRequest_);
+              }
+              onChanged();
+            }
+          } else {
+            if (!other.ntpRequest_.isEmpty()) {
+              if (ntpRequestBuilder_.isEmpty()) {
+                ntpRequestBuilder_.dispose();
+                ntpRequestBuilder_ = null;
+                ntpRequest_ = other.ntpRequest_;
+                bitField0_ = (bitField0_ & ~0x00000010);
+                ntpRequestBuilder_ = 
+                  com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                     getNtpRequestFieldBuilder() : null;
+              } else {
+                ntpRequestBuilder_.addAllMessages(other.ntpRequest_);
+              }
+            }
+          }
+          if (other.hasNtpRequestUpdate()) {
+            setNtpRequestUpdate(other.getNtpRequestUpdate());
+          }
+          if (other.hasRobotState()) {
+            setRobotState(other.getRobotState());
+          }
+          if (other.hasRobotStateUpdate()) {
+            setRobotStateUpdate(other.getRobotStateUpdate());
+          }
+          if (other.hasFallen()) {
+            setFallen(other.getFallen());
+          }
+          if (other.hasFallenUpdate()) {
+            setFallenUpdate(other.getFallenUpdate());
+          }
+          if (other.hasReadyToWalk()) {
+            setReadyToWalk(other.getReadyToWalk());
+          }
+          if (other.hasReadyToWalkUpdate()) {
+            setReadyToWalkUpdate(other.getReadyToWalkUpdate());
+          }
+          if (other.hasPose()) {
+            mergePose(other.getPose());
+          }
+          if (other.hasPoseUpdate()) {
+            setPoseUpdate(other.getPoseUpdate());
+          }
+          if (other.hasBallAge()) {
+            setBallAge(other.getBallAge());
+          }
+          if (other.hasBallAgeUpdate()) {
+            setBallAgeUpdate(other.getBallAgeUpdate());
+          }
+          if (other.hasBallPosition()) {
+            mergeBallPosition(other.getBallPosition());
+          }
+          if (other.hasBallPositionUpdate()) {
+            setBallPositionUpdate(other.getBallPositionUpdate());
+          }
+          if (other.hasTimeToBall()) {
+            setTimeToBall(other.getTimeToBall());
+          }
+          if (other.hasTimeToBallUpdate()) {
+            setTimeToBallUpdate(other.getTimeToBallUpdate());
+          }
+          if (other.hasWantsToBeStriker()) {
+            setWantsToBeStriker(other.getWantsToBeStriker());
+          }
+          if (other.hasWantsToBeStrikerUpdate()) {
+            setWantsToBeStrikerUpdate(other.getWantsToBeStrikerUpdate());
+          }
+          if (other.hasWasStriker()) {
+            setWasStriker(other.getWasStriker());
+          }
+          if (other.hasWasStrikerUpdate()) {
+            setWasStrikerUpdate(other.getWasStrikerUpdate());
+          }
+          if (other.hasRobotRole()) {
+            mergeRobotRole(other.getRobotRole());
+          }
+          if (other.hasRobotRoleUpdate()) {
+            setRobotRoleUpdate(other.getRobotRoleUpdate());
+          }
+          this.mergeUnknownFields(other.unknownFields);
+          onChanged();
+          return this;
+        }
+
+        public final boolean isInitialized() {
+          if (hasMessageFrameInfo()) {
+            if (!getMessageFrameInfo().isInitialized()) {
+              return false;
+            }
+          }
+          for (int i = 0; i < getNtpRequestCount(); i++) {
+            if (!getNtpRequest(i).isInitialized()) {
+              return false;
+            }
+          }
+          if (hasPose()) {
+            if (!getPose().isInitialized()) {
+              return false;
+            }
+          }
+          if (hasBallPosition()) {
+            if (!getBallPosition().isInitialized()) {
+              return false;
+            }
+          }
+          if (hasRobotRole()) {
+            if (!getRobotRole().isInitialized()) {
+              return false;
+            }
+          }
+          return true;
+        }
+
+        public Builder mergeFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player parsedMessage = null;
+          try {
+            parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+            parsedMessage = (de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player) e.getUnfinishedMessage();
+            throw e.unwrapIOException();
+          } finally {
+            if (parsedMessage != null) {
+              mergeFrom(parsedMessage);
+            }
+          }
+          return this;
+        }
+        private int bitField0_;
+
+        private int number_ ;
+        /**
+         * <code>optional uint32 number = 1 [default = 0];</code>
+         */
+        public boolean hasNumber() {
+          return ((bitField0_ & 0x00000001) == 0x00000001);
+        }
+        /**
+         * <code>optional uint32 number = 1 [default = 0];</code>
+         */
+        public int getNumber() {
+          return number_;
+        }
+        /**
+         * <code>optional uint32 number = 1 [default = 0];</code>
+         */
+        public Builder setNumber(int value) {
+          bitField0_ |= 0x00000001;
+          number_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>optional uint32 number = 1 [default = 0];</code>
+         */
+        public Builder clearNumber() {
+          bitField0_ = (bitField0_ & ~0x00000001);
+          number_ = 0;
+          onChanged();
+          return this;
+        }
+
+        private de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfo messageFrameInfo_ = null;
+        private com.google.protobuf.SingleFieldBuilderV3<
+            de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfo, de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfo.Builder, de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfoOrBuilder> messageFrameInfoBuilder_;
+        /**
+         * <code>optional .naothmessages.FrameInfo messageFrameInfo = 2;</code>
+         */
+        public boolean hasMessageFrameInfo() {
+          return ((bitField0_ & 0x00000002) == 0x00000002);
+        }
+        /**
+         * <code>optional .naothmessages.FrameInfo messageFrameInfo = 2;</code>
+         */
+        public de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfo getMessageFrameInfo() {
+          if (messageFrameInfoBuilder_ == null) {
+            return messageFrameInfo_ == null ? de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfo.getDefaultInstance() : messageFrameInfo_;
+          } else {
+            return messageFrameInfoBuilder_.getMessage();
+          }
+        }
+        /**
+         * <code>optional .naothmessages.FrameInfo messageFrameInfo = 2;</code>
+         */
+        public Builder setMessageFrameInfo(de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfo value) {
+          if (messageFrameInfoBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            messageFrameInfo_ = value;
+            onChanged();
+          } else {
+            messageFrameInfoBuilder_.setMessage(value);
+          }
+          bitField0_ |= 0x00000002;
+          return this;
+        }
+        /**
+         * <code>optional .naothmessages.FrameInfo messageFrameInfo = 2;</code>
+         */
+        public Builder setMessageFrameInfo(
+            de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfo.Builder builderForValue) {
+          if (messageFrameInfoBuilder_ == null) {
+            messageFrameInfo_ = builderForValue.build();
+            onChanged();
+          } else {
+            messageFrameInfoBuilder_.setMessage(builderForValue.build());
+          }
+          bitField0_ |= 0x00000002;
+          return this;
+        }
+        /**
+         * <code>optional .naothmessages.FrameInfo messageFrameInfo = 2;</code>
+         */
+        public Builder mergeMessageFrameInfo(de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfo value) {
+          if (messageFrameInfoBuilder_ == null) {
+            if (((bitField0_ & 0x00000002) == 0x00000002) &&
+                messageFrameInfo_ != null &&
+                messageFrameInfo_ != de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfo.getDefaultInstance()) {
+              messageFrameInfo_ =
+                de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfo.newBuilder(messageFrameInfo_).mergeFrom(value).buildPartial();
+            } else {
+              messageFrameInfo_ = value;
+            }
+            onChanged();
+          } else {
+            messageFrameInfoBuilder_.mergeFrom(value);
+          }
+          bitField0_ |= 0x00000002;
+          return this;
+        }
+        /**
+         * <code>optional .naothmessages.FrameInfo messageFrameInfo = 2;</code>
+         */
+        public Builder clearMessageFrameInfo() {
+          if (messageFrameInfoBuilder_ == null) {
+            messageFrameInfo_ = null;
+            onChanged();
+          } else {
+            messageFrameInfoBuilder_.clear();
+          }
+          bitField0_ = (bitField0_ & ~0x00000002);
+          return this;
+        }
+        /**
+         * <code>optional .naothmessages.FrameInfo messageFrameInfo = 2;</code>
+         */
+        public de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfo.Builder getMessageFrameInfoBuilder() {
+          bitField0_ |= 0x00000002;
+          onChanged();
+          return getMessageFrameInfoFieldBuilder().getBuilder();
+        }
+        /**
+         * <code>optional .naothmessages.FrameInfo messageFrameInfo = 2;</code>
+         */
+        public de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfoOrBuilder getMessageFrameInfoOrBuilder() {
+          if (messageFrameInfoBuilder_ != null) {
+            return messageFrameInfoBuilder_.getMessageOrBuilder();
+          } else {
+            return messageFrameInfo_ == null ?
+                de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfo.getDefaultInstance() : messageFrameInfo_;
+          }
+        }
+        /**
+         * <code>optional .naothmessages.FrameInfo messageFrameInfo = 2;</code>
+         */
+        private com.google.protobuf.SingleFieldBuilderV3<
+            de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfo, de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfo.Builder, de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfoOrBuilder> 
+            getMessageFrameInfoFieldBuilder() {
+          if (messageFrameInfoBuilder_ == null) {
+            messageFrameInfoBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+                de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfo, de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfo.Builder, de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfoOrBuilder>(
+                    getMessageFrameInfo(),
+                    getParentForChildren(),
+                    isClean());
+            messageFrameInfo_ = null;
+          }
+          return messageFrameInfoBuilder_;
+        }
+
+        private long messageParsed_ ;
+        /**
+         * <code>optional uint64 messageParsed = 3;</code>
+         */
+        public boolean hasMessageParsed() {
+          return ((bitField0_ & 0x00000004) == 0x00000004);
+        }
+        /**
+         * <code>optional uint64 messageParsed = 3;</code>
+         */
+        public long getMessageParsed() {
+          return messageParsed_;
+        }
+        /**
+         * <code>optional uint64 messageParsed = 3;</code>
+         */
+        public Builder setMessageParsed(long value) {
+          bitField0_ |= 0x00000004;
+          messageParsed_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>optional uint64 messageParsed = 3;</code>
+         */
+        public Builder clearMessageParsed() {
+          bitField0_ = (bitField0_ & ~0x00000004);
+          messageParsed_ = 0L;
+          onChanged();
+          return this;
+        }
+
+        private long messageTimestamp_ ;
+        /**
+         * <code>optional uint64 messageTimestamp = 4;</code>
+         */
+        public boolean hasMessageTimestamp() {
+          return ((bitField0_ & 0x00000008) == 0x00000008);
+        }
+        /**
+         * <code>optional uint64 messageTimestamp = 4;</code>
+         */
+        public long getMessageTimestamp() {
+          return messageTimestamp_;
+        }
+        /**
+         * <code>optional uint64 messageTimestamp = 4;</code>
+         */
+        public Builder setMessageTimestamp(long value) {
+          bitField0_ |= 0x00000008;
+          messageTimestamp_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>optional uint64 messageTimestamp = 4;</code>
+         */
+        public Builder clearMessageTimestamp() {
+          bitField0_ = (bitField0_ & ~0x00000008);
+          messageTimestamp_ = 0L;
+          onChanged();
+          return this;
+        }
+
+        private java.util.List<de.naoth.rc.core.messages.TeamMessageOuterClass.Ntp> ntpRequest_ =
+          java.util.Collections.emptyList();
+        private void ensureNtpRequestIsMutable() {
+          if (!((bitField0_ & 0x00000010) == 0x00000010)) {
+            ntpRequest_ = new java.util.ArrayList<de.naoth.rc.core.messages.TeamMessageOuterClass.Ntp>(ntpRequest_);
+            bitField0_ |= 0x00000010;
+           }
+        }
+
+        private com.google.protobuf.RepeatedFieldBuilderV3<
+            de.naoth.rc.core.messages.TeamMessageOuterClass.Ntp, de.naoth.rc.core.messages.TeamMessageOuterClass.Ntp.Builder, de.naoth.rc.core.messages.TeamMessageOuterClass.NtpOrBuilder> ntpRequestBuilder_;
+
+        /**
+         * <code>repeated .naothmessages.Ntp ntpRequest = 5;</code>
+         */
+        public java.util.List<de.naoth.rc.core.messages.TeamMessageOuterClass.Ntp> getNtpRequestList() {
+          if (ntpRequestBuilder_ == null) {
+            return java.util.Collections.unmodifiableList(ntpRequest_);
+          } else {
+            return ntpRequestBuilder_.getMessageList();
+          }
+        }
+        /**
+         * <code>repeated .naothmessages.Ntp ntpRequest = 5;</code>
+         */
+        public int getNtpRequestCount() {
+          if (ntpRequestBuilder_ == null) {
+            return ntpRequest_.size();
+          } else {
+            return ntpRequestBuilder_.getCount();
+          }
+        }
+        /**
+         * <code>repeated .naothmessages.Ntp ntpRequest = 5;</code>
+         */
+        public de.naoth.rc.core.messages.TeamMessageOuterClass.Ntp getNtpRequest(int index) {
+          if (ntpRequestBuilder_ == null) {
+            return ntpRequest_.get(index);
+          } else {
+            return ntpRequestBuilder_.getMessage(index);
+          }
+        }
+        /**
+         * <code>repeated .naothmessages.Ntp ntpRequest = 5;</code>
+         */
+        public Builder setNtpRequest(
+            int index, de.naoth.rc.core.messages.TeamMessageOuterClass.Ntp value) {
+          if (ntpRequestBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            ensureNtpRequestIsMutable();
+            ntpRequest_.set(index, value);
+            onChanged();
+          } else {
+            ntpRequestBuilder_.setMessage(index, value);
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .naothmessages.Ntp ntpRequest = 5;</code>
+         */
+        public Builder setNtpRequest(
+            int index, de.naoth.rc.core.messages.TeamMessageOuterClass.Ntp.Builder builderForValue) {
+          if (ntpRequestBuilder_ == null) {
+            ensureNtpRequestIsMutable();
+            ntpRequest_.set(index, builderForValue.build());
+            onChanged();
+          } else {
+            ntpRequestBuilder_.setMessage(index, builderForValue.build());
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .naothmessages.Ntp ntpRequest = 5;</code>
+         */
+        public Builder addNtpRequest(de.naoth.rc.core.messages.TeamMessageOuterClass.Ntp value) {
+          if (ntpRequestBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            ensureNtpRequestIsMutable();
+            ntpRequest_.add(value);
+            onChanged();
+          } else {
+            ntpRequestBuilder_.addMessage(value);
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .naothmessages.Ntp ntpRequest = 5;</code>
+         */
+        public Builder addNtpRequest(
+            int index, de.naoth.rc.core.messages.TeamMessageOuterClass.Ntp value) {
+          if (ntpRequestBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            ensureNtpRequestIsMutable();
+            ntpRequest_.add(index, value);
+            onChanged();
+          } else {
+            ntpRequestBuilder_.addMessage(index, value);
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .naothmessages.Ntp ntpRequest = 5;</code>
+         */
+        public Builder addNtpRequest(
+            de.naoth.rc.core.messages.TeamMessageOuterClass.Ntp.Builder builderForValue) {
+          if (ntpRequestBuilder_ == null) {
+            ensureNtpRequestIsMutable();
+            ntpRequest_.add(builderForValue.build());
+            onChanged();
+          } else {
+            ntpRequestBuilder_.addMessage(builderForValue.build());
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .naothmessages.Ntp ntpRequest = 5;</code>
+         */
+        public Builder addNtpRequest(
+            int index, de.naoth.rc.core.messages.TeamMessageOuterClass.Ntp.Builder builderForValue) {
+          if (ntpRequestBuilder_ == null) {
+            ensureNtpRequestIsMutable();
+            ntpRequest_.add(index, builderForValue.build());
+            onChanged();
+          } else {
+            ntpRequestBuilder_.addMessage(index, builderForValue.build());
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .naothmessages.Ntp ntpRequest = 5;</code>
+         */
+        public Builder addAllNtpRequest(
+            java.lang.Iterable<? extends de.naoth.rc.core.messages.TeamMessageOuterClass.Ntp> values) {
+          if (ntpRequestBuilder_ == null) {
+            ensureNtpRequestIsMutable();
+            com.google.protobuf.AbstractMessageLite.Builder.addAll(
+                values, ntpRequest_);
+            onChanged();
+          } else {
+            ntpRequestBuilder_.addAllMessages(values);
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .naothmessages.Ntp ntpRequest = 5;</code>
+         */
+        public Builder clearNtpRequest() {
+          if (ntpRequestBuilder_ == null) {
+            ntpRequest_ = java.util.Collections.emptyList();
+            bitField0_ = (bitField0_ & ~0x00000010);
+            onChanged();
+          } else {
+            ntpRequestBuilder_.clear();
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .naothmessages.Ntp ntpRequest = 5;</code>
+         */
+        public Builder removeNtpRequest(int index) {
+          if (ntpRequestBuilder_ == null) {
+            ensureNtpRequestIsMutable();
+            ntpRequest_.remove(index);
+            onChanged();
+          } else {
+            ntpRequestBuilder_.remove(index);
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .naothmessages.Ntp ntpRequest = 5;</code>
+         */
+        public de.naoth.rc.core.messages.TeamMessageOuterClass.Ntp.Builder getNtpRequestBuilder(
+            int index) {
+          return getNtpRequestFieldBuilder().getBuilder(index);
+        }
+        /**
+         * <code>repeated .naothmessages.Ntp ntpRequest = 5;</code>
+         */
+        public de.naoth.rc.core.messages.TeamMessageOuterClass.NtpOrBuilder getNtpRequestOrBuilder(
+            int index) {
+          if (ntpRequestBuilder_ == null) {
+            return ntpRequest_.get(index);  } else {
+            return ntpRequestBuilder_.getMessageOrBuilder(index);
+          }
+        }
+        /**
+         * <code>repeated .naothmessages.Ntp ntpRequest = 5;</code>
+         */
+        public java.util.List<? extends de.naoth.rc.core.messages.TeamMessageOuterClass.NtpOrBuilder> 
+             getNtpRequestOrBuilderList() {
+          if (ntpRequestBuilder_ != null) {
+            return ntpRequestBuilder_.getMessageOrBuilderList();
+          } else {
+            return java.util.Collections.unmodifiableList(ntpRequest_);
+          }
+        }
+        /**
+         * <code>repeated .naothmessages.Ntp ntpRequest = 5;</code>
+         */
+        public de.naoth.rc.core.messages.TeamMessageOuterClass.Ntp.Builder addNtpRequestBuilder() {
+          return getNtpRequestFieldBuilder().addBuilder(
+              de.naoth.rc.core.messages.TeamMessageOuterClass.Ntp.getDefaultInstance());
+        }
+        /**
+         * <code>repeated .naothmessages.Ntp ntpRequest = 5;</code>
+         */
+        public de.naoth.rc.core.messages.TeamMessageOuterClass.Ntp.Builder addNtpRequestBuilder(
+            int index) {
+          return getNtpRequestFieldBuilder().addBuilder(
+              index, de.naoth.rc.core.messages.TeamMessageOuterClass.Ntp.getDefaultInstance());
+        }
+        /**
+         * <code>repeated .naothmessages.Ntp ntpRequest = 5;</code>
+         */
+        public java.util.List<de.naoth.rc.core.messages.TeamMessageOuterClass.Ntp.Builder> 
+             getNtpRequestBuilderList() {
+          return getNtpRequestFieldBuilder().getBuilderList();
+        }
+        private com.google.protobuf.RepeatedFieldBuilderV3<
+            de.naoth.rc.core.messages.TeamMessageOuterClass.Ntp, de.naoth.rc.core.messages.TeamMessageOuterClass.Ntp.Builder, de.naoth.rc.core.messages.TeamMessageOuterClass.NtpOrBuilder> 
+            getNtpRequestFieldBuilder() {
+          if (ntpRequestBuilder_ == null) {
+            ntpRequestBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+                de.naoth.rc.core.messages.TeamMessageOuterClass.Ntp, de.naoth.rc.core.messages.TeamMessageOuterClass.Ntp.Builder, de.naoth.rc.core.messages.TeamMessageOuterClass.NtpOrBuilder>(
+                    ntpRequest_,
+                    ((bitField0_ & 0x00000010) == 0x00000010),
+                    getParentForChildren(),
+                    isClean());
+            ntpRequest_ = null;
+          }
+          return ntpRequestBuilder_;
+        }
+
+        private long ntpRequestUpdate_ ;
+        /**
+         * <code>optional uint64 ntpRequestUpdate = 6;</code>
+         */
+        public boolean hasNtpRequestUpdate() {
+          return ((bitField0_ & 0x00000020) == 0x00000020);
+        }
+        /**
+         * <code>optional uint64 ntpRequestUpdate = 6;</code>
+         */
+        public long getNtpRequestUpdate() {
+          return ntpRequestUpdate_;
+        }
+        /**
+         * <code>optional uint64 ntpRequestUpdate = 6;</code>
+         */
+        public Builder setNtpRequestUpdate(long value) {
+          bitField0_ |= 0x00000020;
+          ntpRequestUpdate_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>optional uint64 ntpRequestUpdate = 6;</code>
+         */
+        public Builder clearNtpRequestUpdate() {
+          bitField0_ = (bitField0_ & ~0x00000020);
+          ntpRequestUpdate_ = 0L;
+          onChanged();
+          return this;
+        }
+
+        private int robotState_ = 0;
+        /**
+         * <code>optional .naothmessages.RobotState robotState = 7 [default = initial];</code>
+         */
+        public boolean hasRobotState() {
+          return ((bitField0_ & 0x00000040) == 0x00000040);
+        }
+        /**
+         * <code>optional .naothmessages.RobotState robotState = 7 [default = initial];</code>
+         */
+        public de.naoth.rc.core.messages.TeamMessageOuterClass.RobotState getRobotState() {
+          de.naoth.rc.core.messages.TeamMessageOuterClass.RobotState result = de.naoth.rc.core.messages.TeamMessageOuterClass.RobotState.valueOf(robotState_);
+          return result == null ? de.naoth.rc.core.messages.TeamMessageOuterClass.RobotState.initial : result;
+        }
+        /**
+         * <code>optional .naothmessages.RobotState robotState = 7 [default = initial];</code>
+         */
+        public Builder setRobotState(de.naoth.rc.core.messages.TeamMessageOuterClass.RobotState value) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          bitField0_ |= 0x00000040;
+          robotState_ = value.getNumber();
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>optional .naothmessages.RobotState robotState = 7 [default = initial];</code>
+         */
+        public Builder clearRobotState() {
+          bitField0_ = (bitField0_ & ~0x00000040);
+          robotState_ = 0;
+          onChanged();
+          return this;
+        }
+
+        private long robotStateUpdate_ ;
+        /**
+         * <code>optional uint64 robotStateUpdate = 8;</code>
+         */
+        public boolean hasRobotStateUpdate() {
+          return ((bitField0_ & 0x00000080) == 0x00000080);
+        }
+        /**
+         * <code>optional uint64 robotStateUpdate = 8;</code>
+         */
+        public long getRobotStateUpdate() {
+          return robotStateUpdate_;
+        }
+        /**
+         * <code>optional uint64 robotStateUpdate = 8;</code>
+         */
+        public Builder setRobotStateUpdate(long value) {
+          bitField0_ |= 0x00000080;
+          robotStateUpdate_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>optional uint64 robotStateUpdate = 8;</code>
+         */
+        public Builder clearRobotStateUpdate() {
+          bitField0_ = (bitField0_ & ~0x00000080);
+          robotStateUpdate_ = 0L;
+          onChanged();
+          return this;
+        }
+
+        private boolean fallen_ ;
+        /**
+         * <code>optional bool fallen = 9 [default = false];</code>
+         */
+        public boolean hasFallen() {
+          return ((bitField0_ & 0x00000100) == 0x00000100);
+        }
+        /**
+         * <code>optional bool fallen = 9 [default = false];</code>
+         */
+        public boolean getFallen() {
+          return fallen_;
+        }
+        /**
+         * <code>optional bool fallen = 9 [default = false];</code>
+         */
+        public Builder setFallen(boolean value) {
+          bitField0_ |= 0x00000100;
+          fallen_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>optional bool fallen = 9 [default = false];</code>
+         */
+        public Builder clearFallen() {
+          bitField0_ = (bitField0_ & ~0x00000100);
+          fallen_ = false;
+          onChanged();
+          return this;
+        }
+
+        private long fallenUpdate_ ;
+        /**
+         * <code>optional uint64 fallenUpdate = 10;</code>
+         */
+        public boolean hasFallenUpdate() {
+          return ((bitField0_ & 0x00000200) == 0x00000200);
+        }
+        /**
+         * <code>optional uint64 fallenUpdate = 10;</code>
+         */
+        public long getFallenUpdate() {
+          return fallenUpdate_;
+        }
+        /**
+         * <code>optional uint64 fallenUpdate = 10;</code>
+         */
+        public Builder setFallenUpdate(long value) {
+          bitField0_ |= 0x00000200;
+          fallenUpdate_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>optional uint64 fallenUpdate = 10;</code>
+         */
+        public Builder clearFallenUpdate() {
+          bitField0_ = (bitField0_ & ~0x00000200);
+          fallenUpdate_ = 0L;
+          onChanged();
+          return this;
+        }
+
+        private boolean readyToWalk_ ;
+        /**
+         * <code>optional bool readyToWalk = 11;</code>
+         */
+        public boolean hasReadyToWalk() {
+          return ((bitField0_ & 0x00000400) == 0x00000400);
+        }
+        /**
+         * <code>optional bool readyToWalk = 11;</code>
+         */
+        public boolean getReadyToWalk() {
+          return readyToWalk_;
+        }
+        /**
+         * <code>optional bool readyToWalk = 11;</code>
+         */
+        public Builder setReadyToWalk(boolean value) {
+          bitField0_ |= 0x00000400;
+          readyToWalk_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>optional bool readyToWalk = 11;</code>
+         */
+        public Builder clearReadyToWalk() {
+          bitField0_ = (bitField0_ & ~0x00000400);
+          readyToWalk_ = false;
+          onChanged();
+          return this;
+        }
+
+        private long readyToWalkUpdate_ ;
+        /**
+         * <code>optional uint64 readyToWalkUpdate = 12;</code>
+         */
+        public boolean hasReadyToWalkUpdate() {
+          return ((bitField0_ & 0x00000800) == 0x00000800);
+        }
+        /**
+         * <code>optional uint64 readyToWalkUpdate = 12;</code>
+         */
+        public long getReadyToWalkUpdate() {
+          return readyToWalkUpdate_;
+        }
+        /**
+         * <code>optional uint64 readyToWalkUpdate = 12;</code>
+         */
+        public Builder setReadyToWalkUpdate(long value) {
+          bitField0_ |= 0x00000800;
+          readyToWalkUpdate_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>optional uint64 readyToWalkUpdate = 12;</code>
+         */
+        public Builder clearReadyToWalkUpdate() {
+          bitField0_ = (bitField0_ & ~0x00000800);
+          readyToWalkUpdate_ = 0L;
+          onChanged();
+          return this;
+        }
+
+        private de.naoth.rc.core.messages.CommonTypes.Pose2D pose_ = null;
+        private com.google.protobuf.SingleFieldBuilderV3<
+            de.naoth.rc.core.messages.CommonTypes.Pose2D, de.naoth.rc.core.messages.CommonTypes.Pose2D.Builder, de.naoth.rc.core.messages.CommonTypes.Pose2DOrBuilder> poseBuilder_;
+        /**
+         * <code>optional .naothmessages.Pose2D pose = 13;</code>
+         */
+        public boolean hasPose() {
+          return ((bitField0_ & 0x00001000) == 0x00001000);
+        }
+        /**
+         * <code>optional .naothmessages.Pose2D pose = 13;</code>
+         */
+        public de.naoth.rc.core.messages.CommonTypes.Pose2D getPose() {
+          if (poseBuilder_ == null) {
+            return pose_ == null ? de.naoth.rc.core.messages.CommonTypes.Pose2D.getDefaultInstance() : pose_;
+          } else {
+            return poseBuilder_.getMessage();
+          }
+        }
+        /**
+         * <code>optional .naothmessages.Pose2D pose = 13;</code>
+         */
+        public Builder setPose(de.naoth.rc.core.messages.CommonTypes.Pose2D value) {
+          if (poseBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            pose_ = value;
+            onChanged();
+          } else {
+            poseBuilder_.setMessage(value);
+          }
+          bitField0_ |= 0x00001000;
+          return this;
+        }
+        /**
+         * <code>optional .naothmessages.Pose2D pose = 13;</code>
+         */
+        public Builder setPose(
+            de.naoth.rc.core.messages.CommonTypes.Pose2D.Builder builderForValue) {
+          if (poseBuilder_ == null) {
+            pose_ = builderForValue.build();
+            onChanged();
+          } else {
+            poseBuilder_.setMessage(builderForValue.build());
+          }
+          bitField0_ |= 0x00001000;
+          return this;
+        }
+        /**
+         * <code>optional .naothmessages.Pose2D pose = 13;</code>
+         */
+        public Builder mergePose(de.naoth.rc.core.messages.CommonTypes.Pose2D value) {
+          if (poseBuilder_ == null) {
+            if (((bitField0_ & 0x00001000) == 0x00001000) &&
+                pose_ != null &&
+                pose_ != de.naoth.rc.core.messages.CommonTypes.Pose2D.getDefaultInstance()) {
+              pose_ =
+                de.naoth.rc.core.messages.CommonTypes.Pose2D.newBuilder(pose_).mergeFrom(value).buildPartial();
+            } else {
+              pose_ = value;
+            }
+            onChanged();
+          } else {
+            poseBuilder_.mergeFrom(value);
+          }
+          bitField0_ |= 0x00001000;
+          return this;
+        }
+        /**
+         * <code>optional .naothmessages.Pose2D pose = 13;</code>
+         */
+        public Builder clearPose() {
+          if (poseBuilder_ == null) {
+            pose_ = null;
+            onChanged();
+          } else {
+            poseBuilder_.clear();
+          }
+          bitField0_ = (bitField0_ & ~0x00001000);
+          return this;
+        }
+        /**
+         * <code>optional .naothmessages.Pose2D pose = 13;</code>
+         */
+        public de.naoth.rc.core.messages.CommonTypes.Pose2D.Builder getPoseBuilder() {
+          bitField0_ |= 0x00001000;
+          onChanged();
+          return getPoseFieldBuilder().getBuilder();
+        }
+        /**
+         * <code>optional .naothmessages.Pose2D pose = 13;</code>
+         */
+        public de.naoth.rc.core.messages.CommonTypes.Pose2DOrBuilder getPoseOrBuilder() {
+          if (poseBuilder_ != null) {
+            return poseBuilder_.getMessageOrBuilder();
+          } else {
+            return pose_ == null ?
+                de.naoth.rc.core.messages.CommonTypes.Pose2D.getDefaultInstance() : pose_;
+          }
+        }
+        /**
+         * <code>optional .naothmessages.Pose2D pose = 13;</code>
+         */
+        private com.google.protobuf.SingleFieldBuilderV3<
+            de.naoth.rc.core.messages.CommonTypes.Pose2D, de.naoth.rc.core.messages.CommonTypes.Pose2D.Builder, de.naoth.rc.core.messages.CommonTypes.Pose2DOrBuilder> 
+            getPoseFieldBuilder() {
+          if (poseBuilder_ == null) {
+            poseBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+                de.naoth.rc.core.messages.CommonTypes.Pose2D, de.naoth.rc.core.messages.CommonTypes.Pose2D.Builder, de.naoth.rc.core.messages.CommonTypes.Pose2DOrBuilder>(
+                    getPose(),
+                    getParentForChildren(),
+                    isClean());
+            pose_ = null;
+          }
+          return poseBuilder_;
+        }
+
+        private long poseUpdate_ ;
+        /**
+         * <code>optional uint64 poseUpdate = 14;</code>
+         */
+        public boolean hasPoseUpdate() {
+          return ((bitField0_ & 0x00002000) == 0x00002000);
+        }
+        /**
+         * <code>optional uint64 poseUpdate = 14;</code>
+         */
+        public long getPoseUpdate() {
+          return poseUpdate_;
+        }
+        /**
+         * <code>optional uint64 poseUpdate = 14;</code>
+         */
+        public Builder setPoseUpdate(long value) {
+          bitField0_ |= 0x00002000;
+          poseUpdate_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>optional uint64 poseUpdate = 14;</code>
+         */
+        public Builder clearPoseUpdate() {
+          bitField0_ = (bitField0_ & ~0x00002000);
+          poseUpdate_ = 0L;
+          onChanged();
+          return this;
+        }
+
+        private int ballAge_ = -1;
+        /**
+         * <code>optional int32 ballAge = 15 [default = -1];</code>
+         */
+        public boolean hasBallAge() {
+          return ((bitField0_ & 0x00004000) == 0x00004000);
+        }
+        /**
+         * <code>optional int32 ballAge = 15 [default = -1];</code>
+         */
+        public int getBallAge() {
+          return ballAge_;
+        }
+        /**
+         * <code>optional int32 ballAge = 15 [default = -1];</code>
+         */
+        public Builder setBallAge(int value) {
+          bitField0_ |= 0x00004000;
+          ballAge_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>optional int32 ballAge = 15 [default = -1];</code>
+         */
+        public Builder clearBallAge() {
+          bitField0_ = (bitField0_ & ~0x00004000);
+          ballAge_ = -1;
+          onChanged();
+          return this;
+        }
+
+        private long ballAgeUpdate_ ;
+        /**
+         * <code>optional uint64 ballAgeUpdate = 16;</code>
+         */
+        public boolean hasBallAgeUpdate() {
+          return ((bitField0_ & 0x00008000) == 0x00008000);
+        }
+        /**
+         * <code>optional uint64 ballAgeUpdate = 16;</code>
+         */
+        public long getBallAgeUpdate() {
+          return ballAgeUpdate_;
+        }
+        /**
+         * <code>optional uint64 ballAgeUpdate = 16;</code>
+         */
+        public Builder setBallAgeUpdate(long value) {
+          bitField0_ |= 0x00008000;
+          ballAgeUpdate_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>optional uint64 ballAgeUpdate = 16;</code>
+         */
+        public Builder clearBallAgeUpdate() {
+          bitField0_ = (bitField0_ & ~0x00008000);
+          ballAgeUpdate_ = 0L;
+          onChanged();
+          return this;
+        }
+
+        private de.naoth.rc.core.messages.CommonTypes.DoubleVector2 ballPosition_ = null;
+        private com.google.protobuf.SingleFieldBuilderV3<
+            de.naoth.rc.core.messages.CommonTypes.DoubleVector2, de.naoth.rc.core.messages.CommonTypes.DoubleVector2.Builder, de.naoth.rc.core.messages.CommonTypes.DoubleVector2OrBuilder> ballPositionBuilder_;
+        /**
+         * <code>optional .naothmessages.DoubleVector2 ballPosition = 17;</code>
+         */
+        public boolean hasBallPosition() {
+          return ((bitField0_ & 0x00010000) == 0x00010000);
+        }
+        /**
+         * <code>optional .naothmessages.DoubleVector2 ballPosition = 17;</code>
+         */
+        public de.naoth.rc.core.messages.CommonTypes.DoubleVector2 getBallPosition() {
+          if (ballPositionBuilder_ == null) {
+            return ballPosition_ == null ? de.naoth.rc.core.messages.CommonTypes.DoubleVector2.getDefaultInstance() : ballPosition_;
+          } else {
+            return ballPositionBuilder_.getMessage();
+          }
+        }
+        /**
+         * <code>optional .naothmessages.DoubleVector2 ballPosition = 17;</code>
+         */
+        public Builder setBallPosition(de.naoth.rc.core.messages.CommonTypes.DoubleVector2 value) {
+          if (ballPositionBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            ballPosition_ = value;
+            onChanged();
+          } else {
+            ballPositionBuilder_.setMessage(value);
+          }
+          bitField0_ |= 0x00010000;
+          return this;
+        }
+        /**
+         * <code>optional .naothmessages.DoubleVector2 ballPosition = 17;</code>
+         */
+        public Builder setBallPosition(
+            de.naoth.rc.core.messages.CommonTypes.DoubleVector2.Builder builderForValue) {
+          if (ballPositionBuilder_ == null) {
+            ballPosition_ = builderForValue.build();
+            onChanged();
+          } else {
+            ballPositionBuilder_.setMessage(builderForValue.build());
+          }
+          bitField0_ |= 0x00010000;
+          return this;
+        }
+        /**
+         * <code>optional .naothmessages.DoubleVector2 ballPosition = 17;</code>
+         */
+        public Builder mergeBallPosition(de.naoth.rc.core.messages.CommonTypes.DoubleVector2 value) {
+          if (ballPositionBuilder_ == null) {
+            if (((bitField0_ & 0x00010000) == 0x00010000) &&
+                ballPosition_ != null &&
+                ballPosition_ != de.naoth.rc.core.messages.CommonTypes.DoubleVector2.getDefaultInstance()) {
+              ballPosition_ =
+                de.naoth.rc.core.messages.CommonTypes.DoubleVector2.newBuilder(ballPosition_).mergeFrom(value).buildPartial();
+            } else {
+              ballPosition_ = value;
+            }
+            onChanged();
+          } else {
+            ballPositionBuilder_.mergeFrom(value);
+          }
+          bitField0_ |= 0x00010000;
+          return this;
+        }
+        /**
+         * <code>optional .naothmessages.DoubleVector2 ballPosition = 17;</code>
+         */
+        public Builder clearBallPosition() {
+          if (ballPositionBuilder_ == null) {
+            ballPosition_ = null;
+            onChanged();
+          } else {
+            ballPositionBuilder_.clear();
+          }
+          bitField0_ = (bitField0_ & ~0x00010000);
+          return this;
+        }
+        /**
+         * <code>optional .naothmessages.DoubleVector2 ballPosition = 17;</code>
+         */
+        public de.naoth.rc.core.messages.CommonTypes.DoubleVector2.Builder getBallPositionBuilder() {
+          bitField0_ |= 0x00010000;
+          onChanged();
+          return getBallPositionFieldBuilder().getBuilder();
+        }
+        /**
+         * <code>optional .naothmessages.DoubleVector2 ballPosition = 17;</code>
+         */
+        public de.naoth.rc.core.messages.CommonTypes.DoubleVector2OrBuilder getBallPositionOrBuilder() {
+          if (ballPositionBuilder_ != null) {
+            return ballPositionBuilder_.getMessageOrBuilder();
+          } else {
+            return ballPosition_ == null ?
+                de.naoth.rc.core.messages.CommonTypes.DoubleVector2.getDefaultInstance() : ballPosition_;
+          }
+        }
+        /**
+         * <code>optional .naothmessages.DoubleVector2 ballPosition = 17;</code>
+         */
+        private com.google.protobuf.SingleFieldBuilderV3<
+            de.naoth.rc.core.messages.CommonTypes.DoubleVector2, de.naoth.rc.core.messages.CommonTypes.DoubleVector2.Builder, de.naoth.rc.core.messages.CommonTypes.DoubleVector2OrBuilder> 
+            getBallPositionFieldBuilder() {
+          if (ballPositionBuilder_ == null) {
+            ballPositionBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+                de.naoth.rc.core.messages.CommonTypes.DoubleVector2, de.naoth.rc.core.messages.CommonTypes.DoubleVector2.Builder, de.naoth.rc.core.messages.CommonTypes.DoubleVector2OrBuilder>(
+                    getBallPosition(),
+                    getParentForChildren(),
+                    isClean());
+            ballPosition_ = null;
+          }
+          return ballPositionBuilder_;
+        }
+
+        private long ballPositionUpdate_ ;
+        /**
+         * <code>optional uint64 ballPositionUpdate = 18;</code>
+         */
+        public boolean hasBallPositionUpdate() {
+          return ((bitField0_ & 0x00020000) == 0x00020000);
+        }
+        /**
+         * <code>optional uint64 ballPositionUpdate = 18;</code>
+         */
+        public long getBallPositionUpdate() {
+          return ballPositionUpdate_;
+        }
+        /**
+         * <code>optional uint64 ballPositionUpdate = 18;</code>
+         */
+        public Builder setBallPositionUpdate(long value) {
+          bitField0_ |= 0x00020000;
+          ballPositionUpdate_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>optional uint64 ballPositionUpdate = 18;</code>
+         */
+        public Builder clearBallPositionUpdate() {
+          bitField0_ = (bitField0_ & ~0x00020000);
+          ballPositionUpdate_ = 0L;
+          onChanged();
+          return this;
+        }
+
+        private int timeToBall_ ;
+        /**
+         * <code>optional uint32 timeToBall = 19;</code>
+         */
+        public boolean hasTimeToBall() {
+          return ((bitField0_ & 0x00040000) == 0x00040000);
+        }
+        /**
+         * <code>optional uint32 timeToBall = 19;</code>
+         */
+        public int getTimeToBall() {
+          return timeToBall_;
+        }
+        /**
+         * <code>optional uint32 timeToBall = 19;</code>
+         */
+        public Builder setTimeToBall(int value) {
+          bitField0_ |= 0x00040000;
+          timeToBall_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>optional uint32 timeToBall = 19;</code>
+         */
+        public Builder clearTimeToBall() {
+          bitField0_ = (bitField0_ & ~0x00040000);
+          timeToBall_ = 0;
+          onChanged();
+          return this;
+        }
+
+        private long timeToBallUpdate_ ;
+        /**
+         * <code>optional uint64 timeToBallUpdate = 20;</code>
+         */
+        public boolean hasTimeToBallUpdate() {
+          return ((bitField0_ & 0x00080000) == 0x00080000);
+        }
+        /**
+         * <code>optional uint64 timeToBallUpdate = 20;</code>
+         */
+        public long getTimeToBallUpdate() {
+          return timeToBallUpdate_;
+        }
+        /**
+         * <code>optional uint64 timeToBallUpdate = 20;</code>
+         */
+        public Builder setTimeToBallUpdate(long value) {
+          bitField0_ |= 0x00080000;
+          timeToBallUpdate_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>optional uint64 timeToBallUpdate = 20;</code>
+         */
+        public Builder clearTimeToBallUpdate() {
+          bitField0_ = (bitField0_ & ~0x00080000);
+          timeToBallUpdate_ = 0L;
+          onChanged();
+          return this;
+        }
+
+        private boolean wantsToBeStriker_ ;
+        /**
+         * <code>optional bool wantsToBeStriker = 21 [default = false];</code>
+         */
+        public boolean hasWantsToBeStriker() {
+          return ((bitField0_ & 0x00100000) == 0x00100000);
+        }
+        /**
+         * <code>optional bool wantsToBeStriker = 21 [default = false];</code>
+         */
+        public boolean getWantsToBeStriker() {
+          return wantsToBeStriker_;
+        }
+        /**
+         * <code>optional bool wantsToBeStriker = 21 [default = false];</code>
+         */
+        public Builder setWantsToBeStriker(boolean value) {
+          bitField0_ |= 0x00100000;
+          wantsToBeStriker_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>optional bool wantsToBeStriker = 21 [default = false];</code>
+         */
+        public Builder clearWantsToBeStriker() {
+          bitField0_ = (bitField0_ & ~0x00100000);
+          wantsToBeStriker_ = false;
+          onChanged();
+          return this;
+        }
+
+        private long wantsToBeStrikerUpdate_ ;
+        /**
+         * <code>optional uint64 wantsToBeStrikerUpdate = 22;</code>
+         */
+        public boolean hasWantsToBeStrikerUpdate() {
+          return ((bitField0_ & 0x00200000) == 0x00200000);
+        }
+        /**
+         * <code>optional uint64 wantsToBeStrikerUpdate = 22;</code>
+         */
+        public long getWantsToBeStrikerUpdate() {
+          return wantsToBeStrikerUpdate_;
+        }
+        /**
+         * <code>optional uint64 wantsToBeStrikerUpdate = 22;</code>
+         */
+        public Builder setWantsToBeStrikerUpdate(long value) {
+          bitField0_ |= 0x00200000;
+          wantsToBeStrikerUpdate_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>optional uint64 wantsToBeStrikerUpdate = 22;</code>
+         */
+        public Builder clearWantsToBeStrikerUpdate() {
+          bitField0_ = (bitField0_ & ~0x00200000);
+          wantsToBeStrikerUpdate_ = 0L;
+          onChanged();
+          return this;
+        }
+
+        private boolean wasStriker_ ;
+        /**
+         * <code>optional bool wasStriker = 23 [default = false];</code>
+         */
+        public boolean hasWasStriker() {
+          return ((bitField0_ & 0x00400000) == 0x00400000);
+        }
+        /**
+         * <code>optional bool wasStriker = 23 [default = false];</code>
+         */
+        public boolean getWasStriker() {
+          return wasStriker_;
+        }
+        /**
+         * <code>optional bool wasStriker = 23 [default = false];</code>
+         */
+        public Builder setWasStriker(boolean value) {
+          bitField0_ |= 0x00400000;
+          wasStriker_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>optional bool wasStriker = 23 [default = false];</code>
+         */
+        public Builder clearWasStriker() {
+          bitField0_ = (bitField0_ & ~0x00400000);
+          wasStriker_ = false;
+          onChanged();
+          return this;
+        }
+
+        private long wasStrikerUpdate_ ;
+        /**
+         * <code>optional uint64 wasStrikerUpdate = 24;</code>
+         */
+        public boolean hasWasStrikerUpdate() {
+          return ((bitField0_ & 0x00800000) == 0x00800000);
+        }
+        /**
+         * <code>optional uint64 wasStrikerUpdate = 24;</code>
+         */
+        public long getWasStrikerUpdate() {
+          return wasStrikerUpdate_;
+        }
+        /**
+         * <code>optional uint64 wasStrikerUpdate = 24;</code>
+         */
+        public Builder setWasStrikerUpdate(long value) {
+          bitField0_ |= 0x00800000;
+          wasStrikerUpdate_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>optional uint64 wasStrikerUpdate = 24;</code>
+         */
+        public Builder clearWasStrikerUpdate() {
+          bitField0_ = (bitField0_ & ~0x00800000);
+          wasStrikerUpdate_ = 0L;
+          onChanged();
+          return this;
+        }
+
+        private de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole robotRole_ = null;
+        private com.google.protobuf.SingleFieldBuilderV3<
+            de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole, de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole.Builder, de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRoleOrBuilder> robotRoleBuilder_;
+        /**
+         * <code>optional .naothmessages.RobotRole robotRole = 25;</code>
+         */
+        public boolean hasRobotRole() {
+          return ((bitField0_ & 0x01000000) == 0x01000000);
+        }
+        /**
+         * <code>optional .naothmessages.RobotRole robotRole = 25;</code>
+         */
+        public de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole getRobotRole() {
+          if (robotRoleBuilder_ == null) {
+            return robotRole_ == null ? de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole.getDefaultInstance() : robotRole_;
+          } else {
+            return robotRoleBuilder_.getMessage();
+          }
+        }
+        /**
+         * <code>optional .naothmessages.RobotRole robotRole = 25;</code>
+         */
+        public Builder setRobotRole(de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole value) {
+          if (robotRoleBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            robotRole_ = value;
+            onChanged();
+          } else {
+            robotRoleBuilder_.setMessage(value);
+          }
+          bitField0_ |= 0x01000000;
+          return this;
+        }
+        /**
+         * <code>optional .naothmessages.RobotRole robotRole = 25;</code>
+         */
+        public Builder setRobotRole(
+            de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole.Builder builderForValue) {
+          if (robotRoleBuilder_ == null) {
+            robotRole_ = builderForValue.build();
+            onChanged();
+          } else {
+            robotRoleBuilder_.setMessage(builderForValue.build());
+          }
+          bitField0_ |= 0x01000000;
+          return this;
+        }
+        /**
+         * <code>optional .naothmessages.RobotRole robotRole = 25;</code>
+         */
+        public Builder mergeRobotRole(de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole value) {
+          if (robotRoleBuilder_ == null) {
+            if (((bitField0_ & 0x01000000) == 0x01000000) &&
+                robotRole_ != null &&
+                robotRole_ != de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole.getDefaultInstance()) {
+              robotRole_ =
+                de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole.newBuilder(robotRole_).mergeFrom(value).buildPartial();
+            } else {
+              robotRole_ = value;
+            }
+            onChanged();
+          } else {
+            robotRoleBuilder_.mergeFrom(value);
+          }
+          bitField0_ |= 0x01000000;
+          return this;
+        }
+        /**
+         * <code>optional .naothmessages.RobotRole robotRole = 25;</code>
+         */
+        public Builder clearRobotRole() {
+          if (robotRoleBuilder_ == null) {
+            robotRole_ = null;
+            onChanged();
+          } else {
+            robotRoleBuilder_.clear();
+          }
+          bitField0_ = (bitField0_ & ~0x01000000);
+          return this;
+        }
+        /**
+         * <code>optional .naothmessages.RobotRole robotRole = 25;</code>
+         */
+        public de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole.Builder getRobotRoleBuilder() {
+          bitField0_ |= 0x01000000;
+          onChanged();
+          return getRobotRoleFieldBuilder().getBuilder();
+        }
+        /**
+         * <code>optional .naothmessages.RobotRole robotRole = 25;</code>
+         */
+        public de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRoleOrBuilder getRobotRoleOrBuilder() {
+          if (robotRoleBuilder_ != null) {
+            return robotRoleBuilder_.getMessageOrBuilder();
+          } else {
+            return robotRole_ == null ?
+                de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole.getDefaultInstance() : robotRole_;
+          }
+        }
+        /**
+         * <code>optional .naothmessages.RobotRole robotRole = 25;</code>
+         */
+        private com.google.protobuf.SingleFieldBuilderV3<
+            de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole, de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole.Builder, de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRoleOrBuilder> 
+            getRobotRoleFieldBuilder() {
+          if (robotRoleBuilder_ == null) {
+            robotRoleBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+                de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole, de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole.Builder, de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRoleOrBuilder>(
+                    getRobotRole(),
+                    getParentForChildren(),
+                    isClean());
+            robotRole_ = null;
+          }
+          return robotRoleBuilder_;
+        }
+
+        private long robotRoleUpdate_ ;
+        /**
+         * <code>optional uint64 robotRoleUpdate = 26;</code>
+         */
+        public boolean hasRobotRoleUpdate() {
+          return ((bitField0_ & 0x02000000) == 0x02000000);
+        }
+        /**
+         * <code>optional uint64 robotRoleUpdate = 26;</code>
+         */
+        public long getRobotRoleUpdate() {
+          return robotRoleUpdate_;
+        }
+        /**
+         * <code>optional uint64 robotRoleUpdate = 26;</code>
+         */
+        public Builder setRobotRoleUpdate(long value) {
+          bitField0_ |= 0x02000000;
+          robotRoleUpdate_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>optional uint64 robotRoleUpdate = 26;</code>
+         */
+        public Builder clearRobotRoleUpdate() {
+          bitField0_ = (bitField0_ & ~0x02000000);
+          robotRoleUpdate_ = 0L;
+          onChanged();
+          return this;
+        }
+        public final Builder setUnknownFields(
+            final com.google.protobuf.UnknownFieldSet unknownFields) {
+          return super.setUnknownFields(unknownFields);
+        }
+
+        public final Builder mergeUnknownFields(
+            final com.google.protobuf.UnknownFieldSet unknownFields) {
+          return super.mergeUnknownFields(unknownFields);
+        }
+
+
+        // @@protoc_insertion_point(builder_scope:naothmessages.TeamState.Player)
+      }
+
+      // @@protoc_insertion_point(class_scope:naothmessages.TeamState.Player)
+      private static final de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player DEFAULT_INSTANCE;
+      static {
+        DEFAULT_INSTANCE = new de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player();
+      }
+
+      public static de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player getDefaultInstance() {
+        return DEFAULT_INSTANCE;
+      }
+
+      @java.lang.Deprecated public static final com.google.protobuf.Parser<Player>
+          PARSER = new com.google.protobuf.AbstractParser<Player>() {
+        public Player parsePartialFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+            return new Player(input, extensionRegistry);
+        }
+      };
+
+      public static com.google.protobuf.Parser<Player> parser() {
+        return PARSER;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Parser<Player> getParserForType() {
+        return PARSER;
+      }
+
+      public de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player getDefaultInstanceForType() {
+        return DEFAULT_INSTANCE;
+      }
+
+    }
+
+    public static final int PLAYERS_FIELD_NUMBER = 1;
+    private java.util.List<de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player> players_;
+    /**
+     * <code>repeated .naothmessages.TeamState.Player players = 1;</code>
+     */
+    public java.util.List<de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player> getPlayersList() {
+      return players_;
+    }
+    /**
+     * <code>repeated .naothmessages.TeamState.Player players = 1;</code>
+     */
+    public java.util.List<? extends de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.PlayerOrBuilder> 
+        getPlayersOrBuilderList() {
+      return players_;
+    }
+    /**
+     * <code>repeated .naothmessages.TeamState.Player players = 1;</code>
+     */
+    public int getPlayersCount() {
+      return players_.size();
+    }
+    /**
+     * <code>repeated .naothmessages.TeamState.Player players = 1;</code>
+     */
+    public de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player getPlayers(int index) {
+      return players_.get(index);
+    }
+    /**
+     * <code>repeated .naothmessages.TeamState.Player players = 1;</code>
+     */
+    public de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.PlayerOrBuilder getPlayersOrBuilder(
+        int index) {
+      return players_.get(index);
+    }
+
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      for (int i = 0; i < getPlayersCount(); i++) {
+        if (!getPlayers(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      for (int i = 0; i < players_.size(); i++) {
+        output.writeMessage(1, players_.get(i));
+      }
+      unknownFields.writeTo(output);
+    }
+
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      for (int i = 0; i < players_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(1, players_.get(i));
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState)) {
+        return super.equals(obj);
+      }
+      de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState other = (de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState) obj;
+
+      boolean result = true;
+      result = result && getPlayersList()
+          .equals(other.getPlayersList());
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (getPlayersCount() > 0) {
+        hash = (37 * hash) + PLAYERS_FIELD_NUMBER;
+        hash = (53 * hash) + getPlayersList().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code naothmessages.TeamState}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:naothmessages.TeamState)
+        de.naoth.rc.core.messages.TeamMessageOuterClass.TeamStateOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return de.naoth.rc.core.messages.TeamMessageOuterClass.internal_static_naothmessages_TeamState_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return de.naoth.rc.core.messages.TeamMessageOuterClass.internal_static_naothmessages_TeamState_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.class, de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Builder.class);
+      }
+
+      // Construct using de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+          getPlayersFieldBuilder();
+        }
+      }
+      public Builder clear() {
+        super.clear();
+        if (playersBuilder_ == null) {
+          players_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+        } else {
+          playersBuilder_.clear();
+        }
+        return this;
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return de.naoth.rc.core.messages.TeamMessageOuterClass.internal_static_naothmessages_TeamState_descriptor;
+      }
+
+      public de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState getDefaultInstanceForType() {
+        return de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.getDefaultInstance();
+      }
+
+      public de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState build() {
+        de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState buildPartial() {
+        de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState result = new de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState(this);
+        int from_bitField0_ = bitField0_;
+        if (playersBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) == 0x00000001)) {
+            players_ = java.util.Collections.unmodifiableList(players_);
+            bitField0_ = (bitField0_ & ~0x00000001);
+          }
+          result.players_ = players_;
+        } else {
+          result.players_ = playersBuilder_.build();
+        }
+        onBuilt();
+        return result;
+      }
+
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState) {
+          return mergeFrom((de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState other) {
+        if (other == de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.getDefaultInstance()) return this;
+        if (playersBuilder_ == null) {
+          if (!other.players_.isEmpty()) {
+            if (players_.isEmpty()) {
+              players_ = other.players_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+            } else {
+              ensurePlayersIsMutable();
+              players_.addAll(other.players_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.players_.isEmpty()) {
+            if (playersBuilder_.isEmpty()) {
+              playersBuilder_.dispose();
+              playersBuilder_ = null;
+              players_ = other.players_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+              playersBuilder_ = 
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                   getPlayersFieldBuilder() : null;
+            } else {
+              playersBuilder_.addAllMessages(other.players_);
+            }
+          }
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        for (int i = 0; i < getPlayersCount(); i++) {
+          if (!getPlayers(i).isInitialized()) {
+            return false;
+          }
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      private java.util.List<de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player> players_ =
+        java.util.Collections.emptyList();
+      private void ensurePlayersIsMutable() {
+        if (!((bitField0_ & 0x00000001) == 0x00000001)) {
+          players_ = new java.util.ArrayList<de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player>(players_);
+          bitField0_ |= 0x00000001;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player, de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player.Builder, de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.PlayerOrBuilder> playersBuilder_;
+
+      /**
+       * <code>repeated .naothmessages.TeamState.Player players = 1;</code>
+       */
+      public java.util.List<de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player> getPlayersList() {
+        if (playersBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(players_);
+        } else {
+          return playersBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <code>repeated .naothmessages.TeamState.Player players = 1;</code>
+       */
+      public int getPlayersCount() {
+        if (playersBuilder_ == null) {
+          return players_.size();
+        } else {
+          return playersBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .naothmessages.TeamState.Player players = 1;</code>
+       */
+      public de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player getPlayers(int index) {
+        if (playersBuilder_ == null) {
+          return players_.get(index);
+        } else {
+          return playersBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .naothmessages.TeamState.Player players = 1;</code>
+       */
+      public Builder setPlayers(
+          int index, de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player value) {
+        if (playersBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensurePlayersIsMutable();
+          players_.set(index, value);
+          onChanged();
+        } else {
+          playersBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .naothmessages.TeamState.Player players = 1;</code>
+       */
+      public Builder setPlayers(
+          int index, de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player.Builder builderForValue) {
+        if (playersBuilder_ == null) {
+          ensurePlayersIsMutable();
+          players_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          playersBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .naothmessages.TeamState.Player players = 1;</code>
+       */
+      public Builder addPlayers(de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player value) {
+        if (playersBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensurePlayersIsMutable();
+          players_.add(value);
+          onChanged();
+        } else {
+          playersBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .naothmessages.TeamState.Player players = 1;</code>
+       */
+      public Builder addPlayers(
+          int index, de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player value) {
+        if (playersBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensurePlayersIsMutable();
+          players_.add(index, value);
+          onChanged();
+        } else {
+          playersBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .naothmessages.TeamState.Player players = 1;</code>
+       */
+      public Builder addPlayers(
+          de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player.Builder builderForValue) {
+        if (playersBuilder_ == null) {
+          ensurePlayersIsMutable();
+          players_.add(builderForValue.build());
+          onChanged();
+        } else {
+          playersBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .naothmessages.TeamState.Player players = 1;</code>
+       */
+      public Builder addPlayers(
+          int index, de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player.Builder builderForValue) {
+        if (playersBuilder_ == null) {
+          ensurePlayersIsMutable();
+          players_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          playersBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .naothmessages.TeamState.Player players = 1;</code>
+       */
+      public Builder addAllPlayers(
+          java.lang.Iterable<? extends de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player> values) {
+        if (playersBuilder_ == null) {
+          ensurePlayersIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, players_);
+          onChanged();
+        } else {
+          playersBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .naothmessages.TeamState.Player players = 1;</code>
+       */
+      public Builder clearPlayers() {
+        if (playersBuilder_ == null) {
+          players_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+          onChanged();
+        } else {
+          playersBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .naothmessages.TeamState.Player players = 1;</code>
+       */
+      public Builder removePlayers(int index) {
+        if (playersBuilder_ == null) {
+          ensurePlayersIsMutable();
+          players_.remove(index);
+          onChanged();
+        } else {
+          playersBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .naothmessages.TeamState.Player players = 1;</code>
+       */
+      public de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player.Builder getPlayersBuilder(
+          int index) {
+        return getPlayersFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .naothmessages.TeamState.Player players = 1;</code>
+       */
+      public de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.PlayerOrBuilder getPlayersOrBuilder(
+          int index) {
+        if (playersBuilder_ == null) {
+          return players_.get(index);  } else {
+          return playersBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .naothmessages.TeamState.Player players = 1;</code>
+       */
+      public java.util.List<? extends de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.PlayerOrBuilder> 
+           getPlayersOrBuilderList() {
+        if (playersBuilder_ != null) {
+          return playersBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(players_);
+        }
+      }
+      /**
+       * <code>repeated .naothmessages.TeamState.Player players = 1;</code>
+       */
+      public de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player.Builder addPlayersBuilder() {
+        return getPlayersFieldBuilder().addBuilder(
+            de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .naothmessages.TeamState.Player players = 1;</code>
+       */
+      public de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player.Builder addPlayersBuilder(
+          int index) {
+        return getPlayersFieldBuilder().addBuilder(
+            index, de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .naothmessages.TeamState.Player players = 1;</code>
+       */
+      public java.util.List<de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player.Builder> 
+           getPlayersBuilderList() {
+        return getPlayersFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player, de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player.Builder, de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.PlayerOrBuilder> 
+          getPlayersFieldBuilder() {
+        if (playersBuilder_ == null) {
+          playersBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+              de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player, de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.Player.Builder, de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState.PlayerOrBuilder>(
+                  players_,
+                  ((bitField0_ & 0x00000001) == 0x00000001),
+                  getParentForChildren(),
+                  isClean());
+          players_ = null;
+        }
+        return playersBuilder_;
+      }
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:naothmessages.TeamState)
+    }
+
+    // @@protoc_insertion_point(class_scope:naothmessages.TeamState)
+    private static final de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState();
+    }
+
+    public static de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    @java.lang.Deprecated public static final com.google.protobuf.Parser<TeamState>
+        PARSER = new com.google.protobuf.AbstractParser<TeamState>() {
+      public TeamState parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+          return new TeamState(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<TeamState> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<TeamState> getParserForType() {
+      return PARSER;
+    }
+
+    public de.naoth.rc.core.messages.TeamMessageOuterClass.TeamState getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_naothmessages_RobotRole_descriptor;
   private static final 
@@ -9646,6 +13873,16 @@ public final class TeamMessageOuterClass {
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_naothmessages_TeamMessage_Data_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_naothmessages_TeamState_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_naothmessages_TeamState_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_naothmessages_TeamState_Player_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_naothmessages_TeamState_Player_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -9697,24 +13934,45 @@ public final class TeamMessageOuterClass {
       " \001(\010:\005false\022.\n\004user\030\010 \001(\0132 .naothmessage",
       "s.BUUserTeamMessage\022+\n\tframeInfo\030\t \001(\0132\030" +
       ".naothmessages.FrameInfo\022\025\n\nteamNumber\030\014" +
-      " \001(\r:\0010*\262\001\n\tTeamColor\022\014\n\010blueTeam\020\000\022\013\n\007r" +
-      "edTeam\020\001\022\016\n\nyellowTeam\020\002\022\r\n\tblackTeam\020\003\022" +
-      "\r\n\twhiteTeam\020\004\022\r\n\tgreenTeam\020\005\022\016\n\norangeT" +
-      "eam\020\006\022\016\n\npurpleTeam\020\007\022\r\n\tbrownTeam\020\010\022\014\n\010" +
-      "grayTeam\020\t\022\020\n\013invalidTeam\020\377\001*d\n\nRobotSta" +
-      "te\022\013\n\007initial\020\000\022\t\n\005ready\020\001\022\007\n\003set\020\002\022\013\n\007p" +
-      "laying\020\003\022\014\n\010finished\020\004\022\r\n\tpenalized\020\005\022\013\n" +
-      "\007unstiff\020\006*\230\002\n\017RobotRoleStatic\022\026\n\022role_d",
-      "efender_left\020\000\022\030\n\024role_defender_center\020\001" +
-      "\022\027\n\023role_defender_right\020\002\022\030\n\024role_midfie" +
-      "lder_left\020\003\022\032\n\026role_midfielder_center\020\004\022" +
-      "\031\n\025role_midfielder_right\020\005\022\025\n\021role_forwa" +
-      "rd_left\020\006\022\027\n\023role_forward_center\020\007\022\026\n\022ro" +
-      "le_forward_right\020\010\022\017\n\013role_goalie\020\t\022\020\n\014r" +
-      "ole_unknown\020\n*b\n\020RobotRoleDynamic\022\r\n\trol" +
-      "e_none\020\000\022\022\n\016role_supporter\020\001\022\031\n\025role_goa" +
-      "lie_supporter\020\002\022\020\n\014role_striker\020\003B\033\n\031de." +
-      "naoth.rc.core.messages"
+      " \001(\r:\0010\"\320\006\n\tTeamState\0220\n\007players\030\001 \003(\0132\037" +
+      ".naothmessages.TeamState.Player\032\220\006\n\006Play" +
+      "er\022\021\n\006number\030\001 \001(\r:\0010\0222\n\020messageFrameInf" +
+      "o\030\002 \001(\0132\030.naothmessages.FrameInfo\022\025\n\rmes" +
+      "sageParsed\030\003 \001(\004\022\030\n\020messageTimestamp\030\004 \001" +
+      "(\004\022&\n\nntpRequest\030\005 \003(\0132\022.naothmessages.N" +
+      "tp\022\030\n\020ntpRequestUpdate\030\006 \001(\004\0226\n\nrobotSta" +
+      "te\030\007 \001(\0162\031.naothmessages.RobotState:\007ini",
+      "tial\022\030\n\020robotStateUpdate\030\010 \001(\004\022\025\n\006fallen" +
+      "\030\t \001(\010:\005false\022\024\n\014fallenUpdate\030\n \001(\004\022\023\n\013r" +
+      "eadyToWalk\030\013 \001(\010\022\031\n\021readyToWalkUpdate\030\014 " +
+      "\001(\004\022#\n\004pose\030\r \001(\0132\025.naothmessages.Pose2D" +
+      "\022\022\n\nposeUpdate\030\016 \001(\004\022\023\n\007ballAge\030\017 \001(\005:\002-" +
+      "1\022\025\n\rballAgeUpdate\030\020 \001(\004\0222\n\014ballPosition" +
+      "\030\021 \001(\0132\034.naothmessages.DoubleVector2\022\032\n\022" +
+      "ballPositionUpdate\030\022 \001(\004\022\022\n\ntimeToBall\030\023" +
+      " \001(\r\022\030\n\020timeToBallUpdate\030\024 \001(\004\022\037\n\020wantsT" +
+      "oBeStriker\030\025 \001(\010:\005false\022\036\n\026wantsToBeStri",
+      "kerUpdate\030\026 \001(\004\022\031\n\nwasStriker\030\027 \001(\010:\005fal" +
+      "se\022\030\n\020wasStrikerUpdate\030\030 \001(\004\022+\n\trobotRol" +
+      "e\030\031 \001(\0132\030.naothmessages.RobotRole\022\027\n\017rob" +
+      "otRoleUpdate\030\032 \001(\004*\262\001\n\tTeamColor\022\014\n\010blue" +
+      "Team\020\000\022\013\n\007redTeam\020\001\022\016\n\nyellowTeam\020\002\022\r\n\tb" +
+      "lackTeam\020\003\022\r\n\twhiteTeam\020\004\022\r\n\tgreenTeam\020\005" +
+      "\022\016\n\norangeTeam\020\006\022\016\n\npurpleTeam\020\007\022\r\n\tbrow" +
+      "nTeam\020\010\022\014\n\010grayTeam\020\t\022\020\n\013invalidTeam\020\377\001*" +
+      "d\n\nRobotState\022\013\n\007initial\020\000\022\t\n\005ready\020\001\022\007\n" +
+      "\003set\020\002\022\013\n\007playing\020\003\022\014\n\010finished\020\004\022\r\n\tpen",
+      "alized\020\005\022\013\n\007unstiff\020\006*\230\002\n\017RobotRoleStati" +
+      "c\022\026\n\022role_defender_left\020\000\022\030\n\024role_defend" +
+      "er_center\020\001\022\027\n\023role_defender_right\020\002\022\030\n\024" +
+      "role_midfielder_left\020\003\022\032\n\026role_midfielde" +
+      "r_center\020\004\022\031\n\025role_midfielder_right\020\005\022\025\n" +
+      "\021role_forward_left\020\006\022\027\n\023role_forward_cen" +
+      "ter\020\007\022\026\n\022role_forward_right\020\010\022\017\n\013role_go" +
+      "alie\020\t\022\020\n\014role_unknown\020\n*b\n\020RobotRoleDyn" +
+      "amic\022\r\n\trole_none\020\000\022\022\n\016role_supporter\020\001\022" +
+      "\031\n\025role_goalie_supporter\020\002\022\020\n\014role_strik",
+      "er\020\003B\033\n\031de.naoth.rc.core.messages"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -9772,6 +14030,18 @@ public final class TeamMessageOuterClass {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_naothmessages_TeamMessage_Data_descriptor,
         new java.lang.String[] { "PlayerNum", "TeamColor", "Pose", "BallAge", "BallPosition", "BallVelocity", "Fallen", "User", "FrameInfo", "TeamNumber", });
+    internal_static_naothmessages_TeamState_descriptor =
+      getDescriptor().getMessageTypes().get(6);
+    internal_static_naothmessages_TeamState_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_naothmessages_TeamState_descriptor,
+        new java.lang.String[] { "Players", });
+    internal_static_naothmessages_TeamState_Player_descriptor =
+      internal_static_naothmessages_TeamState_descriptor.getNestedTypes().get(0);
+    internal_static_naothmessages_TeamState_Player_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_naothmessages_TeamState_Player_descriptor,
+        new java.lang.String[] { "Number", "MessageFrameInfo", "MessageParsed", "MessageTimestamp", "NtpRequest", "NtpRequestUpdate", "RobotState", "RobotStateUpdate", "Fallen", "FallenUpdate", "ReadyToWalk", "ReadyToWalkUpdate", "Pose", "PoseUpdate", "BallAge", "BallAgeUpdate", "BallPosition", "BallPositionUpdate", "TimeToBall", "TimeToBallUpdate", "WantsToBeStriker", "WantsToBeStrikerUpdate", "WasStriker", "WasStrikerUpdate", "RobotRole", "RobotRoleUpdate", });
     de.naoth.rc.core.messages.CommonTypes.getDescriptor();
     de.naoth.rc.core.messages.FrameworkRepresentations.getDescriptor();
   }
