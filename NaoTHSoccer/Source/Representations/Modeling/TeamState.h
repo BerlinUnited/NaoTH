@@ -32,7 +32,7 @@ public:
 
         private:
             T data;
-            NaoTimestamp lastUpdate = naoth::NaoTime::getSystemTimeInMilliSeconds();
+            NaoTimestamp lastUpdate = 0; // 0 means never set/updated
     };
 
     /** Stores timestamped (message) data of a player. */
@@ -84,14 +84,34 @@ public:
          */
         void print(std::ostream &stream) const
         {
-            // TODO: add all other infos
-            stream << "player: " << number << ",\n";
-            stream << " - " << "Pos (x; y; rotation) = "
-                   << pose().translation.x << "; "
-                   << pose().translation.y << "; "
-                   << pose().rotation << " @ "
-                   << pose.time() <<"\n"
-            ;
+            stream << "------------------------" << std::endl;
+            stream << "player: " << number << "\n";
+            stream << " - time\n"
+                    << "\t" << "send: "          << messageTimestamp << "\n"
+                    << "\t" << "received: "      << messageFrameInfo.getFrameNumber() << " @ " << messageFrameInfo.getTime() << "\n"
+                    << "\t" << "parsed: "        << messageParsed << "\n";
+            stream << "- robot\n"
+                    << "\t" << "state: "         << PlayerInfo::toString(state()) << " @ " << state.time() << "\n" // 
+                    << "\t" << "fallen: "        << (fallen() ? "yes" : "no") << " @ " << fallen.time() << "\n"
+                    << "\t" << "readyToWalk: "   << (readyToWalk() ? "yes" : "no") << " @ " << readyToWalk.time() << "\n"
+                    << "\t" << "pos: "           << pose().translation.x << "; " << pose().translation.y << "; " << pose().rotation << " @ " << pose.time() << "\n";
+            stream << " - ball\n"
+                    << "\t" << "TimeSinceBallwasSeen: " << ballAge() << " @ " << ballAge.time() << "\n"
+                    << "\t" << "pos: "           << ballPosition().x << "; " << ballPosition().y << " @ " << ballPosition.time() << "\n"
+                    << "\t" << "TimeToBall: "    << timeToBall() << " @ " << timeToBall.time() << "\n";
+            stream << " - team\n"
+                    << "\t" << "wantsToBeStriker: " << (wantsToBeStriker() ? "yes" : "no") << " @ " << wantsToBeStriker.time() << "\n"
+                    << "\t" << "wasStriker: "    << (wasStriker() ? "yes" : "no") << " @ " << wasStriker.time() << "\n"
+                    << "\t" << "role: "          << Roles::getName(robotRole().role) << " / " << Roles::getName(robotRole().dynamic) << " @ " << robotRole.time() << "\n";
+            if (!ntpRequests().empty()) {
+                stream << "\t"
+                        << "ntp request for: \n";
+                for (auto const& request : ntpRequests()) {
+                    stream << "\t\t" << request.playerNumber << ", "
+                            << request.sent << " -> " << request.received
+                            << std::endl;
+                }
+            }
         }
     };
 
