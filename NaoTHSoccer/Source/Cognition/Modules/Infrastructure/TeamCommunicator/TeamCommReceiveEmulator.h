@@ -11,8 +11,7 @@
 #include <ModuleFramework/Module.h>
 #include <Representations/Infrastructure/FrameInfo.h>
 
-#include "Representations/Modeling/TeamMessage.h"
-#include <Representations/Infrastructure/TeamMessageData.h>
+#include "Representations/Modeling/TeamState.h"
 
 #include "Tools/Math/Common.h"
 #include "Tools/Math/Probabilistics.h"
@@ -29,7 +28,7 @@ BEGIN_DECLARE_MODULE(TeamCommReceiveEmulator)
   PROVIDE(DebugRequest)
   
   REQUIRE(FrameInfo)
-  PROVIDE(TeamMessage)
+  PROVIDE(TeamState)
 END_DECLARE_MODULE(TeamCommReceiveEmulator)
 
 class TeamCommReceiveEmulator: public TeamCommReceiveEmulatorBase
