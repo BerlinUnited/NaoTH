@@ -23,7 +23,11 @@ public:
     {
         public:
             const T& operator()() const { return data; }
-            TimestampedData& operator=(const T& data) { this->data = data; this->lastUpdate = naoth::NaoTime::getSystemTimeInMilliSeconds(); }
+            TimestampedData& operator=(const T& data) {
+                this->data = data;
+                this->lastUpdate = naoth::NaoTime::getSystemTimeInMilliSeconds();
+                return *this;
+            }
             const NaoTimestamp& time() const { return lastUpdate; }
 
         private:
