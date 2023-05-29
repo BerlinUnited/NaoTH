@@ -50,8 +50,10 @@ void TeamCommReceiver::execute()
       getTeamMessageData().teamNumber == getPlayerInfo().teamNumber) 
   {
     // copying our own (old) message to the inbox
-    getTeamMessage().data[getPlayerInfo().playerNumber] = getTeamMessageData();
-    updateTeamState(getTeamMessageData());
+    auto& myself = getTeamMessage().data[getPlayerInfo().playerNumber];
+    myself = getTeamMessageData();
+    myself.timestampParsed = naoth::NaoTime::getSystemTimeInMilliSeconds();
+    updateTeamState(myself);
   }
 
   // marking the begin of the outgoing message

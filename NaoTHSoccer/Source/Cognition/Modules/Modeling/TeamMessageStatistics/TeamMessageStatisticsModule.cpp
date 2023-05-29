@@ -24,12 +24,14 @@ void TeamMessageStatisticsModule::execute() {
     //Check, from which robots we have received a message, and update the corresponding statistics
     for (const auto& it: getTeamState().players) {
         const auto& playerNumber = it.first;
+        TeamMessageStatistics::Player& player = getTeamMessageStatistics().getPlayer(playerNumber);
         
         // skip my own messages
         if(playerNumber == getPlayerInfo().playerNumber) {
+            player.indicator_messageReceived_upToNow = 0.0;
+            player.lastStatisticsUpdate = it.second.messageFrameInfo;
             continue;
         }
-        TeamMessageStatistics::Player& player = getTeamMessageStatistics().getPlayer(playerNumber);
 
         double currentMessageInterval = getFrameInfo().getTimeSince(player.lastStatisticsUpdate);
 
