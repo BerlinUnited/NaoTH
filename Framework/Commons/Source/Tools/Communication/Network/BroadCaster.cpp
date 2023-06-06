@@ -8,13 +8,10 @@
 
 #include <Tools/ThreadUtil.h>
 
-#ifndef WIN32
-#include <sys/socket.h>
-#else
-#include <winsock.h>
-#if !defined(socklen_t)
-typedef int socklen_t;
-#endif
+#ifdef WIN32
+  #include <winsock.h>
+#else // Linux/MACOS
+  #include <sys/socket.h>
 #endif
 
 #include "Tools/Communication/NetAddr.h"
@@ -43,13 +40,29 @@ BroadCaster::BroadCaster(const std::string& interfaceName, unsigned int port)
   }
 
   g_socket_set_blocking(socket, true);
-  int broadcastFlag = 1;
   
-  #ifndef WIN32
-    setsockopt(g_socket_get_fd(socket), SOL_SOCKET, SO_BROADCAST, (const char*)(&broadcastFlag), static_cast<socklen_t> (sizeof(int)));
-  #else
-    setsockopt(g_socket_get_fd(socket), SOL_SOCKET, SO_BROADCAST, (const char*)(&broadcastFlag), (sizeof(int)));
-  #endif
+  // NOTE:
+  // Set the broadcast option directly. GLib spoorts it starting version 2.36.
+  // Linux and Windows let you set a single-byte value from an int,
+  // but most other platforms don't.
+  // https://github.com/GNOME/glib/blob/main/gio/gsocket.c#L6340
+  // TODO: the following might not work on MACOS
+
+#ifdef WIN32
+  // https://learn.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-setsockopt
+  // https://learn.microsoft.com/en-us/windows/win32/winprog/windows-data-types
+  BOOL broadcastFlag = TRUE;
+  setsockopt(g_socket_get_fd(socket), SOL_SOCKET, SO_BROADCAST, (const char*)(&broadcastFlag), sizeof(broadcastFlag));
+#else // Linux/MACOS
+  // https://linux.die.net/man/3/setsockopt
+  int broadcastFlag = 1;
+  setsockopt(g_socket_get_fd(socket), SOL_SOCKET, SO_BROADCAST, (const char*)(&broadcastFlag), static_cast<socklen_t> (sizeof(int)));
+#endif
+
+  // NOTE: needs newer glib 2.36
+  //g_socket_set_broadcast(socket, true);
+  // or ...
+  //g_socket_set_option (...);
 
   queryBroadcastAddress();
 

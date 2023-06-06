@@ -7,7 +7,9 @@
 
 #include <cstdlib>
 
-#ifndef WIN32
+#ifdef WIN32
+#include <winsock.h>
+#else // Linux/MACOS
 #include <sys/socket.h>
 #endif
 
@@ -78,8 +80,18 @@ GError* SPLGameController::bindAndListen(unsigned int port)
   // Linux and Windows let you set a single-byte value from an int,
   // but most other platforms don't.
   // https://github.com/GNOME/glib/blob/main/gio/gsocket.c#L6340
-  char broadcast = 1;
-  setsockopt(g_socket_get_fd(socket), SOL_SOCKET, SO_BROADCAST, &broadcast, sizeof(broadcast));
+  // TODO: the following might not work on MACOS
+
+#ifdef WIN32
+  // https://learn.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-setsockopt
+  // https://learn.microsoft.com/en-us/windows/win32/winprog/windows-data-types
+  BOOL broadcastFlag = TRUE;
+  setsockopt(g_socket_get_fd(socket), SOL_SOCKET, SO_BROADCAST, (const char*)(&broadcastFlag), sizeof(broadcastFlag));
+#else // Linux/MACOS
+  // https://linux.die.net/man/3/setsockopt
+  int broadcastFlag = 1;
+  setsockopt(g_socket_get_fd(socket), SOL_SOCKET, SO_BROADCAST, (const char*)(&broadcastFlag), static_cast<socklen_t> (sizeof(int)));
+#endif
 
   // NOTE: needs newer glib 2.36
   //g_socket_set_broadcast(socket, true);
@@ -207,7 +219,7 @@ void SPLGameController::socketLoop()
   while(!exiting && socket != NULL)
   {
     GSocketAddress* senderAddress = NULL;
-    int size = g_socket_receive_from(socket, &senderAddress,
+    gssize size = g_socket_receive_from(socket, &senderAddress,
                                      (char*)(&dataIn),
                                      sizeof(RoboCupGameControlData),
                                      cancelable, NULL);
