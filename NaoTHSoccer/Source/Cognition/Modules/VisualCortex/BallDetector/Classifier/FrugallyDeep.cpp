@@ -15,7 +15,7 @@ void FrugallyDeep::predict(const BallCandidates::PatchYUVClassified &patch, doub
 {
     // create input data from patch (TODO: why not use a Y-patch directly and save the copy operation?)
     ASSERT(patch.size() == 16);
-    fdeep::tensor5 inputTensor = fdeep::tensor5(fdeep::shape5(1, 1, 16, 16, 1), 0);
+    fdeep::tensor inputTensor = fdeep::tensor(fdeep::tensor_shape(1, 1, 16, 16, 1), 0);
 
     for (size_t x = 0; x < patch.size(); x++)
     {
