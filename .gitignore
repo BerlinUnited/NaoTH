@@ -9,10 +9,11 @@ NaoSCP/tmp/
 XabslEditor/
 .gradle/
 
-#java project files
+#java project and compiled files
 build.xml
 build-impl.xml
 genfiles.properties
+*.class
 
 #python
 *.pyc
