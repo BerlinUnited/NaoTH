@@ -1,614 +1,369 @@
 {
   "architecture": {
-    "backend": "tensorflow",
-    "class_name": "Model",
+    "class_name": "Functional",
     "config": {
-      "input_layers": [
-        [
-          "input_1",
-          0,
-          0
-        ]
-      ],
+      "name": "fy1500",
+      "trainable": true,
       "layers": [
         {
           "class_name": "InputLayer",
           "config": {
-            "batch_input_shape": [
-              null,
-              16,
-              16,
-              1
-            ],
+            "batch_input_shape": [null, 16, 16, 1],
             "dtype": "float32",
-            "name": "input_1",
-            "sparse": false
+            "sparse": false,
+            "ragged": false,
+            "name": "input_1"
           },
-          "inbound_nodes": [],
-          "name": "input_1"
+          "name": "input_1",
+          "inbound_nodes": []
         },
         {
           "class_name": "Conv2D",
           "config": {
-            "activation": "linear",
-            "activity_regularizer": null,
-            "batch_input_shape": [
-              null,
-              16,
-              16,
-              1
-            ],
-            "bias_constraint": null,
-            "bias_initializer": {
-              "class_name": "Zeros",
-              "config": {}
-            },
-            "bias_regularizer": null,
-            "data_format": "channels_last",
-            "dilation_rate": [
-              1,
-              1
-            ],
-            "dtype": "float32",
-            "filters": 4,
-            "kernel_constraint": null,
-            "kernel_initializer": {
-              "class_name": "VarianceScaling",
-              "config": {
-                "distribution": "uniform",
-                "mode": "fan_avg",
-                "scale": 1.0,
-                "seed": null
-              }
-            },
-            "kernel_regularizer": null,
-            "kernel_size": [
-              3,
-              3
-            ],
             "name": "conv2d_1",
-            "padding": "same",
-            "strides": [
-              1,
-              1
-            ],
             "trainable": true,
-            "use_bias": true
-          },
-          "inbound_nodes": [
-            [
-              [
-                "input_1",
-                0,
-                0,
-                {}
-              ]
-            ]
-          ],
-          "name": "conv2d_1"
-        },
-        {
-          "class_name": "LeakyReLU",
-          "config": {
-            "alpha": 0.0,
-            "name": "leaky_re_lu_1",
-            "trainable": true
-          },
-          "inbound_nodes": [
-            [
-              [
-                "conv2d_1",
-                0,
-                0,
-                {}
-              ]
-            ]
-          ],
-          "name": "leaky_re_lu_1"
-        },
-        {
-          "class_name": "Conv2D",
-          "config": {
-            "activation": "linear",
-            "activity_regularizer": null,
-            "bias_constraint": null,
-            "bias_initializer": {
-              "class_name": "Zeros",
-              "config": {}
-            },
-            "bias_regularizer": null,
-            "data_format": "channels_last",
-            "dilation_rate": [
-              1,
-              1
-            ],
+            "dtype": "float32",
+            "batch_input_shape": [null, 16, 16, 1],
             "filters": 4,
-            "kernel_constraint": null,
+            "kernel_size": [3, 3],
+            "strides": [1, 1],
+            "padding": "same",
+            "data_format": "channels_last",
+            "dilation_rate": [1, 1],
+            "groups": 1,
+            "activation": "linear",
+            "use_bias": true,
             "kernel_initializer": {
               "class_name": "VarianceScaling",
               "config": {
-                "distribution": "uniform",
-                "mode": "fan_avg",
                 "scale": 1.0,
+                "mode": "fan_avg",
+                "distribution": "uniform",
                 "seed": null
               }
             },
+            "bias_initializer": { "class_name": "Zeros", "config": {} },
             "kernel_regularizer": null,
-            "kernel_size": [
-              3,
-              3
-            ],
+            "bias_regularizer": null,
+            "activity_regularizer": null,
+            "kernel_constraint": null,
+            "bias_constraint": null
+          },
+          "name": "conv2d_1",
+          "inbound_nodes": [[["input_1", 0, 0, {}]]]
+        },
+        {
+          "class_name": "LeakyReLU",
+          "config": {
+            "name": "leaky_re_lu_1",
+            "trainable": true,
+            "dtype": "float32",
+            "alpha": 0.0
+          },
+          "name": "leaky_re_lu_1",
+          "inbound_nodes": [[["conv2d_1", 0, 0, {}]]]
+        },
+        {
+          "class_name": "Conv2D",
+          "config": {
             "name": "conv2d_2",
-            "padding": "same",
-            "strides": [
-              1,
-              1
-            ],
             "trainable": true,
-            "use_bias": true
+            "dtype": "float32",
+            "filters": 4,
+            "kernel_size": [3, 3],
+            "strides": [1, 1],
+            "padding": "same",
+            "data_format": "channels_last",
+            "dilation_rate": [1, 1],
+            "groups": 1,
+            "activation": "linear",
+            "use_bias": true,
+            "kernel_initializer": {
+              "class_name": "VarianceScaling",
+              "config": {
+                "scale": 1.0,
+                "mode": "fan_avg",
+                "distribution": "uniform",
+                "seed": null
+              }
+            },
+            "bias_initializer": { "class_name": "Zeros", "config": {} },
+            "kernel_regularizer": null,
+            "bias_regularizer": null,
+            "activity_regularizer": null,
+            "kernel_constraint": null,
+            "bias_constraint": null
           },
-          "inbound_nodes": [
-            [
-              [
-                "leaky_re_lu_1",
-                0,
-                0,
-                {}
-              ]
-            ]
-          ],
-          "name": "conv2d_2"
+          "name": "conv2d_2",
+          "inbound_nodes": [[["leaky_re_lu_1", 0, 0, {}]]]
         },
         {
           "class_name": "LeakyReLU",
           "config": {
-            "alpha": 0.30000001192092896,
             "name": "leaky_re_lu_2",
-            "trainable": true
+            "trainable": true,
+            "dtype": "float32",
+            "alpha": 0.30000001192092896
           },
-          "inbound_nodes": [
-            [
-              [
-                "conv2d_2",
-                0,
-                0,
-                {}
-              ]
-            ]
-          ],
-          "name": "leaky_re_lu_2"
+          "name": "leaky_re_lu_2",
+          "inbound_nodes": [[["conv2d_2", 0, 0, {}]]]
         },
         {
           "class_name": "MaxPooling2D",
           "config": {
-            "data_format": "channels_last",
             "name": "max_pooling2d_1",
+            "trainable": true,
+            "dtype": "float32",
+            "pool_size": [2, 2],
             "padding": "valid",
-            "pool_size": [
-              2,
-              2
-            ],
-            "strides": [
-              2,
-              2
-            ],
-            "trainable": true
+            "strides": [2, 2],
+            "data_format": "channels_last"
           },
-          "inbound_nodes": [
-            [
-              [
-                "leaky_re_lu_2",
-                0,
-                0,
-                {}
-              ]
-            ]
-          ],
-          "name": "max_pooling2d_1"
+          "name": "max_pooling2d_1",
+          "inbound_nodes": [[["leaky_re_lu_2", 0, 0, {}]]]
         },
         {
           "class_name": "Conv2D",
           "config": {
-            "activation": "linear",
-            "activity_regularizer": null,
-            "bias_constraint": null,
-            "bias_initializer": {
-              "class_name": "Zeros",
-              "config": {}
-            },
-            "bias_regularizer": null,
-            "data_format": "channels_last",
-            "dilation_rate": [
-              1,
-              1
-            ],
+            "name": "conv2d_3",
+            "trainable": true,
+            "dtype": "float32",
             "filters": 8,
-            "kernel_constraint": null,
+            "kernel_size": [3, 3],
+            "strides": [1, 1],
+            "padding": "same",
+            "data_format": "channels_last",
+            "dilation_rate": [1, 1],
+            "groups": 1,
+            "activation": "linear",
+            "use_bias": true,
             "kernel_initializer": {
               "class_name": "VarianceScaling",
               "config": {
-                "distribution": "uniform",
-                "mode": "fan_avg",
                 "scale": 1.0,
+                "mode": "fan_avg",
+                "distribution": "uniform",
                 "seed": null
               }
             },
+            "bias_initializer": { "class_name": "Zeros", "config": {} },
             "kernel_regularizer": null,
-            "kernel_size": [
-              3,
-              3
-            ],
-            "name": "conv2d_3",
-            "padding": "same",
-            "strides": [
-              1,
-              1
-            ],
-            "trainable": true,
-            "use_bias": true
+            "bias_regularizer": null,
+            "activity_regularizer": null,
+            "kernel_constraint": null,
+            "bias_constraint": null
           },
-          "inbound_nodes": [
-            [
-              [
-                "max_pooling2d_1",
-                0,
-                0,
-                {}
-              ]
-            ]
-          ],
-          "name": "conv2d_3"
+          "name": "conv2d_3",
+          "inbound_nodes": [[["max_pooling2d_1", 0, 0, {}]]]
         },
         {
           "class_name": "LeakyReLU",
           "config": {
-            "alpha": 0.30000001192092896,
             "name": "leaky_re_lu_3",
-            "trainable": true
+            "trainable": true,
+            "dtype": "float32",
+            "alpha": 0.30000001192092896
           },
-          "inbound_nodes": [
-            [
-              [
-                "conv2d_3",
-                0,
-                0,
-                {}
-              ]
-            ]
-          ],
-          "name": "leaky_re_lu_3"
+          "name": "leaky_re_lu_3",
+          "inbound_nodes": [[["conv2d_3", 0, 0, {}]]]
         },
         {
           "class_name": "MaxPooling2D",
           "config": {
-            "data_format": "channels_last",
             "name": "max_pooling2d_2",
+            "trainable": true,
+            "dtype": "float32",
+            "pool_size": [2, 2],
             "padding": "valid",
-            "pool_size": [
-              2,
-              2
-            ],
-            "strides": [
-              2,
-              2
-            ],
-            "trainable": true
+            "strides": [2, 2],
+            "data_format": "channels_last"
           },
-          "inbound_nodes": [
-            [
-              [
-                "leaky_re_lu_3",
-                0,
-                0,
-                {}
-              ]
-            ]
-          ],
-          "name": "max_pooling2d_2"
+          "name": "max_pooling2d_2",
+          "inbound_nodes": [[["leaky_re_lu_3", 0, 0, {}]]]
         },
         {
           "class_name": "Conv2D",
           "config": {
-            "activation": "linear",
-            "activity_regularizer": null,
-            "bias_constraint": null,
-            "bias_initializer": {
-              "class_name": "Zeros",
-              "config": {}
-            },
-            "bias_regularizer": null,
-            "data_format": "channels_last",
-            "dilation_rate": [
-              1,
-              1
-            ],
+            "name": "conv2d_4",
+            "trainable": true,
+            "dtype": "float32",
             "filters": 8,
-            "kernel_constraint": null,
+            "kernel_size": [3, 3],
+            "strides": [1, 1],
+            "padding": "same",
+            "data_format": "channels_last",
+            "dilation_rate": [1, 1],
+            "groups": 1,
+            "activation": "linear",
+            "use_bias": true,
             "kernel_initializer": {
               "class_name": "VarianceScaling",
               "config": {
-                "distribution": "uniform",
-                "mode": "fan_avg",
                 "scale": 1.0,
+                "mode": "fan_avg",
+                "distribution": "uniform",
                 "seed": null
               }
             },
+            "bias_initializer": { "class_name": "Zeros", "config": {} },
             "kernel_regularizer": null,
-            "kernel_size": [
-              3,
-              3
-            ],
-            "name": "conv2d_4",
-            "padding": "same",
-            "strides": [
-              1,
-              1
-            ],
-            "trainable": true,
-            "use_bias": true
+            "bias_regularizer": null,
+            "activity_regularizer": null,
+            "kernel_constraint": null,
+            "bias_constraint": null
           },
-          "inbound_nodes": [
-            [
-              [
-                "max_pooling2d_2",
-                0,
-                0,
-                {}
-              ]
-            ]
-          ],
-          "name": "conv2d_4"
+          "name": "conv2d_4",
+          "inbound_nodes": [[["max_pooling2d_2", 0, 0, {}]]]
         },
         {
           "class_name": "LeakyReLU",
           "config": {
-            "alpha": 0.0,
             "name": "leaky_re_lu_4",
-            "trainable": true
+            "trainable": true,
+            "dtype": "float32",
+            "alpha": 0.0
           },
-          "inbound_nodes": [
-            [
-              [
-                "conv2d_4",
-                0,
-                0,
-                {}
-              ]
-            ]
-          ],
-          "name": "leaky_re_lu_4"
+          "name": "leaky_re_lu_4",
+          "inbound_nodes": [[["conv2d_4", 0, 0, {}]]]
         },
         {
           "class_name": "Conv2D",
           "config": {
-            "activation": "linear",
-            "activity_regularizer": null,
-            "bias_constraint": null,
-            "bias_initializer": {
-              "class_name": "Zeros",
-              "config": {}
-            },
-            "bias_regularizer": null,
-            "data_format": "channels_last",
-            "dilation_rate": [
-              1,
-              1
-            ],
+            "name": "conv2d_5",
+            "trainable": true,
+            "dtype": "float32",
             "filters": 8,
-            "kernel_constraint": null,
+            "kernel_size": [1, 1],
+            "strides": [1, 1],
+            "padding": "same",
+            "data_format": "channels_last",
+            "dilation_rate": [1, 1],
+            "groups": 1,
+            "activation": "linear",
+            "use_bias": true,
             "kernel_initializer": {
               "class_name": "VarianceScaling",
               "config": {
-                "distribution": "uniform",
-                "mode": "fan_avg",
                 "scale": 1.0,
+                "mode": "fan_avg",
+                "distribution": "uniform",
                 "seed": null
               }
             },
+            "bias_initializer": { "class_name": "Zeros", "config": {} },
             "kernel_regularizer": null,
-            "kernel_size": [
-              1,
-              1
-            ],
-            "name": "conv2d_5",
-            "padding": "same",
-            "strides": [
-              1,
-              1
-            ],
-            "trainable": true,
-            "use_bias": true
+            "bias_regularizer": null,
+            "activity_regularizer": null,
+            "kernel_constraint": null,
+            "bias_constraint": null
           },
-          "inbound_nodes": [
-            [
-              [
-                "leaky_re_lu_4",
-                0,
-                0,
-                {}
-              ]
-            ]
-          ],
-          "name": "conv2d_5"
+          "name": "conv2d_5",
+          "inbound_nodes": [[["leaky_re_lu_4", 0, 0, {}]]]
         },
         {
           "class_name": "Flatten",
           "config": {
-            "data_format": "channels_last",
             "name": "flatten_1",
-            "trainable": true
+            "trainable": true,
+            "dtype": "float32",
+            "data_format": "channels_last"
           },
-          "inbound_nodes": [
-            [
-              [
-                "conv2d_5",
-                0,
-                0,
-                {}
-              ]
-            ]
-          ],
-          "name": "flatten_1"
+          "name": "flatten_1",
+          "inbound_nodes": [[["conv2d_5", 0, 0, {}]]]
         },
         {
           "class_name": "Dense",
           "config": {
+            "name": "dense_1",
+            "trainable": true,
+            "dtype": "float32",
+            "units": 3,
             "activation": "relu",
-            "activity_regularizer": null,
-            "bias_constraint": null,
-            "bias_initializer": {
-              "class_name": "Zeros",
-              "config": {}
-            },
-            "bias_regularizer": null,
-            "kernel_constraint": null,
+            "use_bias": true,
             "kernel_initializer": {
               "class_name": "VarianceScaling",
               "config": {
-                "distribution": "uniform",
-                "mode": "fan_avg",
                 "scale": 1.0,
+                "mode": "fan_avg",
+                "distribution": "uniform",
                 "seed": null
               }
             },
+            "bias_initializer": { "class_name": "Zeros", "config": {} },
             "kernel_regularizer": null,
-            "name": "dense_1",
-            "trainable": true,
-            "units": 3,
-            "use_bias": true
+            "bias_regularizer": null,
+            "activity_regularizer": null,
+            "kernel_constraint": null,
+            "bias_constraint": null
           },
-          "inbound_nodes": [
-            [
-              [
-                "flatten_1",
-                0,
-                0,
-                {}
-              ]
-            ]
-          ],
-          "name": "dense_1"
+          "name": "dense_1",
+          "inbound_nodes": [[["flatten_1", 0, 0, {}]]]
         }
       ],
-      "name": "sequential_1",
-      "output_layers": [
-        [
-          "dense_1",
-          0,
-          0
-        ]
-      ]
+      "input_layers": [["input_1", 0, 0]],
+      "output_layers": [["dense_1", 0, 0]]
     },
-    "keras_version": "2.2.4"
+    "keras_version": "2.12.0",
+    "backend": "tensorflow"
   },
-  "average_pooling_2d_same_offset": false,
-  "average_pooling_2d_valid_offset": false,
-  "conv2d_same_offset_depth_1": false,
-  "conv2d_same_offset_depth_2": false,
-  "conv2d_valid_offset_depth_1": false,
-  "conv2d_valid_offset_depth_2": false,
-  "hash": "404a9b427810e63d0bf803e9de98cfbe1ced6f16371db5403846497ebd3454bc",
   "image_data_format": "channels_last",
-  "input_shapes": [
-    [
-      1,
-      1,
-      16,
-      16,
-      1
-    ]
-  ],
-  "max_pooling_2d_same_offset": false,
-  "max_pooling_2d_valid_offset": false,
-  "separable_conv2d_same_offset_depth_1": false,
-  "separable_conv2d_same_offset_depth_2": false,
-  "separable_conv2d_valid_offset_depth_1": false,
-  "separable_conv2d_valid_offset_depth_2": false,
+  "input_shapes": [[16, 16, 1]],
+  "output_shapes": [[3]],
   "tests": [
     {
       "inputs": [
         {
-          "shape": [
-            1,
-            1,
-            16,
-            16,
-            1
-          ],
+          "shape": [16, 16, 1],
           "values": [
-            "4O0yv9aqEL3cWlA/sgzevw2uZr856RU/ub0zPu7hET5zJXw+2kMLPq7K2D95GxVAsBLpv4Vr8j5rwQJAEbKbv6H+vr8/5Wy/TuaBO53m4z59d1K/L9Brv2Yi2j1i41G+SmERP3xlfD8ImX4/Uw7rvuko9L7phqO/LklwPkRjET5Et+o+N8jkPiGjKD4UXYU+4mi1PveKXr73/hu/lUJqvtGjkz8vcmS+0dJWvkPJRr83Tii/5vSRvzQTsD71uio/j7a7P4yHj78+C5m/tE31v3Rwk79fp5M+T7THv4lCzT07E9g+pJgoP3P7VL7X24W+Ygzdv6LM3L/rOKs+4xaFPy/VqT/42x+/hYhzv7NOZD8BFg3AfLxgP+XUor7jGqW9M/z1v5MX2b5iuFi/0zf8PhQDET9bBGI/AYCNPxgYYD9u0oW/aNqfv9H2zz+3qSg+O3gvvb/VwD8PtSK/yOwOvYpJFb4SGM0/ObZ7Pl0tET+2cmi+KuSePx+DFT/YNvo/ixu8vxBcBz4pGsc9/SgTvzAr7r8XvKo/FgUSv9OBqr+1QY6/FFIdQB/AWj9OAui+AuepvzSCKb7bSwTAMTNavvUGQD+uumm9gQ+SP1/Fxz/j3Kq+CPyRvTf1qT/7+De/pB4nvt1h578BGFy+9Lyrv0zimT/hrYu/h8qAPm5csz9Fkza8BpavP7dFgL9EF5C+IO+Vv1xGTr9Eln+8CvM2P0kUnr8tWmm/WTfGP62oPL9/qxq+wFJUv09SgD/mKmS/d4rAPj+w0L/sbSE/f20XPzL6Cj/DGyU/a4Ccv266JL8Q13W/f1EkPx51CkAMFAQ/ERAvP4XZsT9fZQo+7XGfvwEilT7FAPi9dXzMP/wtgL6lwuK/osp/PnGbnD+sjPe+nZfSPiqo3j54r0k/KTHLvsltG72zx4a/cpsqv18THT/qbZU+Qca8PnFiLsDZwmK8PgpKP0vLm76MgBO//bHmP75e5b4UXdc+nGhfv0vvFD+2SEG/ps6Dvpkc/b5B8hc/",
-            "XzQPvt6wib+Yn7I/kF9zPcMV0D99Xqq+SToIPt/FxD7n/eK/LYi7vhTuTj/nVr0+WrsYP/ekyD7VJDa/gAPGPt5iUr1Yuy++a16OPubHrD6pNLg/Mqkgvxc3MD9f+BG/dsDov9nQwz68goa/N8u6vxxPnTwlrgy+wWAYv7l1qD+I52E/cn/Fv9w/AT3r/C9A/gq6veBSND8YRQo/jFahvSq6oj/w6GM+jMa8vgm5JL9MVBW/QzNoPz1lor8rqQlA/6uGvWf95z+roNW+981yv9Jfbr+wVY6+2YXlvg7irL8XC3U+Ia84v7h1ur43FPo8GVc+P/e2Dj/O406/WEoUPg=="
+            "foBsvpTJmL/fkH4+RGixPy6URL+fgcA+wBBwP3tRMz/1Ol6+XjuGP/KiJcAdcII/7brHv2z2B8CPTIO/77siP992B8A4UJq/aOMwP61ZIr9O2oi8f3wWv1wwmL7LZbq/zM6WP6PE4z0bK3+96xEbP95ne78oZym+zr9ovjUAOz+Jo4E8CSIOvn3gz76So8s/dNjyvtE2w727yRs/iyQBwHaVoT7gBII/bSI3P3Fyl78LhJM/XzuAPitXNT5RGKG/yaAovpnFSr9auHY/1JzGvhGZvL91Wka/xACivoHFEMCw2cc/hatLv2KOA0AKTYI7R01TvyHZ3j/DuOa+7tPBvjuYaL8tXEE/wGNtP4ZOY7/dEH++jOOhPzRnY78R9YQ/RYqkv+QJyD8ymCG/l2GBv19q0b9BZ/8+kbmMP4VNKz/iWyE/yuNjv3XioL4s276/WGZqP4Vo07/uO3e/IAYfP7lkZj/BAve/fz7gP9/vzD8u/O2+LEy6PtRsmb8An5U/FKHQP2Jnir+O9TI/m7D8PvMSo7806XM/mKlZv+JSGr+aLgs+d9t3P37ghT4CNyi/bhKlv/wqkD5e1LK+Ovbkv34Q4j8h2l692ogIv2HqzT1XzRvABreCv1gSIzseayK/V0mIv9cMLMDyQh0/EIyMvdDGe79484Y+ElIBv93Ox70NWtC+6AWXvtjzkD/fleW/PvY8P+5VLj8d46C+H9hAv8db2z53mOq/2Y+GPlI8IL+YZpe/ERnSv54mi78SfDO/qv2MPpQdoL/KFApADE0bPiS+aD5qw049QJjfvi+TTz/7i6e9HHZpPn9ELL/mX+Q/kAOUv/7rQD/jVr8/qYqOPhQuN7+rPuW+885rvq/hDL6k5Yy+JNWMvnUMfL5Ps6C+vcvLPmyC/T9PO7k/Q5F1P96jCL9q3iq/QdQjP8Trpj6BLzc/hdiUPn+R6L6hKAq/zBfSvlzInL8Y8Jw/jCqYv7HoAL+0aTI/9cdGvReNBL9IbYQ+X6VoP1hwnL+qGNc9",
+            "irNuv58zbj7sbQM/UrSfPi+10D7+sKU+d5qXP/u6hD4ptLa+m5kiwKiMG7/meZa/Mck8vxREQj+j8ni/WbiOPrdZoLwPDSe/suViv1hgPz/2Gco+WuZTvyhiQLv1X5w/h2tiv3G1rr5BC9U+BJyjv+lbzz75BfY+b8BUP37gjr8lk0E/IwvmvhP8nT9m2AE/UXshPm06nD4fjXE/qABFvkEq87/i2cW+ySdgP69eKb9Ie0W8NYHhPYcOgT1p2L2+daXxPlJzFL+mrrI+YNktvzuAhr+YG8U8PpZyv6/x0r3xcHm/ZvaQP1BeXz+Q8FW/NXZsvISJbT4hpK+99QSnPg=="
           ]
         }
       ],
-      "outputs": [
-        {
-          "shape": [
-            1,
-            1,
-            1,
-            1,
-            3
-          ],
-          "values": [
-            "lhnYPmNW9z3saNQ+"
-          ]
-        }
-      ]
+      "outputs": [{ "shape": [3], "values": ["PrDLPg/eqz5UNbk+"] }]
     }
   ],
   "trainable_params": {
     "conv2d_1": {
-      "bias": [
-        "JatovCSNkD2U2BS/OMySvQ=="
-      ],
       "weights": [
         "1+9Lv4pxEj4LyyM/Dkb1vkcVu750hks/j0UAP7m/p75oIie+c05Iv/H17b4SyNi9GAfmvmFrvT6mdwg/hnIMPuEGEz+ReRw+97z9PWUiSL4hYmI9ygTAvvjPcb8ikty9rXuiPe5q6b5v7V4+bPaDPnIMFT+hc6c+zIXxvq8Xxb10IwM/Z0lLvlTPe79mwq68"
-      ]
+      ],
+      "bias": ["JatovCSNkD2U2BS/OMySvQ=="]
     },
     "conv2d_2": {
-      "bias": [
-        "VRoIPALK1D0FqgO9pfMgvQ=="
-      ],
       "weights": [
         "+TlFPyqDWr9+Q3C9ryfMPnrJ0j6CSbC+9+uYPqjQEz4K0K0+BbD8vbrbs708ri89VrwtvjWdNT5NBfc9K+RKP0QSFj4+diS+mXOjvTIIfb4wIsg+2vhZvu0vIr2W1im+7t9wvyPemz5HRoi+XByvvq1KUb/dSbq+/OcQPYranD5De4i/DSZ3PkhFfzuBfWW+PEAUvjF3qr5tuMi+wwGYPIkyl7xS3ea+63hKv/FSdzth3L2+dOGZPm+pOD+HRo+9Lavmvqk6ML6cG0W9W881vm7lhz0JI4W/tva7vm76kT6SKy4+7lB4v9kwHb80B6q+N0oavr44ZL9gdXo/0Ub6PnPVAT9BqUm8KkuvPlvrCD9uUxQ/wb85v6MpHj1UV76+lNTUvd0S0bxJEoA/9lvjPlK7rD7x/Hc+OEhXP3H+o769PLS9kTlJPoSMUL/Fwbq+TajePmBvUT2uY9A+Nn7YPPFgoz5x+fw+lGA4v9gtEL+lRLc+ZrfRPPpizb5bori+XD8ZvgdTHj5f4T6/Pxfbvubl6b7BM6y+kncXvzFBrL7U8Ia+TMbTvgAEDz9J9cg+8EndvufIZD5wWR+/yndMv0nweb+iMRK/Ei9vvSxypz7Ufa2+3nCSvptLE79cQQg/ymubPT4fuL5YIAW/qNxDvxxzRL4SUHu+Ji4iP9T4kj0alg28J9PhPEatHT/VbSI/F40hPwMQUr+lTdC+9xvMvVVGfD6LXFg+Cr/rPgVWxj6nz7A+1pCcPqrRuz7eOcW8"
-      ]
+      ],
+      "bias": ["VRoIPALK1D0FqgO9pfMgvQ=="]
     },
     "conv2d_3": {
-      "bias": [
-        "xINVvTfgir6+Zhg9mg/bPnj9E76e9hC+bmIdvLlGQ74="
-      ],
       "weights": [
         "qEIWvgqAtb0Y0Po+Eka4PtEHhr69Pus+2nfYPqH1rr0d4eE+rCeZPcddGb5ZsTk/U9hOPhHCKz4B/RM+CzEtPoCoYz1CSlU+ujGrPiFNCz4IdFA+5b8NPp9CmT5T2rS9BYNlvmqgyb0Nfae9bNNqvS9HyL76JGI92SDVO8g8Wb2Y6wk+k4mPPSmbXbyLOEW+PBIpPn66iT6aIzs9nGfFvENuXTxZfcG+KGRSPhdsVz+Xlae+Y09XPr2NIT025Os+yfe0PUxd6zwVpjU+ZfyQvjUFRj7gxY4/lkO6vhoPcL/92bO96As8PScpOz4Pssy+Skfkvotz6r51RAY90WYWPyq/Bb+ZpsK9yOervopXpj5UQBY8rupcP0YaYb1Y4ly98Mu6Ps1kcT/0Bjc+Vixrvwmxs77g0nK/vaHZvQt7rz2mwUs+cFf8vU9Z0j02xIk+/pdbvoC38D4TCP49mAKrvoJwcL5eO9+9bhgiv2sGI78gDxW9I+UHvxDZEL4neJs+UatgvgB9Pz2/1xI/nqzDPir3Hr9oAA8/vfGZvqo81r7poSo+ZmHUvlSOsb6i71a/zdLzPilWUL6hgSW+4hQiPdUNQjs7TKq+EdXKvsndST0WFtA9ab0CviEMTb6sYMe+5j2mPI+5xb5DWku+fI8AvtXVlD2nF2S+osrnvvRpHj7eBnY+Y5c4veOsAL8PmAy/EwxgP4y9Tz4Qr869UiH9vRcNW773uB+/7t7uvh/OAb8XMig/wP/OvYGn2r49W7u9r5b2PtOsID7lliI/jloPP9rrHz2AR4U9Zx9ivaAzBT8AlAe/x5BaPuyY5z2bKO2+IHo3PUPrErxRAO0+JCQzPtKrcrzeJoc+fkDovro1eL/SblI+bqenPgpm974KuVS/JAt7vikQIr7CMsm8Ac4SvzFN37s8WTy+Hw49v/t7Mr/Hp46+rXSovpOsYL4a9ng++knbPri1876aqGw+KPdjviwz272vCJO++i8hPeso4L5anQu+/YycvmqTSz7gDd08",
         "EU9evo1ZHb+yOzM+9EX3vc2rx71zD8S+NVRJPOT4LL5WZQa971Ehv1YpCj5onY2+NLkgv4L/1r1AREQ7geMOv4SnkL6uYii+UtCHviSBrL1/RsS7i+b8vsWDTr9hw0S+/ZgRv8FIyT3NWJE+a1m1vnwl2z5I69Y+eRjZPoG3rr2VhHW8BU+zPiV36D0T99O+KqJev7idX759jK2+LZ3BvErEzT5ebS493YwJvrjDqj05Fxc9bJRYPvSPeb95XR2+NyxcvVDdVr5aoZ+/Gre8vmwIKb86Sb89D54Av3X8A78Yma4+aFfWPiCmHb8lwP49ka/8vNeSpj4Ay2i9EW6WPf8CpD6pL9K+4+N8Pm3/sT3tIMW+Puj1PTxxyrlvz4W/JccGvhU9sL7r9w2+JFk9P5080T1vpi8+Fz0Qv59ZeD4RaTW/f3/NPtvwbL4m9uu9I+7mvhVQTz5tB9w9W22LPeeWGj54klw+XxndPoIvnD3XEp292V2IvobUBT/b1NA9"
-      ]
+      ],
+      "bias": ["xINVvTfgir6+Zhg9mg/bPnj9E76e9hC+bmIdvLlGQ74="]
     },
     "conv2d_4": {
-      "bias": [
-        "K56yPiG7mT64TTu+OsSOPhp8v768dOs+MyviPtKKKD4="
-      ],
       "weights": [
         "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"
-      ]
+      ],
+      "bias": ["K56yPiG7mT64TTu+OsSOPhp8v768dOs+MyviPtKKKD4="]
     },
     "conv2d_5": {
-      "bias": [
-        "IIU3O+zLy7sAHpK9/gXgvOVKsDxjxUm9p/7AO2aEJDw="
-      ],
       "weights": [
         "BBDKug4egbwsvju89/eBPR8IUb22KKs92JQ0vpdh3zpdnhI+R/1uvqPZdD7oppW+PDVcPRNWyb0wK6s9GWzovf025bwZ1pe+Ps0qP9LWaj0HwSk9C0fgvA/nnT6ouqE/S1IlPYenET55Pqk+1TrVPYlPjz01ktm8mGgTPaNzJr/yBhG93U5uvj5Ca755DYy+KdX6vdxXIT69Vzc+vRWDv4ce5T1EPtY8YG6Evq2HGj4ApHC96H8/PdXiNzxdMpc9+gwtPPkgpT4x0P+85piSvovNv71sYos9jK93vUXR1T7EBBq4LZIDPgDthb4d9jO+bg0sPsnkkDuYIrq9UqesPg=="
-      ]
+      ],
+      "bias": ["IIU3O+zLy7sAHpK9/gXgvOVKsDxjxUm9p/7AO2aEJDw="]
     },
     "dense_1": {
-      "bias": [
-        "hYeJPqpoWz4bZ4U+"
-      ],
       "weights": [
         "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"
-      ]
+      ],
+      "bias": ["hYeJPqpoWz4bZ4U+"]
     }
-  }
+  },
+  "hash": "404a9b427810e63d0bf803e9de98cfbe1ced6f16371db5403846497ebd3454bc"
 }

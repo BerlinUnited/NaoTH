@@ -1,5 +1,6 @@
 **/.idea/
 **/venv/
+**/.venv/
 **/.eggs/
 
 # used to store temorary experimental data that should not be committed
