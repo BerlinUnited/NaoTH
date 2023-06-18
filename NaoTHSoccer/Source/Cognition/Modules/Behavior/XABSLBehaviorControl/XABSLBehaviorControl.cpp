@@ -83,8 +83,7 @@ void XABSLBehaviorControl::loadBehaviorFromFile(std::string file, std::string ag
   // reset the error handler
   theErrorHandler.errorsOccurred = false;
   
-
-  // (is it necessary?)
+  // Delete and creata new engine every time when a new behavior file is loaded. Just in case :)
   // delete the old engine if avaliable
   delete theEngine;
   // create a new engine 
