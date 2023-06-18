@@ -100,10 +100,20 @@ void DummySimulator::play()
     unsigned int startTime = NaoTime::getNaoTimeInMilliSeconds();
     
     executeFrame();
-    
+
+    // Calculate the waiting time until the next frame: 
+    //    5ms <= waitTime <= frameExecutionTime
+    // 
+    // Time passed since last frame. 
+    // NOTE: NaoTime::getNaoTimeInMilliSeconds() >= startTime
     unsigned int calculationTime = NaoTime::getNaoTimeInMilliSeconds() - startTime;
-    // wait at least 5ms but max 1s
-    unsigned int waitTime = Math::clamp(frameExecutionTime - calculationTime, 5u, 1000u);
+    // allways wait at least 5ms to avoid busy loop
+    unsigned int waitTime = 5u;
+    // If the execution was fast enough then calculate waitTime to ensure 
+    //    calculationTime + waitTime == frameExecutionTime
+    if (calculationTime + waitTime < frameExecutionTime) {
+      waitTime = frameExecutionTime - calculationTime;
+    }
 
     ThreadUtil::sleep(waitTime);
   }
