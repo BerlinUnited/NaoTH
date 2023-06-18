@@ -32,7 +32,6 @@ double XabslFileInputSource::readValue()
 
 bool XabslFileInputSource::readString(char* destination, int maxLength)
 {
-
   if(inFile.eof()) {
     return false;
   }
@@ -46,7 +45,7 @@ bool XabslFileInputSource::readString(char* destination, int maxLength)
   }
 
   return true;
-}//end readString
+}
 
 void XabslFileInputSource::skipComments()
 {
@@ -56,7 +55,7 @@ void XabslFileInputSource::skipComments()
     inFile.ignore(256, '\n');
     c = static_cast<char>(inFile.peek());
   }
-}//end skipComments
+}
 
 void XabslFileInputSource::skipWhiteSpace()
 {
@@ -66,4 +65,4 @@ void XabslFileInputSource::skipWhiteSpace()
     inFile.ignore(1);
     c = static_cast<char>(inFile.peek());
   }
-}//end skipWhiteSpace
+}

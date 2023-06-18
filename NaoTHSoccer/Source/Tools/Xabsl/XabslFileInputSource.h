@@ -17,7 +17,7 @@ public:
   XabslFileInputSource(const std::string& file) : file(file) {}
   virtual ~XabslFileInputSource() {}
 
-  // virtual methods from InputSource
+  // implement virtual methods from InputSource
   virtual bool open();
   virtual void close();
   virtual double readValue();
