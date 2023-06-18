@@ -71,8 +71,8 @@ std::string GameData::toString(CompetitionType value)
   switch (value)
   {
     RETURN_VALUE_TO_STR(competition_normal);
-    RETURN_VALUE_TO_STR(COMPETITION_TYPE_CHALLENGE_SHIELD);
-    RETURN_VALUE_TO_STR(COMPETITION_TYPE_7V7);
+    //RETURN_VALUE_TO_STR(COMPETITION_TYPE_CHALLENGE_SHIELD); // deprecated since 2023
+    //RETURN_VALUE_TO_STR(COMPETITION_TYPE_7V7); // deprecated since 2023
     RETURN_VALUE_TO_STR(COMPETITION_TYPE_DYNAMIC_BALL_HANDLING);
     //RETURN_VALUE_TO_STR(competition_1v1); // deprecated since 2022
     //RETURN_VALUE_TO_STR(competition_passing); // deprecated since 2022
@@ -144,6 +144,9 @@ std::string GameData::toString(Penalty value)
     RETURN_VALUE_TO_STR(request_for_pickup);
     RETURN_VALUE_TO_STR(local_game_stuck);
     RETURN_VALUE_TO_STR(illegal_positioning);
+    RETURN_VALUE_TO_STR(illegal_position);
+    RETURN_VALUE_TO_STR(illegal_position_in_set);
+    RETURN_VALUE_TO_STR(player_stance);
     RETURN_VALUE_TO_STR(substitute);
     RETURN_VALUE_TO_STR(manual);
   }
@@ -194,6 +197,9 @@ GameData::Penalty GameData::penaltyFromString(const std::string& str)
   RETURN_STING_TO_VALUE(request_for_pickup, str);
   RETURN_STING_TO_VALUE(local_game_stuck, str);
   RETURN_STING_TO_VALUE(illegal_positioning, str);
+  RETURN_STING_TO_VALUE(illegal_position, str);
+  RETURN_STING_TO_VALUE(illegal_position_in_set, str);
+  RETURN_STING_TO_VALUE(player_stance, str);
   RETURN_STING_TO_VALUE(substitute, str);
   RETURN_STING_TO_VALUE(manual, str);
 
@@ -234,8 +240,9 @@ void GameData::parseTeamInfo(TeamInfo& teamInfoDst, const spl::TeamInfo& teamInf
 {
   teamInfoDst.penaltyShot = teamInfoSrc.penaltyShot;
   teamInfoDst.score = teamInfoSrc.score;
-  teamInfoDst.teamColor = (TeamColor)teamInfoSrc.teamColour;
+  teamInfoDst.teamColor = (TeamColor)teamInfoSrc.fieldPlayerColour;
   teamInfoDst.teamNumber = teamInfoSrc.teamNumber;
+  teamInfoDst.messageBudget = teamInfoSrc.messageBudget;
 
   teamInfoDst.players.resize(playersPerTeam);
   for(unsigned int i = 0; i < playersPerTeam; i++) {
@@ -268,6 +275,7 @@ void GameData::print(ostream& stream) const
   stream << " |- color = " << toString(ownTeam.teamColor) << std::endl;
   stream << " |- score = " << ownTeam.score << std::endl;
   stream << " |- penaltyShot = " << ownTeam.penaltyShot << std::endl;
+  stream << " |- messageBudget = " << ownTeam.messageBudget << std::endl;
   stream << " |- players (penalty, time until unpenalize in s):" << std::endl;
   for(size_t i = 0; i < ownTeam.players.size(); ++i) {
     stream << "      |- " << (i+1) << ": " << toString(ownTeam.players[i].penalty) << " - " << ownTeam.players[i].secsTillUnpenalised << std::endl;
@@ -279,6 +287,7 @@ void GameData::print(ostream& stream) const
   stream << " |- color = " << toString(oppTeam.teamColor) << std::endl;
   stream << " |- score = " << oppTeam.score << std::endl;
   stream << " |- penaltyShot = " << oppTeam.penaltyShot << std::endl;
+  stream << " |- messageBudget = " << ownTeam.messageBudget << std::endl;
   stream << " |- players (penalty, time until unpenalize in s):" << std::endl;
   for(size_t i = 0; i < oppTeam.players.size(); ++i) {
     stream << "      |- " << (i+1) << ": " << toString(oppTeam.players[i].penalty) << " - " << oppTeam.players[i].secsTillUnpenalised << std::endl;
