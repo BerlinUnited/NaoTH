@@ -13,16 +13,16 @@
 #include <Representations/Modeling/InertialModel.h>
 
 BEGIN_DECLARE_MODULE(KinematicChainProvider)
+  PROVIDE(DebugParameterList)
+
   REQUIRE(FrameInfo)
   REQUIRE(IMUData)
-  PROVIDE(SensorJointData) // HACK
+  PROVIDE(SensorJointData) // HACK: needed by KinematicChain().init
 
   REQUIRE(InertialModel)
   REQUIRE(AccelerometerData)
 
   PROVIDE(KinematicChain)
-
-  PROVIDE(DebugParameterList)
 END_DECLARE_MODULE(KinematicChainProvider)
 
 class KinematicChainProvider : public KinematicChainProviderBase

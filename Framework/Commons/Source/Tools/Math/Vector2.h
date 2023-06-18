@@ -23,9 +23,6 @@ template <class V> class Vector2
   Vector2<V>() : x(0), y(0) {}
   Vector2<V>(V x, V y) : x(x), y(y) {}
 
-  // Since C++11 we have to declare copy constructor explicitly.
-  Vector2<V> ( const Vector2<V> & ) = default;
-
   // conversion copy constructor, used to cast the type
   template<class W>
   Vector2<V>(const Vector2<W>& other) : 

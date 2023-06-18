@@ -41,8 +41,12 @@ void SoundControl::setSoundData(const SoundPlayData& theSoundData)
   if(theSoundData.soundFile == "" || !lock.owns_lock()) {
     return;
   }
-
-  filename = media_path + theSoundData.soundFile;
+  
+  if (theSoundData.soundFile[0] == ':') {
+    filename = theSoundData.soundFile;
+  } else {
+    filename = media_path + theSoundData.soundFile;
+  }
 
   // release the data lock and notify the waiting thread
   lock.unlock();
@@ -57,9 +61,15 @@ void SoundControl::play()
     std::unique_lock<std::mutex> lock(dataMutex);
     new_data_avaliable.wait(lock);
 
-    std::cout << "[SoundControl] play " << filename << std::endl;
-    std::string cmd = "/usr/bin/paplay " + filename;
-    std::system(cmd.c_str());
+    if(filename[0] == ':') {
+      std::cout << "[SoundControl] say " << filename << std::endl;
+      std::string cmd = "/home/nao/bin/flite_cmu_us_slt -t \"" + filename.substr(1) + "\"";
+      std::system(cmd.c_str());
+    } else {
+      std::cout << "[SoundControl] play " << filename << std::endl;
+      std::string cmd = "/usr/bin/paplay " + filename;
+      std::system(cmd.c_str());
+    }
 
     //TODO: handle the case if the file does not exist:
     //      if the file does not exist, then we end up in 

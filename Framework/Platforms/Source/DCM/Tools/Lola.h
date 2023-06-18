@@ -84,7 +84,7 @@ class Lola
       m_pac.reserve_buffer(PACKET_ZIZE);
 
       // read from the soccet (POSIX style)
-      int bytes = read(fd, m_pac.buffer(), m_pac.buffer_capacity());
+      size_t bytes = read(fd, m_pac.buffer(), m_pac.buffer_capacity());
       
       if(bytes != PACKET_ZIZE) {
         std::cerr << "[LOLA] wrong message size: " << bytes << " expected " << PACKET_ZIZE << std::endl;

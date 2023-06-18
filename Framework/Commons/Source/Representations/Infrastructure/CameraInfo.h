@@ -5,8 +5,8 @@
  * Created on 1. Februar 2009, 20:07
  */
 
-#ifndef _CAMERAINFO_H_
-#define _CAMERAINFO_H_
+#ifndef CAMERAINFO_H
+#define CAMERAINFO_H
 
 #include "Tools/DataStructures/ParameterList.h"
 #include "Tools/DataStructures/Printable.h"
@@ -21,7 +21,7 @@ namespace naoth
   class CameraInfoParameter : public ParameterList
   {
   public:
-    //diagonal angle of field of view
+    // diagonal angle of field of view
     double openingAngleDiagonal;
 
     /*
@@ -58,23 +58,22 @@ namespace naoth
     };
     
     CameraInfo()
-    :
-    cameraID(Bottom),
-    resolutionWidth(IMAGE_WIDTH),
-    resolutionHeight(IMAGE_HEIGHT),
-    params(getCameraIDName(Bottom))
+      :
+      cameraID(Bottom),
+      resolutionWidth(IMAGE_WIDTH),
+      resolutionHeight(IMAGE_HEIGHT),
+      params(getCameraIDName(Bottom))
     {}
 
     CameraInfo(CameraID id)
-    :
-    cameraID(id),
-    resolutionWidth(IMAGE_WIDTH),
-    resolutionHeight(IMAGE_HEIGHT),
-    params(getCameraIDName(id))
+      :
+      cameraID(id),
+      resolutionWidth(IMAGE_WIDTH),
+      resolutionHeight(IMAGE_HEIGHT),
+      params(getCameraIDName(id))
     {}
 
-    virtual ~CameraInfo()
-    {}
+    virtual ~CameraInfo() {}
 
     CameraID cameraID;
 
@@ -91,13 +90,9 @@ namespace naoth
     unsigned long getSize() const;
     double getOpeningAngleDiagonal() const;
 
-    CameraInfoParameter& getCameraInfoParameter() {
-      return params;
-    }
-
     virtual void print(std::ostream& stream) const;
 
-    std::string getCameraIDName(CameraID id) const
+    inline static std::string getCameraIDName(CameraID id)
     {
       switch(id)
       {
@@ -107,7 +102,6 @@ namespace naoth
       }
     }
 
-  protected:
     CameraInfoParameter params;
   };
 
@@ -133,5 +127,5 @@ namespace naoth
   
 }
 
-#endif  /* _CAMERAINFO_H_ */
+#endif // CAMERAINFO_H
 

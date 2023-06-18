@@ -112,6 +112,8 @@ void MotionSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerBooleanOutputSymbol("motion.walk.stop_with_stand",&getMotionRequest().standardStand);
   engine.registerDecimalOutputSymbol("motion.standHeight",&getMotionRequest().standHeight);
 
+  engine.registerBooleanOutputSymbol("motion.stand.disable_relax", &getMotionRequest().disable_relaxed_stand);
+
   // step control
   for(int i = 0; i <= none; i++)
   {
@@ -197,7 +199,7 @@ void MotionSymbols::updateOutputSymbols()
     req.stepID = getMotionStatus().stepControl.stepID;
     req.target.translation = stepControlRequestTarget.translation;
     req.target.rotation = Math::fromDegrees(stepControlRequestTarget.rotation);
-    req.time = (int)(stepControlRequestTime);
+    req.time = static_cast<unsigned int>(stepControlRequestTime);
     req.speedDirection = Math::fromDegrees(stepControlRequestSpeedDirection);
     req.moveLeftFoot = (stepControlFoot == left);
     req.scale = stepControlScale;
@@ -392,7 +394,7 @@ void MotionSymbols::dribble(bool /*dummy*/)
     theInstance->walkStyle = fast;
 
     theInstance->getMotionRequest().id = motion::walk;
-    theInstance->actionPerformed = theInstance->getMotionStatus().stepControl.stepID;
+    theInstance->actionPerformed = static_cast<int>(theInstance->getMotionStatus().stepControl.stepID);
   }
   else
   {

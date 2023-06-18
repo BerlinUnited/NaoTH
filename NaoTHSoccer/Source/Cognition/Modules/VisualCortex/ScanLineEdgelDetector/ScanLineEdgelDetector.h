@@ -23,7 +23,6 @@
 // Tools
 #include "Tools/DoubleCamHelpers.h"
 #include "Tools/ImageProcessing/Edgel.h"
-#include "Tools/ImageProcessing/MaximumScan.h"
 #include "Tools/CameraGeometry.h"
 #include "Tools/ColorClasses.h"
 #include <Tools/Math/Vector2.h>

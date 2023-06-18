@@ -18,42 +18,35 @@ using namespace std;
 
 double CameraInfo::getFocalLength() const
 {
-  double d2 = Math::sqr(resolutionWidth) + Math::sqr(resolutionHeight);
-  double halfDiagLength = 0.5 * sqrt(d2);
+  double halfDiagLength = 0.5 * hypot(resolutionWidth, resolutionHeight);
   
   // senity check
   ASSERT(halfDiagLength > 0.0 && getOpeningAngleDiagonal() > 0.0);
   return halfDiagLength / tan(0.5 * getOpeningAngleDiagonal());
 }
 
-double CameraInfo::getOpeningAngleHeight() const
-{
-  return 2.0 * atan2((double)resolutionHeight,getFocalLength() * 2.0);
+double CameraInfo::getOpeningAngleHeight() const {
+  return 2.0 * atan2(static_cast<double>(resolutionHeight), getFocalLength() * 2.0);
 }
 
-double CameraInfo::getOpeningAngleWidth() const
-{
-  return 2.0 * atan2((double)resolutionWidth, getFocalLength() * 2.0);
+double CameraInfo::getOpeningAngleWidth() const {
+  return 2.0 * atan2(static_cast<double>(resolutionWidth), getFocalLength() * 2.0);
 }
 
-double CameraInfo::getOpticalCenterX() const
-{
+double CameraInfo::getOpticalCenterX() const {
   return static_cast<double>(resolutionWidth / 2);
 }
 
-double CameraInfo::getOpticalCenterY() const
-{
+double CameraInfo::getOpticalCenterY() const {
   return static_cast<double>(resolutionHeight / 2);
 }
 
-unsigned long CameraInfo::getSize() const
-{
+unsigned long CameraInfo::getSize() const {
   return resolutionHeight * resolutionWidth;
 }
 
-double CameraInfo::getOpeningAngleDiagonal() const
-{
-  return Math::fromDegrees(params.openingAngleDiagonal);
+double CameraInfo::getOpeningAngleDiagonal() const {
+  return params.openingAngleDiagonal;
 }
 
 void CameraInfo::print(ostream& stream) const
@@ -62,7 +55,7 @@ void CameraInfo::print(ostream& stream) const
          << "Resolution Width, Height: " << resolutionWidth << ", " << resolutionHeight << endl
 
          << "Opening Angle Diagonal (config): " << getOpeningAngleDiagonal() << "rad [" 
-                                                << params.openingAngleDiagonal << " deg]" << endl
+                                                << Math::toDegrees(getOpeningAngleDiagonal()) << " deg]" << endl
 
          << "Opening Angle Width (calculated): " << getOpeningAngleWidth() << " rad [" 
                                                  << Math::toDegrees(getOpeningAngleWidth()) << "deg]" << endl
@@ -84,10 +77,10 @@ void CameraInfo::print(ostream& stream) const
 }
 
 CameraInfoParameter::CameraInfoParameter(const std::string& idName)
-:
+  :
   ParameterList("CameraInfo" + idName)
 {
-  PARAMETER_REGISTER(openingAngleDiagonal) = 72.6;
+  PARAMETER_ANGLE_REGISTER(openingAngleDiagonal) = 72.6;
 
   /*
   //size of an Pixel on the chip
@@ -115,8 +108,8 @@ CameraInfoParameter::CameraInfoParameter(const std::string& idName)
 void Serializer<CameraInfo>::serialize(const CameraInfo& representation, std::ostream& stream)
 {
   naothmessages::CameraInfo msg;
-  msg.set_resolutionwidth(static_cast<int>(representation.resolutionWidth));
-  msg.set_resolutionheight(static_cast<int>(representation.resolutionHeight));
+  msg.set_resolutionwidth(representation.resolutionWidth);
+  msg.set_resolutionheight(representation.resolutionHeight);
   msg.set_cameraid((naothmessages::CameraID) representation.cameraID);
   msg.set_openinganglediagonal(representation.params.openingAngleDiagonal);
   //msg.set_focus(representation.params.focus);

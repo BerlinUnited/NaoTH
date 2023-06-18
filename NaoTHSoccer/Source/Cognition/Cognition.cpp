@@ -34,7 +34,6 @@
 #include "Modules/Infrastructure/TeamCommunicator/SimpleNetworkTimeProtocol.h"
 
 #include "Modules/Infrastructure/Debug/CameraDebug.h"
-#include "Modules/Infrastructure/Camera/CameraInfoSetter.h"
 #include "Modules/Infrastructure/Camera/AdaptiveAutoExposure.h"
 #include "Modules/Infrastructure/GameLogger/GameLogger.h"
 
@@ -62,6 +61,7 @@
 #include "Modules/VisualCortex/BallDetector/CNNBallDetector.h"
 #include "Modules/VisualCortex/BallDetector/MultiPassBallDetector.h"
 #include "Modules/VisualCortex/IntegralImageProvider.h"
+#include "Modules/VisualCortex/IntegralSubsamplingTest/IntegralSubsamplingTest.h"
 
 #include "Modules/VisualCortex/ObstacleDetector/NoGreenObstacleDetector.h"
 
@@ -174,7 +174,6 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(UltraSoundControl);
 
   REGISTER_MODULE(CameraDebug);
-  REGISTER_MODULE(CameraInfoSetter);
   REGISTER_MODULE(AdaptiveAutoExposure);
   REGISTER_MODULE(WhistleDetectorV1);
   REGISTER_MODULE(WhistleDetectorV2);
@@ -186,8 +185,11 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(BodyContourProvider);	
 
   REGISTER_MODULE(HistogramProvider);
-  REGISTER_MODULE(IntegralImageProvider);
   REGISTER_MODULE(FieldColorClassifier);
+  
+  REGISTER_MODULE(IntegralImageProvider);
+  REGISTER_MODULE(IntegralSubsamplingTest);
+
   REGISTER_MODULE(IntegralFieldDetector);
   REGISTER_MODULE(ScanGridProvider);
   REGISTER_MODULE(ScanGridEdgelDetector);
@@ -218,7 +220,6 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(CompassProvider);
 
   // modeling
-  REGISTER_MODULE(SituationPriorProvider);
   REGISTER_MODULE(BodyStateProvider);
   REGISTER_MODULE(FieldCompass);
   REGISTER_MODULE(UltraSoundObstacleDetector);
@@ -228,9 +229,12 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(TeamMessagePlayersStateModule);
   REGISTER_MODULE(SoccerStrategyProvider);
   REGISTER_MODULE(PotentialFieldProvider);
+  REGISTER_MODULE(SituationPriorProvider);
+  
   REGISTER_MODULE(GPS_SelfLocator);
   REGISTER_MODULE(MonteCarloSelfLocator);
   REGISTER_MODULE(OdometrySelfLocator);
+  
   REGISTER_MODULE(WholeGoalLocator);
   REGISTER_MODULE(DummyActiveGoalLocator);
   REGISTER_MODULE(MultiKalmanBallLocator);

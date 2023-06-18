@@ -6,12 +6,13 @@
 * Definition of class GoalCrossBarDetector
 */
 
-#ifndef _GoalCrossBarDetector_H_
-#define _GoalCrossBarDetector_H_
+#ifndef GOALCROSSBARDETECTOR_H
+#define GOALCROSSBARDETECTOR_H
 
 #include <ModuleFramework/Module.h>
 
 #include <Representations/Infrastructure/FieldInfo.h>
+#include <Representations/Infrastructure/CameraInfo.h>
 #include <Representations/Infrastructure/Image.h>
 #include "Representations/Perception/ArtificialHorizon.h"
 #include "Representations/Perception/GoalPercept.h"
@@ -44,6 +45,9 @@ BEGIN_DECLARE_MODULE(GoalCrossBarDetector)
   PROVIDE(DebugParameterList)
 
   REQUIRE(FieldInfo)
+
+  REQUIRE(CameraInfo)
+  REQUIRE(CameraInfoTop)
   REQUIRE(Image)
   REQUIRE(ImageTop)
   REQUIRE(CameraMatrix)
@@ -151,7 +155,7 @@ private:
 
       // estimate the line
       cv::Vec4f line;
-      cv::fitLine(cv::Mat(points), line, CV_DIST_L2, 0, 0.01, 0.01);
+      cv::fitLine(cv::Mat(points), line, cv::DIST_L2, 0, 0.01, 0.01);
 
       Vector2d x(line[2], line[3]);
       Vector2d v(line[0], line[1]);
@@ -252,6 +256,7 @@ private:
   DOUBLE_CAM_PROVIDE(GoalCrossBarDetector, DebugImageDrawings);
 
   // double cam stuff
+  DOUBLE_CAM_REQUIRE(GoalCrossBarDetector, CameraInfo);
   DOUBLE_CAM_REQUIRE(GoalCrossBarDetector, Image);
   DOUBLE_CAM_REQUIRE(GoalCrossBarDetector, CameraMatrix);
   DOUBLE_CAM_REQUIRE(GoalCrossBarDetector, ArtificialHorizon);
@@ -261,4 +266,4 @@ private:
 
 };//end class GoalCrossBarDetector
 
-#endif // _GoalCrossBarDetector_H_
+#endif // GOALCROSSBARDETECTOR_H

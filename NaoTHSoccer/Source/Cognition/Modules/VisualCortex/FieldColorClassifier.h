@@ -4,8 +4,8 @@
  *
  */
 
-#ifndef _FieldColorClassifier_H_
-#define _FieldColorClassifier_H_
+#ifndef FieldColorClassifier_H
+#define FieldColorClassifier_H
 
 #include <ModuleFramework/Module.h>
 
@@ -191,7 +191,7 @@ private:
 private: // debug
   void plot(std::string id, Statistics::HistogramX& histogram) const
   {
-    for(int i = 0; i < histogram.size; i++) {
+    for(unsigned int i = 0; i < histogram.size; i++) {
       PLOT_GENERIC(id + ":rawHistogram" + ((cameraID == CameraInfo::Top)?"Top":"Bottom"), i, histogram.rawData[i]);
     }
   }
@@ -202,4 +202,4 @@ private: // debug
 
 };
 
-#endif  /* _FieldColorClassifier_H_ */
+#endif  /* FieldColorClassifier_H */

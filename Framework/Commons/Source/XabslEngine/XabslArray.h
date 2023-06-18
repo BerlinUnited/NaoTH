@@ -172,18 +172,19 @@ template <class T> class Array
     * The function returns the number of elements in the array.
     * @return The length of the list.
     */
-    int getSize() const {return usedSize;}
+    int getSize() const {return static_cast<int>(usedSize);}
     
     /** 
     * Returns the value for a given array position.
     * Note that the function crashes if the required position is bigger than the 
     * size of the array.
     */
-    const T& operator[](int pos) const
+    const T& operator[](unsigned int pos) const
     {
       return data[pos];
     }
-    T& operator[](int pos)
+
+    T& operator[](unsigned int pos)
     {
       while (pos >= usedSize) append(T());
       return data[pos];
@@ -197,14 +198,14 @@ template <class T> class Array
     }
 
     // TODO: is this operator needed??
-//    operator Array<const T>&() {return this;}
+    // operator Array<const T>&() {return this;}
 
   protected:
     /** The array */
     T* data;
 
     /** The number of elements in the array */
-    int usedSize, allocatedSize;
+    unsigned int usedSize, allocatedSize;
 };
 
 /**

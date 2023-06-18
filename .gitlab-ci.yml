@@ -14,7 +14,7 @@ variables:
 
 # Note that reopen MR do not trigger pipeline execution: https://gitlab.com/gitlab-org/gitlab/-/issues/31116
 
-cppcheck:
+.cppcheck:
   stage: test
   rules:
     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop"'
@@ -33,7 +33,7 @@ cppcheck:
     reports:
       codequality: cppcheck.json
 
-compile_nao_gcc:
+compile_local_clang:
   stage: build
   rules:
     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop"'
@@ -42,23 +42,9 @@ compile_nao_gcc:
     - if: $CI_COMMIT_BRANCH == "develop"
   script:
   - cd NaoTHSoccer/Make
-  - ./compileGame.sh -j 4
-  - ./compileLoLaAdaptor.sh -j 4
-  artifacts:
-    expire_in: 4 weeks
-    name: "nao_gcc"
-    paths:
-      - NaoTHSoccer/dist/
-
-compile_local_gcc:
-  stage: build
-  rules:
-    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop"'
-    - if: '$CI_PIPELINE_SOURCE == "web"'
-    - if: '$CI_PIPELINE_SOURCE == "trigger"'
-    - if: $CI_COMMIT_BRANCH == "develop"
-  script:
-  - cd NaoTHSoccer/Make
+  - export CC=$(which clang)
+  - export CXX=$(which clang++)
+  - export LD=$(which ld.lld)
   - premake5 gmake2 --protoc
   - cd ../build/gmake2
   - make all -j 4
@@ -77,7 +63,9 @@ compile_nao_clang:
     - if: $CI_COMMIT_BRANCH == "develop"
   script:
   - cd NaoTHSoccer/Make
-  - echo -en "if PLATFORM == \"Nao\" then\n    _OPTIONS[\"crosscompiler\"] = \"clang\"\nend\n" > projectconfig.user.lua
+  - echo -en "NAO_CTC = \"/naoth/toolchain/toolchain_nao_ubuntu\"\n" > projectconfig.user.lua
+  - echo -en "if PLATFORM == \"Nao\" then\n    _OPTIONS[\"crosscompiler\"] = \"clang\"\nend\n" >> projectconfig.user.lua
+  - clang++ --version
   - ./compileGame.sh -j 4
   - ./compileLoLaAdaptor.sh -j 4
   artifacts:
@@ -109,9 +97,9 @@ publish_naoth_docker:
   services:
     - docker:dind
   dependencies:
-    - compile_nao_gcc
-    - compile_local_gcc
-    # - compile_nao_clang  # this would overwrite the gcc binaries
+    # you can either export the gcc or the clang binaries for now
+    - compile_local_clang
+    - compile_nao_clang  
   rules:
     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop"'
     - if: '$CI_PIPELINE_SOURCE == "web"'
@@ -128,7 +116,7 @@ publish_naoth_docker:
     - docker commit temp_container scm.cms.hu-berlin.de:4567/berlinunited/naoth-2020:$branchname
     - docker push scm.cms.hu-berlin.de:4567/berlinunited/naoth-2020:$branchname
 
-publish_naoth_python:
+.publish_naoth_python_gitlab:
   # run the publish command if the PUBLISH_NAOTH flag is set or the commit changes the develop with changes in the naoth package
   stage: deploy
   rules:
@@ -142,3 +130,18 @@ publish_naoth_python:
   - premake5 gmake2 --protoc
   - cd ../../Utils/py/naoth
   - ./package_naoth.sh
+
+publish_naoth_python_pypi:
+  # run the publish command if the PUBLISH_NAOTH flag is set or the commit changes the develop with changes in the naoth package
+  stage: deploy
+  rules:
+    - if: '$PUBLISH_NAOTH'
+    - if: $CI_COMMIT_BRANCH == "develop"
+      changes:
+      - Utils/py/naoth/**/*
+  dependencies: []  # don't download any artifacts to this job for speed
+  script:
+  - cd NaoTHSoccer/Make
+  - premake5 gmake2 --protoc
+  - cd ../../Utils/py/naoth
+  - ./package_naoth_pypi.sh

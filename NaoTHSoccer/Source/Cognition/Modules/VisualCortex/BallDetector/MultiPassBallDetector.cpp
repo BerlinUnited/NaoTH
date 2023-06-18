@@ -273,11 +273,11 @@ BestPatchList MultiPassBallDetector::getPatchesByLastBall() {
     ballInField.z = getFieldInfo().ballRadius;
 
     Vector2i ballInImage;
-    if (CameraGeometry::relativePointToImage(getCameraMatrix(), getImage().cameraInfo, ballInField, ballInImage))
+    if (CameraGeometry::relativePointToImage(getCameraMatrix(), getCameraInfo(), ballInField, ballInImage))
     {
 
       double estimatedRadius = CameraGeometry::estimatedBallRadius(
-          getCameraMatrix(), getImage().cameraInfo, getFieldInfo().ballRadius,
+          getCameraMatrix(), getCameraInfo(), getFieldInfo().ballRadius,
           ballInImage.x, ballInImage.y);
 
       int border = static_cast<int>((estimatedRadius * 1.1) + 0.5);
@@ -311,10 +311,8 @@ std::map<string, std::shared_ptr<AbstractCNNFinder> > MultiPassBallDetector::cre
   result.insert({ "fy1500_conf", std::make_shared<Fy1500_Conf>() });
   result.insert({ "model1", std::make_shared<Model1>() });
 
-#ifndef WIN32
   result.insert({ "fdeep_fy1300", std::make_shared<FrugallyDeep>("fy1300.json")});
   result.insert({ "fdeep_fy1500", std::make_shared<FrugallyDeep>("fy1500.json")});
-#endif
 
   return result;
 }
@@ -395,7 +393,7 @@ void MultiPassBallDetector::addBallPercepts(std::vector<MultiBallPercept::BallPe
     if(scores[i] >= scoreThreshold && percepts[i].centerInImage.x >= 0.0 && percepts[i].centerInImage.y >= 0.0) {
         if(CameraGeometry::imagePixelToFieldCoord(
             getCameraMatrix(), 
-            getImage().cameraInfo,
+            getCameraInfo(),
             percepts[i].centerInImage.x, 
             percepts[i].centerInImage.y, 
             ballRadius,

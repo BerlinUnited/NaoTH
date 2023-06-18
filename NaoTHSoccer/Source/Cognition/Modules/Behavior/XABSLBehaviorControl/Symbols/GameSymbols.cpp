@@ -13,9 +13,8 @@ using namespace std;
 void GameSymbols::registerSymbols(xabsl::Engine& engine)
 {
   // enum for the competition type
-  engine.registerEnumElement("game.type", "game.type.normal"  , GameData::competition_normal);
-  engine.registerEnumElement("game.type", "game.type.game_1v1", GameData::competition_1v1);
-  engine.registerEnumElement("game.type", "game.type.passing" , GameData::competition_passing);
+  engine.registerEnumElement("game.type", "game.type.normal" , GameData::competition_normal);
+  engine.registerEnumElement("game.type", "game.type.dynamic_ball_handling" , GameData::competition_dynamic_ball_handling);
 
   engine.registerEnumeratedInputSymbol("game.type", "game.type", &getCompetitionType);
 

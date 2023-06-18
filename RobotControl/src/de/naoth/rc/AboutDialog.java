@@ -10,8 +10,8 @@ package de.naoth.rc;
  *
  * @author  thomas
  */
-public class AboutDialog extends javax.swing.JDialog {
-  
+public class AboutDialog extends javax.swing.JDialog 
+{  
   /** Creates new form AboutDialog */
   public AboutDialog(java.awt.Frame parent, boolean modal) {
     super(parent, modal);
@@ -46,7 +46,7 @@ public class AboutDialog extends javax.swing.JDialog {
         jEditorPane1.setEditable(false);
         jEditorPane1.setBorder(null);
         jEditorPane1.setContentType("text/html"); // NOI18N
-        jEditorPane1.setText("<html> \n<center>\n  <h3>RobotControl</h3> \n  <p> a remote debugging and monitoring tool for mobile robots</p>\n  <p>created by the Berlin United - NaoTH</p>\n  <br><a href=\"http://naoth.de\">http://naoth.de</a> \n  <br>&copy; 2008-2019\n</center>\n</html>");
+        jEditorPane1.setText("<html> \n<center>\n  <h3>RobotControl</h3> \n  <p> a remote debugging and monitoring tool for mobile robots</p>\n  <p>created by the Berlin United - NaoTH</p>\n  <br><a href=\"http://naoth.de\">http://naoth.de</a> \n  <br>&copy; 2008-2023\n</center>\n</html>");
         jScrollPane1.setViewportView(jEditorPane1);
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/naos.png"))); // NOI18N
@@ -81,9 +81,7 @@ public class AboutDialog extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
   private void btOkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btOkActionPerformed
-    
     this.dispose();
-    
   }//GEN-LAST:event_btOkActionPerformed
 
   

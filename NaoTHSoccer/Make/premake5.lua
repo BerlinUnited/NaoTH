@@ -18,7 +18,6 @@ dofile (FRAMEWORK_PATH .. "/BuildTools/qtcreator_2.7+.lua")
 
 dofile (FRAMEWORK_PATH .. "/BuildTools/extract_modules.lua")
 
-
 print("INFO: generating solution NaoTHSoccer")
 print("  PLATFORM = " .. PLATFORM)
 print("  OS = " .. os.target())
@@ -108,20 +107,15 @@ workspace "NaoTHSoccer"
     pythonOut   = path.join(NAOTH_PROJECT, "Utils/py/naoth/naoth/pb/"),
     includeDirs = {COMMONS_MESSAGES, path.join(NAOTH_PROJECT, "NaoTHSoccer/Messages/")}
   }
-  
+
+  dofile "tools/warnings.lua" -- set the warning levels for each target
 
   filter "configurations:Debug"
     defines { "DEBUG" }
-    -- FatalWarnings treats compiler/linker warnings as errors
-    -- in premake4 linker warnings are not enabled
-    flags { "FatalCompileWarnings"}
     symbols "On"
 
   filter "configurations:OptDebug"
     defines { "DEBUG" }
-    -- FatalWarnings treats compiler/linker warnings as errors
-    -- in premake4 linker warnings are not enabled
-    flags { "FatalCompileWarnings" } --"LinkTimeOptimization"
     optimize "Speed"
 
   filter { "platforms:Native" }
@@ -132,7 +126,7 @@ workspace "NaoTHSoccer"
     targetdir "../dist/Nao"
     defines { "NAO" }
     system ("linux")
-    
+
     -- HACK: system() doesn't set the target system properly => set the target system manually
     if _OPTIONS["platform"] == "Nao" then
       -- include the Nao platform
@@ -142,43 +136,20 @@ workspace "NaoTHSoccer"
       _TARGET_OS = "linux"
       print("NOTE: set the target OS to " .. os.target())
     end
-    
-    cppdialect "c++14"
-    
-    warnings "Extra"
-    -- Wconversion is not included in Wall and Wextra
-    buildoptions {"-Wconversion"}
-    -- These are a lot of warnings that should be fixed, but currently this is not the highest priority
-    buildoptions {"-Wno-sign-conversion"}
-    -- clang - allow unused functions in cpp files
-    buildoptions {"-Wno-unused-function"}
-    
+
+    -- add a hard coded path for the libs on the robot
+    linkoptions { "-Wl,-rpath=/home/nao/lib" }
+
+    cppdialect "c++17"
+
     -- for debugging:
     -- buildoptions {"-time"}
-
-    filter "files:../Source/Tools/DataStructures/Spline.cpp"
-      warnings "Off"
-
-    filter "files:../Source/Cognition/Modules/VisualCortex/BallDetector/Classifier/*"
-      warnings "Off"
     
   -- additional defines for visual studio   
   filter {"system:windows", "action:vs*"}
     defines {"WIN32", "NOMINMAX", "NOGDI", "EIGEN_DONT_ALIGN"}
-    buildoptions {"/wd4351"} -- disable warning: "...new behavior: elements of array..."
-    buildoptions {"/wd4996"} -- disable warning: "...deprecated..."
-    buildoptions {"/wd4290"} -- exception specification ignored (typed specifications are ignored)
-    buildoptions {"/wd4800"} -- protobuf 3.4.1 forcing value to bool 'true' or 'false' (performance warning)
-    buildoptions {"/wd4503"} -- disable decorated name length exceeded warning
-    buildoptions {"/experimental:external  /external:W0"}
-    -- TODO those arguments are a copy of the values given to sysincludedirs. Figure out a way to make it less redundant
-    buildoptions {"/external:I " .. FRAMEWORK_PATH .. "/Commons/Source/Messages"}
-    buildoptions {"/external:I " .. EXTERN_PATH .. "/include"}
-    buildoptions {"/external:I " .. EXTERN_PATH .. "/include/glib-2.0"}
-    buildoptions {"/external:I " .. EXTERN_PATH .. "/include/gio-unix-2.0"}
-    buildoptions {"/external:I " .. EXTERN_PATH .. "/lib/glib-2.0/include"}
     
-    cppdialect "c++14"
+    cppdialect "c++17"
     links {"ws2_32"}
     
     ignoredefaultlibraries { "MSVCRT" }
@@ -201,13 +172,10 @@ workspace "NaoTHSoccer"
     
   -- TODO test this on a mac  
   filter "system:macosx"
-    defines { "BOOST_SIGNALS_NO_DEPRECATION_WARNING", "EIGEN_DONT_ALIGN" }
+    defines { "EIGEN_DONT_ALIGN" }
     --buildoptions {"-std=c++11"}
-    cppdialect "c++14"
-    -- disable some warnings
-    buildoptions {"-Wno-deprecated-declarations"}
-    buildoptions {"-Wno-deprecated-register"}
-    buildoptions {"-Wno-logical-op-parentheses"}
+    cppdialect "c++17"
+
     -- use clang on macOS -> there is actual clang support via the toolset function
     -- NOTE: configuration doesn't affect these settings, they NEED to be in a if
     if (os.ishost("macosx") and _OPTIONS["platform"] ~= "Nao") then
@@ -225,29 +193,13 @@ workspace "NaoTHSoccer"
     -- http://www.akkadia.org/drepper/dsohowto.pdf
     buildoptions {"-fPIC"}
     
-    -- may be needed for newer glib2 versions, remove if not needed
-    buildoptions {"-Wno-deprecated-declarations"}
-    buildoptions {"-Wno-deprecated"}
     -- Prohibit GCC to be clever and use undefined behavior for some optimizations
     -- (see http://www.airs.com/blog/archives/120 for some nice explanation)
     buildoptions {"-fno-strict-overflow"}
-    --buildoptions {"-std=c++11"}
-    cppdialect "c++14"
+    cppdialect "c++17"
+    toolset ("clang")
     
-    --flags { "ExtraWarnings" }
     links {"pthread"}
-    
-    if _OPTIONS["Wno-conversion"] == nil then
-      buildoptions {"-Wconversion"}
-    end
-
-    if _OPTIONS["Wno-misleading-indentation"] ~= nil then
-      buildoptions {"-Wno-misleading-indentation"}
-    end
-
-    if _OPTIONS["Wno-ignored-attributes"] ~= nil then
-      buildoptions {"-Wno-ignored-attributes"}
-    end
     
     -- Why? OpenCV is always dynamically linked and we can only garantuee that there is one version in Extern (Thomas)
     linkoptions {"-Wl,-rpath \"" .. path.getabsolute(EXTERN_PATH .. "/lib/") .. "\""}

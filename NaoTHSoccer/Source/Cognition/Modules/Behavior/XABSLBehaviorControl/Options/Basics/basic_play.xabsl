@@ -35,6 +35,9 @@ option basic_play
       
       // this will be set in state play
       game.time_in_play = 0;
+
+      // relax while standing by default
+      motion.stand.disable_relax = false;
       
       // react to the game controller and observe fall down
       decide_game_state();

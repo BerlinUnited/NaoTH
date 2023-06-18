@@ -111,10 +111,8 @@ std::map<string, std::shared_ptr<AbstractCNNFinder> > CNNBallDetector::createCNN
   result.insert({ "fy1500_conf", std::make_shared<Fy1500_Conf>() });
   result.insert({ "model1", std::make_shared<Model1>() });
 
-#ifndef WIN32
   result.insert({ "fdeep_fy1300", std::make_shared<FrugallyDeep>("fy1300.json")});
   result.insert({ "fdeep_fy1500", std::make_shared<FrugallyDeep>("fy1500.json")});
-#endif
 
   return result;
 }
@@ -317,7 +315,7 @@ void CNNBallDetector::addBallPercept(const Vector2d& center, double radius)
   
   if(CameraGeometry::imagePixelToFieldCoord(
 		  getCameraMatrix(), 
-		  getImage().cameraInfo,
+		  getCameraInfo(),
 		  center.x, 
 		  center.y, 
 		  ballRadius,
@@ -342,11 +340,11 @@ void CNNBallDetector::addPatchByLastBall()
     ballInField.z = getFieldInfo().ballRadius;
 
     Vector2i ballInImage;
-    if (CameraGeometry::relativePointToImage(getCameraMatrix(), getImage().cameraInfo, ballInField, ballInImage))
+    if (CameraGeometry::relativePointToImage(getCameraMatrix(), getCameraInfo(), ballInField, ballInImage))
     {
 
       double estimatedRadius = CameraGeometry::estimatedBallRadius(
-          getCameraMatrix(), getImage().cameraInfo, getFieldInfo().ballRadius,
+          getCameraMatrix(), getCameraInfo(), getFieldInfo().ballRadius,
           ballInImage.x, ballInImage.y);
 
       int border = static_cast<int>((estimatedRadius * 1.1) + 0.5);

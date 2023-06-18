@@ -1,6 +1,6 @@
-#ifndef WIN32
-
 #include "FrugallyDeep.h"
+
+// NOTE: assumes frugally 0.7.8-p0 is used
 
 FrugallyDeep::FrugallyDeep(std::string file)
 {
@@ -56,5 +56,3 @@ double FrugallyDeep::getRadius()
         return 0.0;
     }
 }
-
-#endif

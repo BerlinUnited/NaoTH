@@ -71,8 +71,8 @@ void Serializer<ButtonData>::serialize(const ButtonData& representation, std::os
   // NOTE: deprecated to support logs before 12.01.2017
   for(size_t i=0; i < ButtonData::numOfButtons; i++) {
     msg.add_ispressed(representation.isPressed[i]);
-    msg.add_numofframespressed(representation.numOfFramesPressed[i]);
-    msg.add_eventcounter(representation.eventCounter[i]);
+    msg.add_numofframespressed(static_cast<unsigned int>(representation.numOfFramesPressed[i]));
+    msg.add_eventcounter(static_cast<unsigned int>(representation.eventCounter[i]));
   }
 
   google::protobuf::io::OstreamOutputStream buf(&stream);
@@ -91,8 +91,8 @@ void Serializer<ButtonData>::deserialize(std::istream& stream, ButtonData& repre
 
   for(int i=0; i < ButtonData::numOfButtons; i++) {
     representation.isPressed[i] = msg.ispressed(i);
-    representation.numOfFramesPressed[i] = msg.numofframespressed(i);
-    representation.eventCounter[i] = msg.eventcounter(i);
+    representation.numOfFramesPressed[i] = static_cast<int>(msg.numofframespressed(i));
+    representation.eventCounter[i] = static_cast<int>(msg.eventcounter(i));
   }
 }
 

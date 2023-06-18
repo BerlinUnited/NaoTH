@@ -1,6 +1,6 @@
 /**
 * @file ActionSimulator.h
-* @author <a href="mailto:schlottb@informatik.hu-berlin.de">Benjamin Schlotter</a>
+* @author <a href="mailto:schlottb@informatik.hu-berlin.de">Stella Alice Schlotter</a>
 * Declaration of class ActionSimulator
 */
 
@@ -40,10 +40,8 @@ BEGIN_DECLARE_MODULE(ActionSimulator)
   
   REQUIRE(FrameInfo)
   REQUIRE(FieldInfo)
-//  REQUIRE(ObstacleModel)
   REQUIRE(BallModel)
   REQUIRE(RobotPose)
-  //REQUIRE(SelfLocGoalModel)
 
   PROVIDE(KickActionModel)
 END_DECLARE_MODULE(ActionSimulator)

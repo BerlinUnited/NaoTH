@@ -5064,6 +5064,13 @@ class MotionStatus : public ::google::protobuf::Message /* @@protoc_insertion_po
   bool walk_emergency_stop() const;
   void set_walk_emergency_stop(bool value);
 
+  // optional bool head_at_rest = 14;
+  bool has_head_at_rest() const;
+  void clear_head_at_rest();
+  static const int kHeadAtRestFieldNumber = 14;
+  bool head_at_rest() const;
+  void set_head_at_rest(bool value);
+
   // @@protoc_insertion_point(class_scope:naothmessages.MotionStatus)
  private:
   void set_has_time();
@@ -5092,6 +5099,8 @@ class MotionStatus : public ::google::protobuf::Message /* @@protoc_insertion_po
   void clear_has_head_got_stuck();
   void set_has_walk_emergency_stop();
   void clear_has_walk_emergency_stop();
+  void set_has_head_at_rest();
+  void clear_has_head_at_rest();
 
   // helper for ByteSizeLong()
   size_t RequiredFieldsByteSizeFallback() const;
@@ -5112,6 +5121,7 @@ class MotionStatus : public ::google::protobuf::Message /* @@protoc_insertion_po
   bool head_target_reached_;
   bool head_got_stuck_;
   bool walk_emergency_stop_;
+  bool head_at_rest_;
   friend struct protobuf_Representations_2eproto::TableStruct;
 };
 // -------------------------------------------------------------------
@@ -6870,6 +6880,13 @@ class IMUData : public ::google::protobuf::Message /* @@protoc_insertion_point(c
   ::naothmessages::DoubleVector3* release_orientation_rotvec();
   void set_allocated_orientation_rotvec(::naothmessages::DoubleVector3* orientation_rotvec);
 
+  // optional bool has_been_reset = 10;
+  bool has_has_been_reset() const;
+  void clear_has_been_reset();
+  static const int kHasBeenResetFieldNumber = 10;
+  bool has_been_reset() const;
+  void set_has_been_reset(bool value);
+
   // @@protoc_insertion_point(class_scope:naothmessages.IMUData)
  private:
   void set_has_location();
@@ -6890,6 +6907,8 @@ class IMUData : public ::google::protobuf::Message /* @@protoc_insertion_point(c
   void clear_has_orientation();
   void set_has_orientation_rotvec();
   void clear_has_orientation_rotvec();
+  void set_has_has_been_reset();
+  void clear_has_has_been_reset();
 
   // helper for ByteSizeLong()
   size_t RequiredFieldsByteSizeFallback() const;
@@ -6906,6 +6925,7 @@ class IMUData : public ::google::protobuf::Message /* @@protoc_insertion_point(c
   ::naothmessages::DoubleVector3* rotational_velocity_sensor_;
   ::naothmessages::DoubleVector2* orientation_;
   ::naothmessages::DoubleVector3* orientation_rotvec_;
+  bool has_been_reset_;
   friend struct protobuf_Representations_2eproto::TableStruct;
 };
 // -------------------------------------------------------------------
@@ -13158,6 +13178,30 @@ inline void MotionStatus::set_walk_emergency_stop(bool value) {
   // @@protoc_insertion_point(field_set:naothmessages.MotionStatus.walk_emergency_stop)
 }
 
+// optional bool head_at_rest = 14;
+inline bool MotionStatus::has_head_at_rest() const {
+  return (_has_bits_[0] & 0x00002000u) != 0;
+}
+inline void MotionStatus::set_has_head_at_rest() {
+  _has_bits_[0] |= 0x00002000u;
+}
+inline void MotionStatus::clear_has_head_at_rest() {
+  _has_bits_[0] &= ~0x00002000u;
+}
+inline void MotionStatus::clear_head_at_rest() {
+  head_at_rest_ = false;
+  clear_has_head_at_rest();
+}
+inline bool MotionStatus::head_at_rest() const {
+  // @@protoc_insertion_point(field_get:naothmessages.MotionStatus.head_at_rest)
+  return head_at_rest_;
+}
+inline void MotionStatus::set_head_at_rest(bool value) {
+  set_has_head_at_rest();
+  head_at_rest_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.MotionStatus.head_at_rest)
+}
+
 // -------------------------------------------------------------------
 
 // OdometryData
@@ -14650,6 +14694,30 @@ inline void IMUData::set_allocated_orientation_rotvec(::naothmessages::DoubleVec
     clear_has_orientation_rotvec();
   }
   // @@protoc_insertion_point(field_set_allocated:naothmessages.IMUData.orientation_rotvec)
+}
+
+// optional bool has_been_reset = 10;
+inline bool IMUData::has_has_been_reset() const {
+  return (_has_bits_[0] & 0x00000200u) != 0;
+}
+inline void IMUData::set_has_has_been_reset() {
+  _has_bits_[0] |= 0x00000200u;
+}
+inline void IMUData::clear_has_has_been_reset() {
+  _has_bits_[0] &= ~0x00000200u;
+}
+inline void IMUData::clear_has_been_reset() {
+  has_been_reset_ = false;
+  clear_has_has_been_reset();
+}
+inline bool IMUData::has_been_reset() const {
+  // @@protoc_insertion_point(field_get:naothmessages.IMUData.has_been_reset)
+  return has_been_reset_;
+}
+inline void IMUData::set_has_been_reset(bool value) {
+  set_has_has_been_reset();
+  has_been_reset_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.IMUData.has_been_reset)
 }
 
 // -------------------------------------------------------------------

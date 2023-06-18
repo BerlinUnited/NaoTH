@@ -56,8 +56,15 @@ public:
     //competition_mixed  = COMPETITION_TYPE_MIXEDTEAM // Deprecated since 2021
     
     // RC 2021
-    competition_1v1      = COMPETITION_TYPE_1VS1_CHALLENGE,
-    competition_passing  = COMPETITION_TYPE_PASSING_CHALLENGE
+    //competition_1v1      = COMPETITION_TYPE_1VS1_CHALLENGE,
+    //competition_passing  = COMPETITION_TYPE_PASSING_CHALLENGE
+
+    // RC 2022
+    //competition_challenge_shield        = COMPETITION_TYPE_CHALLENGE_SHIELD,
+    //competition_7v7                     = COMPETITION_TYPE_7V7,
+
+    // RC 2023
+    competition_dynamic_ball_handling   = COMPETITION_TYPE_DYNAMIC_BALL_HANDLING
   };
 
   enum GamePhase
@@ -89,19 +96,22 @@ public:
 
   enum Penalty
   {
-    penalty_none          = PENALTY_NONE,
-    illegal_ball_contact  = PENALTY_SPL_ILLEGAL_BALL_CONTACT,
-    player_pushing        = PENALTY_SPL_PLAYER_PUSHING,
-    illegal_motion_in_set = PENALTY_SPL_ILLEGAL_MOTION_IN_SET,
-    inactive_player       = PENALTY_SPL_INACTIVE_PLAYER,
-    illegal_defender      = 97, //PENALTY_SPL_ILLEGAL_DEFENDER, // Deprecated since 2021
-    leaving_the_field     = PENALTY_SPL_LEAVING_THE_FIELD,
-    kick_off_goal         = 98, //PENALTY_SPL_KICK_OFF_GOAL, // Deprecated since 2021
-    request_for_pickup    = PENALTY_SPL_REQUEST_FOR_PICKUP,
-    local_game_stuck      = PENALTY_SPL_LOCAL_GAME_STUCK,
-    illegal_positioning   = 99, //PENALTY_SPL_ILLEGAL_POSITIONING, // Deprecated since 2021
-    substitute            = PENALTY_SUBSTITUTE,
-    manual                = PENALTY_MANUAL
+    penalty_none            = PENALTY_NONE,
+    illegal_ball_contact    = PENALTY_SPL_ILLEGAL_BALL_CONTACT,
+    player_pushing          = PENALTY_SPL_PLAYER_PUSHING,
+    illegal_motion_in_set   = PENALTY_SPL_ILLEGAL_MOTION_IN_SET,
+    inactive_player         = PENALTY_SPL_INACTIVE_PLAYER,
+    illegal_defender        = 97, //PENALTY_SPL_ILLEGAL_DEFENDER, // Deprecated since 2021
+    leaving_the_field       = PENALTY_SPL_LEAVING_THE_FIELD,
+    kick_off_goal           = 98, //PENALTY_SPL_KICK_OFF_GOAL, // Deprecated since 2021
+    request_for_pickup      = PENALTY_SPL_REQUEST_FOR_PICKUP,
+    local_game_stuck        = PENALTY_SPL_LOCAL_GAME_STUCK,
+    illegal_positioning     = 99, //PENALTY_SPL_ILLEGAL_POSITIONING, // Deprecated since 2021
+    illegal_position        = PENALTY_SPL_ILLEGAL_POSITION,
+    illegal_position_in_set = PENALTY_SPL_ILLEGAL_POSITION_IN_SET,
+    player_stance           = PENALTY_SPL_PLAYER_STANCE,
+    substitute              = PENALTY_SUBSTITUTE,
+    manual                  = PENALTY_MANUAL
   };
 
 
@@ -129,9 +139,12 @@ public:
     TeamColor teamColor;            // colour of the team
     unsigned int score;             // team's score
     unsigned int penaltyShot;       // penalty shot counter
+    unsigned int messageBudget;     // number of team messages the team is allowed to send for the remainder of the game
     std::vector<RobotInfo> players; // the team's players
 
     // NOTE: not used yet
+    //unsigned int goalieNumber;      // unique goalie number
+    //TeamColor goalieColor;          // colour of the goalie
     //uint16_t singleShots;     // bits represent penalty shot success
   };
 
@@ -189,28 +202,51 @@ class GameReturnData: public Printable
 public:
   GameReturnData()
     :
-    team(0),
-    player(0),
-    message(alive)
+    playerNum(0),
+    teamNum(0),
+    fallen(ROBOT_CAN_PLAY)
   {}
 
-  enum Message
+  enum FallenState
   {
-    alive             = GAMECONTROLLER_RETURN_MSG_ALIVE,
-    dead              = 100
+    ROBOT_CAN_PLAY    = 0,
+    ROBOT_FALLEN      = 1
   };
 
-  static std::string toString(Message value);
+  static std::string toString(FallenState value);
 
-  int team;
-  int player;
-  Message message;
+  int playerNum;
+  int teamNum;
+  
+  FallenState fallen;  // 1 means that the robot is fallen, 0 means that the robot can play
+
+
+  /*
+  // NOT YET implemented
+  // position and orientation of robot
+  // coordinates in millimeters
+  // 0,0 is in center of field
+  // +ve x-axis points towards the goal we are attempting to score on
+  // +ve y-axis is 90 degrees counter clockwise from the +ve x-axis
+  // angle in radians, 0 along the +x axis, increasing counter clockwise
+  float pose[3];         // x,y,theta
+
+  // ball information
+  float ballAge;         // seconds since this robot last saw the ball. -1.f if we haven't seen it
+
+  // position of ball relative to the robot
+  // coordinates in millimeters
+  // 0,0 is in center of the robot
+  // +ve x-axis points forward from the robot
+  // +ve y-axis is 90 degrees counter clockwise from the +ve x-axis
+  float ball[2];
+  */
 
   virtual void print(std::ostream& stream) const
   {
-    stream << "team:\t"     << team << std::endl;
-    stream << "player:\t"   << player << std::endl;
-    stream << "message:\t"  << toString(message) << std::endl;
+    stream << "player:\t"   << playerNum << std::endl;
+    stream << "team:\t"     << teamNum << std::endl;
+    stream << "message:\t"  << toString(fallen) << std::endl;
   }
 };
 

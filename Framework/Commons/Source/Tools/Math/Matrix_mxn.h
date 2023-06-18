@@ -501,7 +501,7 @@ namespace Math
       Matrix_mxn<T> matrix(*this);
   
       // initialize ranking vector
-      Matrix_mxn<int> ranking(1, n);
+      Matrix_mxn<unsigned int> ranking(1, n);
       unsigned int i;
       for (i = 0; i < n; i++)
       {
@@ -509,17 +509,17 @@ namespace Math
       }
       T z = T();
       unsigned int c;
-      int r;
+      unsigned int r;
       for (c = 0; c < n - 1; c++)
       {
         // find row containing highest value
-        int maxRow = c;
+        unsigned int maxRow = c;
         T maxValue = matrix[ranking[0][maxRow]][c];
         if (maxValue < z)
         {
           maxValue = -maxValue;
         }
-        for (r = c + 1; r < ((int) n); ++r)
+        for (r = c + 1; r <  n; ++r)
         {
           T value = matrix[ranking[0][r]][c];
           if (value < z)
@@ -551,12 +551,12 @@ namespace Math
         */
   
         // swap rows in ranking
-        int temp = ranking[0][c];
+        unsigned int temp = ranking[0][c];
         ranking[0][c] = ranking[0][maxRow];
         ranking[0][maxRow] = temp;
   
         // process all following rows
-        for (r = c + 1; r < ((int) n); r++)
+        for (r = c + 1; r < n; r++)
         {
           // calc factor for subtracting
           T factor = matrix[ranking[0][r]][c] / matrix[ranking[0][c]][c];
@@ -632,8 +632,9 @@ namespace Math
       // matrix has triangle form
       // calculate solutions
       b[ranking[0][n - 1]][0] /= matrix[ranking[0][n - 1]][n - 1];
-      for (r = n - 2; r >= 0; r--)
+      for (unsigned int j = 0; j <= n-2; ++j)
       {
+        r = n-2 - j;
         T sum = T();
         for (c = r + 1; c < n; c++)
         {
@@ -704,7 +705,5 @@ namespace Math
 
   };
 
-
 }
 #endif
-

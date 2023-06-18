@@ -47,7 +47,7 @@ class UKF
             // calculate new process covariance
             Eigen::Matrix<double, S::size, 2*S::size + 1> temp;
             for(size_t idx = 0; idx < sigmaPoints.size(); ++idx) {
-               temp.col(idx) = sigmaPoints[idx] - mean;
+                temp.col(static_cast<Eigen::Index>(idx)) = sigmaPoints[idx] - mean;
             }
 
             state = mean;
@@ -71,14 +71,14 @@ class UKF
             // calculate current measurement covariance
             Eigen::Matrix<double, M::size, 2*S::size+1> temp;
             for(size_t idx = 0; idx < sigmaMeasurements.size(); ++idx) {
-                temp.col(idx) = sigmaMeasurements[idx] - predicted_z;
+                temp.col(static_cast<Eigen::Index>(idx)) = sigmaMeasurements[idx] - predicted_z;
             }
             Eigen::Matrix<double,M::size,M::size> Pzz(1.0 / static_cast<double>(sigmaPoints.size()) * temp * (temp).transpose());
 
             // calculate state-measurement cross-covariance
             Eigen::Matrix<double, S::size, 2*S::size + 1> temp2;
             for(size_t idx = 0; idx < sigmaPoints.size(); ++idx) {
-               temp2.col(idx) = sigmaPoints[idx] - state;
+                temp2.col(static_cast<Eigen::Index>(idx)) = sigmaPoints[idx] - state;
             }
             Eigen::Matrix<double,S::size,M::size> Pxz(1.0 / static_cast<double>(sigmaPoints.size()) * temp2 * (temp).transpose());
 
@@ -120,9 +120,9 @@ class UKF
             choleskyDecompositionOfCov.compute(P+Q);
             Eigen::Matrix<double,S::size,S::size> L = choleskyDecompositionOfCov.matrixL();
 
-            for(int i = 0; i < S::size; i++)
+            for(size_t i = 0; i < S::size; i++)
             {
-                S noise(std::sqrt(2*S::size) * L.col(i));
+                S noise(std::sqrt(2*S::size) * L.col(static_cast<Eigen::Index>(i)));
 
                 sigmaPoints[i]  = noise;
                 sigmaPoints[i] += state;

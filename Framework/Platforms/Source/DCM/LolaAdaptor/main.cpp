@@ -63,7 +63,7 @@ void got_signal(int sigid)
       already_got_signal = true;
       // if(sigid == SIGINT) 
       // {
-      //   system("paplay /opt/aldebaran/share/naoqi/wav/shutdown.wav");
+      //   system("/usr/bin/paplay /opt/aldebaran/share/naoqi/wav/shutdown.wav");
       // }
 
     // stop signal handling for now and give the binary time to stop gracefully
@@ -99,7 +99,7 @@ int main(int /*argc*/, char **/*argv[]*/)
   std::cout << "=========================================="  << std::endl;
   std::cout << "LoalAdaptor compiled on: " << __DATE__ << " at " << __TIME__ << std::endl;
 
-  system("paplay /opt/aldebaran/share/naoqi/wav/bip_power_on.wav");
+  system("/usr/bin/paplay /home/nao/Media/bip_power_on.wav");
 
   #ifdef REVISION
   std::cout << "Revision number: " << TO_STRING(REVISION) << std::endl;

@@ -286,6 +286,8 @@ message MotionStatus
   optional bool   head_got_stuck = 12;
   
   optional bool   walk_emergency_stop = 13;
+  
+  optional bool   head_at_rest = 14;
 }
 
 message OdometryData
@@ -412,6 +414,8 @@ message IMUData
  optional DoubleVector3 rotational_velocity_sensor = 7;
  required DoubleVector2 orientation = 8;
  required DoubleVector3 orientation_rotvec = 9;
+
+ optional bool has_been_reset = 10;
 }
 
 message CentreOfPressure {
