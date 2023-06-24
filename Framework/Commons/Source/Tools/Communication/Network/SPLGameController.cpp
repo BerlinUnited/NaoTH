@@ -1,9 +1,17 @@
+
 #include "SPLGameController.h"
-#include <cstdlib>
+
 #include <PlatformInterface/Platform.h>
-#include <sys/socket.h>
 #include "Tools/Communication/NetAddr.h"
 #include <Tools/ThreadUtil.h>
+
+#include <cstdlib>
+
+#ifdef WIN32
+#include <winsock.h>
+#else // Linux/MACOS
+#include <sys/socket.h>
+#endif
 
 using namespace naoth;
 using namespace std;
@@ -28,6 +36,12 @@ SPLGameController::SPLGameController()
     cancelable = g_cancellable_new();
 
     // init return data
+    // 
+    // NOTE: subtle harmless "bug": copy zero terminated c-string (4+1 chars) 
+    //       but header is only 4 chars long. 
+    //       The terminal '\0' is copied into 'version' and is then overwritten
+    // 
+    // Is there a more elegant+safer way of doing this?
     strcpy(dataOut.header, GAMECONTROLLER_RETURN_STRUCT_HEADER);
     dataOut.version = GAMECONTROLLER_RETURN_STRUCT_VERSION;
     dataOut.playerNum = 0;
@@ -54,11 +68,35 @@ GError* SPLGameController::bindAndListen(unsigned int port)
 {
   GError* err = NULL;
   socket = g_socket_new(G_SOCKET_FAMILY_IPV4, G_SOCKET_TYPE_DATAGRAM, G_SOCKET_PROTOCOL_UDP, &err);
-  if(err) return err;
+  
+  if(err) { 
+    return err;
+  }
+
   g_socket_set_blocking(socket, true);
 
-  int broadcast = 1;
-  setsockopt(g_socket_get_fd(socket), SOL_SOCKET, SO_BROADCAST, &broadcast, sizeof(int));
+  // NOTE:
+  // Set the broadcast option directly. GLib spoorts it starting version 2.36.
+  // Linux and Windows let you set a single-byte value from an int,
+  // but most other platforms don't.
+  // https://github.com/GNOME/glib/blob/main/gio/gsocket.c#L6340
+  // TODO: the following might not work on MACOS
+
+#ifdef WIN32
+  // https://learn.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-setsockopt
+  // https://learn.microsoft.com/en-us/windows/win32/winprog/windows-data-types
+  BOOL broadcastFlag = TRUE;
+  setsockopt(g_socket_get_fd(socket), SOL_SOCKET, SO_BROADCAST, (const char*)(&broadcastFlag), sizeof(broadcastFlag));
+#else // Linux/MACOS
+  // https://linux.die.net/man/3/setsockopt
+  int broadcastFlag = 1;
+  setsockopt(g_socket_get_fd(socket), SOL_SOCKET, SO_BROADCAST, (const char*)(&broadcastFlag), static_cast<socklen_t> (sizeof(int)));
+#endif
+
+  // NOTE: needs newer glib 2.36
+  //g_socket_set_broadcast(socket, true);
+  // or ...
+  //g_socket_set_option (...);
 
   GInetAddress* inetAddress = g_inet_address_new_any(G_SOCKET_FAMILY_IPV4);
   GSocketAddress* socketAddress = g_inet_socket_address_new(inetAddress, static_cast<guint16>(port));
@@ -90,6 +128,13 @@ bool SPLGameController::update()
       data.valid = true;
     }
   } // end if header correct
+  else
+  {
+    std::cerr << "[SPLGameController] Invalid header and/or version ("
+              << " header: " << header << " != " << GAMECONTROLLER_STRUCT_HEADER
+              << " ; version: " << GAMECONTROLLER_STRUCT_VERSION << " != " << dataIn.version
+              << ")!" << std::endl;
+  }
 
   return data.valid;
 }
@@ -174,7 +219,7 @@ void SPLGameController::socketLoop()
   while(!exiting && socket != NULL)
   {
     GSocketAddress* senderAddress = NULL;
-    int size = g_socket_receive_from(socket, &senderAddress,
+    gssize size = g_socket_receive_from(socket, &senderAddress,
                                      (char*)(&dataIn),
                                      sizeof(RoboCupGameControlData),
                                      cancelable, NULL);

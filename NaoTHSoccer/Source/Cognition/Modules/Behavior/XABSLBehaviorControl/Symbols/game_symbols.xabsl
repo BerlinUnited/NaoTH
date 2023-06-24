@@ -5,8 +5,6 @@ namespace game_symbols("Game Control Symbols")
   enum game.type
   {
     normal,
-    challenge_shield,
-    game_7v7,
     dynamic_ball_handling
   };
 
