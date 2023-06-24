@@ -4,6 +4,7 @@
 #include <ModuleFramework/Module.h>
 #include <Representations/Infrastructure/FrameInfo.h>
 #include <Representations/Infrastructure/TeamMessageData.h>
+#include "Representations/Modeling/TeamState.h"
 #include "Representations/Modeling/TeamMessage.h"
 #include "Representations/Modeling/TeamMessageData.h"
 #include "Representations/Modeling/PlayerInfo.h"
@@ -29,6 +30,7 @@ BEGIN_DECLARE_MODULE(TeamCommReceiver)
   REQUIRE(TeamMessageDataIn)
   REQUIRE(WifiMode)
 
+  PROVIDE(TeamState)
   PROVIDE(TeamMessage)
   PROVIDE(TeamMessageData)
 END_DECLARE_MODULE(TeamCommReceiver)
@@ -66,7 +68,8 @@ private:
 
 private:
   void handleMessage(const std::string& data);
-  
+  void updateTeamState(const TeamMessageData& msg);
+
   // TODO: move this into SPLStandardMessage.h or some other more suitable place
   /** Parses the informations of the string (spl message) and updates the corresponding fields of this object.
   *  A player/team number different than 0 defines which messages of a player/team are only parsed (restricted to this number).

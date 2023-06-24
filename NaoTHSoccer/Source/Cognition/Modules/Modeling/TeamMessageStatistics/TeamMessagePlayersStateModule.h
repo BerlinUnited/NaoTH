@@ -5,13 +5,13 @@
 #include "Tools/DataStructures/ParameterList.h"
 #include "Tools/Debug/DebugParameterList.h"
 #include "Representations/Infrastructure/FrameInfo.h"
-#include "Representations/Modeling/TeamMessage.h"
+#include "Representations/Modeling/TeamState.h"
 #include "Representations/Modeling/TeamMessagePlayersState.h"
 #include "Representations/Modeling/TeamMessageStatistics.h"
 
 
 BEGIN_DECLARE_MODULE(TeamMessagePlayersStateModule)
-  REQUIRE(TeamMessage)
+  REQUIRE(TeamState)
   REQUIRE(FrameInfo)
   REQUIRE(TeamMessageStatistics)
 
@@ -69,8 +69,8 @@ private:
     /**
      * @brief Determines the 'dead/alive' status for each player we received a message from.
      */
-    void calc(bool (TeamMessagePlayersStateModule::*func)(const TeamMessageData&) const) {
-        for(const auto& it : getTeamMessage().data) {
+    void calc(bool (TeamMessagePlayersStateModule::*func)(const TeamState::Player&) const) {
+        for (const auto& it: getTeamState().players) {
             getTeamMessagePlayersState().data[it.first].alive = (this->*func)(it.second);
         }
     }
@@ -86,12 +86,12 @@ private:
      * @param player    the player the 'dead' status should be determined for
      * @return true|false   whether the player is 'dead' or not
      */
-    bool messageIndicator(const TeamMessageData& data) const {
+    bool messageIndicator(const TeamState::Player& player) const {
         const auto& stats = getTeamMessageStatistics();
-        if(stats.isStatisticsActive(data.playerNumber)) {
-            return stats.getMessageIndicator(data.playerNumber) <= params.maxMessageReceivingIndicator;
+        if(stats.isStatisticsActive(player.number)) {
+            return stats.getMessageIndicator(player.number) <= params.maxMessageReceivingIndicator;
         }
-        return messageLastReceived(data);
+        return messageLastReceived(player);
     }
 
     /**
@@ -101,8 +101,8 @@ private:
      * @param player    the player the 'alive' status should be determined for
      * @return true|false   whether the player is 'dead' or 'alive'
      */
-    bool messageLastReceived(const TeamMessageData& data) const {
-        return getFrameInfo().getTimeSince(data.frameInfo) <= params.maxTimeLastMessageReceived;
+    bool messageLastReceived(const TeamState::Player& player) const {
+        return (naoth::NaoTime::getSystemTimeInMilliSeconds() - player.messageParsed) <= params.maxTimeLastMessageReceived;
     }
 
     /**
@@ -112,9 +112,9 @@ private:
      * @param player    the player the 'alive' status should be determined for
      * @return true|false   whether the player is 'dead' or 'alive'
      */
-    bool messageSimple(const TeamMessageData& data) const {
+    bool messageSimple(const TeamState::Player& player) const {
         // HACK: prevent 'unused-parameter' warning
-        return &data == &data;
+        return &player == &player;
     }
 
     /**
@@ -123,14 +123,14 @@ private:
      *        ('ready','set','playing').
      */
     void determineActiveStates() {
-        for(const auto& it : getTeamMessage().data) {
+        for (const auto& it: getTeamState().players) {
             auto& active = getTeamMessagePlayersState().data[it.first].active;
             active = getTeamMessagePlayersState().isAlive(it.first) && (
-                        it.second.custom.robotState == PlayerInfo::ready ||
-                        it.second.custom.robotState == PlayerInfo::set ||
-                        it.second.custom.robotState == PlayerInfo::playing
+                        it.second.state() == PlayerInfo::ready ||
+                        it.second.state() == PlayerInfo::set ||
+                        it.second.state() == PlayerInfo::playing
                     );
-            getTeamMessagePlayersState().data[it.first].penalized = it.second.custom.robotState == PlayerInfo::penalized;
+            getTeamMessagePlayersState().data[it.first].penalized = it.second.state() == PlayerInfo::penalized;
         }
     }
 
@@ -140,8 +140,8 @@ private:
      *        There could be other indicators, like de-localised robots.
      */
     void determinePlayingStates() {
-        for(const auto& it : getTeamMessage().data) {
-            getTeamMessagePlayersState().data[it.first].playing = !it.second.fallen && it.second.custom.readyToWalk;
+        for (const auto& it: getTeamState().players) {
+            getTeamMessagePlayersState().data[it.first].playing = !it.second.fallen() && it.second.readyToWalk();
         }
     }
 

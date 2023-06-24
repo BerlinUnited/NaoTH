@@ -9,10 +9,8 @@
 #include "Tools/Debug/DebugPlot.h"
 #include "Tools/Debug/DebugRequest.h"
 
-#include "Representations/Modeling/TeamMessage.h"
-#include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Modeling/PlayerInfo.h"
-#include "Representations/Modeling/TeamMessageData.h"
+#include "Representations/Modeling/TeamState.h"
 #include "Representations/Modeling/TeamMessageNTP.h"
 
 
@@ -21,12 +19,10 @@ BEGIN_DECLARE_MODULE(SimpleNetworkTimeProtocol)
   PROVIDE(DebugParameterList)
   PROVIDE(DebugPlot)
 
-  REQUIRE(FrameInfo)
   REQUIRE(PlayerInfo)
-  REQUIRE(TeamMessage)
+  REQUIRE(TeamState)
 
   PROVIDE(TeamMessageNTP)
-  PROVIDE(TeamMessageData)
 END_DECLARE_MODULE(SimpleNetworkTimeProtocol)
 
 

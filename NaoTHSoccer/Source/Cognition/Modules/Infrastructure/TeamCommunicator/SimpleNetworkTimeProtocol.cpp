@@ -19,17 +19,15 @@ void SimpleNetworkTimeProtocol::execute() {
 
 void SimpleNetworkTimeProtocol::createNtpRequest()
 {
-    TeamMessage const& tm = getTeamMessage();
     // get all players (except myself)
     std::vector<unsigned int> players;
-    for(auto const& it: tm.data) {
-        if(it.second.playerNumber == getPlayerInfo().playerNumber) { continue; }
+    for(auto const& it: getTeamState().players) {
+        if(it.second.number == getPlayerInfo().playerNumber) { continue; }
         players.push_back(it.first);
     }
 
-    TeamMessageData& msg = getTeamMessageData();
     // clear requests from previous round
-    msg.custom.ntpRequests.clear();
+    getTeamMessageNTP().requests.clear();
 
     // if another player is present
     if(!players.empty() && params.maxSyncingPlayer > 0) {
@@ -37,9 +35,9 @@ void SimpleNetworkTimeProtocol::createNtpRequest()
         std::shuffle(players.begin(), players.end(), SimpleNetworkTimeProtocol::rng);
         // fill ntp request for max. syncing partners
         for(unsigned int i = 0; i<players.size() && i<params.maxSyncingPlayer; ++i) {
-            auto& player = tm.data.at(players.at(i));
-            msg.custom.ntpRequests.push_back(
-                {player.playerNumber, player.custom.timestamp, player.timestampParsed}
+            auto& player = getTeamState().getPlayer(players.at(i));
+            getTeamMessageNTP().requests.push_back(
+                {player.number, player.messageTimestamp, player.ntpRequests.time()}
             );
         }
     }
@@ -48,42 +46,42 @@ void SimpleNetworkTimeProtocol::createNtpRequest()
 void SimpleNetworkTimeProtocol::updateMessageStatistics()
 {
     // iterate over all team messages
-    for(const auto& it : getTeamMessage().data)
+    for(const auto& it : getTeamState().players)
     {
-        const TeamMessageData& data = it.second;
+        auto player = it.second;
         // skip my own messages
-        if(data.playerNumber == getPlayerInfo().playerNumber) {
+        if(player.number == getPlayerInfo().playerNumber) {
             // update myself
-            getTeamMessageNTP().getPlayer(data.playerNumber).lastNtpUpdate = data.frameInfo;
+            getTeamMessageNTP().getPlayer(player.number).lastNtpUpdate = player.ntpRequests.time();
             continue;
         }
-        TeamMessageNTP::Player& player = getTeamMessageNTP().getPlayer(data.playerNumber);
+        TeamMessageNTP::Player& ntp = getTeamMessageNTP().getPlayer(player.number);
         // Update only with newer information
-        if(data.frameInfo > player.lastNtpUpdate)
+        if(player.ntpRequests.time() > ntp.lastNtpUpdate)
         {
             // search for myself in teammates response messages
             auto response = std::find_if(
-                        data.custom.ntpRequests.cbegin(),
-                        data.custom.ntpRequests.cend(),
-                        [&](const NtpRequest& r) {return r.playerNumber == getPlayerInfo().playerNumber;}
+                        player.ntpRequests().cbegin(),
+                        player.ntpRequests().cend(),
+                        [&](const TeamMessageNTP::Request& r) {return r.playerNumber == getPlayerInfo().playerNumber;}
             );
             // got my 'new' synchronization message from teammate back ...
-            if (response != data.custom.ntpRequests.cend())
+            if (response != player.ntpRequests().cend())
             {
                 const auto& t1 = response->sent;
                 const auto& t2 = response->received;
-                const auto& t3 = data.custom.timestamp;
-                const auto& t4 = data.timestampParsed;
+                const auto& t3 = player.messageTimestamp;
+                const auto& t4 = player.ntpRequests.time();
                 const long long rtt = (t4 - t1) - (t3 - t2);
                 const long long lat = rtt / 2;
-                if(player.rtt == 0 || player.rtt > rtt) {
-                    player.rtt = rtt;
-                    player.latency = lat;
-                    player.offset = (t4 - lat) - t3;
+                if(ntp.rtt == 0 || ntp.rtt > rtt) {
+                    ntp.rtt = rtt;
+                    ntp.latency = lat;
+                    ntp.offset = (t4 - lat) - t3;
                 }
             }
             // set last update time
-            player.lastNtpUpdate = data.frameInfo;
+            ntp.lastNtpUpdate = player.ntpRequests.time();
         }
     }
 }

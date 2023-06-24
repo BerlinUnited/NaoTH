@@ -10,6 +10,8 @@
 #ifndef NAOTIME_H
 #define NAOTIME_H
 
+typedef unsigned long long NaoTimestamp;
+
 namespace naoth
 {
 class NaoTime 

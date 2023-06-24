@@ -7,12 +7,12 @@
 #include "Tools/Debug/DebugParameterList.h"
 #include "Tools/StringTools.h"
 
-#include "Representations/Modeling/TeamMessage.h"
+#include "Representations/Modeling/TeamState.h"
 #include "Representations/Modeling/RoleDecisionModel.h"
 
 
 BEGIN_DECLARE_MODULE(RoleDecisionAssignmentStatic)
-  REQUIRE(TeamMessage)
+  REQUIRE(TeamState)
   PROVIDE(DebugParameterList)
   PROVIDE(RoleDecisionModel)
 END_DECLARE_MODULE(RoleDecisionAssignmentStatic);
@@ -32,7 +32,7 @@ public:
     }
 
     virtual void execute() {
-        for (const auto& i : getTeamMessage().data) {
+        for (const auto& i: getTeamState().players) {
             const auto& r = params.assignment_role.find(i.first);
             if(r == params.assignment_role.cend()) {
                 getRoleDecisionModel().roles[i.first].role = Roles::unknown;
