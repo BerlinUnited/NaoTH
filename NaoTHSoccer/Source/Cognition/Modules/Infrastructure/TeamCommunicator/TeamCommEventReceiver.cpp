@@ -55,6 +55,9 @@ void TeamCommEventReceiver::handleMessage(const std::string& data)
     //   return;
     // }
 
+    auto ntpRequests = std::vector<TeamMessageNTP::Request>();
+
+    // iterate through received data
     for (auto messagePart : message.details())
     {
       if (messagePart.Is<naothmessages::Ntp>())
@@ -62,8 +65,13 @@ void TeamCommEventReceiver::handleMessage(const std::string& data)
         naothmessages::Ntp ntp;
         messagePart.UnpackTo(&ntp);
 
-        std::cout << message.playernum() << " == " << ntp.playernum() << " - " << ntp.sent() << " - " << ntp.received() << std::endl;
+        ntpRequests.push_back({(PlayerNumber)ntp.playernum(), ntp.sent(), ntp.received()});
       }
+    }
+
+    if (!ntpRequests.empty())
+    {
+      getTeamState().getPlayer(message.playernum()).ntpRequests = ntpRequests;
     }
   }
 }

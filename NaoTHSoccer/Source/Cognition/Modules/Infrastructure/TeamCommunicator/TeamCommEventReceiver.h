@@ -4,6 +4,7 @@
 #include <ModuleFramework/Module.h>
 #include <Representations/Infrastructure/FrameInfo.h>
 #include <Representations/Infrastructure/TeamMessageData.h>
+#include "Representations/Modeling/TeamState.h"
 #include "Representations/Modeling/TeamMessage.h"
 #include "Representations/Modeling/TeamMessageData.h"
 #include "Representations/Modeling/PlayerInfo.h"
@@ -25,6 +26,7 @@ BEGIN_DECLARE_MODULE(TeamCommEventReceiver)
   REQUIRE(TeamMessageDataIn)
   REQUIRE(WifiMode)
 
+  PROVIDE(TeamState)
   PROVIDE(TeamMessage)
   PROVIDE(TeamMessageData)
 END_DECLARE_MODULE(TeamCommEventReceiver)
