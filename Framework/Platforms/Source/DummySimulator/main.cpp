@@ -5,7 +5,6 @@
  * Created on 2017.05.21
  */
 
-#include <getopt.h>
 #include <glib.h>
 #include <glib-object.h>
 
@@ -45,52 +44,34 @@ void print_info()
   std::cout << "==========================================\n"  << std::endl;
 }
 
-void print_help()
-{
-  std::cout <<
-      "USAGE: ./dummysimulator [options]\n\n"
-      "OPTIONS:\n"
-      "-b|--backend:        Use DummySimulator with RobotControl\n"
-      "-g|--gamecontroller: Listen to the GameController\n"
-      "-t|--teamcomm:       Use TeamComm\n"
-      "-i|--interface <n>:  The TeamComm interface, default = wifi0\n"
-      "-d|--debug <n>:      Debug port, default = 5401\n"
-      "-h|--help:           Show help\n";
-  exit(EXIT_FAILURE);
-}
+struct Options {
+  gboolean backendMode = false;
+  gint port = 5401;
+  gboolean useGameController = false;
+  gboolean useTeamComms = false;
+  gchar* teamcommInterface = "wlan0";
+  gint playerNumber = 0; // zero means read from config
+};
 
-void parse_arguments(int argc, char** argv,
-                     bool& backendMode,
-                     unsigned short& port,
-                     bool& useGameController,
-                     bool& useTeamComms,
-                     string& teamcommInterface)
+void parse_arguments(int argc, char** argv, Options& o)
 {
-  const char* const short_opts = "bgti:d:h";
-  const option long_opts[] = {
-      {"backend",        no_argument,       nullptr, 'b'},
-      {"gamecontroller", no_argument,       nullptr, 'g'},
-      {"teamcomm",       no_argument,       nullptr, 't'},
-      {"interface",      required_argument, nullptr, 'i'},
-      {"debug",          required_argument, nullptr, 'd'},
-      {"help",           no_argument,       nullptr, 'h'},
-      {nullptr,          0,                 nullptr,  0 }
+  GOptionEntry entries[] = {
+    {"backend",       'b', 0, G_OPTION_ARG_NONE,   &o.backendMode,       "Use DummySimulator with RobotControl", NULL},
+    {"gamecontroller",'g', 0, G_OPTION_ARG_NONE,   &o.useGameController, "Listen to the GameController", NULL},
+    {"teamcomm",      't', 0, G_OPTION_ARG_NONE,   &o.useTeamComms,      "Use TeamComm", NULL},
+    {"interface",     'i', 0, G_OPTION_ARG_STRING, &o.teamcommInterface, "The TeamComm interface, default = wlan0", "wlan0"},
+    {"debug",         'd', 0, G_OPTION_ARG_INT,    &o.port,              "Debug port, default = 5401", "5401"},
+    {"num",           'n', 0, G_OPTION_ARG_INT,    &o.playerNumber,      "Player number", "0"},
+    {NULL,0,0,G_OPTION_ARG_NONE, NULL, NULL, NULL} // This NULL is very important!!!
   };
 
-  int opt;
-  while ((opt = getopt_long(argc, argv, short_opts, long_opts, nullptr)) != -1) {
-      switch (opt) {
-          case 'b': backendMode = true; break;
-          case 'g': useGameController = true; break;
-          case 't': useTeamComms = true; break;
-          case 'i': teamcommInterface.assign(optarg); break;
-          case 'd': port = atoi(optarg); break; // debug port
-          case 'h': // -h or --help
-          case '?': // Unrecognized option
-          default:
-              print_help();
-              break;
-      }
+  GError *error = NULL;
+  GOptionContext *context = g_option_context_new(NULL);
+  g_option_context_add_main_entries (context, entries, NULL);
+  if (!g_option_context_parse (context, &argc, &argv, &error))
+  {
+    g_print ("option parsing failed: %s\n", error->message);
+    exit(EXIT_FAILURE);
   }
 }
 
@@ -100,22 +81,19 @@ int main(int argc, char** argv)
 
   g_type_init();
 
-  bool backendMode = false;
-  unsigned short port = 5401;
-  bool useGameController = false;
-  bool useTeamComms = false;
-  string teamcommInterface = "wlan0";
-
-  parse_arguments(argc, argv, backendMode, port, useGameController, useTeamComms, teamcommInterface);
+  Options options;
+  parse_arguments(argc, argv, options);
 
   // create the simulator instance
-  DummySimulator sim(backendMode, port);
+  // TODO: why is it unsigned short?
+  DummySimulator sim(options.backendMode, static_cast<unsigned short>(options.port));
   
   // init the platform
   Platform::getInstance().init(&sim);
 
-  if (useGameController) { sim.enableGameController(); }
-  if (useTeamComms) { sim.enableTeamComm(teamcommInterface); }
+  if (options.useGameController) { sim.enableGameController(); }
+  if (options.useTeamComms) { sim.enableTeamComm(options.teamcommInterface); }
+  if (options.playerNumber != 0) { Platform::getInstance().theConfiguration.setInt("player", "PlayerNumber", (int)options.playerNumber); }
 
   //init_agent(sim);
   Cognition* theCognition = createCognition();

@@ -6880,6 +6880,13 @@ class IMUData : public ::google::protobuf::Message /* @@protoc_insertion_point(c
   ::naothmessages::DoubleVector3* release_orientation_rotvec();
   void set_allocated_orientation_rotvec(::naothmessages::DoubleVector3* orientation_rotvec);
 
+  // optional bool has_been_reset = 10;
+  bool has_has_been_reset() const;
+  void clear_has_been_reset();
+  static const int kHasBeenResetFieldNumber = 10;
+  bool has_been_reset() const;
+  void set_has_been_reset(bool value);
+
   // @@protoc_insertion_point(class_scope:naothmessages.IMUData)
  private:
   void set_has_location();
@@ -6900,6 +6907,8 @@ class IMUData : public ::google::protobuf::Message /* @@protoc_insertion_point(c
   void clear_has_orientation();
   void set_has_orientation_rotvec();
   void clear_has_orientation_rotvec();
+  void set_has_has_been_reset();
+  void clear_has_has_been_reset();
 
   // helper for ByteSizeLong()
   size_t RequiredFieldsByteSizeFallback() const;
@@ -6916,6 +6925,7 @@ class IMUData : public ::google::protobuf::Message /* @@protoc_insertion_point(c
   ::naothmessages::DoubleVector3* rotational_velocity_sensor_;
   ::naothmessages::DoubleVector2* orientation_;
   ::naothmessages::DoubleVector3* orientation_rotvec_;
+  bool has_been_reset_;
   friend struct protobuf_Representations_2eproto::TableStruct;
 };
 // -------------------------------------------------------------------
@@ -14684,6 +14694,30 @@ inline void IMUData::set_allocated_orientation_rotvec(::naothmessages::DoubleVec
     clear_has_orientation_rotvec();
   }
   // @@protoc_insertion_point(field_set_allocated:naothmessages.IMUData.orientation_rotvec)
+}
+
+// optional bool has_been_reset = 10;
+inline bool IMUData::has_has_been_reset() const {
+  return (_has_bits_[0] & 0x00000200u) != 0;
+}
+inline void IMUData::set_has_has_been_reset() {
+  _has_bits_[0] |= 0x00000200u;
+}
+inline void IMUData::clear_has_has_been_reset() {
+  _has_bits_[0] &= ~0x00000200u;
+}
+inline void IMUData::clear_has_been_reset() {
+  has_been_reset_ = false;
+  clear_has_has_been_reset();
+}
+inline bool IMUData::has_been_reset() const {
+  // @@protoc_insertion_point(field_get:naothmessages.IMUData.has_been_reset)
+  return has_been_reset_;
+}
+inline void IMUData::set_has_been_reset(bool value) {
+  set_has_has_been_reset();
+  has_been_reset_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.IMUData.has_been_reset)
 }
 
 // -------------------------------------------------------------------

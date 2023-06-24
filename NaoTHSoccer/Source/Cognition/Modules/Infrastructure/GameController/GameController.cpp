@@ -86,6 +86,19 @@ GameController::GameController()
     getPlayerInfo().playerNumber = config.getInt("team", name);
   }
 
+  if (config.hasKey("player", "InitialState")) {
+    const auto state  = config.getString("player", "InitialState");
+    const auto states = {PlayerInfo::initial,  PlayerInfo::ready,
+                         PlayerInfo::set,      PlayerInfo::playing,
+                         PlayerInfo::finished, PlayerInfo::penalized,
+                         PlayerInfo::unstiff};
+    for (const auto& s : states) {
+      if (state == PlayerInfo::toString(s)) {
+          getPlayerInfo().robotState = s;
+      }
+    }
+  }
+
   // print out the "final" player number for loggin purposes
   std::cout << "[PlayerInfo] " << "playerNumber: " << getPlayerInfo().playerNumber << std::endl;
 }
