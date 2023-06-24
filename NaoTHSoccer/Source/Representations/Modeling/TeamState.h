@@ -22,6 +22,8 @@ public:
     template<typename T> struct TimestampedData
     {
         public:
+            TimestampedData() {}
+            TimestampedData(T val) : data(val) {}
             const T& operator()() const { return data; }
             TimestampedData& operator=(const T& data) {
                 this->data = data;
@@ -43,33 +45,33 @@ public:
         /** the frameinfo when the last message was parsed/received */
         FrameInfo messageFrameInfo;
         /** timestamp in ms when the last message was parsed/received */
-        NaoTimestamp messageParsed;
+        NaoTimestamp messageParsed = 0;
         /** timestamp in ms when the message was send; 0 if it wasn't send */
-        NaoTimestamp messageTimestamp;
+        NaoTimestamp messageTimestamp = 0;
 
         /** ntp requests from teammates */
         TimestampedData<std::vector<TeamMessageNTP::Request>> ntpRequests;
 
         /** state of the robot (initial, ready, set, play, finish, penalized) */
-        TimestampedData<PlayerInfo::RobotState> state;
+        TimestampedData<PlayerInfo::RobotState> state = PlayerInfo::unstiff;
         /** true means that the robot is fallen, false means that the robot can play */
-        TimestampedData<bool> fallen;
+        TimestampedData<bool> fallen = false;
         /** indicates, whether the robot is ready to walk */
-        TimestampedData<bool> readyToWalk;
+        TimestampedData<bool> readyToWalk = false;
         /** the robot pose */
         TimestampedData<Pose2D> pose;
 
         /** ms since this robot last saw the ball. -1 if we haven't seen it */
-        TimestampedData<double> ballAge;
+        TimestampedData<double> ballAge = -1.0;
         /** position of ball relative to the robot coordinates in millimeters; 0,0 is in centre of the robot */
         TimestampedData<Vector2d> ballPosition;
         /** the shorest time, in which the robot can reach the ball [ms] */
-        TimestampedData<unsigned int> timeToBall;
+        TimestampedData<unsigned int> timeToBall = 0;
 
         /** announcement that the player wants to be striker */
-        TimestampedData<bool> wantsToBeStriker;
+        TimestampedData<bool> wantsToBeStriker = false;
         /** the player decided to be striker */
-        TimestampedData<bool> wasStriker;
+        TimestampedData<bool> wasStriker = false;
         /** role of the robot (static & dynamic) */
         TimestampedData<Roles::Role> robotRole;
 
