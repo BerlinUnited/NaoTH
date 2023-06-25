@@ -246,7 +246,7 @@ workspace "NaoTHSoccer"
        
         dofile (FRAMEWORK_PATH .. "/Platforms/Make/LolaAdaptor.lua")
         kind "ConsoleApp"
-        links { "NaoTHSoccer", "Commons", naoth_links}
+        links { "NaoTHSoccer", "Commons"}
         vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/LolaAdaptor" }
       
     -- generate tests if required
