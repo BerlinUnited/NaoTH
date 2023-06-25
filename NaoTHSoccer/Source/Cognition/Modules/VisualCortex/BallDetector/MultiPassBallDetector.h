@@ -92,7 +92,7 @@ class MultiPassBallDetector: private MultiPassBallDetectorBase, private ModuleMa
 {
 public:
   MultiPassBallDetector();
-  ~MultiPassBallDetector();
+  virtual ~MultiPassBallDetector();
 
   void execute(CameraInfo::CameraID id);
 
