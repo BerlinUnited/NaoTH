@@ -33,45 +33,93 @@ void TeamCommEventReceiver::execute()
 
   // marking the begin of the outgoing message
   getTeamMessageData().frameInfo = getFrameInfo();
-  // TODO: should we clear the old state?!? (see TeamMessageData::clear())
-
-  PLOT("TeamCommEventReceiver:dropNoSplMessage", getTeamMessage().dropNoSplMessage);
-  PLOT("TeamCommEventReceiver:dropNotOurTeam",   getTeamMessage().dropNotOurTeam);
-  PLOT("TeamCommEventReceiver:dropNotParseable", getTeamMessage().dropNotParseable);
-  PLOT("TeamCommEventReceiver:dropKeyFail",      getTeamMessage().dropKeyFail);
-  PLOT("TeamCommEventReceiver:dropMonotonic",    getTeamMessage().dropMonotonic);
   */
 }
 
 void TeamCommEventReceiver::handleMessage(const std::string& data)
 {
-  std::cout << "handleMessage()" << std::endl;
-
-  naothmessages::TeamMessageEvent message;
-  if (message.ParseFromString(data)) 
+  naothmessages::TeamState::Player message;
+  if (message.ParseFromString(data))
   {
     // ignore own messages
     // if (message.playernum() == (int)getPlayerInfo().playerNumber) {
     //   return;
     // }
 
-    auto ntpRequests = std::vector<TeamMessageNTP::Request>();
+    auto state = getTeamState().getPlayer(message.number());
 
-    // iterate through received data
-    for (auto messagePart : message.details())
+    if (message.ntprequest().size() > 0)
     {
-      if (messagePart.Is<naothmessages::Ntp>())
-      {
-        naothmessages::Ntp ntp;
-        messagePart.UnpackTo(&ntp);
-
-        ntpRequests.push_back({(PlayerNumber)ntp.playernum(), ntp.sent(), ntp.received()});
-      }
+        auto ntpRequests = std::vector<TeamMessageNTP::Request>(message.ntprequest_size());
+        for(int i=0; i < message.ntprequest_size(); i++)
+        {
+            auto& request = message.ntprequest((int)i);
+            auto& syncingPlayer = ntpRequests[i];
+            syncingPlayer.playerNumber = request.playernum();
+            syncingPlayer.sent = request.sent();
+            syncingPlayer.received = request.received();
+        }
+        state.ntpRequests = ntpRequests;
     }
 
-    if (!ntpRequests.empty())
+    if (message.has_robotstate())
     {
-      getTeamState().getPlayer(message.playernum()).ntpRequests = ntpRequests;
+        state.state = (PlayerInfo::RobotState) message.robotstate();
+    }
+
+    if (message.has_fallen())
+    {
+        state.fallen = message.fallen();
+    }
+
+    if (message.has_readytowalk())
+    {
+        state.readyToWalk = message.readytowalk();
+    }
+
+    if (message.has_pose())
+    {
+        state.pose = {
+          message.pose().rotation(),
+          message.pose().translation().x(),
+          message.pose().translation().y()
+        };
+    }
+
+    if (message.has_ballage())
+    {
+        state.ballAge = message.ballage();
+    }
+
+    if (message.has_ballposition())
+    {
+        state.ballPosition = {
+          message.ballposition().x(),
+          message.ballposition().y()
+        };
+    }
+
+    if (message.has_timetoball())
+    {
+        state.timeToBall = message.timetoball();
+    }
+
+    if (message.has_wantstobestriker())
+    {
+        state.wantsToBeStriker = message.wantstobestriker();
+    }
+
+    if (message.has_wasstriker())
+    {
+      state.wasStriker = message.wasstriker();
+    }
+
+    if (message.has_robotrole())
+    { 
+      state.robotRole = {
+        (Roles::Static)message.robotrole().role_static(),
+        (Roles::Dynamic)message.robotrole().role_dynamic()
+      };
     }
   }
 }
