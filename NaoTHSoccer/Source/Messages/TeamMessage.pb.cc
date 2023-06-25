@@ -53,11 +53,6 @@ public:
  ::google::protobuf::internal::ExplicitlyConstructed<TeamMessage>
      _instance;
 } _TeamMessage_default_instance_;
-class TeamMessageEventDefaultTypeInternal {
-public:
- ::google::protobuf::internal::ExplicitlyConstructed<TeamMessageEvent>
-     _instance;
-} _TeamMessageEvent_default_instance_;
 class TeamState_PlayerDefaultTypeInternal {
 public:
  ::google::protobuf::internal::ExplicitlyConstructed<TeamState_Player>
@@ -74,7 +69,7 @@ namespace protobuf_TeamMessage_2eproto {
 
 namespace {
 
-::google::protobuf::Metadata file_level_metadata[10];
+::google::protobuf::Metadata file_level_metadata[9];
 const ::google::protobuf::EnumDescriptor* file_level_enum_descriptors[4];
 
 }  // namespace
@@ -90,7 +85,6 @@ PROTOBUF_CONSTEXPR_VAR ::google::protobuf::internal::AuxillaryParseTableField
 };
 PROTOBUF_CONSTEXPR_VAR ::google::protobuf::internal::ParseTable const
     TableStruct::schema[] GOOGLE_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
-  { NULL, NULL, 0, -1, -1, -1, -1, NULL, false },
   { NULL, NULL, 0, -1, -1, -1, -1, NULL, false },
   { NULL, NULL, 0, -1, -1, -1, -1, NULL, false },
   { NULL, NULL, 0, -1, -1, -1, -1, NULL, false },
@@ -226,15 +220,6 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_ATTRIBUTE_SECTION
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessage, messagedrop_),
   ~0u,
   0,
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessageEvent, _has_bits_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessageEvent, _internal_metadata_),
-  ~0u,  // no _extensions_
-  ~0u,  // no _oneof_case_
-  ~0u,  // no _weak_field_map_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessageEvent, playernum_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessageEvent, details_),
-  0,
-  ~0u,
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamState_Player, _has_bits_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamState_Player, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -308,9 +293,8 @@ static const ::google::protobuf::internal::MigrationSchema schemas[] GOOGLE_ATTR
   { 44, 69, sizeof(BUUserTeamMessage)},
   { 89, 104, sizeof(TeamMessage_Data)},
   { 114, 121, sizeof(TeamMessage)},
-  { 123, 130, sizeof(TeamMessageEvent)},
-  { 132, 163, sizeof(TeamState_Player)},
-  { 189, 195, sizeof(TeamState)},
+  { 123, 154, sizeof(TeamState_Player)},
+  { 180, 186, sizeof(TeamState)},
 };
 
 static ::google::protobuf::Message const * const file_default_instances[] = {
@@ -321,7 +305,6 @@ static ::google::protobuf::Message const * const file_default_instances[] = {
   reinterpret_cast<const ::google::protobuf::Message*>(&_BUUserTeamMessage_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&_TeamMessage_Data_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&_TeamMessage_default_instance_),
-  reinterpret_cast<const ::google::protobuf::Message*>(&_TeamMessageEvent_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&_TeamState_Player_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&_TeamState_default_instance_),
 };
@@ -344,7 +327,7 @@ void protobuf_AssignDescriptorsOnce() {
 void protobuf_RegisterTypes(const ::std::string&) GOOGLE_ATTRIBUTE_COLD;
 void protobuf_RegisterTypes(const ::std::string&) {
   protobuf_AssignDescriptorsOnce();
-  ::google::protobuf::internal::RegisterAllTypes(file_level_metadata, 10);
+  ::google::protobuf::internal::RegisterAllTypes(file_level_metadata, 9);
 }
 
 }  // namespace
@@ -354,7 +337,6 @@ void TableStruct::InitDefaultsImpl() {
   ::google::protobuf::internal::InitProtobufDefaults();
   ::naothmessages::protobuf_CommonTypes_2eproto::InitDefaults();
   ::naothmessages::protobuf_Framework_2dRepresentations_2eproto::InitDefaults();
-  ::google::protobuf::protobuf_google_2fprotobuf_2fany_2eproto::InitDefaults();
   _RobotRole_default_instance_._instance.DefaultConstruct();
   ::google::protobuf::internal::OnShutdownDestroyMessage(
       &_RobotRole_default_instance_);_Opponent_default_instance_._instance.DefaultConstruct();
@@ -377,9 +359,7 @@ void TableStruct::InitDefaultsImpl() {
   ::google::protobuf::internal::OnShutdownDestroyMessage(
       &_TeamMessage_Data_default_instance_);_TeamMessage_default_instance_._instance.DefaultConstruct();
   ::google::protobuf::internal::OnShutdownDestroyMessage(
-      &_TeamMessage_default_instance_);_TeamMessageEvent_default_instance_._instance.DefaultConstruct();
-  ::google::protobuf::internal::OnShutdownDestroyMessage(
-      &_TeamMessageEvent_default_instance_);_TeamState_Player_default_instance_._instance.DefaultConstruct();
+      &_TeamMessage_default_instance_);_TeamState_Player_default_instance_._instance.DefaultConstruct();
   ::google::protobuf::internal::OnShutdownDestroyMessage(
       &_TeamState_Player_default_instance_);_TeamState_default_instance_._instance.DefaultConstruct();
   ::google::protobuf::internal::OnShutdownDestroyMessage(
@@ -423,96 +403,92 @@ void AddDescriptorsImpl() {
   static const char descriptor[] GOOGLE_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
       "\n\021TeamMessage.proto\022\rnaothmessages\032\021Comm"
       "onTypes.proto\032\037Framework-Representations"
-      ".proto\032\031google/protobuf/any.proto\"\220\001\n\tRo"
-      "botRole\022A\n\013role_static\030\001 \002(\0162\036.naothmess"
-      "ages.RobotRoleStatic:\014role_unknown\022@\n\014ro"
-      "le_dynamic\030\002 \002(\0162\037.naothmessages.RobotRo"
-      "leDynamic:\trole_none\"L\n\010Opponent\022\024\n\tplay"
-      "erNum\030\001 \002(\005:\0010\022*\n\013poseOnField\030\002 \001(\0132\025.na"
-      "othmessages.Pose2D\"A\n\003Ntp\022\024\n\tplayerNum\030\001"
-      " \002(\005:\0010\022\017\n\004sent\030\002 \001(\004:\0010\022\023\n\010received\030\003 \001"
-      "(\004:\0010\"\216\001\n\005Drops\022\033\n\020dropNoSplMessage\030\001 \001("
-      "\r:\0010\022\031\n\016dropNotOurTeam\030\002 \001(\r:\0010\022\033\n\020dropN"
-      "otParseable\030\003 \001(\r:\0010\022\026\n\013dropKeyFail\030\004 \001("
-      "\r:\0010\022\030\n\rdropMonotonic\030\005 \001(\r:\0010\"\230\005\n\021BUUse"
-      "rTeamMessage\022\027\n\006bodyID\030\001 \001(\t:\007unknown\022\022\n"
-      "\ntimeToBall\030\002 \001(\r\022\031\n\nwasStriker\030\003 \001(\010:\005f"
-      "alse\022\036\n\013isPenalized\030\004 \001(\010:\005falseB\002\030\001\022*\n\t"
-      "opponents\030\005 \003(\0132\027.naothmessages.Opponent"
-      "\022\031\n\nteamNumber\030\006 \001(\r:\0010B\002\030\001\022\030\n\rbatteryCh"
-      "arge\030\007 \001(\002:\0011\022\026\n\013temperature\030\010 \001(\002:\0010\022\024\n"
-      "\ttimestamp\030\t \001(\004:\0010\022\037\n\020wantsToBeStriker\030"
-      "\n \001(\010:\005false\022\031\n\016cpuTemperature\030\013 \001(\002:\0010\022"
-      "\036\n\017whistleDetected\030\014 \001(\010:\005false\022\027\n\014whist"
-      "leCount\030\r \001(\005:\0010\022.\n\010teamBall\030\016 \001(\0132\034.nao"
-      "thmessages.DoubleVector2\022&\n\nntpRequest\030\017"
-      " \003(\0132\022.naothmessages.Ntp\0222\n\014ballVelocity"
-      "\030\020 \001(\0132\034.naothmessages.DoubleVector2\0226\n\n"
-      "robotState\030\021 \001(\0162\031.naothmessages.RobotSt"
-      "ate:\007initial\022+\n\trobotRole\030\022 \001(\0132\030.naothm"
-      "essages.RobotRole\022\023\n\013readyToWalk\030\023 \001(\010\022\021"
-      "\n\003key\030d \001(\t:\004none\"\356\003\n\013TeamMessage\022-\n\004dat"
-      "a\030\001 \003(\0132\037.naothmessages.TeamMessage.Data"
-      "\022)\n\013messageDrop\030\002 \001(\0132\024.naothmessages.Dr"
-      "ops\032\204\003\n\004Data\022\024\n\tplayerNum\030\001 \001(\r:\0010\0229\n\tte"
-      "amColor\030\013 \001(\0162\030.naothmessages.TeamColor:"
-      "\010blueTeamB\002\030\001\022#\n\004pose\030\003 \001(\0132\025.naothmessa"
-      "ges.Pose2D\022\023\n\007ballAge\030\004 \001(\005:\002-1\0222\n\014ballP"
-      "osition\030\005 \001(\0132\034.naothmessages.DoubleVect"
-      "or2\0222\n\014ballVelocity\030\006 \001(\0132\034.naothmessage"
-      "s.DoubleVector2\022\025\n\006fallen\030\n \001(\010:\005false\022."
-      "\n\004user\030\010 \001(\0132 .naothmessages.BUUserTeamM"
-      "essage\022+\n\tframeInfo\030\t \001(\0132\030.naothmessage"
-      "s.FrameInfo\022\025\n\nteamNumber\030\014 \001(\r:\0010\"O\n\020Te"
-      "amMessageEvent\022\024\n\tplayerNum\030\001 \001(\r:\0010\022%\n\007"
-      "details\030\002 \003(\0132\024.google.protobuf.Any\"\320\006\n\t"
-      "TeamState\0220\n\007players\030\001 \003(\0132\037.naothmessag"
-      "es.TeamState.Player\032\220\006\n\006Player\022\021\n\006number"
-      "\030\001 \001(\r:\0010\0222\n\020messageFrameInfo\030\002 \001(\0132\030.na"
-      "othmessages.FrameInfo\022\025\n\rmessageParsed\030\003"
-      " \001(\004\022\030\n\020messageTimestamp\030\004 \001(\004\022&\n\nntpReq"
-      "uest\030\005 \003(\0132\022.naothmessages.Ntp\022\030\n\020ntpReq"
-      "uestUpdate\030\006 \001(\004\0226\n\nrobotState\030\007 \001(\0162\031.n"
-      "aothmessages.RobotState:\007initial\022\030\n\020robo"
-      "tStateUpdate\030\010 \001(\004\022\025\n\006fallen\030\t \001(\010:\005fals"
-      "e\022\024\n\014fallenUpdate\030\n \001(\004\022\023\n\013readyToWalk\030\013"
-      " \001(\010\022\031\n\021readyToWalkUpdate\030\014 \001(\004\022#\n\004pose\030"
-      "\r \001(\0132\025.naothmessages.Pose2D\022\022\n\nposeUpda"
-      "te\030\016 \001(\004\022\023\n\007ballAge\030\017 \001(\005:\002-1\022\025\n\rballAge"
-      "Update\030\020 \001(\004\0222\n\014ballPosition\030\021 \001(\0132\034.nao"
-      "thmessages.DoubleVector2\022\032\n\022ballPosition"
-      "Update\030\022 \001(\004\022\022\n\ntimeToBall\030\023 \001(\r\022\030\n\020time"
-      "ToBallUpdate\030\024 \001(\004\022\037\n\020wantsToBeStriker\030\025"
-      " \001(\010:\005false\022\036\n\026wantsToBeStrikerUpdate\030\026 "
-      "\001(\004\022\031\n\nwasStriker\030\027 \001(\010:\005false\022\030\n\020wasStr"
-      "ikerUpdate\030\030 \001(\004\022+\n\trobotRole\030\031 \001(\0132\030.na"
-      "othmessages.RobotRole\022\027\n\017robotRoleUpdate"
-      "\030\032 \001(\004*\262\001\n\tTeamColor\022\014\n\010blueTeam\020\000\022\013\n\007re"
-      "dTeam\020\001\022\016\n\nyellowTeam\020\002\022\r\n\tblackTeam\020\003\022\r"
-      "\n\twhiteTeam\020\004\022\r\n\tgreenTeam\020\005\022\016\n\norangeTe"
-      "am\020\006\022\016\n\npurpleTeam\020\007\022\r\n\tbrownTeam\020\010\022\014\n\010g"
-      "rayTeam\020\t\022\020\n\013invalidTeam\020\377\001*d\n\nRobotStat"
-      "e\022\013\n\007initial\020\000\022\t\n\005ready\020\001\022\007\n\003set\020\002\022\013\n\007pl"
-      "aying\020\003\022\014\n\010finished\020\004\022\r\n\tpenalized\020\005\022\013\n\007"
-      "unstiff\020\006*\230\002\n\017RobotRoleStatic\022\026\n\022role_de"
-      "fender_left\020\000\022\030\n\024role_defender_center\020\001\022"
-      "\027\n\023role_defender_right\020\002\022\030\n\024role_midfiel"
-      "der_left\020\003\022\032\n\026role_midfielder_center\020\004\022\031"
-      "\n\025role_midfielder_right\020\005\022\025\n\021role_forwar"
-      "d_left\020\006\022\027\n\023role_forward_center\020\007\022\026\n\022rol"
-      "e_forward_right\020\010\022\017\n\013role_goalie\020\t\022\020\n\014ro"
-      "le_unknown\020\n*b\n\020RobotRoleDynamic\022\r\n\trole"
-      "_none\020\000\022\022\n\016role_supporter\020\001\022\031\n\025role_goal"
-      "ie_supporter\020\002\022\020\n\014role_striker\020\003B\033\n\031de.n"
-      "aoth.rc.core.messages"
+      ".proto\"\220\001\n\tRobotRole\022A\n\013role_static\030\001 \002("
+      "\0162\036.naothmessages.RobotRoleStatic:\014role_"
+      "unknown\022@\n\014role_dynamic\030\002 \002(\0162\037.naothmes"
+      "sages.RobotRoleDynamic:\trole_none\"L\n\010Opp"
+      "onent\022\024\n\tplayerNum\030\001 \002(\005:\0010\022*\n\013poseOnFie"
+      "ld\030\002 \001(\0132\025.naothmessages.Pose2D\"A\n\003Ntp\022\024"
+      "\n\tplayerNum\030\001 \002(\005:\0010\022\017\n\004sent\030\002 \001(\004:\0010\022\023\n"
+      "\010received\030\003 \001(\004:\0010\"\216\001\n\005Drops\022\033\n\020dropNoSp"
+      "lMessage\030\001 \001(\r:\0010\022\031\n\016dropNotOurTeam\030\002 \001("
+      "\r:\0010\022\033\n\020dropNotParseable\030\003 \001(\r:\0010\022\026\n\013dro"
+      "pKeyFail\030\004 \001(\r:\0010\022\030\n\rdropMonotonic\030\005 \001(\r"
+      ":\0010\"\230\005\n\021BUUserTeamMessage\022\027\n\006bodyID\030\001 \001("
+      "\t:\007unknown\022\022\n\ntimeToBall\030\002 \001(\r\022\031\n\nwasStr"
+      "iker\030\003 \001(\010:\005false\022\036\n\013isPenalized\030\004 \001(\010:\005"
+      "falseB\002\030\001\022*\n\topponents\030\005 \003(\0132\027.naothmess"
+      "ages.Opponent\022\031\n\nteamNumber\030\006 \001(\r:\0010B\002\030\001"
+      "\022\030\n\rbatteryCharge\030\007 \001(\002:\0011\022\026\n\013temperatur"
+      "e\030\010 \001(\002:\0010\022\024\n\ttimestamp\030\t \001(\004:\0010\022\037\n\020want"
+      "sToBeStriker\030\n \001(\010:\005false\022\031\n\016cpuTemperat"
+      "ure\030\013 \001(\002:\0010\022\036\n\017whistleDetected\030\014 \001(\010:\005f"
+      "alse\022\027\n\014whistleCount\030\r \001(\005:\0010\022.\n\010teamBal"
+      "l\030\016 \001(\0132\034.naothmessages.DoubleVector2\022&\n"
+      "\nntpRequest\030\017 \003(\0132\022.naothmessages.Ntp\0222\n"
+      "\014ballVelocity\030\020 \001(\0132\034.naothmessages.Doub"
+      "leVector2\0226\n\nrobotState\030\021 \001(\0162\031.naothmes"
+      "sages.RobotState:\007initial\022+\n\trobotRole\030\022"
+      " \001(\0132\030.naothmessages.RobotRole\022\023\n\013readyT"
+      "oWalk\030\023 \001(\010\022\021\n\003key\030d \001(\t:\004none\"\356\003\n\013TeamM"
+      "essage\022-\n\004data\030\001 \003(\0132\037.naothmessages.Tea"
+      "mMessage.Data\022)\n\013messageDrop\030\002 \001(\0132\024.nao"
+      "thmessages.Drops\032\204\003\n\004Data\022\024\n\tplayerNum\030\001"
+      " \001(\r:\0010\0229\n\tteamColor\030\013 \001(\0162\030.naothmessag"
+      "es.TeamColor:\010blueTeamB\002\030\001\022#\n\004pose\030\003 \001(\013"
+      "2\025.naothmessages.Pose2D\022\023\n\007ballAge\030\004 \001(\005"
+      ":\002-1\0222\n\014ballPosition\030\005 \001(\0132\034.naothmessag"
+      "es.DoubleVector2\0222\n\014ballVelocity\030\006 \001(\0132\034"
+      ".naothmessages.DoubleVector2\022\025\n\006fallen\030\n"
+      " \001(\010:\005false\022.\n\004user\030\010 \001(\0132 .naothmessage"
+      "s.BUUserTeamMessage\022+\n\tframeInfo\030\t \001(\0132\030"
+      ".naothmessages.FrameInfo\022\025\n\nteamNumber\030\014"
+      " \001(\r:\0010\"\320\006\n\tTeamState\0220\n\007players\030\001 \003(\0132\037"
+      ".naothmessages.TeamState.Player\032\220\006\n\006Play"
+      "er\022\021\n\006number\030\001 \001(\r:\0010\0222\n\020messageFrameInf"
+      "o\030\002 \001(\0132\030.naothmessages.FrameInfo\022\025\n\rmes"
+      "sageParsed\030\003 \001(\004\022\030\n\020messageTimestamp\030\004 \001"
+      "(\004\022&\n\nntpRequest\030\005 \003(\0132\022.naothmessages.N"
+      "tp\022\030\n\020ntpRequestUpdate\030\006 \001(\004\0226\n\nrobotSta"
+      "te\030\007 \001(\0162\031.naothmessages.RobotState:\007ini"
+      "tial\022\030\n\020robotStateUpdate\030\010 \001(\004\022\025\n\006fallen"
+      "\030\t \001(\010:\005false\022\024\n\014fallenUpdate\030\n \001(\004\022\023\n\013r"
+      "eadyToWalk\030\013 \001(\010\022\031\n\021readyToWalkUpdate\030\014 "
+      "\001(\004\022#\n\004pose\030\r \001(\0132\025.naothmessages.Pose2D"
+      "\022\022\n\nposeUpdate\030\016 \001(\004\022\023\n\007ballAge\030\017 \001(\005:\002-"
+      "1\022\025\n\rballAgeUpdate\030\020 \001(\004\0222\n\014ballPosition"
+      "\030\021 \001(\0132\034.naothmessages.DoubleVector2\022\032\n\022"
+      "ballPositionUpdate\030\022 \001(\004\022\022\n\ntimeToBall\030\023"
+      " \001(\r\022\030\n\020timeToBallUpdate\030\024 \001(\004\022\037\n\020wantsT"
+      "oBeStriker\030\025 \001(\010:\005false\022\036\n\026wantsToBeStri"
+      "kerUpdate\030\026 \001(\004\022\031\n\nwasStriker\030\027 \001(\010:\005fal"
+      "se\022\030\n\020wasStrikerUpdate\030\030 \001(\004\022+\n\trobotRol"
+      "e\030\031 \001(\0132\030.naothmessages.RobotRole\022\027\n\017rob"
+      "otRoleUpdate\030\032 \001(\004*\262\001\n\tTeamColor\022\014\n\010blue"
+      "Team\020\000\022\013\n\007redTeam\020\001\022\016\n\nyellowTeam\020\002\022\r\n\tb"
+      "lackTeam\020\003\022\r\n\twhiteTeam\020\004\022\r\n\tgreenTeam\020\005"
+      "\022\016\n\norangeTeam\020\006\022\016\n\npurpleTeam\020\007\022\r\n\tbrow"
+      "nTeam\020\010\022\014\n\010grayTeam\020\t\022\020\n\013invalidTeam\020\377\001*"
+      "d\n\nRobotState\022\013\n\007initial\020\000\022\t\n\005ready\020\001\022\007\n"
+      "\003set\020\002\022\013\n\007playing\020\003\022\014\n\010finished\020\004\022\r\n\tpen"
+      "alized\020\005\022\013\n\007unstiff\020\006*\230\002\n\017RobotRoleStati"
+      "c\022\026\n\022role_defender_left\020\000\022\030\n\024role_defend"
+      "er_center\020\001\022\027\n\023role_defender_right\020\002\022\030\n\024"
+      "role_midfielder_left\020\003\022\032\n\026role_midfielde"
+      "r_center\020\004\022\031\n\025role_midfielder_right\020\005\022\025\n"
+      "\021role_forward_left\020\006\022\027\n\023role_forward_cen"
+      "ter\020\007\022\026\n\022role_forward_right\020\010\022\017\n\013role_go"
+      "alie\020\t\022\020\n\014role_unknown\020\n*b\n\020RobotRoleDyn"
+      "amic\022\r\n\trole_none\020\000\022\022\n\016role_supporter\020\001\022"
+      "\031\n\025role_goalie_supporter\020\002\022\020\n\014role_strik"
+      "er\020\003B\033\n\031de.naoth.rc.core.messages"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 3341);
+      descriptor, 3233);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "TeamMessage.proto", &protobuf_RegisterTypes);
   ::naothmessages::protobuf_CommonTypes_2eproto::AddDescriptors();
   ::naothmessages::protobuf_Framework_2dRepresentations_2eproto::AddDescriptors();
-  ::google::protobuf::protobuf_google_2fprotobuf_2fany_2eproto::AddDescriptors();
 }
 } // anonymous namespace
 
@@ -5379,348 +5355,6 @@ void TeamMessage::set_allocated_messagedrop(::naothmessages::Drops* messagedrop)
     clear_has_messagedrop();
   }
   // @@protoc_insertion_point(field_set_allocated:naothmessages.TeamMessage.messageDrop)
-}
-
-#endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
-
-// ===================================================================
-
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
-const int TeamMessageEvent::kPlayerNumFieldNumber;
-const int TeamMessageEvent::kDetailsFieldNumber;
-#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
-
-TeamMessageEvent::TeamMessageEvent()
-  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
-  if (GOOGLE_PREDICT_TRUE(this != internal_default_instance())) {
-    protobuf_TeamMessage_2eproto::InitDefaults();
-  }
-  SharedCtor();
-  // @@protoc_insertion_point(constructor:naothmessages.TeamMessageEvent)
-}
-TeamMessageEvent::TeamMessageEvent(const TeamMessageEvent& from)
-  : ::google::protobuf::Message(),
-      _internal_metadata_(NULL),
-      _has_bits_(from._has_bits_),
-      _cached_size_(0),
-      details_(from.details_) {
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
-  playernum_ = from.playernum_;
-  // @@protoc_insertion_point(copy_constructor:naothmessages.TeamMessageEvent)
-}
-
-void TeamMessageEvent::SharedCtor() {
-  _cached_size_ = 0;
-  playernum_ = 0u;
-}
-
-TeamMessageEvent::~TeamMessageEvent() {
-  // @@protoc_insertion_point(destructor:naothmessages.TeamMessageEvent)
-  SharedDtor();
-}
-
-void TeamMessageEvent::SharedDtor() {
-}
-
-void TeamMessageEvent::SetCachedSize(int size) const {
-  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-  _cached_size_ = size;
-  GOOGLE_SAFE_CONCURRENT_WRITES_END();
-}
-const ::google::protobuf::Descriptor* TeamMessageEvent::descriptor() {
-  protobuf_TeamMessage_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_TeamMessage_2eproto::file_level_metadata[kIndexInFileMessages].descriptor;
-}
-
-const TeamMessageEvent& TeamMessageEvent::default_instance() {
-  protobuf_TeamMessage_2eproto::InitDefaults();
-  return *internal_default_instance();
-}
-
-TeamMessageEvent* TeamMessageEvent::New(::google::protobuf::Arena* arena) const {
-  TeamMessageEvent* n = new TeamMessageEvent;
-  if (arena != NULL) {
-    arena->Own(n);
-  }
-  return n;
-}
-
-void TeamMessageEvent::Clear() {
-// @@protoc_insertion_point(message_clear_start:naothmessages.TeamMessageEvent)
-  ::google::protobuf::uint32 cached_has_bits = 0;
-  // Prevent compiler warnings about cached_has_bits being unused
-  (void) cached_has_bits;
-
-  details_.Clear();
-  playernum_ = 0u;
-  _has_bits_.Clear();
-  _internal_metadata_.Clear();
-}
-
-bool TeamMessageEvent::MergePartialFromCodedStream(
-    ::google::protobuf::io::CodedInputStream* input) {
-#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
-  ::google::protobuf::uint32 tag;
-  // @@protoc_insertion_point(parse_start:naothmessages.TeamMessageEvent)
-  for (;;) {
-    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
-    tag = p.first;
-    if (!p.second) goto handle_unusual;
-    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // optional uint32 playerNum = 1 [default = 0];
-      case 1: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(8u /* 8 & 0xFF */)) {
-          set_has_playernum();
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
-                 input, &playernum_)));
-        } else {
-          goto handle_unusual;
-        }
-        break;
-      }
-
-      // repeated .google.protobuf.Any details = 2;
-      case 2: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(18u /* 18 & 0xFF */)) {
-          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
-                input, add_details()));
-        } else {
-          goto handle_unusual;
-        }
-        break;
-      }
-
-      default: {
-      handle_unusual:
-        if (tag == 0) {
-          goto success;
-        }
-        DO_(::google::protobuf::internal::WireFormat::SkipField(
-              input, tag, _internal_metadata_.mutable_unknown_fields()));
-        break;
-      }
-    }
-  }
-success:
-  // @@protoc_insertion_point(parse_success:naothmessages.TeamMessageEvent)
-  return true;
-failure:
-  // @@protoc_insertion_point(parse_failure:naothmessages.TeamMessageEvent)
-  return false;
-#undef DO_
-}
-
-void TeamMessageEvent::SerializeWithCachedSizes(
-    ::google::protobuf::io::CodedOutputStream* output) const {
-  // @@protoc_insertion_point(serialize_start:naothmessages.TeamMessageEvent)
-  ::google::protobuf::uint32 cached_has_bits = 0;
-  (void) cached_has_bits;
-
-  cached_has_bits = _has_bits_[0];
-  // optional uint32 playerNum = 1 [default = 0];
-  if (cached_has_bits & 0x00000001u) {
-    ::google::protobuf::internal::WireFormatLite::WriteUInt32(1, this->playernum(), output);
-  }
-
-  // repeated .google.protobuf.Any details = 2;
-  for (unsigned int i = 0,
-      n = static_cast<unsigned int>(this->details_size()); i < n; i++) {
-    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      2, this->details(static_cast<int>(i)), output);
-  }
-
-  if (_internal_metadata_.have_unknown_fields()) {
-    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
-        _internal_metadata_.unknown_fields(), output);
-  }
-  // @@protoc_insertion_point(serialize_end:naothmessages.TeamMessageEvent)
-}
-
-::google::protobuf::uint8* TeamMessageEvent::InternalSerializeWithCachedSizesToArray(
-    bool deterministic, ::google::protobuf::uint8* target) const {
-  (void)deterministic; // Unused
-  // @@protoc_insertion_point(serialize_to_array_start:naothmessages.TeamMessageEvent)
-  ::google::protobuf::uint32 cached_has_bits = 0;
-  (void) cached_has_bits;
-
-  cached_has_bits = _has_bits_[0];
-  // optional uint32 playerNum = 1 [default = 0];
-  if (cached_has_bits & 0x00000001u) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(1, this->playernum(), target);
-  }
-
-  // repeated .google.protobuf.Any details = 2;
-  for (unsigned int i = 0,
-      n = static_cast<unsigned int>(this->details_size()); i < n; i++) {
-    target = ::google::protobuf::internal::WireFormatLite::
-      InternalWriteMessageNoVirtualToArray(
-        2, this->details(static_cast<int>(i)), deterministic, target);
-  }
-
-  if (_internal_metadata_.have_unknown_fields()) {
-    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
-        _internal_metadata_.unknown_fields(), target);
-  }
-  // @@protoc_insertion_point(serialize_to_array_end:naothmessages.TeamMessageEvent)
-  return target;
-}
-
-size_t TeamMessageEvent::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:naothmessages.TeamMessageEvent)
-  size_t total_size = 0;
-
-  if (_internal_metadata_.have_unknown_fields()) {
-    total_size +=
-      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
-        _internal_metadata_.unknown_fields());
-  }
-  // repeated .google.protobuf.Any details = 2;
-  {
-    unsigned int count = static_cast<unsigned int>(this->details_size());
-    total_size += 1UL * count;
-    for (unsigned int i = 0; i < count; i++) {
-      total_size +=
-        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
-          this->details(static_cast<int>(i)));
-    }
-  }
-
-  // optional uint32 playerNum = 1 [default = 0];
-  if (has_playernum()) {
-    total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::UInt32Size(
-        this->playernum());
-  }
-
-  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
-  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-  _cached_size_ = cached_size;
-  GOOGLE_SAFE_CONCURRENT_WRITES_END();
-  return total_size;
-}
-
-void TeamMessageEvent::MergeFrom(const ::google::protobuf::Message& from) {
-// @@protoc_insertion_point(generalized_merge_from_start:naothmessages.TeamMessageEvent)
-  GOOGLE_DCHECK_NE(&from, this);
-  const TeamMessageEvent* source =
-      ::google::protobuf::internal::DynamicCastToGenerated<const TeamMessageEvent>(
-          &from);
-  if (source == NULL) {
-  // @@protoc_insertion_point(generalized_merge_from_cast_fail:naothmessages.TeamMessageEvent)
-    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
-  } else {
-  // @@protoc_insertion_point(generalized_merge_from_cast_success:naothmessages.TeamMessageEvent)
-    MergeFrom(*source);
-  }
-}
-
-void TeamMessageEvent::MergeFrom(const TeamMessageEvent& from) {
-// @@protoc_insertion_point(class_specific_merge_from_start:naothmessages.TeamMessageEvent)
-  GOOGLE_DCHECK_NE(&from, this);
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
-  ::google::protobuf::uint32 cached_has_bits = 0;
-  (void) cached_has_bits;
-
-  details_.MergeFrom(from.details_);
-  if (from.has_playernum()) {
-    set_playernum(from.playernum());
-  }
-}
-
-void TeamMessageEvent::CopyFrom(const ::google::protobuf::Message& from) {
-// @@protoc_insertion_point(generalized_copy_from_start:naothmessages.TeamMessageEvent)
-  if (&from == this) return;
-  Clear();
-  MergeFrom(from);
-}
-
-void TeamMessageEvent::CopyFrom(const TeamMessageEvent& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:naothmessages.TeamMessageEvent)
-  if (&from == this) return;
-  Clear();
-  MergeFrom(from);
-}
-
-bool TeamMessageEvent::IsInitialized() const {
-  return true;
-}
-
-void TeamMessageEvent::Swap(TeamMessageEvent* other) {
-  if (other == this) return;
-  InternalSwap(other);
-}
-void TeamMessageEvent::InternalSwap(TeamMessageEvent* other) {
-  using std::swap;
-  details_.InternalSwap(&other->details_);
-  swap(playernum_, other->playernum_);
-  swap(_has_bits_[0], other->_has_bits_[0]);
-  _internal_metadata_.Swap(&other->_internal_metadata_);
-  swap(_cached_size_, other->_cached_size_);
-}
-
-::google::protobuf::Metadata TeamMessageEvent::GetMetadata() const {
-  protobuf_TeamMessage_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_TeamMessage_2eproto::file_level_metadata[kIndexInFileMessages];
-}
-
-#if PROTOBUF_INLINE_NOT_IN_HEADERS
-// TeamMessageEvent
-
-// optional uint32 playerNum = 1 [default = 0];
-bool TeamMessageEvent::has_playernum() const {
-  return (_has_bits_[0] & 0x00000001u) != 0;
-}
-void TeamMessageEvent::set_has_playernum() {
-  _has_bits_[0] |= 0x00000001u;
-}
-void TeamMessageEvent::clear_has_playernum() {
-  _has_bits_[0] &= ~0x00000001u;
-}
-void TeamMessageEvent::clear_playernum() {
-  playernum_ = 0u;
-  clear_has_playernum();
-}
-::google::protobuf::uint32 TeamMessageEvent::playernum() const {
-  // @@protoc_insertion_point(field_get:naothmessages.TeamMessageEvent.playerNum)
-  return playernum_;
-}
-void TeamMessageEvent::set_playernum(::google::protobuf::uint32 value) {
-  set_has_playernum();
-  playernum_ = value;
-  // @@protoc_insertion_point(field_set:naothmessages.TeamMessageEvent.playerNum)
-}
-
-// repeated .google.protobuf.Any details = 2;
-int TeamMessageEvent::details_size() const {
-  return details_.size();
-}
-void TeamMessageEvent::clear_details() {
-  details_.Clear();
-}
-const ::google::protobuf::Any& TeamMessageEvent::details(int index) const {
-  // @@protoc_insertion_point(field_get:naothmessages.TeamMessageEvent.details)
-  return details_.Get(index);
-}
-::google::protobuf::Any* TeamMessageEvent::mutable_details(int index) {
-  // @@protoc_insertion_point(field_mutable:naothmessages.TeamMessageEvent.details)
-  return details_.Mutable(index);
-}
-::google::protobuf::Any* TeamMessageEvent::add_details() {
-  // @@protoc_insertion_point(field_add:naothmessages.TeamMessageEvent.details)
-  return details_.Add();
-}
-::google::protobuf::RepeatedPtrField< ::google::protobuf::Any >*
-TeamMessageEvent::mutable_details() {
-  // @@protoc_insertion_point(field_mutable_list:naothmessages.TeamMessageEvent.details)
-  return &details_;
-}
-const ::google::protobuf::RepeatedPtrField< ::google::protobuf::Any >&
-TeamMessageEvent::details() const {
-  // @@protoc_insertion_point(field_list:naothmessages.TeamMessageEvent.details)
-  return details_;
 }
 
 #endif  // PROTOBUF_INLINE_NOT_IN_HEADERS

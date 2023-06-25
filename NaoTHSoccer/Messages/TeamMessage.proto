@@ -4,7 +4,6 @@ option java_package= "de.naoth.rc.core.messages";
 
 import "CommonTypes.proto";
 import "Framework-Representations.proto";
-import "google/protobuf/any.proto";
 
 enum TeamColor
 {
@@ -124,12 +123,6 @@ message TeamMessage
   }
   repeated Data data = 1;
   optional Drops messageDrop = 2;
-}
-
-message TeamMessageEvent
-{
-  optional uint32 playerNum = 1 [default=0];
-  repeated google.protobuf.Any details = 2;
 }
 
 message TeamState
