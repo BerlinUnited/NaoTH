@@ -1,6 +1,6 @@
 #include "FrugallyDeep.h"
 
-// NOTE: assumes frugally 0.7.8-p0 is used
+// NOTE: assumes frugally v0.15.20-p0 is used
 
 FrugallyDeep::FrugallyDeep(std::string file)
 {
