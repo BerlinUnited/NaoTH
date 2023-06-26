@@ -5,6 +5,7 @@
 #include <Representations/Infrastructure/FrameInfo.h>
 #include <Representations/Infrastructure/GameData.h>
 #include <Representations/Infrastructure/TeamMessageData.h>
+#include "Representations/Modeling/TeamState.h"
 #include "Representations/Modeling/PlayerInfo.h"
 #include "Representations/Modeling/TeamMessage.h"
 #include "Representations/Modeling/TeamMessageData.h"
@@ -44,6 +45,7 @@ BEGIN_DECLARE_MODULE(TeamCommEventSender)
   REQUIRE(SoccerStrategy)
   REQUIRE(TeamMessageDecision)
 
+  PROVIDE(TeamState)
   PROVIDE(TeamMessageData)
   PROVIDE(TeamMessageDataOut)
 END_DECLARE_MODULE(TeamCommEventSender)
@@ -78,20 +80,9 @@ private:
 private:
   unsigned int lastSentTimestamp;
 
+  void updateMyself() const;
   inline bool shouldSendMessage() const;
   bool createMessage() const;
-
-  void addNtpRequests(Message& message) const;
-  void addRobotState(Message& message) const;
-  void addRobotRole(Message& message) const;
-  void addFallen(Message& message) const;
-  void addPose(Message& message) const;
-  void addBallAge(Message& message) const;
-  void addBallPosition(Message& message) const;
-  void addTimeToBall(Message& message) const;
-  void addWantsToBeStriker(Message& message) const;
-  void addWasStriker(Message& message) const;
-  void addReadyToWalk(Message& message) const;
 };
 
 #endif // TEAMCOMMEVENTSENDER_H

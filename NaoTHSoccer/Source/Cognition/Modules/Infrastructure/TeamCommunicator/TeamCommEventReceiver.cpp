@@ -20,6 +20,11 @@ void TeamCommEventReceiver::execute()
     }
   }
 
+  // simulate own message reception
+  auto& myself = getTeamState().getPlayer(getPlayerInfo().playerNumber);
+  myself.messageFrameInfo = getFrameInfo();
+  myself.messageParsed    = naoth::NaoTime::getSystemTimeInMilliSeconds();
+
   /*
   // wait until we got a valid player number
   if (getPlayerInfo().playerNumber > 0 && 
@@ -41,15 +46,16 @@ void TeamCommEventReceiver::handleMessage(const std::string& data)
   naothmessages::TeamState::Player message;
   if (message.ParseFromString(data))
   {
-    // ignore own messages
-    // if (message.playernum() == (int)getPlayerInfo().playerNumber) {
-    //   return;
-    // }
+    // skip my "own" or the message of another player with the same number
+    if (message.number() == getPlayerInfo().playerNumber) {
+        return;
+    }
 
-    auto state = getTeamState().getPlayer(message.number());
+    auto& state = getTeamState().getPlayer(message.number());
+    state.messageFrameInfo = getFrameInfo();
+    state.messageParsed    = naoth::NaoTime::getSystemTimeInMilliSeconds();
 
-    if (message.ntprequest().size() > 0)
-    {
+    if (message.ntprequest().size() > 0) {
         auto ntpRequests = std::vector<TeamMessageNTP::Request>(message.ntprequest_size());
         for(int i=0; i < message.ntprequest_size(); i++)
         {

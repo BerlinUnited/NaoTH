@@ -12,15 +12,47 @@ TeamCommEventSender::~TeamCommEventSender()
 
 void TeamCommEventSender::execute()
 {
-    if(shouldSendMessage() && createMessage())
-    {
-        // remember the last sending time
-        lastSentTimestamp = getFrameInfo().getTime();
+  // first update my own state
+  updateMyself();
+  // ... then send the message based on the updated state
+  if (shouldSendMessage() && createMessage()) {
+      // remember the last sending time
+      lastSentTimestamp = getFrameInfo().getTime();
 
-        PLOT(std::string("TeamCommEventSender:message_size"), static_cast<double>(getTeamMessageDataOut().data.size()));
-    } else {
-        getTeamMessageDataOut().data.clear();
-    }
+      PLOT(std::string("TeamCommEventSender:message_size"), static_cast<double>(getTeamMessageDataOut().data.size()));
+  } else {
+      getTeamMessageDataOut().data.clear();
+  }
+}
+
+void TeamCommEventSender::updateMyself() const
+{
+  auto& myself = getTeamState().getPlayer(getPlayerInfo().playerNumber);
+
+  myself.messageTimestamp = naoth::NaoTime::getSystemTimeInMilliSeconds();
+  myself.ntpRequests      = getTeamMessageNTP().requests;
+  myself.state            = getMotionStatus().currentMotion == motion::init ? PlayerInfo::initial : getPlayerInfo().robotState;
+  myself.fallen =
+      getBodyState().fall_down_state != BodyState::upright ||
+      getMotionStatus().currentMotion == motion::stand_up_from_back ||
+      getMotionStatus().currentMotion == motion::stand_up_from_side ||
+      getMotionStatus().currentMotion == motion::stand_up_from_front ||
+      getMotionStatus().currentMotion == motion::stand_up_from_back_arms_back;
+  myself.readyToWalk      = getBodyState().readyToWalk;
+  myself.pose             = getRobotPose();
+
+  if (getBallModel().knows) {
+      myself.ballAge      = getFrameInfo().getTimeSince(getBallModel().getFrameInfoWhenBallWasSeen().getTime());
+      myself.ballPosition = getBallModel().position;
+  } else {
+      myself.ballAge      = -1;
+      myself.ballPosition = {std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity()};
+  }
+
+  myself.timeToBall       = getSoccerStrategy().timeToBall;
+  myself.wantsToBeStriker = getRoleDecisionModel().wantsToBeStriker;
+  myself.wasStriker       = getRoleDecisionModel().isStriker(getPlayerInfo().playerNumber);
+  myself.robotRole        = getRoleDecisionModel().getRole(getPlayerInfo().playerNumber);
 }
 
 inline bool TeamCommEventSender::shouldSendMessage() const
@@ -31,6 +63,8 @@ inline bool TeamCommEventSender::shouldSendMessage() const
 
 bool TeamCommEventSender::createMessage() const
 {
+    const auto& myself = getTeamState().getPlayer(getPlayerInfo().playerNumber);
+
     Message message;
     message.set_number(getPlayerInfo().playerNumber);
     message.set_messagetimestamp(naoth::NaoTime::getSystemTimeInMilliSeconds());
@@ -38,43 +72,56 @@ bool TeamCommEventSender::createMessage() const
     bool send = false;
 
     if (getTeamMessageDecision().send_ntpRequests()) {
-        addNtpRequests(message);
+        for (const auto& request : myself.ntpRequests())
+        {
+          auto ntp = message.add_ntprequest();
+          ntp->set_playernum(request.playerNumber);
+          ntp->set_sent(request.sent);
+          ntp->set_received(request.received);
+        }
         send = true;
     }
     if (getTeamMessageDecision().send_state()) {
-        addRobotState(message);
+        message.set_robotstate((naothmessages::RobotState)myself.state());
         send = true;
     }
     if (getTeamMessageDecision().send_fallen()) {
-        addFallen(message);
+        message.set_fallen(myself.fallen());
         send = true;
     }
     if (getTeamMessageDecision().send_readyToWalk()) {
-        addReadyToWalk(message);
+        message.set_readytowalk(myself.readyToWalk());
         send = true;
     }
     if (getTeamMessageDecision().send_pose()) {
-        addPose(message);
+        message.mutable_pose()->mutable_translation()->set_x(myself.pose().translation.x);
+        message.mutable_pose()->mutable_translation()->set_y(myself.pose().translation.y);
+        message.mutable_pose()->set_rotation(myself.pose().rotation);
         send = true;
     }
     if (getTeamMessageDecision().send_ballAge()) {
-        addBallAge(message);
+        message.set_ballage(myself.ballAge());
         send = true;
     }
+    if (getTeamMessageDecision().send_ballPosition()) {
+      message.mutable_ballposition()->set_x(myself.ballPosition().x);
+      message.mutable_ballposition()->set_y(myself.ballPosition().y);
+    }
     if (getTeamMessageDecision().send_timeToBall()) {
-        addTimeToBall(message);
+        message.set_timetoball(myself.timeToBall());
         send = true;
     }
     if (getTeamMessageDecision().send_wantsToBeStriker()) {
-        addWantsToBeStriker(message);
+        message.set_wantstobestriker(myself.wantsToBeStriker());
         send = true;
     }
     if (getTeamMessageDecision().send_wasStriker()) {
-        addWasStriker(message);
+        message.set_wasstriker(myself.wasStriker());
         send = true;
     }
     if (getTeamMessageDecision().send_robotRole()) {
-        addRobotRole(message);
+        message.mutable_robotrole()->set_role_static((naothmessages::RobotRoleStatic)myself.robotRole().role);
+        message.mutable_robotrole()->set_role_dynamic((naothmessages::RobotRoleDynamic)myself.robotRole().dynamic);
         send = true;
     }
 
@@ -82,95 +129,7 @@ bool TeamCommEventSender::createMessage() const
     if (send)
     {
       getTeamMessageDataOut().data = message.SerializeAsString();
-      std::cout << "TeamEvent Size = " << getTeamMessageDataOut().data.size() << std::endl;
-      return true;
     }
         
-    return false;
-}
-
-void TeamCommEventSender::addNtpRequests(Message& message) const
-{
-  for (const auto request : getTeamMessageNTP().requests)
-  {
-    auto ntp = message.add_ntprequest();
-    ntp->set_playernum(request.playerNumber);
-    ntp->set_sent(request.sent);
-    ntp->set_received(request.received);
-  }
-}
-
-void TeamCommEventSender::addRobotState(Message& message) const
-{
-  message.set_robotstate((naothmessages::RobotState)(
-      getMotionStatus().currentMotion == motion::init
-          ? PlayerInfo::initial
-          : getPlayerInfo().robotState));
-}
-
-void TeamCommEventSender::addFallen(Message& message) const
-{
-  bool fallen = getBodyState().fall_down_state != BodyState::upright
-        || getMotionStatus().currentMotion == motion::stand_up_from_back
-        || getMotionStatus().currentMotion == motion::stand_up_from_side
-        || getMotionStatus().currentMotion == motion::stand_up_from_front
-        || getMotionStatus().currentMotion == motion::stand_up_from_back_arms_back;
-  message.set_fallen(fallen);
-}
-
-void TeamCommEventSender::addReadyToWalk(Message& message) const
-{
-  message.set_readytowalk(getBodyState().readyToWalk);
-}
-
-void TeamCommEventSender::addPose(Message& message) const
-{
-  message.mutable_pose()->mutable_translation()->set_x(getRobotPose().translation.x);
-  message.mutable_pose()->mutable_translation()->set_y(getRobotPose().translation.y);
-  message.mutable_pose()->set_rotation(getRobotPose().rotation);
-}
-
-void TeamCommEventSender::addBallAge(Message& message) const
-{
-  if (getBallModel().knows)
-  {
-    message.set_ballage(getFrameInfo().getTimeSince(getBallModel().getFrameInfoWhenBallWasSeen().getTime()));
-  } else {
-    message.set_ballage(-1);
-  }
-}
-
-void TeamCommEventSender::addBallPosition(Message& message) const
-{
-  if (getBallModel().knows)
-  {
-    message.mutable_ballposition()->set_x(getBallModel().position.x);
-    message.mutable_ballposition()->set_y(getBallModel().position.y);
-  } else {
-    message.mutable_ballposition()->set_x(std::numeric_limits<double>::infinity());
-    message.mutable_ballposition()->set_y(std::numeric_limits<double>::infinity());
-  }
-}
-
-void TeamCommEventSender::addTimeToBall(Message& message) const
-{
-  message.set_timetoball((unsigned int)getSoccerStrategy().timeToBall);
-}
-
-void TeamCommEventSender::addWantsToBeStriker(Message& message) const
-{
-  message.set_wantstobestriker(getRoleDecisionModel().wantsToBeStriker);
-}
-
-void TeamCommEventSender::addWasStriker(Message& message) const
-{
-  message.set_wasstriker(getRoleDecisionModel().isStriker(getPlayerInfo().playerNumber));
-}
-
-void TeamCommEventSender::addRobotRole(Message& message) const
-{
-  auto role = getRoleDecisionModel().getRole(getPlayerInfo().playerNumber);
-  
-  message.mutable_robotrole()->set_role_static((naothmessages::RobotRoleStatic)role.role);
-  message.mutable_robotrole()->set_role_dynamic((naothmessages::RobotRoleDynamic)role.dynamic);
+    return send;
 }
