@@ -133,11 +133,15 @@ void GameLogger::execute()
       }
 
       // record images every n seconds
-      if(params.logPlainImages && getFrameInfo().getTimeSince(lastTimeImageRecorded) > params.logPlainImagesDelay && imageOutFile.is_open() && !imageOutFile.fail()){
+      if(params.logPlainImages && getFrameInfo().getTimeSince(lastTimeImageRecorded) > params.logPlainImagesDelay && imageOutFile.is_open() && !imageOutFile.fail())
+      {
         unsigned int frameNumber = getFrameInfo().getFrameNumber();
+
+        // first image: bottom
         imageOutFile.write((const char*)(&frameNumber), sizeof(unsigned int));
         imageOutFile.write((const char*)getImage().data(), getImage().data_size());
 
+        // second image: top
         imageOutFile.write((const char*)(&frameNumber), sizeof(unsigned int));
         imageOutFile.write((const char*)getImageTop().data(), getImageTop().data_size());
 
