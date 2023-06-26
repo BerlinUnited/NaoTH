@@ -16,6 +16,7 @@
 #include "Representations/Modeling/BodyState.h"
 #include "Representations/Modeling/BallModel.h"
 #include "Representations/Modeling/SoccerStrategy.h"
+#include "Representations/Modeling/TeamMessageDecision.h"
 
 #include "Tools/Debug/DebugPlot.h"
 #include "Tools/Debug/DebugRequest.h"
@@ -41,6 +42,7 @@ BEGIN_DECLARE_MODULE(TeamCommEventSender)
   REQUIRE(BallModel)
   REQUIRE(BodyState)
   REQUIRE(SoccerStrategy)
+  REQUIRE(TeamMessageDecision)
 
   PROVIDE(TeamMessageData)
   PROVIDE(TeamMessageDataOut)

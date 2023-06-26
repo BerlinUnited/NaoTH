@@ -35,19 +35,51 @@ bool TeamCommEventSender::createMessage() const
     message.set_number(getPlayerInfo().playerNumber);
     message.set_messagetimestamp(naoth::NaoTime::getSystemTimeInMilliSeconds());
 
-    addNtpRequests(message);
-    addRobotState(message);
-    addFallen(message);
-    addReadyToWalk(message);
-    addPose(message);
-    addBallAge(message);
-    addTimeToBall(message);
-    addWantsToBeStriker(message);
-    addWasStriker(message);
-    addRobotRole(message);
+    bool send = false;
 
-    // only send message if there's something to send (except player number & timestamp (7 bytes))
-    if (message.ByteSize() > 7)
+    if (getTeamMessageDecision().send_ntpRequests()) {
+        addNtpRequests(message);
+        send = true;
+    }
+    if (getTeamMessageDecision().send_state()) {
+        addRobotState(message);
+        send = true;
+    }
+    if (getTeamMessageDecision().send_fallen()) {
+        addFallen(message);
+        send = true;
+    }
+    if (getTeamMessageDecision().send_readyToWalk()) {
+        addReadyToWalk(message);
+        send = true;
+    }
+    if (getTeamMessageDecision().send_pose()) {
+        addPose(message);
+        send = true;
+    }
+    if (getTeamMessageDecision().send_ballAge()) {
+        addBallAge(message);
+        send = true;
+    }
+    if (getTeamMessageDecision().send_timeToBall()) {
+        addTimeToBall(message);
+        send = true;
+    }
+    if (getTeamMessageDecision().send_wantsToBeStriker()) {
+        addWantsToBeStriker(message);
+        send = true;
+    }
+    if (getTeamMessageDecision().send_wasStriker()) {
+        addWasStriker(message);
+        send = true;
+    }
+    if (getTeamMessageDecision().send_robotRole()) {
+        addRobotRole(message);
+        send = true;
+    }
+
+    // only send message if there's something to send
+    if (send)
     {
       getTeamMessageDataOut().data = message.SerializeAsString();
       std::cout << "TeamEvent Size = " << getTeamMessageDataOut().data.size() << std::endl;

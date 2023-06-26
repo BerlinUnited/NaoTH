@@ -33,6 +33,7 @@
 #include "Modules/Infrastructure/TeamCommunicator/TeamCommSender.h"
 #include "Modules/Infrastructure/TeamCommunicator/TeamCommEventReceiver.h"
 #include "Modules/Infrastructure/TeamCommunicator/TeamCommEventSender.h"
+#include "Modules/Infrastructure/TeamCommunicator/TeamCommEventDecision.h"
 #include "Modules/Infrastructure/TeamCommunicator/SimpleNetworkTimeProtocol.h"
 
 #include "Modules/Infrastructure/Debug/CameraDebug.h"
@@ -282,6 +283,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(CameraMatrixCorrectorV3);
 
   REGISTER_MODULE(TeamCommSender);
+  REGISTER_MODULE(TeamCommEventDecision);
   REGISTER_MODULE(TeamCommEventSender);
 
   // debug
