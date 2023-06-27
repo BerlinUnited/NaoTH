@@ -17,7 +17,7 @@ TeamCommEventDecision::~TeamCommEventDecision()
 void TeamCommEventDecision::execute()
 {
     getTeamMessageDecision().reset();
-    byInterval();
+    (this->*params.decisionMethod)();
 }
 
 void TeamCommEventDecision::byInterval()
@@ -38,4 +38,57 @@ void TeamCommEventDecision::byInterval()
 
         params.byInterval_lastSentTimestamp = getFrameInfo().getTime();
     }
+}
+
+void TeamCommEventDecision::byDistance()
+{
+    // there is no limit/budget in the initial phase; use this phase for syncing
+    if (getGameData().gameState == GameData::initial) {
+        getTeamMessageDecision().send_ntpRequests.set();
+    }
+
+    // if the robot is not playing (eg. penalized), do not send any message
+    if (getPlayerInfo().robotState != PlayerInfo::playing) {
+        return;
+    }
+
+    // as kind of safety set a lower bound how often we can send messages
+    if ((unsigned int)getFrameInfo().getTimeSince(params.byDistance_lastSentTimestamp) < params.byDistance_minInterval) {
+        return;
+    }
+
+    const auto& role = getRoleDecisionModel().getRole(getPlayerInfo().playerNumber);
+
+    double distance = 1.0;
+    if (Roles::isDefender(role.role))
+    {
+        distance = params.byDistance_defender;
+    }
+    else if (Roles::isMidfielder(role.role))
+    {
+        distance = params.byDistance_midfielder;
+    }
+    else if (Roles::isForward(role.role))
+    {
+        distance = params.byDistance_forward;
+    }
+
+    // send new message only if the robot moved some distance
+    if ((getRobotPose() - params.byDistance_lastPose).translation.abs() > distance)
+    {
+        getTeamMessageDecision().send_pose.set();
+
+        // only send ball model, if it adds value
+        if (getBallModel().knows) {
+            getTeamMessageDecision().send_ballAge.set();
+            getTeamMessageDecision().send_ballPosition.set();
+        }
+
+        params.byDistance_lastPose = getRobotPose();
+
+        // update timestamp for the safety condition
+        params.byDistance_lastSentTimestamp = getFrameInfo().getTime();
+    }
+    // TODO: do we allow a role change?
+    // TODO: how do we handle the striker decision
 }
