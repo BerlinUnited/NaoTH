@@ -422,6 +422,9 @@ class Log:
     def log_ball(self, run, time, ball):
         pass
 
+    def log_messages(self, run, time, message_cnt):
+        pass
+
     def log_player(self, run, time, players):
         pass
 
@@ -534,6 +537,9 @@ class LogStd(Log):
     def log_ball(self, run, time, ball):
         print("Run: {}\tTime: {}\tBall: {}, {}".format(run, time, ball['x'], ball['y']))
 
+    def log_messages(self, run, time, message_cnt):
+        print("Run: {}\tTime: {}\tLeft: {}, Right: {}".format(run, time, message_cnt[0], message_cnt[1]))
+
     def log_player(self, run, time, players):
         players_left = []
         players_right = []
@@ -585,6 +591,7 @@ def wait_half(r, s, half_time, log:Log=None, i:multiprocessing.Event=None):
         # make sure we got a new time frame to log
         if log and t != _:
             log.log_ball(r, t, s.get_ball())
+            log.log_messages(r, t, s.get_messageCount)
             log.log_player(r, t, s.get_robots())
         t = _
 

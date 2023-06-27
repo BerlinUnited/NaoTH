@@ -327,26 +327,32 @@ class SimsparkController(threading.Thread):
         """
         env = self.__environment
         for item in data:
-            if len(item) == 2:
+            try:
                 if item[0] == 'messages':
                     if len(item) > 1:
-                        # TODO: save messages of players
+                        for m in item[1:]:
+                            # check if the format is the expected
+                            if len(m) == 3 and len(m[1]) == 2 and m[1][0] == 'side' and len(m[2]) == 2 and m[2][0] == 'ip':
+                                if 'messages' not in env:
+                                    env['messages'] = [0, 0]
+                                if m[1][1] == '1':  # side 1 / left
+                                    env['messages'][0] += 1
+                                elif m[1][1] == '2':  # side 2 / right
+                                    env['messages'][1] += 1
                         '''
+                        # TODO: save messages of players
                         if item[0] not in self.__environment: self.__environment[item[0]] = {}
                         self.__environment[item[0]][] = {}
                         print(item)
                         '''
-                        pass
+                elif item[0] in ['FieldLength', 'FieldWidth', 'FieldHeight', 'GoalWidth', 'GoalDepth', 'GoalHeight', 'FreeKickDistance', 'WaitBeforeKickOff', 'AgentRadius', 'BallRadius', 'BallMass', 'RuleGoalPauseTime', 'RuleKickInPauseTime', 'RuleHalfTime', 'time']:
+                    env[item[0]] = float(item[1])
+                elif item[0] in ['half', 'score_left', 'score_right', 'play_mode']:
+                    env[item[0]] = int(item[1])
                 else:
-                    try:
-                        if item[0] in ['FieldLength', 'FieldWidth', 'FieldHeight', 'GoalWidth', 'GoalDepth', 'GoalHeight', 'FreeKickDistance', 'WaitBeforeKickOff', 'AgentRadius', 'BallRadius', 'BallMass', 'RuleGoalPauseTime', 'RuleKickInPauseTime', 'RuleHalfTime', 'time']:
-                            env[item[0]] = float(item[1])
-                        elif item[0] in ['half', 'score_left', 'score_right', 'play_mode']:
-                            env[item[0]] = int(item[1])
-                        else:
-                            env[item[0]] = item[1]
-                    except Exception as e:
-                        logging.warning("Exception while updating environment: %s\n%s", e, str(item))
+                    env[item[0]] = item[1]
+            except Exception as e:
+                logging.warning("Exception while updating environment: %s\n%s", e, str(item))
         self.__environment = env
 
     def __update_scene(self, data):
@@ -525,6 +531,14 @@ class SimsparkController(threading.Thread):
         :return:    the current play mode
         """
         return self.__get_environment('play_mode')
+
+    def get_messageCount(self):
+        """
+        Returns the number of messages of each team.
+
+        :return:    number of messages per team
+        """
+        return self.__get_environment('messages')
 
     def cmd_dropball(self):
         """Schedules the '(dropBall)' trainer command for the simspark instance."""
