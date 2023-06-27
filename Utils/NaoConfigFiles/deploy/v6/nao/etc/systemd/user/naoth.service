@@ -3,6 +3,7 @@ Description = NaoTH
 After = dev-video0.device dev-video1.device lola_adaptor.service
 Wants = dev-video0.device dev-video1.device lola_adaptor.service
 Requires = lola_adaptor.service
+Requires = pulseaudio.service
 ConditionPathExists=/home/nao/bin/naoth
 
 [Service]

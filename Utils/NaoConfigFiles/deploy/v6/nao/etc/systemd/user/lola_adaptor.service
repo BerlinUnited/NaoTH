@@ -3,6 +3,7 @@ Description = NaoTH LolaAdaptor
 After = lola.service pulseaudio.service
 Wants = lola.service pulseaudio.service
 Requires = lola.service
+Requires = pulseaudio.service
 ConditionPathExists=/home/nao/bin/lola_adaptor
 
 [Service]

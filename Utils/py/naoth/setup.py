@@ -21,7 +21,7 @@ setup(name='naoth',
       zip_safe=False,
       setup_requires=['wheel'],
       install_requires=[
-          'protobuf', 'numpy'
+          'protobuf==3.20.0', 'numpy'
       ],
       python_requires='>=3.6.9',
       )

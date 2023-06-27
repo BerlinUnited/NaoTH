@@ -71,7 +71,11 @@ workspace "NaoTHSoccer"
       "opencv_core",
       "opencv_ml",
       "opencv_imgproc",
-      "opencv_objdetect"
+      "opencv_objdetect",
+      "opencv_dnn",
+      "opencv_calib3d",
+      "opencv_features2d",
+      "opencv_flann"
   }
   
   -- this is on by default in premake4 stuff
@@ -242,7 +246,7 @@ workspace "NaoTHSoccer"
        
         dofile (FRAMEWORK_PATH .. "/Platforms/Make/LolaAdaptor.lua")
         kind "ConsoleApp"
-        links { "NaoTHSoccer", "Commons", naoth_links}
+        links { "NaoTHSoccer", "Commons"}
         vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/LolaAdaptor" }
       
     -- generate tests if required

@@ -1,10 +1,6 @@
 #ifndef _FRUGALLY_DEEP_H
 #define _FRUGALLY_DEEP_H
 
-// NOTE: assumes frugally 0.7.8-p0 is used
-
-# include <emmintrin.h>
-
 #include "AbstractCNNClassifier.h"
 
 // seems to be required on systems where clang uses gcc 13, otherwise following error might occur:
@@ -29,7 +25,7 @@ public:
 private:
 	std::shared_ptr<fdeep::model> model;
  
-    std::vector<fdeep::tensor5> result;
+    std::vector<fdeep::tensor> result;
 
 };
 

@@ -93,7 +93,7 @@ class CNNBallDetector: private CNNBallDetectorBase, private ModuleManager
 {
 public:
   CNNBallDetector();
-  ~CNNBallDetector();
+  virtual ~CNNBallDetector();
 
   void execute(CameraInfo::CameraID id);
 
