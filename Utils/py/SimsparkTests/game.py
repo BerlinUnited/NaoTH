@@ -591,7 +591,7 @@ def wait_half(r, s, half_time, log:Log=None, i:multiprocessing.Event=None):
         # make sure we got a new time frame to log
         if log and t != _:
             log.log_ball(r, t, s.get_ball())
-            log.log_messages(r, t, s.get_messageCount)
+            log.log_messages(r, t, s.get_messageCount())
             log.log_player(r, t, s.get_robots())
         t = _
 
