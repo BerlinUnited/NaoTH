@@ -350,7 +350,7 @@ class SimsparkController(threading.Thread):
                 elif item[0] in ['half', 'score_left', 'score_right', 'play_mode']:
                     env[item[0]] = int(item[1])
                 else:
-                    env[item[0]] = item[1]
+                    env[item[0]] = item[1:]
             except Exception as e:
                 logging.warning("Exception while updating environment: %s\n%s", e, str(item))
         self.__environment = env
@@ -524,13 +524,23 @@ class SimsparkController(threading.Thread):
         """
         return self.__get_environment('team_left') if side == 'Left' else self.__get_environment('team_right')
 
+    def get_playModes(self):
+        """
+        Returns the play modes of the simulation.
+
+        :return:    the available play modes
+        """
+        return self.__get_environment('play_modes')
+
     def get_playMode(self):
         """
         Returns the play mode of the simulation.
 
         :return:    the current play mode
         """
-        return self.__get_environment('play_mode')
+        modes = self.get_playModes()
+        mode = self.__get_environment('play_mode')
+        return modes[mode] if modes and len(modes) > mode else mode
 
     def get_messageCount(self):
         """
