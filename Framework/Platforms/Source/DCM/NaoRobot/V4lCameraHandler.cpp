@@ -122,6 +122,11 @@ void V4lCameraHandler::init(const std::string& camDevice, CameraInfo::CameraID c
   if (isCapturing) {
     shutdown();
   }
+  
+  // reset the camera just in case
+  if (isV6) {
+    resetV6Camera();
+  }
 
   currentCamera = camID;
   cameraName = camDevice;
@@ -134,7 +139,6 @@ void V4lCameraHandler::init(const std::string& camDevice, CameraInfo::CameraID c
   
   // initialize parameter manager
   if (isV6) {
-    resetV6Camera();
     settingsManager = std::make_shared<CameraSettingsV6Manager>(fd, cameraName);
   } else {
     settingsManager = std::make_shared<CameraSettingsV5Manager>(fd, cameraName);
