@@ -225,16 +225,24 @@ SensorJointData::SensorJointData()
 void SensorJointData::print(ostream& stream) const
 {
   stream << "Timestamp: " << timestamp << endl;
-  stream << "Joint [pos(deg), stiffness, temperature,current]" << endl;
-  stream << "------------------------" << endl;
+
+  // print the joint valies as a table
+  stream << "Joint           pos    , pos(deg) , stiffness, temperature, current " << endl;
+  stream << "-------------------------------------------------------------------" << endl;
   for (int i = 0; i < numOfJoint; i++) 
   {
+    stream << std::left << std::setw(16) << getJointName((JointData::JointID) i);
+
     stream.precision(4);
-    stream << getJointName((JointData::JointID) i) << "\t[" << fixed << Math::toDegrees(position[i]) << ", " << stiffness[i] << ", ";
+    stream << std::right << std::setw(7) << fixed << position[i] << ", ";
+    stream << std::right << std::setw(9) << fixed << Math::toDegrees(position[i]) << ", "; 
+    stream << std::right << std::setw(9) << fixed << stiffness[i] << ", ";
+
     stream.precision(0);
-    stream << temperature[i] << ", ";
+    stream << std::right << std::setw(11) << temperature[i] << ", ";
+
     stream.precision(3);
-    stream << electricCurrent[i] << "]" <<  endl;
+    stream << std::right << std::setw(7) << electricCurrent[i] <<  endl;
   }
 }//end print
 
@@ -253,10 +261,18 @@ MotorJointData::~MotorJointData()
 
 void MotorJointData::print(ostream& stream) const
 {
-  stream << "Joint [pos, stiffness]" << endl;
-  stream << "------------------------" << endl;
-  for (int i = 0; i < numOfJoint; i++) {
-    stream << getJointName((JointData::JointID) i) << "[" << position[i] << ", " << stiffness[i] << "]" << endl;
+  // print the joint valies as a table
+  stream << "Joint           pos    , pos(deg) , stiffness " << endl;
+  stream << "----------------------------------------------" << endl;
+  for (int i = 0; i < numOfJoint; i++) 
+  {
+    stream << std::left << std::setw(16) << getJointName((JointData::JointID) i);
+
+    stream.precision(4);
+    stream << std::right << std::setw(7) << fixed << position[i] << ", ";
+    stream << std::right << std::setw(9) << fixed << Math::toDegrees(position[i]) << ", "; 
+    stream << std::right << std::setw(9) << fixed << stiffness[i] << ", ";
+    stream << endl;
   }
 }//end print
 
@@ -270,10 +286,15 @@ OffsetJointData::~OffsetJointData()
 
 void OffsetJointData::print(ostream& stream) const
 {
-  stream << "Joint [offset]" << endl;
-  stream << "------------------------" << endl;
-  for (int i = 0; i < numOfJoint; i++) {
-    stream << getJointName((JointData::JointID) i) << "[" << position[i] << "]" << endl;
+  // print the joint valies as a table
+  stream << "Joint           offset " << endl;
+  stream << "-----------------------" << endl;
+  for (int i = 0; i < numOfJoint; i++) 
+  {
+    stream << std::left << std::setw(16) << getJointName((JointData::JointID) i);
+
+    stream.precision(4);
+    stream << std::right << std::setw(7) << fixed << position[i] << endl;
   }
 }//end print
 

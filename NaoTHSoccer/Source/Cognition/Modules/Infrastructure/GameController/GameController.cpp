@@ -327,7 +327,7 @@ void GameController::handleButtons()
 void GameController::handleHeadButtons()
 {
   if(getButtonState().buttons[ButtonState::HeadMiddle] == ButtonEvent::CLICKED
-    && (getPlayerInfo().robotState == PlayerInfo::initial || getPlayerInfo().robotState == PlayerInfo::finished))
+    && (getPlayerInfo().robotState == PlayerInfo::initial || getPlayerInfo().robotState == PlayerInfo::unstiff || getPlayerInfo().robotState == PlayerInfo::finished))
   {
     int playerNumber = getPlayerInfo().playerNumber;
     if(playerNumber <= 9)
