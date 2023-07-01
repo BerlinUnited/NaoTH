@@ -329,22 +329,28 @@ class SimsparkController(threading.Thread):
         for item in data:
             try:
                 if item[0] == 'messages':
-                    if len(item) > 1:
+                    # count messages only during the game phase
+                    if len(item) > 1 and self.get_playMode() not in ['BeforeKickOff']:
                         for m in item[1:]:
                             # check if the format is the expected
-                            if len(m) == 3 and len(m[1]) == 2 and m[1][0] == 'side' and len(m[2]) == 2 and m[2][0] == 'ip':
+                            if len(m) == 4\
+                                    and len(m[1]) == 2 and m[1][0] == 'side'\
+                                    and len(m[2]) == 2 and m[2][0] == 'ip'\
+                                    and len(m[3]) == 2 and m[3][0] == 'num':
+                                # init messages environment
                                 if 'messages' not in env:
-                                    env['messages'] = [0, 0]
-                                if m[1][1] == '1':  # side 1 / left
-                                    env['messages'][0] += 1
-                                elif m[1][1] == '2':  # side 2 / right
-                                    env['messages'][1] += 1
-                        '''
-                        # TODO: save messages of players
-                        if item[0] not in self.__environment: self.__environment[item[0]] = {}
-                        self.__environment[item[0]][] = {}
-                        print(item)
-                        '''
+                                    env['messages'] = {
+                                        '1': {'cnt': 0},
+                                        '2': {'cnt': 0}
+                                    }
+                                # only update/count, if message changed
+                                if m[3][1] not in env['messages'][m[1][1]] or env['messages'][m[1][1]][m[3][1]] != m[0]:
+                                    if m[1][1] == '1':  # side 1 / left
+                                        env['messages'][m[1][1]]['cnt'] += 1
+                                        env['messages'][m[1][1]][m[3][1]] = m[0]
+                                    elif m[1][1] == '2':  # side 2 / right
+                                        env['messages'][m[1][1]]['cnt'] += 1
+                                        env['messages'][m[1][1]][m[3][1]] = m[0]
                 elif item[0] in ['FieldLength', 'FieldWidth', 'FieldHeight', 'GoalWidth', 'GoalDepth', 'GoalHeight', 'FreeKickDistance', 'WaitBeforeKickOff', 'AgentRadius', 'BallRadius', 'BallMass', 'RuleGoalPauseTime', 'RuleKickInPauseTime', 'RuleHalfTime', 'time']:
                     env[item[0]] = float(item[1])
                 elif item[0] in ['half', 'score_left', 'score_right', 'play_mode']:
@@ -548,7 +554,8 @@ class SimsparkController(threading.Thread):
 
         :return:    number of messages per team
         """
-        return self.__get_environment('messages')
+        messages = self.__get_environment('messages')
+        return [messages['1']['cnt'], messages['2']['cnt']] if messages else [0, 0]
 
     def cmd_dropball(self):
         """Schedules the '(dropBall)' trainer command for the simspark instance."""
