@@ -37,6 +37,7 @@ include "Options/Basics/motion_init_stand_watch.xabsl";
 include "Options/Basics/show_calibration.xabsl";
 include "Options/Basics/stand_up.xabsl";
 include "Options/Basics/treat_lifted.xabsl";
+include "Options/Basics/auto_calibration.xabsl";
 
 // Head Control
 include "Options/HeadControl/head_control.xabsl";

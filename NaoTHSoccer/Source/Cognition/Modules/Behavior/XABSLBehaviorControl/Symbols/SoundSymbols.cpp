@@ -11,6 +11,8 @@
 
 #include "SoundSymbols.h"
 
+#include <string>
+
 void SoundSymbols::registerSymbols(xabsl::Engine& engine)
 {
   // register the sound enums
@@ -21,6 +23,9 @@ void SoundSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerEnumElement("sound", "sound.playing", 4);
   engine.registerEnumElement("sound", "sound.battery_low", 5);
   engine.registerEnumElement("sound", "sound.weeeee", 6);
+  engine.registerEnumElement("sound", "sound.finished_walking", 7);
+  engine.registerEnumElement("sound", "sound.ball_position", 8);
+  engine.registerEnumElement("sound", "sound.start_calibration", 9);
 
   engine.registerEnumeratedOutputSymbol("sound.request", "sound", &setSoundRequest, &getSoundRequest);
 }//end registerSymbols
@@ -53,6 +58,23 @@ void SoundSymbols::setSoundRequest(int value)
       theInstance->getSoundPlayData().soundFile = "battery_low.wav";
     } else if(value == 6) {
       theInstance->getSoundPlayData().soundFile = "weeeee.wav";
+    } else if(value == 7) {
+      theInstance->getSoundPlayData().soundFile = ":Finished walking";
+    } else if(value == 8) {
+
+      theInstance->getSoundPlayData().soundFile = ":The ball is at: ";
+
+      Vector2d ball(0,0);
+      if(theInstance->getBallModel().knows) {
+        ball = theInstance->getRobotPose()*theInstance->getBallModel().position;
+        ball = ball / 10.0;
+      }
+
+      theInstance->getSoundPlayData().soundFile += 
+        std::to_string(static_cast<int>(ball.x)) + " " + 
+        std::to_string(static_cast<int>(ball.y));
+    } else if(value == 9) {
+      theInstance->getSoundPlayData().soundFile = ":Start Calibration";
     }
   }
 }
@@ -73,6 +95,12 @@ int SoundSymbols::getSoundRequest()
     return 5;
   } else if(theInstance->getSoundPlayData().soundFile == "weeeee.wav") {
     return 6;
+  } else if(theInstance->getSoundPlayData().soundFile == "finished_walking") {
+    return 7;
+  } else if(theInstance->getSoundPlayData().soundFile == "ball_position") {
+    return 8;
+  } else if(theInstance->getSoundPlayData().soundFile == "start_calibration") {
+    return 9;
   }
 
   return 0;

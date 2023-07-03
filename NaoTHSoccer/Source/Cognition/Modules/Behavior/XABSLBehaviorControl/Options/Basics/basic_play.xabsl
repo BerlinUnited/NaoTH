@@ -39,6 +39,9 @@ option basic_play
       // relax while standing by default
       motion.stand.disable_relax = false;
       
+      // reset automatic calibration flag
+      strategy.automatic_calibration = false;
+      
       // react to the game controller and observe fall down
       decide_game_state();
 

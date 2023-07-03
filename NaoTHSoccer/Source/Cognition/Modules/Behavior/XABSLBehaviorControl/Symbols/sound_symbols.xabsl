@@ -10,7 +10,10 @@ namespace sound("Sound Symbols") {
     penalized,
     playing,
     battery_low,
-    weeeee
+    weeeee,
+    finished_walking,
+    ball_position,
+    start_calibration
   };
 
   enum sound output sound.request;
