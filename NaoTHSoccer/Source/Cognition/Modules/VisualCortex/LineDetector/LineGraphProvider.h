@@ -62,6 +62,7 @@ BEGIN_DECLARE_MODULE(LineGraphProvider)
 
   //PROVIDE(ProbabilisticQuadCompas)
   PROVIDE(LineGraphPercept)
+  PROVIDE(LineGraphPerceptTop)
 END_DECLARE_MODULE(LineGraphProvider)
 
 
@@ -76,14 +77,12 @@ public:
   void execute()
   {
     //getProbabilisticQuadCompas().reset();
-    getLineGraphPercept().reset();
+    //getLineGraphPercept().reset();
 
-    //execute(CameraInfo::Bottom);
+    execute(CameraInfo::Bottom);
     execute(CameraInfo::Top);
     
     //getProbabilisticQuadCompas().normalize();
-
-
 
     DEBUG_REQUEST("Vision:LineGraphProvider:draw_extended_line_graph",
       FIELD_DRAWING_CONTEXT;
@@ -191,7 +190,8 @@ private: // method members
   void extendLineGraph(std::vector<Neighbors>& neighbors);
 
   DOUBLE_CAM_PROVIDE(LineGraphProvider, DebugImageDrawings);
-
+  DOUBLE_CAM_PROVIDE(LineGraphProvider, LineGraphPercept);
+  
   DOUBLE_CAM_REQUIRE(LineGraphProvider, CameraInfo);
   DOUBLE_CAM_REQUIRE(LineGraphProvider, CameraMatrix);
   DOUBLE_CAM_REQUIRE(LineGraphProvider, ScanLineEdgelPercept);

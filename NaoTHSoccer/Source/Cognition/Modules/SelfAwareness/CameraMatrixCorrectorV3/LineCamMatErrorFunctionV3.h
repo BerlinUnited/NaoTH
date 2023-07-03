@@ -53,9 +53,12 @@ public:
     Vector2d const * global_position;
     double const * global_orientation;
 
+    mutable std::vector<Math::LineSegment> lineProjections;
+
 private:
     CalibrationData calibrationData;
     unsigned int numberOfResudials;
+    unsigned int numberOfLines;
 
     DebugRequest&        theDebugRequest;
     DebugDrawings&       theDebugDrawings;
@@ -101,6 +104,7 @@ public:
     ):
         bounds(nullptr),
         numberOfResudials(0),
+        numberOfLines(0),
         theDebugRequest(theDebugRequest),
         theDebugDrawings(theDebugDrawings),
         //theDebugModify(theDebugModify),
@@ -122,14 +126,17 @@ public:
 
     void add(const CalibrationDataSample& c_data_sample)
     {
-        unsigned int numNewResudials =
-          (c_data_sample.field_lines_in_image.empty()   ? 0 : 1) +
-          (c_data_sample.field_lines_in_image_top.empty()? 0 : 1);
+        unsigned int numNewLines = c_data_sample.field_lines_in_image.size() +
+          c_data_sample.field_lines_in_image_top.size();
 
-        if (numNewResudials > 0) {
+        if (numNewLines > 0) {
             calibrationData.push_back(c_data_sample);
-            numberOfResudials += numNewResudials;
-        }
+            numberOfLines += numNewLines;
+            
+            // this doesn't work well
+            //numberOfResudials = numberOfLines*(numberOfLines-1) / 2;
+        }   
+        numberOfResudials = 1;
     }
 
     void clear(){
