@@ -190,12 +190,14 @@ NaoController::~NaoController()
 
 void NaoController::set(const CameraSettingsRequest &request)
 {
+  // FIXME: CameraSettings are assembled and copied in every frame 
   CameraSettings settings = request.getCameraSettings();
   theBottomCameraHandler.setAllCameraParams(settings);
 }
 
 void NaoController::set(const CameraSettingsRequestTop &request)
 {
+  // FIXME: CameraSettings are assembled and copied in every frame
   CameraSettings settings = request.getCameraSettings();
   theTopCameraHandler.setAllCameraParams(settings);
 }

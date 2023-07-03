@@ -20,12 +20,15 @@ extern "C"
 #define V4L2_MT9M114_AE_MIN_VIRT_DGAIN (V4L2_CID_PRIVATE_BASE + 5)
 #define V4L2_MT9M114_AE_MAX_VIRT_DGAIN (V4L2_CID_PRIVATE_BASE + 6)
 
-CameraSettingsV5Manager::CameraSettingsV5Manager()
-    : initialized(false)
+CameraSettingsV5Manager::CameraSettingsV5Manager(int cameraFd, const std::string &cameraName)
+    : 
+  initialized(false), 
+  cameraFd(cameraFd), 
+  cameraName(cameraName) 
 {
 }
 
-void CameraSettingsV5Manager::query(int cameraFd, const std::string& cameraName, naoth::CameraSettings &settings)
+void CameraSettingsV5Manager::query(naoth::CameraSettings &settings)
 {
     settings.autoExposition = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE_AUTO) == 0 ? false : true;
 
@@ -68,7 +71,7 @@ void CameraSettingsV5Manager::query(int cameraFd, const std::string& cameraName,
     current = settings;
 }
 
-void CameraSettingsV5Manager::apply(int cameraFd, const std::string& cameraName, const naoth::CameraSettings &settings, bool force)
+void CameraSettingsV5Manager::apply(const naoth::CameraSettings &settings, bool force)
 {
     if (!initialized)
     {
