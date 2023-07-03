@@ -73,9 +73,21 @@ public:
 
 
   // sleep for a number of milliseconds
-  static void sleep(unsigned int ms) { 
+  static void sleep(unsigned int ms) 
+  {
+    // NOTE: sleep_for() is quite imprecise starting Windows 10. 
+    // Approach set the resolution for the timing services higher. 
+    // This can increase computational load.
+    // It's here for the future use in case higher precision is required.
+    // https://learn.microsoft.com/en-us/windows/win32/api/timeapi/nf-timeapi-timebeginperiod
+    // requires winmm.lib to be linked in VS
+    //timeBeginPeriod(1);
+    
     std::this_thread::sleep_for(std::chrono::milliseconds(ms)); 
-
+    
+    //timeEndPeriod(1);
+    
+    
     // NOTE: this is the legacy way of a portable sleep function
     /*
     #ifdef WIN32
