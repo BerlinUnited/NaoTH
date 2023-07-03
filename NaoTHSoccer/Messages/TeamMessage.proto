@@ -24,13 +24,14 @@ enum TeamColor
 
 enum RobotState
 {
-  initial  = 0;
-  ready    = 1;
-  set      = 2;
-  playing  = 3;
-  finished = 4;
-  penalized = 5;
-  unstiff = 6;
+  initial     = 0;
+  ready       = 1;
+  set         = 2;
+  playing     = 3;
+  finished    = 4;
+  penalized   = 5;
+  unstiff     = 6;
+  calibration = 7;
 };
 
 enum RobotRoleStatic
