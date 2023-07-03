@@ -2,7 +2,7 @@
 * @file XabslFileInputSource.h
 *
 * Declaration of class XabslFileInputSource:
-* reads and tokenazes a xabsl behavior from an intermediate code file, e.h., behavior-ic.dat
+* reads and tokenizes a xabsl behavior from an intermediate code file, e.g., behavior-ic.dat
 */
 
 #ifndef XABSLFILEINPUTSOURCE_H
