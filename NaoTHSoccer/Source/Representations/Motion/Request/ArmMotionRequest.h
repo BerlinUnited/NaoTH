@@ -83,23 +83,23 @@ public:
 
   // LEFT ARM
   // describes the target angle-position: x=Pitch, y=roll
-  Vector2<double> lShoulderPosition;
+  Vector2d lShoulderPosition;
   // describes the target stiffness: x=Pitch, y=roll
-  Vector2<double> lShoulderStiffness;
+  Vector2d lShoulderStiffness;
   // describes the target angle-position: x=yaw, y=roll
-  Vector2<double> lElbowPosition;
+  Vector2d lElbowPosition;
   // describes the target stiffness: x=yaw, y=roll
-  Vector2<double> lElbowStiffness;
+  Vector2d lElbowStiffness;
 
   // RIGHT ARM
   // describes the target angle-position: x=Pitch, y=roll
-  Vector2<double> rShoulderPosition;
+  Vector2d rShoulderPosition;
   // describes the target stiffness: x=Pitch, y=roll
-  Vector2<double> rShoulderStiffness;
+  Vector2d rShoulderStiffness;
   // describes the target angle-position: x=yaw, y=roll
-  Vector2<double> rElbowPosition;
+  Vector2d rElbowPosition;
   // describes the target stiffness: x=yaw, y=roll
-  Vector2<double> rElbowStiffness;
+  Vector2d rElbowStiffness;
 
   double stiffness;
 
