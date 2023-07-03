@@ -8,12 +8,14 @@ GameLogger::GameLogger()
   lastCompleteFrameNumber(0),
   oldState(PlayerInfo::initial),
   firstRecording(true),
-  lastAudioDataTimestamp(0),
-  lastRecordedPlainImageID(CameraInfo::Bottom)
+  lastAudioDataTimestamp(0)
 {
-  logfileManager.openFile("/tmp/game.log");
+  const std::string gameLogPath = params.logDirPath + "/game.log";
+  const std::string imageLogPath = params.logDirPath + "/images.log";
+
+  logfileManager.openFile(gameLogPath);
   
-  imageOutFile.open("/tmp/images.log", ios::out | ios::binary);
+  imageOutFile.open(imageLogPath, ios::out | ios::binary);
   lastTimeImageRecorded = getFrameInfo();
 
   getDebugParameterList().add(&params);
@@ -59,6 +61,7 @@ void GameLogger::execute()
     if(!firstRecording && oldState == getPlayerInfo().robotState) {
       log_this_frame = log_this_frame && getPlayerInfo().robotState != PlayerInfo::initial;
       log_this_frame = log_this_frame && getPlayerInfo().robotState != PlayerInfo::finished;
+      log_this_frame = log_this_frame && getPlayerInfo().robotState != PlayerInfo::unstiff;
       log_this_frame = log_this_frame && getMotionStatus().currentMotion != motion::init;
     }
 
@@ -129,19 +132,18 @@ void GameLogger::execute()
         LOGSTUFF(WhistlePercept);
       }
 
-      // record images every 1s
-      if(params.logPlainImages && getFrameInfo().getTimeSince(lastTimeImageRecorded) > params.logPlainImagesDelay && imageOutFile.is_open() && !imageOutFile.fail()) {
+      // record images every n seconds
+      if(params.logPlainImages && getFrameInfo().getTimeSince(lastTimeImageRecorded) > params.logPlainImagesDelay && imageOutFile.is_open() && !imageOutFile.fail())
+      {
         unsigned int frameNumber = getFrameInfo().getFrameNumber();
-        imageOutFile.write((const char*)(&frameNumber), sizeof(unsigned int));
 
-        // switch camera each frame
-        if(lastRecordedPlainImageID == CameraInfo::Top) {
-          imageOutFile.write((const char*)getImage().data(), getImage().data_size());
-          lastRecordedPlainImageID = CameraInfo::Bottom;
-        } else {
-          imageOutFile.write((const char*)getImageTop().data(), getImageTop().data_size());
-          lastRecordedPlainImageID = CameraInfo::Top;
-        }
+        // first image: bottom
+        imageOutFile.write((const char*)(&frameNumber), sizeof(unsigned int));
+        imageOutFile.write((const char*)getImage().data(), getImage().data_size());
+
+        // second image: top
+        imageOutFile.write((const char*)(&frameNumber), sizeof(unsigned int));
+        imageOutFile.write((const char*)getImageTop().data(), getImageTop().data_size());
 
         lastTimeImageRecorded = getFrameInfo();
       }

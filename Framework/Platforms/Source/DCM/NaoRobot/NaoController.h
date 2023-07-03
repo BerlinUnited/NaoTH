@@ -27,11 +27,11 @@
 
 
 #include "SoundControl.h"
-#include "SPLGameController.h"
 #include "CPUTemperatureReader.h"
 #include "DebugCommunication/DebugServer.h"
 #include "AudioRecorder.h"
 
+#include "Tools/Communication/Network/SPLGameController.h"
 #include "Tools/Communication/Network/BroadCaster.h"
 #include "Tools/Communication/Network/UDPReceiver.h"
 
@@ -208,6 +208,9 @@ protected:
   DebugServer* theDebugServer;
   CPUTemperatureReader theCPUTemperatureReader;
   AudioRecorder theAudioRecorder;
+
+private:
+  static bool fileExists (const std::string& filename);
 };
 
 } // end namespace naoth

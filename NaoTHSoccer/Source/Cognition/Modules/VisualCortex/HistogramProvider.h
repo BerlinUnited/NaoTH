@@ -73,7 +73,7 @@ private:
   //generate plot for raw, normalized and cumulated histograms
   void plot(std::string id, Statistics::HistogramX& histogram) const
   {
-    for(int i = 0; i < histogram.size; i++)
+    for(unsigned int i = 0; i < histogram.size; i++)
     {
       PLOT_GENERIC(id + ":rawHistogram", i, histogram.rawData[i]);
       if(histogram.isCalculated())
@@ -89,7 +89,7 @@ private:
   {
     if(histogram.isCalculated())
     {
-      for(int i = 0; i < histogram.size; i++)
+      for(unsigned int i = 0; i < histogram.size; i++)
       {
         PLOT_GENERIC(id + ":rawHistogram", i, histogram.rawData[i]);
       }
@@ -101,7 +101,7 @@ private:
   {
     if(histogram.isCalculated())
     {
-      for(int i = 0; i < histogram.size; i++)
+      for(unsigned int i = 0; i < histogram.size; i++)
       {
         PLOT_GENERIC(id + ":normalizedHistogram", i, histogram.normalizedData[i]);
       }
@@ -113,7 +113,7 @@ private:
   {
     if(histogram.isCalculated())
     {
-      for(int i = 0; i < histogram.size; i++)
+      for(unsigned int i = 0; i < histogram.size; i++)
       {
         PLOT_GENERIC(id + ":cumulativeHistogram", i, histogram.cumulativeData[i]);
       }

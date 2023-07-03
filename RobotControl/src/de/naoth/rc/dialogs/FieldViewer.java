@@ -610,8 +610,16 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
   {
       
         Pose2D robotPose = null;
+        
+        // camera matrix for top and bottom image
         Pose3D cmBottom = null;
         Pose3D cmTop = null;
+        // in some logfiles CM dowes not exist, this flag makes sure 
+        // that the exception is thrown only once to notify about the absence
+        // of CMs.
+        boolean cmExceptionThrown = false;
+        
+        // needed for projection
         final double f = (0.5*640.0) / Math.tan(0.5 * 60.9/180.0*Math.PI);
         
         private void readCameraMatrix(BlackBoard b) 
@@ -639,9 +647,17 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
                         toVector(cmt.getPose().getRotation(2)))
                 );
                 
+                // CMs exist, reset the error flag
+                cmExceptionThrown = false;
             } catch(InvalidProtocolBufferException ex) {
                 ex.printStackTrace(System.err);
-            }      
+            } catch(NullPointerException ex) {
+                // throw the exception only once to avoid spamming
+                if(!cmExceptionThrown) {
+                    new Exception("No CameraMatrix or CameraMatrixTop.", ex).printStackTrace(System.err);
+                    cmExceptionThrown = true;
+                }
+            }
         }
         
         private void drawTeamMessages(BlackBoard b, DrawingCollection dc)

@@ -1,11 +1,12 @@
 #ifndef _FRUGALLY_DEEP_H
 #define _FRUGALLY_DEEP_H
 
-#ifndef WIN32
-
-# include <emmintrin.h>
-
 #include "AbstractCNNClassifier.h"
+
+// seems to be required on systems where clang uses gcc 13, otherwise following error might occur:
+// LinuxToolchain/toolchain_native/extern/include/fplus/numeric.hpp:320:25: error: no type named 'uint64_t'
+// in namespace 'std'; did you mean simply 'uint64_t'?
+#include <cstdint>
 
 #include <fdeep/fdeep.hpp>
 
@@ -18,15 +19,14 @@ public:
 
 	void predict(const BallCandidates::PatchYUVClassified& p, double meanBrightness);
 
-	double getRadius();
+    double getRadius();
     Vector2d getCenter();
 
 private:
 	std::shared_ptr<fdeep::model> model;
  
-    std::vector<fdeep::tensor5> result;
+    std::vector<fdeep::tensor> result;
 
 };
-# endif
 
 #endif

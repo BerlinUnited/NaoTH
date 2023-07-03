@@ -230,7 +230,7 @@ Vector2d GoalCrossBarDetector::getBackProjectedTopPoint(const GoalPercept::GoalP
   Vector3d pt1(p1.x, p1.y, getFieldInfo().goalHeight);
 
   Vector2i topInImage1;
-  CameraGeometry::relativePointToImage(getCameraMatrix(), getImage().cameraInfo, pt1, topInImage1); 
+  CameraGeometry::relativePointToImage(getCameraMatrix(), getCameraInfo(), pt1, topInImage1); 
   return topInImage1;
 }
 
@@ -243,8 +243,8 @@ int GoalCrossBarDetector::getBackProjectedTopBarWidth(const GoalPercept::GoalPos
 
   Vector2i topInImage1;
   Vector2i topInImage2;
-  CameraGeometry::relativePointToImage(getCameraMatrix(), getImage().cameraInfo, pt1, topInImage1); 
-  CameraGeometry::relativePointToImage(getCameraMatrix(), getImage().cameraInfo, pt2, topInImage2);
+  CameraGeometry::relativePointToImage(getCameraMatrix(), getCameraInfo(), pt1, topInImage1); 
+  CameraGeometry::relativePointToImage(getCameraMatrix(), getCameraInfo(), pt2, topInImage2);
 
   return (topInImage1 - topInImage2).abs();
 }
@@ -257,8 +257,8 @@ int GoalCrossBarDetector::getBackProjectedPostHeight(const GoalPercept::GoalPost
 
   Vector2i pbImg;
   Vector2i ptImg;
-  CameraGeometry::relativePointToImage(getCameraMatrix(), getImage().cameraInfo, pb, pbImg); 
-  CameraGeometry::relativePointToImage(getCameraMatrix(), getImage().cameraInfo, pt, ptImg);
+  CameraGeometry::relativePointToImage(getCameraMatrix(), getCameraInfo(), pb, pbImg); 
+  CameraGeometry::relativePointToImage(getCameraMatrix(), getCameraInfo(), pt, ptImg);
 
   return (pbImg - ptImg).abs();
 }
@@ -797,7 +797,7 @@ void GoalCrossBarDetector::calcuateCrossBars()
 
       //// NOTE: if the projection is not successfull, then post.position = (0,0)
       //bool projectionOk = CameraGeometry::imagePixelToFieldCoord(
-      //    getCameraMatrix(), getImage().cameraInfo,
+      //    getCameraMatrix(), getCameraInfo(),
       //    post.basePoint.x, post.basePoint.y, 0.0,
       //    post.position);
 
@@ -906,11 +906,11 @@ void GoalCrossBarDetector::testBackProjection()
       Vector2i baseInImage2;
       Vector2i topInImage2;
 
-      CameraGeometry::relativePointToImage(getCameraMatrix(), getImage().cameraInfo, pb1,baseInImage1); 
-      CameraGeometry::relativePointToImage(getCameraMatrix(), getImage().cameraInfo, pt1,topInImage1); 
+      CameraGeometry::relativePointToImage(getCameraMatrix(), getCameraInfo(), pb1,baseInImage1); 
+      CameraGeometry::relativePointToImage(getCameraMatrix(), getCameraInfo(), pt1,topInImage1); 
 
-      CameraGeometry::relativePointToImage(getCameraMatrix(), getImage().cameraInfo, pb2,baseInImage2); 
-      CameraGeometry::relativePointToImage(getCameraMatrix(), getImage().cameraInfo, pt2,topInImage2); 
+      CameraGeometry::relativePointToImage(getCameraMatrix(), getCameraInfo(), pb2,baseInImage2); 
+      CameraGeometry::relativePointToImage(getCameraMatrix(), getCameraInfo(), pt2,topInImage2); 
 
       LINE_PX(ColorClasses::red, baseInImage1.x, baseInImage1.y, topInImage1.x, topInImage1.y);
       LINE_PX(ColorClasses::red, baseInImage2.x, baseInImage2.y, topInImage2.x, topInImage2.y);
@@ -925,8 +925,8 @@ void GoalCrossBarDetector::testBackProjection()
 
       Vector2i baseInImage1;
       Vector2i topInImage1;
-      CameraGeometry::relativePointToImage(getCameraMatrix(), getImage().cameraInfo, pb1,baseInImage1); 
-      CameraGeometry::relativePointToImage(getCameraMatrix(), getImage().cameraInfo, pt1,topInImage1); 
+      CameraGeometry::relativePointToImage(getCameraMatrix(), getCameraInfo(), pb1,baseInImage1); 
+      CameraGeometry::relativePointToImage(getCameraMatrix(), getCameraInfo(), pt1,topInImage1); 
 
       LINE_PX(ColorClasses::red, baseInImage1.x, baseInImage1.y, topInImage1.x, topInImage1.y);
 

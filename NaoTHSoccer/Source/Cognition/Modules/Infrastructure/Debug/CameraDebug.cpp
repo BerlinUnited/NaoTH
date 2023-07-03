@@ -11,17 +11,23 @@ using namespace std;
 
 CameraDebug::CameraDebug(): CameraDebugBase()
 {  
+  getDebugParameterList().add(&getCameraInfo().params);
+  getDebugParameterList().add(&getCameraInfoTop().params);
+
   // register the CameraSettingsRequest as a parameter list
-  getDebugParameterList().add(&(getCameraSettingsRequest()));
-  getDebugParameterList().add(&(getCameraSettingsRequestTop()));
-  getDebugParameterList().add(&(getCommonCameraSettingsRequest()));
+  getDebugParameterList().add(&getCameraSettingsRequest());
+  getDebugParameterList().add(&getCameraSettingsRequestTop());
+  getDebugParameterList().add(&getCommonCameraSettingsRequest());
 }
 
 CameraDebug::~CameraDebug()
 {
-  getDebugParameterList().remove(&(getCameraSettingsRequest()));
-  getDebugParameterList().remove(&(getCameraSettingsRequestTop()));
-  getDebugParameterList().remove(&(getCommonCameraSettingsRequest()));
+  getDebugParameterList().remove(&getCameraInfo().params);
+  getDebugParameterList().remove(&getCameraInfoTop().params);
+
+  getDebugParameterList().remove(&getCameraSettingsRequest());
+  getDebugParameterList().remove(&getCameraSettingsRequestTop());
+  getDebugParameterList().remove(&getCommonCameraSettingsRequest());
 }
 
 void CameraDebug::execute()
@@ -61,5 +67,9 @@ void CameraDebug::execute()
     }
   }
   
+  // A sanity check, just in case ... 
+  if(getCameraInfo().resolutionWidth != naoth::IMAGE_WIDTH || getCameraInfo().resolutionHeight != naoth::IMAGE_HEIGHT) {
+    THROW("Image size of the CameraInfo doesn't correspond to the static values IMAGE_WIDTH and IMAGE_HEIGHT.");
+  }
 }//end execute
 

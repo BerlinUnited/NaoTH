@@ -83,6 +83,7 @@ def fy_1500_new():
     model.add(Dense(4, name="dense_1"))
 
     # For using custom loss import your loss function and use the name of the function as loss argument.
+    # FIXME: devil compiler 1 kann mit custom metrics nicht umgehen
     model.compile(loss='mean_squared_error', optimizer='adam', metrics=['accuracy', ClassificationMetric(), IoU])
 
     return model

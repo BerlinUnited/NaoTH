@@ -158,7 +158,7 @@ void GoalDetector::calcuateGoalPosts()
 
       // NOTE: if the projection is not successfull, then post.position = (0,0)
       bool projectionOk = CameraGeometry::imagePixelToFieldCoord(
-          getCameraMatrix(), getImage().cameraInfo,
+          getCameraMatrix(), getCameraInfo(),
           post.basePoint.x, post.basePoint.y, 0.0,
           post.position);
 
@@ -197,7 +197,7 @@ Vector2i GoalDetector::scanForEndPoint(const Vector2i& start, const Vector2d& di
 {
   Vector2i pos(start);
   Pixel pixel;
-  BresenhamLineScan footPointScanner(pos, direction, getImage().cameraInfo);
+  BresenhamLineScan footPointScanner(pos, direction, getImage().width(), getImage().height());
 
   // initialize the scanner
   Vector2i peak_point(pos);

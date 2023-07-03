@@ -218,125 +218,106 @@ Pose3D FootTrajectoryGenerator2018::stepControl(
 }
 
 Pose3D FootTrajectoryGenerator2018::stepControlNew(
-	const FootStep& step,
-	double cycle,
-	double samplesDoubleSupport,
-	double samplesSingleSupport,
-	double stepHeight,
-	double footPitchOffset,
-	double footRollOffset,
-	double speedDirection,
-	double scale,
-	double sidekick_width
-	) const
+    const FootStep& step,
+    double cycle,
+    double samplesDoubleSupport,
+    double samplesSingleSupport,
+    double stepHeight,
+    double footPitchOffset,
+    double footRollOffset,
+    double speedDirection,
+    double scale,
+    double sidekick_width
+    ) const
 {
-	double doubleSupportEnd = samplesDoubleSupport / 2;
-	double doubleSupportBegin = samplesDoubleSupport / 2 + samplesSingleSupport;
+    double doubleSupportEnd = samplesDoubleSupport / 2;
+    double doubleSupportBegin = samplesDoubleSupport / 2 + samplesSingleSupport;
 
-	if (cycle <= doubleSupportEnd)
-	{
-		return step.footBegin();
-	}
-	else if (cycle <= doubleSupportBegin)
-	{
-		Pose3D /*supFoot,*/ startFoot, targetFoot;
+    if (cycle <= doubleSupportEnd)
+    {
+        return step.footBegin();
+    }
+    else if (cycle <= doubleSupportBegin)
+    {
+        Pose3D /*supFoot,*/ startFoot, targetFoot;
 
-		// poses in support foot coordinates
-		if (step.liftingFoot() == FootStep::LEFT)
-		{
-			InverseKinematic::FeetPose begin = step.begin();
-			InverseKinematic::FeetPose end = step.end();
+        // poses in support foot coordinates
+        if (step.liftingFoot() == FootStep::LEFT)
+        {
+            InverseKinematic::FeetPose begin = step.begin();
+            InverseKinematic::FeetPose end = step.end();
 
-			begin.localInRightFoot();
-			end.localInRightFoot();
+            begin.localInRightFoot();
+            end.localInRightFoot();
 
-			//supFoot    = begin.right;
-			startFoot = begin.left;
-			targetFoot = end.left;
-		}
-		else
-		{
-			InverseKinematic::FeetPose begin = step.begin();
-			InverseKinematic::FeetPose end = step.end();
+            //supFoot    = begin.right;
+            startFoot = begin.left;
+            targetFoot = end.left;
+        }
+        else
+        {
+            InverseKinematic::FeetPose begin = step.begin();
+            InverseKinematic::FeetPose end = step.end();
 
-			begin.localInLeftFoot();
-			end.localInLeftFoot();
+            begin.localInLeftFoot();
+            end.localInLeftFoot();
 
-			//supFoot    = begin.left;
-			startFoot = begin.right;
-			targetFoot = end.right;
-		}
+            //supFoot    = begin.left;
+            startFoot = begin.right;
+            targetFoot = end.right;
+        }
 
-		// X trajectory
-		std::vector<double> xX;
-		std::vector<double> yX;
-		tk::spline theCubicSplineX;
+        // X trajectory
+        std::vector<double> xX;
+        std::vector<double> yX;
+        tk::spline theCubicSplineX;
 
-    xX = { 0.0, 0.125, 0.375, 1.0 };
-    yX = {
-      0.0,
-      0.3,
-      0.75,
-      1.0
-    };
-    theCubicSplineX.set_boundary(tk::spline::first_deriv, 0.0, tk::spline::first_deriv, 0.0, false);
-		theCubicSplineX.set_points(xX, yX);
+        xX = { 0.0, 0.125, 0.375, 1.0 };
+        yX = {0.0, 0.3, 0.75, 1.0 };
+        theCubicSplineX.set_boundary(tk::spline::first_deriv, 0.0, tk::spline::first_deriv, 0.0, false);
+        theCubicSplineX.set_points(xX, yX);
 
-		// Y trajectory
-		std::vector<double> xY = { 0.0, 0.25, 0.5, 0.75, 1.0 };
-		std::vector<double> yY = {
-			0.0,
-			0.5,
-			1.0,
-			0.5,
-			0.0
-		};
+        // Y trajectory
+        std::vector<double> xY = { 0.0, 0.25, 0.5, 0.75, 1.0 };
+        std::vector<double> yY = { 0.0, 0.5, 1.0, 0.5, 0.0 };
 
-		tk::spline theCubicSplineY;
-		theCubicSplineY.set_boundary(tk::spline::first_deriv, 0.0, tk::spline::first_deriv, 0.0, false);
-		theCubicSplineY.set_points(xY, yY);
+        tk::spline theCubicSplineY;
+        theCubicSplineY.set_boundary(tk::spline::first_deriv, 0.0, tk::spline::first_deriv, 0.0, false);
+        theCubicSplineY.set_points(xY, yY);
 
-		// Z trajectory
-		std::vector<double> xZ = { 0.0, 0.125, 0.35, 0.5, 0.65, 0.875, 1.0 };
-		std::vector<double> yZ = {
-			0.0,
-			0.275,
-			0.775,
-			1.0,
-			0.775,
-			0.275,
-			0.0
-		};
+        // Z trajectory
+        std::vector<double> xZ = { 0.0, 0.125, 0.35, 0.5, 0.65, 0.875, 1.0 };
+        std::vector<double> yZ = { 0.0, 0.275, 0.775, 1.0, 0.775, 0.275, 0.0 };
 
-		tk::spline theCubicSplineZ;
-		theCubicSplineZ.set_boundary(tk::spline::first_deriv, 2.0, tk::spline::first_deriv, -8.0, false);
-		theCubicSplineZ.set_points(xZ, yZ);
+        tk::spline theCubicSplineZ;
+        theCubicSplineZ.set_boundary(tk::spline::first_deriv, 2.0, tk::spline::first_deriv, -8.0, false);
+        theCubicSplineZ.set_points(xZ, yZ);
 
-		double t = 1 - (doubleSupportBegin - cycle) / samplesSingleSupport;
-		double xp = (t < scale) ? (1 - cos(t / scale*Math::pi))*0.5 : 1.0;
-		double zp = (1 - cos(t*Math::pi2))*0.5;
+        double t = 1 - (doubleSupportBegin - cycle) / samplesSingleSupport;
+        double xp = (t < scale) ? (1 - cos(t / scale*Math::pi))*0.5 : 1.0;
+        double zp = (1 - cos(t*Math::pi2))*0.5;
 
-		double splineX = theCubicSplineX(xp);
-		double splineY = theCubicSplineY(xp);
-		double splineZ = theCubicSplineZ(t);
+        double splineX = theCubicSplineX(xp);
+        double splineY = theCubicSplineY(xp);
+        double splineZ = theCubicSplineZ(t);
 
-		Pose3D foot;
+        Pose3D foot;
 
-		foot.translation.x = (1 - splineX) * startFoot.translation.x + splineX * targetFoot.translation.x;
-		foot.translation.y = (1 - xp) * startFoot.translation.y + xp * targetFoot.translation.y + /*step.liftingFoot() **/ splineY * sidekick_width * std::sin(-speedDirection);
-		foot.translation.z = startFoot.translation.z + splineZ*stepHeight;
+        foot.translation.x = (1 - splineX) * startFoot.translation.x + splineX * targetFoot.translation.x;
+        foot.translation.y = (1 - xp) * startFoot.translation.y + xp * targetFoot.translation.y + /*step.liftingFoot() **/ splineY * sidekick_width * std::sin(-speedDirection);
+        foot.translation.z = startFoot.translation.z + splineZ*stepHeight;
 
-		foot.rotation = RotationMatrix::getRotationX(footRollOffset * zp);
-		foot.rotation.rotateY(Math::sgn(targetFoot.translation.x - startFoot.translation.x) * footPitchOffset * zp);
-		RotationMatrix rot = RotationMatrix::interpolate(startFoot.rotation, targetFoot.rotation, xp);
-		foot.rotation *= rot;
+        foot.rotation = RotationMatrix::getRotationX(footRollOffset * zp);
+        foot.rotation.rotateY(Math::sgn(targetFoot.translation.x - startFoot.translation.x) * footPitchOffset * zp);
+        RotationMatrix rot = RotationMatrix::interpolate(startFoot.rotation, targetFoot.rotation, xp);
+        foot.rotation *= rot;
 
-		return step.supFoot()*foot;
-	}
-	else
-	{
-		return step.footEnd();
-	}
+        return step.supFoot()*foot;
+    }
+    else
+    {
+        return step.footEnd();
+    }
 }
 
 Pose3D FootTrajectoryGenerator2018::genTrajectoryWithSplines(

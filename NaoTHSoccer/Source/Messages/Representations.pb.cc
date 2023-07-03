@@ -780,6 +780,7 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_ATTRIBUTE_SECTION
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionStatus, head_target_reached_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionStatus, head_got_stuck_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionStatus, walk_emergency_stop_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionStatus, head_at_rest_),
   4,
   5,
   6,
@@ -793,6 +794,7 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_ATTRIBUTE_SECTION
   10,
   11,
   12,
+  13,
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(OdometryData, _has_bits_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(OdometryData, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -924,6 +926,7 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_ATTRIBUTE_SECTION
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(IMUData, rotational_velocity_sensor_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(IMUData, orientation_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(IMUData, orientation_rotvec_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(IMUData, has_been_reset_),
   0,
   1,
   2,
@@ -933,6 +936,7 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_ATTRIBUTE_SECTION
   6,
   7,
   8,
+  9,
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CentreOfPressure, _has_bits_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CentreOfPressure, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -1073,28 +1077,28 @@ static const ::google::protobuf::internal::MigrationSchema schemas[] GOOGLE_ATTR
   { 380, 388, sizeof(ScanLineEdgelPercept)},
   { 391, 399, sizeof(LineGraphPercept)},
   { 402, 410, sizeof(StepControlStatus)},
-  { 413, 431, sizeof(MotionStatus)},
-  { 444, 450, sizeof(OdometryData)},
-  { 451, 457, sizeof(BodyState)},
-  { 458, 465, sizeof(BodyStatus)},
-  { 467, 476, sizeof(CalibrationData)},
-  { 480, 486, sizeof(InertialModel)},
-  { 487, 496, sizeof(CameraMatrixCalibration)},
-  { 500, 509, sizeof(BallCandidates_Patch)},
-  { 513, 519, sizeof(BallCandidates)},
-  { 520, 529, sizeof(RemoteControlCommand)},
-  { 533, 541, sizeof(GroundContactModel)},
-  { 544, 555, sizeof(CollisionPercept)},
-  { 561, 575, sizeof(IMUData)},
-  { 584, 598, sizeof(CentreOfPressure)},
-  { 607, 618, sizeof(CalibrationDataCMC_CalibrationDataSampleV3)},
-  { 624, 631, sizeof(CalibrationDataCMC)},
-  { 633, 641, sizeof(WhistlePercept_Whistle)},
-  { 644, 653, sizeof(WhistlePercept)},
-  { 657, 665, sizeof(DebugModify_ModifyValue)},
-  { 668, 674, sizeof(DebugModify)},
-  { 675, 681, sizeof(StepBuffer)},
-  { 682, 690, sizeof(bodyAwareness)},
+  { 413, 432, sizeof(MotionStatus)},
+  { 446, 452, sizeof(OdometryData)},
+  { 453, 459, sizeof(BodyState)},
+  { 460, 467, sizeof(BodyStatus)},
+  { 469, 478, sizeof(CalibrationData)},
+  { 482, 488, sizeof(InertialModel)},
+  { 489, 498, sizeof(CameraMatrixCalibration)},
+  { 502, 511, sizeof(BallCandidates_Patch)},
+  { 515, 521, sizeof(BallCandidates)},
+  { 522, 531, sizeof(RemoteControlCommand)},
+  { 535, 543, sizeof(GroundContactModel)},
+  { 546, 557, sizeof(CollisionPercept)},
+  { 563, 578, sizeof(IMUData)},
+  { 588, 602, sizeof(CentreOfPressure)},
+  { 611, 622, sizeof(CalibrationDataCMC_CalibrationDataSampleV3)},
+  { 628, 635, sizeof(CalibrationDataCMC)},
+  { 637, 645, sizeof(WhistlePercept_Whistle)},
+  { 648, 657, sizeof(WhistlePercept)},
+  { 661, 669, sizeof(DebugModify_ModifyValue)},
+  { 672, 678, sizeof(DebugModify)},
+  { 679, 685, sizeof(StepBuffer)},
+  { 686, 694, sizeof(bodyAwareness)},
 };
 
 static ::google::protobuf::Message const * const file_default_instances[] = {
@@ -1605,7 +1609,7 @@ void AddDescriptorsImpl() {
       "sages.DoubleEdgel\0221\n\redgelsInImage\030\003 \003(\013"
       "2\032.naothmessages.DoubleEdgel\"P\n\021StepCont"
       "rolStatus\022\016\n\006stepID\030\001 \002(\r\022\024\n\014moveableFoo"
-      "t\030\002 \002(\r\022\025\n\rstepRequestID\030\003 \002(\r\"\274\003\n\014Motio"
+      "t\030\002 \002(\r\022\025\n\rstepRequestID\030\003 \002(\r\"\322\003\n\014Motio"
       "nStatus\022\014\n\004time\030\001 \002(\r\022\022\n\nlastMotion\030\002 \002("
       "\r\022\025\n\rcurrentMotion\030\003 \002(\r\022\022\n\nheadMotion\030\004"
       " \002(\r\022\032\n\022currentMotionState\030\005 \002(\r\0224\n\025plan"
@@ -1616,106 +1620,107 @@ void AddDescriptorsImpl() {
       "ntrolStatus\030\t \001(\0132 .naothmessages.StepCo"
       "ntrolStatus\022\026\n\016target_reached\030\n \001(\010\022\033\n\023h"
       "ead_target_reached\030\013 \001(\010\022\026\n\016head_got_stu"
-      "ck\030\014 \001(\010\022\033\n\023walk_emergency_stop\030\r \001(\010\"3\n"
-      "\014OdometryData\022#\n\004pose\030\001 \002(\0132\025.naothmessa"
-      "ges.Pose2D\"\037\n\tBodyState\022\022\n\nisLiftedUp\030\001 "
-      "\001(\010\"3\n\nBodyStatus\022\022\n\ncurrentSum\030\001 \003(\001\022\021\n"
-      "\ttimestamp\030\003 \002(\r\"\320\001\n\017CalibrationData\022:\n\024"
-      "inertialSensorOffset\030\001 \001(\0132\034.naothmessag"
-      "es.DoubleVector2\0226\n\020gyroSensorOffset\030\005 \001"
-      "(\0132\034.naothmessages.DoubleVector3\0225\n\017accS"
-      "ensorOffset\030\003 \001(\0132\034.naothmessages.Double"
-      "Vector3\022\022\n\ncalibrated\030\004 \002(\010\"B\n\rInertialM"
-      "odel\0221\n\013orientation\030\001 \001(\0132\034.naothmessage"
-      "s.DoubleVector2\"\210\002\n\027CameraMatrixCalibrat"
-      "ion\022:\n\020correctionOffset\030\001 \003(\0132\034.naothmes"
-      "sages.DoubleVector2B\002\030\001\022:\n\024correctionOff"
-      "setBody\030\002 \001(\0132\034.naothmessages.DoubleVect"
-      "or2\022:\n\024correctionOffsetHead\030\003 \001(\0132\034.naot"
-      "hmessages.DoubleVector3\0229\n\023correctionOff"
-      "setCam\030\004 \003(\0132\034.naothmessages.DoubleVecto"
-      "r3\"\213\002\n\016BallCandidates\0224\n\007patches\030\001 \003(\0132#"
-      ".naothmessages.BallCandidates.Patch\032\302\001\n\005"
-      "Patch\022&\n\003min\030\001 \002(\0132\031.naothmessages.IntVe"
-      "ctor2\022&\n\003max\030\002 \002(\0132\031.naothmessages.IntVe"
-      "ctor2\0229\n\004type\030\003 \001(\0162(.naothmessages.Ball"
-      "Candidates.Patch.Type:\001Y\022\014\n\004data\030\005 \002(\014\" "
-      "\n\004Type\022\005\n\001Y\020\000\022\007\n\003YUV\020\001\022\010\n\004YUVC\020\002\"\371\003\n\024Rem"
-      "oteControlCommand\022D\n\013controlMode\030\001 \001(\0162/"
-      ".naothmessages.RemoteControlCommand.Cont"
-      "rolMode\022>\n\006action\030\002 \001(\0162..naothmessages."
-      "RemoteControlCommand.ActionType\022K\n\rsecon"
-      "d_action\030\003 \001(\01624.naothmessages.RemoteCon"
-      "trolCommand.SecondActionType\022%\n\006target\030\004"
-      " \001(\0132\025.naothmessages.Pose2D\"3\n\013ControlMo"
-      "de\022\022\n\016DIRECT_CONTROL\020\000\022\020\n\014LOCK_CONTROL\020\001"
-      "\"y\n\nActionType\022\010\n\004NONE\020\000\022\t\n\005STAND\020\001\022\010\n\004W"
-      "ALK\020\002\022\016\n\nKICK_RIGHT\020\003\022\r\n\tKICK_LEFT\020\004\022\025\n\021"
-      "KICK_FORWARD_LEFT\020\005\022\026\n\022KICK_FORWARD_RIGH"
-      "T\020\006\"7\n\020SecondActionType\022\017\n\013SECOND_NONE\020\000"
-      "\022\t\n\005BLINK\020\001\022\007\n\003SAY\020\002\"\257\001\n\022GroundContactMo"
-      "del\022\031\n\021leftGroundContact\030\001 \002(\010\022\032\n\022rightG"
-      "roundContact\030\002 \002(\010\022;\n\013supportFoot\030\003 \002(\0162"
-      "&.naothmessages.GroundContactModel.Foot\""
-      "%\n\004Foot\022\010\n\004LEFT\020\000\022\t\n\005RIGHT\020\001\022\010\n\004NONE\020\002\"\325"
-      "\001\n\020CollisionPercept\022\034\n\024timeCollisionArmL"
-      "eft\030\001 \002(\r\022\035\n\025timeCollisionArmRight\030\002 \002(\r"
-      "\022\035\n\025isCollisionLeftBumper\030\003 \002(\010\022\036\n\026isCol"
-      "lisionRightBumper\030\004 \002(\010\022!\n\031lastComputedC"
-      "ollisionLeft\030\005 \002(\001\022\"\n\032lastComputedCollis"
-      "ionRight\030\006 \002(\001\"\362\003\n\007IMUData\022.\n\010location\030\001"
-      " \002(\0132\034.naothmessages.DoubleVector3\022.\n\010ve"
-      "locity\030\002 \002(\0132\034.naothmessages.DoubleVecto"
-      "r3\0222\n\014acceleration\030\003 \002(\0132\034.naothmessages"
-      ".DoubleVector3\0229\n\023acceleration_sensor\030\004 "
-      "\001(\0132\034.naothmessages.DoubleVector3\022.\n\010rot"
-      "ation\030\005 \002(\0132\034.naothmessages.DoubleVector"
-      "3\0229\n\023rotational_velocity\030\006 \002(\0132\034.naothme"
-      "ssages.DoubleVector3\022@\n\032rotational_veloc"
-      "ity_sensor\030\007 \001(\0132\034.naothmessages.DoubleV"
-      "ector3\0221\n\013orientation\030\010 \002(\0132\034.naothmessa"
-      "ges.DoubleVector2\0228\n\022orientation_rotvec\030"
-      "\t \002(\0132\034.naothmessages.DoubleVector3\"\316\003\n\020"
-      "CentreOfPressure\022\?\n\031in_and_only_left_foo"
-      "t_cop\030\001 \002(\0132\034.naothmessages.DoubleVector"
-      "3\022\'\n\037in_and_only_left_foot_magnitude\030\002 \002"
-      "(\001\022#\n\033in_and_only_left_foot_valid\030\003 \002(\010\022"
-      "@\n\032in_and_only_right_foot_cop\030\004 \002(\0132\034.na"
-      "othmessages.DoubleVector3\022(\n in_and_only"
-      "_right_foot_magnitude\030\005 \002(\001\022$\n\034in_and_on"
-      "ly_right_foot_valid\030\006 \002(\010\022C\n\035in_kinemati"
-      "c_chain_origin_cop\030\007 \002(\0132\034.naothmessages"
-      ".DoubleVector3\022+\n#in_kinematic_chain_ori"
-      "gin_magnitude\030\010 \002(\001\022\'\n\037in_kinematic_chai"
-      "n_origin_valid\030\t \002(\010\"\215\003\n\022CalibrationData"
-      "CMC\022R\n\017calibrationData\030\001 \003(\01329.naothmess"
-      "ages.CalibrationDataCMC.CalibrationDataS"
-      "ampleV3\022\031\n\021numberOfResudials\030\002 \001(\r\032\207\002\n\027C"
-      "alibrationDataSampleV3\022(\n\tchestPose\030\001 \001("
-      "\0132\025.naothmessages.Pose3D\0223\n\redgelsInImag"
-      "e\030\002 \003(\0132\034.naothmessages.DoubleVector2\0226\n"
-      "\020edgelsInImageTop\030\003 \003(\0132\034.naothmessages."
-      "DoubleVector2\0221\n\013orientation\030\004 \001(\0132\034.nao"
-      "thmessages.DoubleVector2\022\017\n\007headYaw\030\005 \001("
-      "\001\022\021\n\theadPitch\030\006 \001(\001\"\356\001\n\016WhistlePercept\022"
-      " \n\030frameWhenWhistleDetected\030\001 \001(\r\022\023\n\013cap"
-      "tureFile\030\002 \001(\t\022A\n\022recognizedWhistles\030\003 \003"
-      "(\0132%.naothmessages.WhistlePercept.Whistl"
-      "e\022\027\n\017whistleDetected\030\004 \001(\010\032I\n\007Whistle\022\014\n"
-      "\004name\030\001 \002(\t\022\031\n\021positionInCapture\030\002 \002(\003\022\025"
-      "\n\rresponseValue\030\003 \002(\001\"\203\001\n\013DebugModify\0228\n"
-      "\010valueMap\030\001 \003(\0132&.naothmessages.DebugMod"
-      "ify.ModifyValue\032:\n\013ModifyValue\022\014\n\004name\030\001"
-      " \002(\t\022\016\n\006modify\030\002 \001(\010\022\r\n\005value\030\003 \001(\001\"9\n\nS"
-      "tepBuffer\022+\n\014support_foot\030\001 \001(\0132\025.naothm"
-      "essages.Pose3D\"\215\001\n\rbodyAwareness\022\020\n\010isLi"
-      "fted\030\001 \001(\010\0223\n\rcalculatedCoM\030\002 \001(\0132\034.naot"
-      "hmessages.DoubleVector3\0225\n\017currentCoMErr"
-      "or\030\003 \001(\0132\034.naothmessages.DoubleVector3B\033"
-      "\n\031de.naoth.rc.core.messages"
+      "ck\030\014 \001(\010\022\033\n\023walk_emergency_stop\030\r \001(\010\022\024\n"
+      "\014head_at_rest\030\016 \001(\010\"3\n\014OdometryData\022#\n\004p"
+      "ose\030\001 \002(\0132\025.naothmessages.Pose2D\"\037\n\tBody"
+      "State\022\022\n\nisLiftedUp\030\001 \001(\010\"3\n\nBodyStatus\022"
+      "\022\n\ncurrentSum\030\001 \003(\001\022\021\n\ttimestamp\030\003 \002(\r\"\320"
+      "\001\n\017CalibrationData\022:\n\024inertialSensorOffs"
+      "et\030\001 \001(\0132\034.naothmessages.DoubleVector2\0226"
+      "\n\020gyroSensorOffset\030\005 \001(\0132\034.naothmessages"
+      ".DoubleVector3\0225\n\017accSensorOffset\030\003 \001(\0132"
+      "\034.naothmessages.DoubleVector3\022\022\n\ncalibra"
+      "ted\030\004 \002(\010\"B\n\rInertialModel\0221\n\013orientatio"
+      "n\030\001 \001(\0132\034.naothmessages.DoubleVector2\"\210\002"
+      "\n\027CameraMatrixCalibration\022:\n\020correctionO"
+      "ffset\030\001 \003(\0132\034.naothmessages.DoubleVector"
+      "2B\002\030\001\022:\n\024correctionOffsetBody\030\002 \001(\0132\034.na"
+      "othmessages.DoubleVector2\022:\n\024correctionO"
+      "ffsetHead\030\003 \001(\0132\034.naothmessages.DoubleVe"
+      "ctor3\0229\n\023correctionOffsetCam\030\004 \003(\0132\034.nao"
+      "thmessages.DoubleVector3\"\213\002\n\016BallCandida"
+      "tes\0224\n\007patches\030\001 \003(\0132#.naothmessages.Bal"
+      "lCandidates.Patch\032\302\001\n\005Patch\022&\n\003min\030\001 \002(\013"
+      "2\031.naothmessages.IntVector2\022&\n\003max\030\002 \002(\013"
+      "2\031.naothmessages.IntVector2\0229\n\004type\030\003 \001("
+      "\0162(.naothmessages.BallCandidates.Patch.T"
+      "ype:\001Y\022\014\n\004data\030\005 \002(\014\" \n\004Type\022\005\n\001Y\020\000\022\007\n\003Y"
+      "UV\020\001\022\010\n\004YUVC\020\002\"\371\003\n\024RemoteControlCommand\022"
+      "D\n\013controlMode\030\001 \001(\0162/.naothmessages.Rem"
+      "oteControlCommand.ControlMode\022>\n\006action\030"
+      "\002 \001(\0162..naothmessages.RemoteControlComma"
+      "nd.ActionType\022K\n\rsecond_action\030\003 \001(\01624.n"
+      "aothmessages.RemoteControlCommand.Second"
+      "ActionType\022%\n\006target\030\004 \001(\0132\025.naothmessag"
+      "es.Pose2D\"3\n\013ControlMode\022\022\n\016DIRECT_CONTR"
+      "OL\020\000\022\020\n\014LOCK_CONTROL\020\001\"y\n\nActionType\022\010\n\004"
+      "NONE\020\000\022\t\n\005STAND\020\001\022\010\n\004WALK\020\002\022\016\n\nKICK_RIGH"
+      "T\020\003\022\r\n\tKICK_LEFT\020\004\022\025\n\021KICK_FORWARD_LEFT\020"
+      "\005\022\026\n\022KICK_FORWARD_RIGHT\020\006\"7\n\020SecondActio"
+      "nType\022\017\n\013SECOND_NONE\020\000\022\t\n\005BLINK\020\001\022\007\n\003SAY"
+      "\020\002\"\257\001\n\022GroundContactModel\022\031\n\021leftGroundC"
+      "ontact\030\001 \002(\010\022\032\n\022rightGroundContact\030\002 \002(\010"
+      "\022;\n\013supportFoot\030\003 \002(\0162&.naothmessages.Gr"
+      "oundContactModel.Foot\"%\n\004Foot\022\010\n\004LEFT\020\000\022"
+      "\t\n\005RIGHT\020\001\022\010\n\004NONE\020\002\"\325\001\n\020CollisionPercep"
+      "t\022\034\n\024timeCollisionArmLeft\030\001 \002(\r\022\035\n\025timeC"
+      "ollisionArmRight\030\002 \002(\r\022\035\n\025isCollisionLef"
+      "tBumper\030\003 \002(\010\022\036\n\026isCollisionRightBumper\030"
+      "\004 \002(\010\022!\n\031lastComputedCollisionLeft\030\005 \002(\001"
+      "\022\"\n\032lastComputedCollisionRight\030\006 \002(\001\"\212\004\n"
+      "\007IMUData\022.\n\010location\030\001 \002(\0132\034.naothmessag"
+      "es.DoubleVector3\022.\n\010velocity\030\002 \002(\0132\034.nao"
+      "thmessages.DoubleVector3\0222\n\014acceleration"
+      "\030\003 \002(\0132\034.naothmessages.DoubleVector3\0229\n\023"
+      "acceleration_sensor\030\004 \001(\0132\034.naothmessage"
+      "s.DoubleVector3\022.\n\010rotation\030\005 \002(\0132\034.naot"
+      "hmessages.DoubleVector3\0229\n\023rotational_ve"
+      "locity\030\006 \002(\0132\034.naothmessages.DoubleVecto"
+      "r3\022@\n\032rotational_velocity_sensor\030\007 \001(\0132\034"
+      ".naothmessages.DoubleVector3\0221\n\013orientat"
+      "ion\030\010 \002(\0132\034.naothmessages.DoubleVector2\022"
+      "8\n\022orientation_rotvec\030\t \002(\0132\034.naothmessa"
+      "ges.DoubleVector3\022\026\n\016has_been_reset\030\n \001("
+      "\010\"\316\003\n\020CentreOfPressure\022\?\n\031in_and_only_le"
+      "ft_foot_cop\030\001 \002(\0132\034.naothmessages.Double"
+      "Vector3\022\'\n\037in_and_only_left_foot_magnitu"
+      "de\030\002 \002(\001\022#\n\033in_and_only_left_foot_valid\030"
+      "\003 \002(\010\022@\n\032in_and_only_right_foot_cop\030\004 \002("
+      "\0132\034.naothmessages.DoubleVector3\022(\n in_an"
+      "d_only_right_foot_magnitude\030\005 \002(\001\022$\n\034in_"
+      "and_only_right_foot_valid\030\006 \002(\010\022C\n\035in_ki"
+      "nematic_chain_origin_cop\030\007 \002(\0132\034.naothme"
+      "ssages.DoubleVector3\022+\n#in_kinematic_cha"
+      "in_origin_magnitude\030\010 \002(\001\022\'\n\037in_kinemati"
+      "c_chain_origin_valid\030\t \002(\010\"\215\003\n\022Calibrati"
+      "onDataCMC\022R\n\017calibrationData\030\001 \003(\01329.nao"
+      "thmessages.CalibrationDataCMC.Calibratio"
+      "nDataSampleV3\022\031\n\021numberOfResudials\030\002 \001(\r"
+      "\032\207\002\n\027CalibrationDataSampleV3\022(\n\tchestPos"
+      "e\030\001 \001(\0132\025.naothmessages.Pose3D\0223\n\redgels"
+      "InImage\030\002 \003(\0132\034.naothmessages.DoubleVect"
+      "or2\0226\n\020edgelsInImageTop\030\003 \003(\0132\034.naothmes"
+      "sages.DoubleVector2\0221\n\013orientation\030\004 \001(\013"
+      "2\034.naothmessages.DoubleVector2\022\017\n\007headYa"
+      "w\030\005 \001(\001\022\021\n\theadPitch\030\006 \001(\001\"\356\001\n\016WhistlePe"
+      "rcept\022 \n\030frameWhenWhistleDetected\030\001 \001(\r\022"
+      "\023\n\013captureFile\030\002 \001(\t\022A\n\022recognizedWhistl"
+      "es\030\003 \003(\0132%.naothmessages.WhistlePercept."
+      "Whistle\022\027\n\017whistleDetected\030\004 \001(\010\032I\n\007Whis"
+      "tle\022\014\n\004name\030\001 \002(\t\022\031\n\021positionInCapture\030\002"
+      " \002(\003\022\025\n\rresponseValue\030\003 \002(\001\"\203\001\n\013DebugMod"
+      "ify\0228\n\010valueMap\030\001 \003(\0132&.naothmessages.De"
+      "bugModify.ModifyValue\032:\n\013ModifyValue\022\014\n\004"
+      "name\030\001 \002(\t\022\016\n\006modify\030\002 \001(\010\022\r\n\005value\030\003 \001("
+      "\001\"9\n\nStepBuffer\022+\n\014support_foot\030\001 \001(\0132\025."
+      "naothmessages.Pose3D\"\215\001\n\rbodyAwareness\022\020"
+      "\n\010isLifted\030\001 \001(\010\0223\n\rcalculatedCoM\030\002 \001(\0132"
+      "\034.naothmessages.DoubleVector3\0225\n\017current"
+      "CoMError\030\003 \001(\0132\034.naothmessages.DoubleVec"
+      "tor3B\033\n\031de.naoth.rc.core.messages"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 10227);
+      descriptor, 10273);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Representations.proto", &protobuf_RegisterTypes);
   ::naothmessages::protobuf_CommonTypes_2eproto::AddDescriptors();
@@ -18746,6 +18751,7 @@ const int MotionStatus::kTargetReachedFieldNumber;
 const int MotionStatus::kHeadTargetReachedFieldNumber;
 const int MotionStatus::kHeadGotStuckFieldNumber;
 const int MotionStatus::kWalkEmergencyStopFieldNumber;
+const int MotionStatus::kHeadAtRestFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 MotionStatus::MotionStatus()
@@ -18783,16 +18789,16 @@ MotionStatus::MotionStatus(const MotionStatus& from)
     stepcontrolstatus_ = NULL;
   }
   ::memcpy(&time_, &from.time_,
-    static_cast<size_t>(reinterpret_cast<char*>(&walk_emergency_stop_) -
-    reinterpret_cast<char*>(&time_)) + sizeof(walk_emergency_stop_));
+    static_cast<size_t>(reinterpret_cast<char*>(&head_at_rest_) -
+    reinterpret_cast<char*>(&time_)) + sizeof(head_at_rest_));
   // @@protoc_insertion_point(copy_constructor:naothmessages.MotionStatus)
 }
 
 void MotionStatus::SharedCtor() {
   _cached_size_ = 0;
   ::memset(&plannedmotionleftfoot_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&walk_emergency_stop_) -
-      reinterpret_cast<char*>(&plannedmotionleftfoot_)) + sizeof(walk_emergency_stop_));
+      reinterpret_cast<char*>(&head_at_rest_) -
+      reinterpret_cast<char*>(&plannedmotionleftfoot_)) + sizeof(head_at_rest_));
 }
 
 MotionStatus::~MotionStatus() {
@@ -18860,10 +18866,10 @@ void MotionStatus::Clear() {
         reinterpret_cast<char*>(&headmotion_) -
         reinterpret_cast<char*>(&time_)) + sizeof(headmotion_));
   }
-  if (cached_has_bits & 7936u) {
+  if (cached_has_bits & 16128u) {
     ::memset(&currentmotionstate_, 0, static_cast<size_t>(
-        reinterpret_cast<char*>(&walk_emergency_stop_) -
-        reinterpret_cast<char*>(&currentmotionstate_)) + sizeof(walk_emergency_stop_));
+        reinterpret_cast<char*>(&head_at_rest_) -
+        reinterpret_cast<char*>(&currentmotionstate_)) + sizeof(head_at_rest_));
   }
   _has_bits_.Clear();
   _internal_metadata_.Clear();
@@ -19053,6 +19059,20 @@ bool MotionStatus::MergePartialFromCodedStream(
         break;
       }
 
+      // optional bool head_at_rest = 14;
+      case 14: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(112u /* 112 & 0xFF */)) {
+          set_has_head_at_rest();
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
+                 input, &head_at_rest_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
       default: {
       handle_unusual:
         if (tag == 0) {
@@ -19149,6 +19169,11 @@ void MotionStatus::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteBool(13, this->walk_emergency_stop(), output);
   }
 
+  // optional bool head_at_rest = 14;
+  if (cached_has_bits & 0x00002000u) {
+    ::google::protobuf::internal::WireFormatLite::WriteBool(14, this->head_at_rest(), output);
+  }
+
   if (_internal_metadata_.have_unknown_fields()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         _internal_metadata_.unknown_fields(), output);
@@ -19235,6 +19260,11 @@ void MotionStatus::SerializeWithCachedSizes(
   // optional bool walk_emergency_stop = 13;
   if (cached_has_bits & 0x00001000u) {
     target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(13, this->walk_emergency_stop(), target);
+  }
+
+  // optional bool head_at_rest = 14;
+  if (cached_has_bits & 0x00002000u) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(14, this->head_at_rest(), target);
   }
 
   if (_internal_metadata_.have_unknown_fields()) {
@@ -19367,7 +19397,7 @@ size_t MotionStatus::ByteSizeLong() const {
         *this->stepcontrolstatus_);
   }
 
-  if (_has_bits_[8 / 32] & 7680u) {
+  if (_has_bits_[8 / 32] & 15872u) {
     // optional bool target_reached = 10;
     if (has_target_reached()) {
       total_size += 1 + 1;
@@ -19385,6 +19415,11 @@ size_t MotionStatus::ByteSizeLong() const {
 
     // optional bool walk_emergency_stop = 13;
     if (has_walk_emergency_stop()) {
+      total_size += 1 + 1;
+    }
+
+    // optional bool head_at_rest = 14;
+    if (has_head_at_rest()) {
       total_size += 1 + 1;
     }
 
@@ -19446,7 +19481,7 @@ void MotionStatus::MergeFrom(const MotionStatus& from) {
     }
     _has_bits_[0] |= cached_has_bits;
   }
-  if (cached_has_bits & 7936u) {
+  if (cached_has_bits & 16128u) {
     if (cached_has_bits & 0x00000100u) {
       currentmotionstate_ = from.currentmotionstate_;
     }
@@ -19461,6 +19496,9 @@ void MotionStatus::MergeFrom(const MotionStatus& from) {
     }
     if (cached_has_bits & 0x00001000u) {
       walk_emergency_stop_ = from.walk_emergency_stop_;
+    }
+    if (cached_has_bits & 0x00002000u) {
+      head_at_rest_ = from.head_at_rest_;
     }
     _has_bits_[0] |= cached_has_bits;
   }
@@ -19516,6 +19554,7 @@ void MotionStatus::InternalSwap(MotionStatus* other) {
   swap(head_target_reached_, other->head_target_reached_);
   swap(head_got_stuck_, other->head_got_stuck_);
   swap(walk_emergency_stop_, other->walk_emergency_stop_);
+  swap(head_at_rest_, other->head_at_rest_);
   swap(_has_bits_[0], other->_has_bits_[0]);
   _internal_metadata_.Swap(&other->_internal_metadata_);
   swap(_cached_size_, other->_cached_size_);
@@ -19927,6 +19966,30 @@ void MotionStatus::set_walk_emergency_stop(bool value) {
   set_has_walk_emergency_stop();
   walk_emergency_stop_ = value;
   // @@protoc_insertion_point(field_set:naothmessages.MotionStatus.walk_emergency_stop)
+}
+
+// optional bool head_at_rest = 14;
+bool MotionStatus::has_head_at_rest() const {
+  return (_has_bits_[0] & 0x00002000u) != 0;
+}
+void MotionStatus::set_has_head_at_rest() {
+  _has_bits_[0] |= 0x00002000u;
+}
+void MotionStatus::clear_has_head_at_rest() {
+  _has_bits_[0] &= ~0x00002000u;
+}
+void MotionStatus::clear_head_at_rest() {
+  head_at_rest_ = false;
+  clear_has_head_at_rest();
+}
+bool MotionStatus::head_at_rest() const {
+  // @@protoc_insertion_point(field_get:naothmessages.MotionStatus.head_at_rest)
+  return head_at_rest_;
+}
+void MotionStatus::set_head_at_rest(bool value) {
+  set_has_head_at_rest();
+  head_at_rest_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.MotionStatus.head_at_rest)
 }
 
 #endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -24732,6 +24795,7 @@ const int IMUData::kRotationalVelocityFieldNumber;
 const int IMUData::kRotationalVelocitySensorFieldNumber;
 const int IMUData::kOrientationFieldNumber;
 const int IMUData::kOrientationRotvecFieldNumber;
+const int IMUData::kHasBeenResetFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 IMUData::IMUData()
@@ -24793,14 +24857,15 @@ IMUData::IMUData(const IMUData& from)
   } else {
     orientation_rotvec_ = NULL;
   }
+  has_been_reset_ = from.has_been_reset_;
   // @@protoc_insertion_point(copy_constructor:naothmessages.IMUData)
 }
 
 void IMUData::SharedCtor() {
   _cached_size_ = 0;
   ::memset(&location_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&orientation_rotvec_) -
-      reinterpret_cast<char*>(&location_)) + sizeof(orientation_rotvec_));
+      reinterpret_cast<char*>(&has_been_reset_) -
+      reinterpret_cast<char*>(&location_)) + sizeof(has_been_reset_));
 }
 
 IMUData::~IMUData() {
@@ -24888,6 +24953,7 @@ void IMUData::Clear() {
     GOOGLE_DCHECK(orientation_rotvec_ != NULL);
     orientation_rotvec_->::naothmessages::DoubleVector3::Clear();
   }
+  has_been_reset_ = false;
   _has_bits_.Clear();
   _internal_metadata_.Clear();
 }
@@ -25010,6 +25076,20 @@ bool IMUData::MergePartialFromCodedStream(
         break;
       }
 
+      // optional bool has_been_reset = 10;
+      case 10: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(80u /* 80 & 0xFF */)) {
+          set_has_has_been_reset();
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
+                 input, &has_been_reset_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
       default: {
       handle_unusual:
         if (tag == 0) {
@@ -25091,6 +25171,11 @@ void IMUData::SerializeWithCachedSizes(
       9, *this->orientation_rotvec_, output);
   }
 
+  // optional bool has_been_reset = 10;
+  if (cached_has_bits & 0x00000200u) {
+    ::google::protobuf::internal::WireFormatLite::WriteBool(10, this->has_been_reset(), output);
+  }
+
   if (_internal_metadata_.have_unknown_fields()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         _internal_metadata_.unknown_fields(), output);
@@ -25167,6 +25252,11 @@ void IMUData::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageNoVirtualToArray(
         9, *this->orientation_rotvec_, deterministic, target);
+  }
+
+  // optional bool has_been_reset = 10;
+  if (cached_has_bits & 0x00000200u) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(10, this->has_been_reset(), target);
   }
 
   if (_internal_metadata_.have_unknown_fields()) {
@@ -25294,6 +25384,11 @@ size_t IMUData::ByteSizeLong() const {
         *this->rotational_velocity_sensor_);
   }
 
+  // optional bool has_been_reset = 10;
+  if (has_has_been_reset()) {
+    total_size += 1 + 1;
+  }
+
   int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
   GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
   _cached_size_ = cached_size;
@@ -25350,8 +25445,14 @@ void IMUData::MergeFrom(const IMUData& from) {
       mutable_orientation()->::naothmessages::DoubleVector2::MergeFrom(from.orientation());
     }
   }
-  if (cached_has_bits & 0x00000100u) {
-    mutable_orientation_rotvec()->::naothmessages::DoubleVector3::MergeFrom(from.orientation_rotvec());
+  if (cached_has_bits & 768u) {
+    if (cached_has_bits & 0x00000100u) {
+      mutable_orientation_rotvec()->::naothmessages::DoubleVector3::MergeFrom(from.orientation_rotvec());
+    }
+    if (cached_has_bits & 0x00000200u) {
+      has_been_reset_ = from.has_been_reset_;
+    }
+    _has_bits_[0] |= cached_has_bits;
   }
 }
 
@@ -25416,6 +25517,7 @@ void IMUData::InternalSwap(IMUData* other) {
   swap(rotational_velocity_sensor_, other->rotational_velocity_sensor_);
   swap(orientation_, other->orientation_);
   swap(orientation_rotvec_, other->orientation_rotvec_);
+  swap(has_been_reset_, other->has_been_reset_);
   swap(_has_bits_[0], other->_has_bits_[0]);
   _internal_metadata_.Swap(&other->_internal_metadata_);
   swap(_cached_size_, other->_cached_size_);
@@ -25841,6 +25943,30 @@ void IMUData::set_allocated_orientation_rotvec(::naothmessages::DoubleVector3* o
     clear_has_orientation_rotvec();
   }
   // @@protoc_insertion_point(field_set_allocated:naothmessages.IMUData.orientation_rotvec)
+}
+
+// optional bool has_been_reset = 10;
+bool IMUData::has_has_been_reset() const {
+  return (_has_bits_[0] & 0x00000200u) != 0;
+}
+void IMUData::set_has_has_been_reset() {
+  _has_bits_[0] |= 0x00000200u;
+}
+void IMUData::clear_has_has_been_reset() {
+  _has_bits_[0] &= ~0x00000200u;
+}
+void IMUData::clear_has_been_reset() {
+  has_been_reset_ = false;
+  clear_has_has_been_reset();
+}
+bool IMUData::has_been_reset() const {
+  // @@protoc_insertion_point(field_get:naothmessages.IMUData.has_been_reset)
+  return has_been_reset_;
+}
+void IMUData::set_has_been_reset(bool value) {
+  set_has_has_been_reset();
+  has_been_reset_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.IMUData.has_been_reset)
 }
 
 #endif  // PROTOBUF_INLINE_NOT_IN_HEADERS

@@ -1,10 +1,10 @@
 /*
- * File:   V4lCameraHandler.h
- * Author: Thomas Krause <krauseto@hu-berlin.de>
- * Author: Heinrich Mellmann <mellmann@informatik.hu-berlin.de>
- *
- * Created on 22. April 2010, 17:24
- */
+* @file   V4lCameraHandler.h
+* @author Thomas Krause <krauseto@hu-berlin.de>
+* @author Heinrich Mellmann <mellmann@informatik.hu-berlin.de>
+*
+* Created on 22. April 2010, 17:24
+*/
 
 #ifndef V4LCAMERAHANDLER_H
 #define	V4LCAMERAHANDLER_H
@@ -19,29 +19,42 @@
 #include "V4LCameraSettingsManager.h"
 
 /**
- * This is a CameraHandler that uses the V4L2 API directly. It will use the
- * Memory Map Streaming method for getting the images (which should be the
- * fastest possibility).
- *
- * For an example code look at http://v4l2spec.bytesex.org/spec/a16706.htm .
- * The whole specification is located at http://v4l2spec.bytesex.org/spec/book1.htm .
- *
- * @author Thomas Krause
- *
- * NOTE (Settings issues):
- * In general, it seems that the camera settings are preserved after the camera was started once.
- * Exposure is a special case - while the setting value itself is preserved, it seems to be 
- * NOT applied internaly at the start of the camera. So we have to reset it every time.
- * Exposure setting is ONLY applied if the new value is different from the current one. 
- * This is why we have to change it in the "HACK (exposure)".
- * 
- * There are also some driver issues, see "HACK (FadeToBlack and Sharpness)"
- *
- * The code is based on the V4L examples:
- * https://hverkuil.home.xs4all.nl/codec-api/uapi/v4l/v4l2grab.c.html
- * https://01.org/linuxgraphics/gfx-docs/drm/media/uapi/v4l/capture.c.html
- *
- */
+* This is a CameraHandler that uses the V4L2 API directly. It will use the
+* Memory Map Streaming method for getting the images (which should be the
+* fastest possibility).
+*
+* For an example code look at http://v4l2spec.bytesex.org/spec/a16706.htm .
+* The whole specification is located at http://v4l2spec.bytesex.org/spec/book1.htm .
+*
+* Testing cameras and inspecting the settings with v4l2-ctl:
+* https://www.mankier.com/1/v4l2-ctl#Description
+*
+* - display all available information 
+*     v4l2-ctl --all
+*
+* - List all settings
+*     v4l2-ctl -l
+*
+* - List all devices
+*     v4l2-ctl --list-devices
+* 
+*
+* @author Thomas Krause
+*
+* NOTE (Settings issues):
+* In general, it seems that the camera settings are preserved after the camera was started once.
+* Exposure is a special case - while the setting value itself is preserved, it seems to be 
+* NOT applied internaly at the start of the camera. So we have to reset it every time.
+* Exposure setting is ONLY applied if the new value is different from the current one. 
+* This is why we have to change it in the "HACK (exposure)".
+* 
+* There are also some driver issues, see "HACK (FadeToBlack and Sharpness)"
+*
+* The code is based on the V4L examples:
+* https://hverkuil.home.xs4all.nl/codec-api/uapi/v4l/v4l2grab.c.html
+* https://01.org/linuxgraphics/gfx-docs/drm/media/uapi/v4l/capture.c.html
+*
+*/
 
 namespace naoth {
 
@@ -124,5 +137,5 @@ private: // data members
 };
 
 } // namespace naoth
-#endif	/* V4LCAMERAHANDLER_H */
+#endif	// V4LCAMERAHANDLER_H
 

@@ -2,17 +2,24 @@
 #ifndef AUDIO_CONTROL_H
 #define AUDIO_CONTROL_H
 
-#include <string>
 #include "Tools/DataStructures/Printable.h"
+#include "Tools/DataStructures/ParameterList.h"
 
 namespace naoth
 {
-  class AudioControl: public Printable
+  class AudioControl: public Printable, public ParameterList
   {
   public:
-    bool capture;                 // controls if detection and audio capture is active or not
+    // controls if audio capture is active or not
+    bool capture;
+
+    // parameters for the audio capture
     unsigned int numChannels;
     unsigned int sampleRate;
+
+    // number of samples per channel, 
+    // i.e., the actual size of the whole buffer is calculated as 
+    //   buffer_size * numChannels
     unsigned int buffer_size;
 
     AudioControl();

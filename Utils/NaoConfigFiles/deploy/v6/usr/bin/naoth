@@ -14,9 +14,9 @@ function run_as_nao() {
 
 function show_log_as_nao() {
   if [ nao = `whoami` ]; then
-    journalctl --user-unit=naoth
+    journalctl -e --user-unit=naoth
   else
-    su nao -c "journalctl --user-unit=naoth"
+    su nao -c "journalctl -e --user-unit=naoth"
   fi
 }
 

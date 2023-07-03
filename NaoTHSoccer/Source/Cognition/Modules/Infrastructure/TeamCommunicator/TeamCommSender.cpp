@@ -60,8 +60,8 @@ void TeamCommSender::fillMessageBeforeSending() const
       msg.ballAge = getFrameInfo().getTimeSince(getBallModel().getFrameInfoWhenBallWasSeen().getTime());
       msg.ballPosition = getBallModel().position;
       msg.custom.ballVelocity = getBallModel().speed;
-    } 
-    else 
+    }
+    else
     {
       // only sent these values if the ball was never seen
       msg.ballAge = -1;
@@ -89,16 +89,20 @@ void TeamCommSender::fillMessageBeforeSending() const
     msg.custom.batteryCharge = getBatteryData().charge;
     msg.custom.temperature = std::max(getBodyState().temperatureLeftLeg, getBodyState().temperatureRightLeg);
     msg.custom.cpuTemperature = getCpuData().temperature;
+
+    msg.custom.whistleDetected = getWhistlePercept().whistleDetected;
+
     // update teamball in teamcomm
     if(getTeamBallModel().valid) {
-      getTeamMessageData().custom.teamBall = getTeamBallModel().positionOnField;
+      msg.custom.teamBall = getTeamBallModel().positionOnField;
     } else {
       // set teamball in teamcomm to an invalid value
-      getTeamMessageData().custom.teamBall.x = std::numeric_limits<double>::infinity();
-      getTeamMessageData().custom.teamBall.y = std::numeric_limits<double>::infinity();
+      msg.custom.teamBall.x = std::numeric_limits<double>::infinity();
+      msg.custom.teamBall.y = std::numeric_limits<double>::infinity();
     }
 
-    msg.custom.robotState = getPlayerInfo().robotState;
+    // if the robot is in the "inital pose" (InitialMotion) just send 'initial' otherwise send the current robotState
+    msg.custom.robotState = getMotionStatus().currentMotion == motion::init ? PlayerInfo::initial : getPlayerInfo().robotState;
     msg.custom.robotRole = getRoleDecisionModel().getRole(getPlayerInfo().playerNumber);
 
     msg.custom.readyToWalk = getBodyState().readyToWalk;

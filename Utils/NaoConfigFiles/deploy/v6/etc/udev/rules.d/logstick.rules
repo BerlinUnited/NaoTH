@@ -1,3 +1,2 @@
-# mounts the usb stick for naoth logs
-
+# Heinrich says it was only used for remote games in 2021 - it has nothing to do with our log stick
 KERNEL=="sd*", SUBSYSTEMS=="usb", ENV{ID_FS_TYPE}=="ext3|ext4", ACTION=="add", SYMLINK+="logstick", RUN+="/usr/bin/mount_logstick"

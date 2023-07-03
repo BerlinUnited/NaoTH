@@ -29,11 +29,11 @@ public:
 
   void init(GSocket* s);
 
-  void send(const std::string& msg) throw(std::runtime_error);
+  void send(const std::string& msg);
 
   SocketStream& send();
 
-  int recv(std::string& msg) throw(std::runtime_error);
+  int recv(std::string& msg);
 
   template <class T>
   SocketStream & operator <<(const T& msg)
@@ -58,7 +58,7 @@ protected:
 
   void prefixedSend();
 
-  bool isFixedLengthDataAvailable(unsigned int len) throw(std::runtime_error);
+  bool isFixedLengthDataAvailable(unsigned int len);
 
   unsigned int prefixedRecv(std::string& msg);
 

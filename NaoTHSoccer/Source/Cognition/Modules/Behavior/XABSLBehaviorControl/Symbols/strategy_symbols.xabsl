@@ -44,9 +44,6 @@ namespace strategy("Strategy Symbols") {
   float input goalie.defensive.y;
   float input goalie.defensive.a;
 
-  //float input penalty_goalie.pos.x;
-  //float input penalty_goalie.pos.y;
-
   /** formation */
   float input soccer_strategy.formation.x;
   float input soccer_strategy.formation.y;

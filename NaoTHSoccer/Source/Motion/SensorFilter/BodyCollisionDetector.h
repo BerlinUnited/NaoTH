@@ -19,7 +19,6 @@
 #include "Representations/Modeling/InertialModel.h"
 #include "Representations/Modeling/IMUData.h"
 
-
 //Include tools, datastructures and algorithms
 #include <Tools/Math/Vector2.h>
 
@@ -33,25 +32,23 @@
 
 //Module declaration
 BEGIN_DECLARE_MODULE(BodyCollisionDetector)
-//Provides
-PROVIDE(CollisionPercept)
-PROVIDE(TargetHipFeetPose)
+  REQUIRE(FrameInfo)
+  REQUIRE(Walk2018Parameters)
+  REQUIRE(InertialModel)
+  REQUIRE(IMUData)
+  REQUIRE(CalibrationData)
+  REQUIRE(StepBuffer)
+  REQUIRE(GyrometerData)
+  REQUIRE(RobotInfo)
+  REQUIRE(MotionStatus)
+  REQUIRE(TargetHipFeetPose)
 
-//Requires
-REQUIRE(FrameInfo)
-REQUIRE(Walk2018Parameters)
-REQUIRE(InertialModel)
-REQUIRE(IMUData)
-REQUIRE(CalibrationData)
-REQUIRE(StepBuffer)
-REQUIRE(GyrometerData)
-REQUIRE(RobotInfo)
-REQUIRE(MotionStatus)
+  //Debug
+  PROVIDE(DebugRequest)
+  PROVIDE(DebugPlot)
+  PROVIDE(DebugDrawings)
 
-//Debug
-PROVIDE(DebugRequest)
-PROVIDE(DebugPlot)
-PROVIDE(DebugDrawings)
+  PROVIDE(CollisionPercept)
 END_DECLARE_MODULE(BodyCollisionDetector)
 
 class BodyCollisionDetector : private BodyCollisionDetectorBase
@@ -72,4 +69,4 @@ private:
   Vector2d inertial;
 };
 
-#endif // BodyCollisionDetector_H
+#endif  // BodyCollisionDetector_H

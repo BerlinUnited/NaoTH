@@ -25,7 +25,9 @@
 // sensors
 #include <Representations/Infrastructure/GyrometerData.h>
 #include <Representations/Infrastructure/AccelerometerData.h>
+#include <Representations/Infrastructure/InertialSensorData.h>
 #include "Representations/Motion/MotionStatus.h"
+#include "Representations/Modeling/InertialModel.h"
 
 // result
 #include <Representations/Modeling/IMUData.h>
@@ -49,6 +51,8 @@ BEGIN_DECLARE_MODULE(IMUModel)
 
     REQUIRE(GyrometerData)
     REQUIRE(AccelerometerData)
+    REQUIRE(InertialSensorData)
+    REQUIRE(InertialModel)
 
     REQUIRE(MotionStatus)
 
@@ -59,19 +63,23 @@ class IMUModel: private IMUModelBase
 {
 public:
     IMUModel();
-    virtual~IMUModel();
+    virtual ~IMUModel();
 
     virtual void execute();
     void writeIMUData();
     void plots();
+    void reloadParameters();
+    void reset_filter();
 
-private:
     FrameInfo lastFrameInfo;
+    GyrometerData lastGyrometerData;
+    AccelerometerData lastAccelerometerData;
 
     /* filter for rotation */
-    UKF<RotationState<Measurement<6>,6> > ukf_rot;
+    using IMUMeasurement = Measurement<6>;  // both acc + gyro
+    using RotationUKF = UKF<RotationState<AccMeasurement, GyroMeasurement, IMUMeasurement, 6> >;
 
-    typedef Measurement<6> IMU_RotationMeasurement;
+    RotationUKF ukf_rot;
 
     Eigen::Matrix<double,6,6> Q_rotation;
     Eigen::Matrix<double,6,6> Q_rotation_walk;
@@ -104,8 +112,7 @@ private: /* small helper */
         return Vector3d(v(0),v(1),v(2));
     }
 
-    void reloadParameters();
-
+public:
     class IMUParameters:  public ParameterList
     {
     public:
@@ -133,7 +140,19 @@ private: /* small helper */
            //              -2.013737709159823391e-02,  2.705392100034859082e-01,    0.0,
            //               0.000000000000000000e+00,  0.000000000000000000e+00, 10e-05;
 
+           // Gyro Covariance Matrix (sample size: 154605) - 20201210
+           // [[ 5.53092822e-05 -3.30760425e-05 -4.97718715e-06]
+           //  [-3.30760425e-05  6.38229161e-05 -8.44537228e-06]
+           //  [-4.97718715e-06 -8.44537228e-06  6.73641306e-06]]
+
+           // Accelerometer Covariance Matrix (sample size: 154605) - 20201210
+           // [[ 2.63164975e-04  8.46430940e-07  5.08220594e-06]
+           //  [ 8.46430940e-07  1.44437874e-04 -4.11118190e-07]
+           //  [ 5.08220594e-06 -4.11118190e-07  3.01043187e-04]]
+
            PARAMETER_REGISTER(enableWhileWalking) = true;
+           PARAMETER_REGISTER(check_input_sensors) = true;
+           PARAMETER_REGISTER(prediction_horizon) = 2;
 
            /* acceleration filter parameter */
            // while standing
@@ -166,11 +185,12 @@ private: /* small helper */
        }
 
        bool enableWhileWalking;
+       bool check_input_sensors; // if true the filter will only be updated if the input changes (i.e. acc and gyro)
+       double prediction_horizon; // number of frames the model shall predict in IMUData
 
        struct Filter{
            struct Mode{
                 double processNoiseAcc;
-
                 double measurementNoiseAcc;
            } walk, stand;
        } acceleration;

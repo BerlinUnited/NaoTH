@@ -242,10 +242,16 @@ then
     ln -s /home/nao/naoqi/Media /home/nao/Media;
 fi
 
+# copy naoth binaries
 rm -f /home/nao/bin/naoth.bak
 copy ../home/nao/bin/naoth /home/nao/bin/naoth nao 755
 rm -f /home/nao/bin/libnaosmal.so.bak
 copy ../home/nao/bin/libnaosmal.so /home/nao/bin/libnaosmal.so nao 755
+
+# copy text-to-speech libs
+copy ../home/nao/bin/flite_cmu_us_slt /home/nao/bin/flite_cmu_us_slt nao 755
+copy ../home/nao/bin/flite /home/nao/bin/flite nao 755
+
 
 if [ -d "/home/nao/naoqi/Config" ]; then
   rm -rf /home/nao/naoqi/Config/*

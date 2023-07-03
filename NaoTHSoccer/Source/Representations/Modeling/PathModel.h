@@ -4,19 +4,17 @@
  * @author <a href="mailto:akcayyig@hu-berlin.de">Yigit Can Akcay</a>
  */
 
-#ifndef _PathModel_H_
-#define _PathModel_H_
+#ifndef PathModel_H
+#define PathModel_H
 
 #include <Tools/DataStructures/Printable.h>
+#include "Tools/Math/Pose2D.h"
 
 class PathModel : public naoth::Printable
 {
 public:
    PathModel() :
-     path_routine(PathRoutine::NONE),
      path2018_routine(PathPlanner2018Routine::NONE),
-     distance(0.0),
-     yOffset(0.0), //TODO delete me
      direction(0.0),
      radius(0.0),
      stable(false),
@@ -24,95 +22,37 @@ public:
    {}
   ~PathModel() {}
 
-  enum class PathRoutine
-  {
-    NONE,
-    GO_TO_BALL_FAST,
-    GO_TO_BALL_SLOW,
-    APPROACH_BALL_RIGHT,
-    APPROACH_BALL_LEFT,
-    MOVE_AROUND_BALL,
-    SHORT_KICK_RIGHT,
-    SHORT_KICK_LEFT,
-    LONG_KICK_RIGHT,
-    LONG_KICK_LEFT,
-    SIDEKICK_RIGHT,
-    SIDEKICK_LEFT
-  };
-
   enum class PathPlanner2018Routine
   {
     NONE,
+    AVOID,
     MOVE_AROUND_BALL2,
     FORWARDKICK,
     SIDEKICK_LEFT,
     SIDEKICK_RIGHT,
     SIDESTEP
   };
-
-  PathRoutine path_routine;
   PathPlanner2018Routine path2018_routine;
 
-  // distance and yOffset parameters (set by XABSL)
-  double distance;
-  double yOffset; //TODO delete me
-
-  // Move around ball
+  // move around ball
   double direction;
   double radius;
   bool stable;
 
   bool kick_executed;
+  Pose2D target_point;
 
   virtual void print(std::ostream& stream) const
-  {
-    std::string path_type;
-    switch (path_routine)
-    {
-    case PathRoutine::NONE:
-      path_type = "none";
-      break;
-    case PathRoutine::GO_TO_BALL_FAST:
-      path_type = "go_to_ball_fast";
-      break;
-    case PathRoutine::GO_TO_BALL_SLOW:
-      path_type = "go_to_ball_slow";
-      break;
-    case PathRoutine::APPROACH_BALL_LEFT:
-      path_type = "approach_ball_left";
-      break;
-    case PathRoutine::APPROACH_BALL_RIGHT:
-      path_type = "approach_ball_right";
-      break;
-    case PathRoutine::MOVE_AROUND_BALL:
-      path_type = "move_around_ball";
-      break;
-    case PathRoutine::SHORT_KICK_LEFT:
-      path_type = "short_kick_left";
-      break;
-    case PathRoutine::SHORT_KICK_RIGHT:
-      path_type = "short_kick_right";
-      break;
-    case PathRoutine::LONG_KICK_LEFT:
-      path_type = "long_kick_left";
-      break;
-    case PathRoutine::LONG_KICK_RIGHT:
-      path_type = "long_kick_right";
-      break;
-    case PathRoutine::SIDEKICK_LEFT:
-      path_type = "sidekick_left";
-      break;
-    case PathRoutine::SIDEKICK_RIGHT:
-      path_type = "sidekick_right";
-      break;
-    }
-
+  {  
     std::string path_type2018;
     switch (path2018_routine)
     {
     case PathPlanner2018Routine::NONE:
         path_type2018 = "none";
         break;
+    case PathPlanner2018Routine::AVOID:
+      path_type2018 = "avoid";
+      break;
     case PathPlanner2018Routine::MOVE_AROUND_BALL2:
       path_type2018 = "move_around_ball";
       break;
@@ -130,10 +70,7 @@ public:
       break;
     }
 
-    stream << "path_type = " << path_type << std::endl;
     stream << "path_type2018 = " << path_type2018 << std::endl;
-    stream << "distance = " << distance << std::endl;
-    stream << "yOffset = " << yOffset << std::endl;  //TODO delete me
     stream << "direction = " << direction << std::endl;
     stream << "radius = " << radius << std::endl;
   }
@@ -141,4 +78,4 @@ public:
 
 
 
-#endif /* _PathModel_H_ */
+#endif /* PathModel_H */

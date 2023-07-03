@@ -14,11 +14,12 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
 
-<SplitPane fx:id="split" dividerPositions="0.3" onKeyPressed="#fxPanelShortcuts" xmlns="http://javafx.com/javafx/8.0.202-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.naoth.rc.dialogsFx.representationinspector.RepresentationPanel">
+<SplitPane fx:id="split" dividerPositions="0.3" onKeyPressed="#fxPanelShortcuts" stylesheets="@../../res/style.css" xmlns="http://javafx.com/javafx/8.0.202-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.naoth.rc.dialogsFx.representationinspector.RepresentationPanel">
    <items>
       <BorderPane>
          <center>
@@ -77,7 +78,7 @@
             </GridPane>
          </bottom>
       </BorderPane>
-      <StackPane prefHeight="150.0" prefWidth="200.0">
+      <StackPane onMouseEntered="#fxAdditionalActions" onMouseExited="#fxAdditionalActions" prefHeight="150.0" prefWidth="200.0">
          <children>
             <TextArea fx:id="content" editable="false" onKeyPressed="#fxTextAreaShortcuts">
                <font>
@@ -89,6 +90,21 @@
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </StackPane.margin>
             </TextField>
+            <HBox fx:id="additionalActions" fillHeight="false" maxHeight="-Infinity" maxWidth="-Infinity" opacity="0.5" spacing="5.0" visible="false" StackPane.alignment="TOP_RIGHT">
+               <children>
+                  <ToggleButton fx:id="additionalActionsPauseBtn" mnemonicParsing="false" onAction="#fxAdditionalActionsPause" styleClass="pause" text="Pause">
+                     <font>
+                        <Font size="8.0" />
+                     </font></ToggleButton>
+                  <Button fx:id="additionalActionsCopy" mnemonicParsing="false" onAction="#fxAdditionalActionsCopy" styleClass="copy" text="Button">
+                     <font>
+                        <Font size="8.0" />
+                     </font></Button>
+               </children>
+               <StackPane.margin>
+                  <Insets bottom="5.0" left="5.0" right="20.0" top="5.0" />
+               </StackPane.margin>
+            </HBox>
          </children>
       </StackPane>
    </items>

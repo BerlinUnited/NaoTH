@@ -66,11 +66,12 @@ void Serializer<ScanLineEdgelPercept>::deserialize(std::istream& stream, ScanLin
   google::protobuf::io::IstreamInputStream buf(&stream);
   percept_msg.ParseFromZeroCopyStream(&buf);
 
-  representation.endPoints.resize(percept_msg.endpoints_size());
-  for(int i = 0; i < percept_msg.endpoints_size(); i++)
+  unsigned int size = static_cast<unsigned int>(percept_msg.endpoints_size());
+  representation.endPoints.resize(size);
+  for(unsigned int i = 0; i < size; i++)
   {
     ScanLineEdgelPercept::EndPoint& point = representation.endPoints[i];
-    const naothmessages::ScanLineEndPoint& point_msg = percept_msg.endpoints(i);
+    const naothmessages::ScanLineEndPoint& point_msg = percept_msg.endpoints(static_cast<int>(i));
 
     DataConversion::fromMessage(point_msg.posinimage(), point.posInImage);
     DataConversion::fromMessage(point_msg.posonfield(), point.posOnField);
@@ -78,20 +79,22 @@ void Serializer<ScanLineEdgelPercept>::deserialize(std::istream& stream, ScanLin
     point.ScanLineID = point_msg.scanlineid();
   }
 
-  representation.edgels.resize(percept_msg.edgels_size());
-  for(int i = 0; i < percept_msg.edgels_size(); i++)
+  size = static_cast<unsigned int>(percept_msg.edgels_size());
+  representation.edgels.resize(size);
+  for(unsigned int i = 0; i < size; i++)
   {
     Edgel& edgel = representation.edgels[i];
-    const naothmessages::Edgel& edgel_msg = percept_msg.edgels(i);   
+    const naothmessages::Edgel& edgel_msg = percept_msg.edgels(static_cast<int>(i));
 
     DataConversion::fromMessage(edgel_msg.point(), edgel.point);
     DataConversion::fromMessage(edgel_msg.direction(), edgel.direction);
   }
 
-  representation.pairs.resize(percept_msg.pairs_size());
-  for(int i = 0; i < percept_msg.pairs_size(); i++)
+  size = static_cast<unsigned int>(percept_msg.pairs_size());
+  representation.pairs.resize(size);
+  for(unsigned int i = 0; i < size; i++)
   {
-    const naothmessages::EdgelPair& pair_msg = percept_msg.pairs(i);
+    const naothmessages::EdgelPair& pair_msg = percept_msg.pairs(static_cast<int>(i));
     ScanLineEdgelPercept::EdgelPair& pair = representation.pairs[i];
     
     pair.begin = pair_msg.begin();
@@ -101,8 +104,8 @@ void Serializer<ScanLineEdgelPercept>::deserialize(std::istream& stream, ScanLin
 
     // TODO: is it ok here?
     // recalculate the values for the center edgel like in ScanLineEdgelDetector.h
-    const Edgel& end = representation.edgels[pair.end];
-    const Edgel& begin = representation.edgels[pair.begin];
+    const Edgel& end = representation.edgels[static_cast<unsigned int>(pair.end)];
+    const Edgel& begin = representation.edgels[static_cast<unsigned int>(pair.begin)];
     pair.point = Vector2d(begin.point + end.point)*0.5;
     pair.direction = (begin.direction - end.direction).normalize();
   }

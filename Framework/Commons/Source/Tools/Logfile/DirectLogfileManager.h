@@ -88,7 +88,7 @@ public:
     return stream;
   }
 
-  void openFile(const char* filePath)
+  void openFile(const std::string& filePath)
   {
     closeFile();
     outFile.open(filePath, std::ios::out | std::ios::binary);

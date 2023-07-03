@@ -34,12 +34,6 @@ IMUModel::~IMUModel()
 
 void IMUModel::execute()
 {
-    DEBUG_REQUEST("IMUModel:reset_filter",
-                  ukf_rot.reset();
-                  ukf_acc_global.reset();
-                  integrated=Eigen::Quaterniond(1,0,0,0);
-    );
-
     DEBUG_REQUEST("IMUModel:reset_representation",
         getIMUData().reset();
     );
@@ -63,19 +57,46 @@ void IMUModel::execute()
     // don't generate sigma points again because the process noise would be applied a second time
     // ukf.generateSigmaPoints();
 
-    Eigen::Vector3d gyro;
-    gyro << getGyrometerData().data.x, getGyrometerData().data.y, getGyrometerData().data.z;
-    Eigen::Vector3d acceleration = Eigen::Vector3d(getAccelerometerData().data.x, getAccelerometerData().data.y, getAccelerometerData().data.z);
+    // check what kind of update can be performed
+    bool gyro_update = lastGyrometerData.data != getGyrometerData().data;
+    bool acc_update = lastAccelerometerData.data != getAccelerometerData().data;
 
-    IMU_RotationMeasurement z;
-    z << acceleration.normalized(), gyro;
-
-    if(getMotionStatus().currentMotion == motion::walk) {
-        if(imuParameters.enableWhileWalking) {
-            ukf_rot.update(z, R_rotation_walk);
+    if (! imuParameters.check_input_sensors
+        || (gyro_update && acc_update)) {
+        IMUMeasurement z_imu;
+        Eigen::Vector3d acceleration(getAccelerometerData().data.x,
+                                     getAccelerometerData().data.y,
+                                     getAccelerometerData().data.z);
+        z_imu << acceleration.normalized(), getGyrometerData().data.x, getGyrometerData().data.y, getGyrometerData().data.z;
+        if(getMotionStatus().currentMotion == motion::walk) {
+            if(imuParameters.enableWhileWalking) {
+                ukf_rot.update(z_imu, R_rotation_walk);
+            }
+        } else {
+            ukf_rot.update(z_imu, R_rotation);
         }
-    } else {
-        ukf_rot.update(z, R_rotation);
+    } else if(gyro_update) {
+        GyroMeasurement z_gyro;
+        z_gyro << getGyrometerData().data.x, getGyrometerData().data.y, getGyrometerData().data.z;
+        if(getMotionStatus().currentMotion == motion::walk) {
+            if(imuParameters.enableWhileWalking) {
+                ukf_rot.update(z_gyro, R_rotation_walk.block<3,3>(3,3));
+            }
+        } else {
+            ukf_rot.update(z_gyro, R_rotation.block<3,3>(3,3));
+        }
+    } else if(acc_update) {
+        AccMeasurement z_acc;
+        z_acc << Eigen::Vector3d(getAccelerometerData().data.x,
+                                 getAccelerometerData().data.y,
+                                 getAccelerometerData().data.z).normalized();
+        if(getMotionStatus().currentMotion == motion::walk) {
+            if(imuParameters.enableWhileWalking) {
+                ukf_rot.update(z_acc, R_rotation_walk.block<3,3>(0,0));
+            }
+        } else {
+            ukf_rot.update(z_acc, R_rotation.block<3,3>(0,0));
+        }
     }
     /* rotation ukf end */
 
@@ -84,6 +105,9 @@ void IMUModel::execute()
     // TODO: Odometry as location measurement?
     // TODO: velocity of trunk in supfoot / local robot frame as velocity measurement
     // TODO: really needs bias removal or "calibration" of g
+    Eigen::Vector3d acceleration(getAccelerometerData().data.x,
+                                 getAccelerometerData().data.y,
+                                 getAccelerometerData().data.z);
     IMU_AccMeasurementGlobal z_acc = ukf_rot.state.getRotationAsQuaternion()._transformVector(acceleration);
 
     if(getMotionStatus().currentMotion == motion::walk) {
@@ -106,13 +130,21 @@ void IMUModel::execute()
     }
     /* acc ukf end */
 
-    writeIMUData();
+    getIMUData().has_been_reset = false;
+    DEBUG_REQUEST("IMUModel:reset_filter",
+        reset_filter();
+    );
+
+    if (!getIMUData().has_been_reset)
+        writeIMUData();
 
     DEBUG_REQUEST("IMUModel:enablePlotsAndDrawings",
         plots();
     );
 
     lastFrameInfo = getFrameInfo();
+    lastGyrometerData = getGyrometerData();
+    lastAccelerometerData = getAccelerometerData();
 }
 
 void IMUModel::writeIMUData()
@@ -132,13 +164,14 @@ void IMUModel::writeIMUData()
     getIMUData().velocity += getIMUData().acceleration * getRobotInfo().getBasicTimeStepInSecond();
 
     // the state we are estimating in ukf_rot is 20 ms in the past. so predict 20 ms as estimate for the real current state
-    UKF<RotationState<Measurement<6>,6> > sensor_delay_corrected_rot = ukf_rot;
+    RotationUKF sensor_delay_corrected_rot = ukf_rot;
     sensor_delay_corrected_rot.generateSigmaPoints();
     Eigen::Vector3d u_rot(0,0,0);
-    sensor_delay_corrected_rot.predict(u_rot, 2 * getRobotInfo().getBasicTimeStepInSecond());
+    sensor_delay_corrected_rot.predict(u_rot, imuParameters.prediction_horizon * getRobotInfo().getBasicTimeStepInSecond());
 
     // store rotation in IMUData as a rotation vector
     getIMUData().rotation = eigenVectorToVector3D(sensor_delay_corrected_rot.state.rotation());
+
     RotationMatrix bodyIntoGlobalMapping(getIMUData().rotation);
 
     /*
@@ -160,9 +193,6 @@ void IMUModel::writeIMUData()
 
     getIMUData().orientation = Vector2d(-atan2(bodyIntoGlobalMappingWithoutZ[2].y, bodyIntoGlobalMappingWithoutZ[1].y),
                                         -atan2(-bodyIntoGlobalMappingWithoutZ[2].x, bodyIntoGlobalMappingWithoutZ[0].x));
-
-    PLOT("IMUModel:State:orientation:x", Math::toDegrees(getIMUData().orientation.x));
-    PLOT("IMUModel:State:orientation:y", Math::toDegrees(getIMUData().orientation.y));
 
     getIMUData().rotational_velocity.x = ukf_rot.state.rotational_velocity()(0,0);
     getIMUData().rotational_velocity.y = ukf_rot.state.rotational_velocity()(1,0);
@@ -208,12 +238,78 @@ void IMUModel::plots()
     COLOR_CUBE(30, pose);
     LINE_3D(ColorClasses::black, pose.translation, pose.translation + gravity*10.0);
 
+    // reconstruct g to determine a valid rotation from InertialSensorData values
+    // y-axis of the NAO has wrong direction for a right-hand-side coordinate system
+    // therefore the InertialSensorData.x needs to be negated
+    // see Framework/Platforms/Source/DCM/Tools/IPCData.cpp: NaoSensorData::get(AccelerometerData& data)
+    // in addition the rotation from the local to the global system shall be determined and therfore all angles need to be negated
+    // (in other words:
+    //     - InertialSensorData.x is negated twice
+    //     - cos is symmetric -> negating the argument doesn't matter
+    //     - the following g is a direction of the intersection line of the two planes defined by the the angles)
+    Vector3d g(sin(-getInertialSensorData().data.y) * cos(getInertialSensorData().data.x),
+               sin(getInertialSensorData().data.x)  * cos(getInertialSensorData().data.y),
+               cos(getInertialSensorData().data.x)  * cos(getInertialSensorData().data.y));
+    g.normalize();
+    // check for right direction of g
+    // the direction information is contained in the sine parts
+    // if cos is negative the direction is inverted -> undo it
+    // Note: somehow this is only required for InertialModel (even if they should be almost identical in behavior)
+    //       it seems that InertialSensorData.x|.y are somehow filtered...the angles behave in a non-consistent way
+    // if (cos(getInertialSensorData().data.x) < 0
+    //     || cos(getInertialSensorData().data.y) < 0) {
+    //    g *= -1;
+    // }
+    Vector3d axis(g[1], -g[0], 0); // cross product between z and g
+    axis.normalize();
+    double angle = acos(g[2]);
+    // TODO: z rotation is not provided in develop branch
+    // does work "better" because global z rotation won't result in local z rotation if robot is inclinated
+    // pose.rotation = RotationMatrix::getRotationZ(-getInertialSensorData().data.z) * RotationMatrix(axis * angle);
+    pose.rotation = RotationMatrix(axis * angle);
+    pose.translation = Vector3d(0, 250, 250);
+    COLOR_CUBE(30, pose);
+
+    // reconstruct g to determine a valid rotation from (old) InertialModel values
+    g = Vector3d(sin(-getInertialModel().orientation.y) * cos(getInertialModel().orientation.x),
+                 sin(getInertialModel().orientation.x)  * cos(getInertialModel().orientation.y),
+                 cos(getInertialModel().orientation.x)  * cos(getInertialModel().orientation.y));
+    g.normalize();
+    if (cos(getInertialModel().orientation.x) < 0
+        || cos(getInertialModel().orientation.y) < 0) {
+       g *= -1;
+    }
+    axis = Vector3d(g[1], -g[0], 0); // cross product between z and g
+    axis.normalize();
+    angle = acos(g[2]);
+    pose.rotation = RotationMatrix(axis * angle);
+    pose.translation = Vector3d(0, 500, 250);
+    COLOR_CUBE(30, pose);
+
     PLOT("IMUModel:Measurement:rotational_velocity:x", getGyrometerData().data.x);
     PLOT("IMUModel:Measurement:rotational_velocity:y", getGyrometerData().data.y);
     PLOT("IMUModel:Measurement:rotational_velocity:z", getGyrometerData().data.z);
 
-    PLOT("IMUModel:State:orientation:x", Math::toDegrees(getIMUData().orientation.x));
-    PLOT("IMUModel:State:orientation:y", Math::toDegrees(getIMUData().orientation.y));
+    PLOT("IMUModel:State:orientation:x [rad]", getIMUData().orientation.x);
+    PLOT("IMUModel:State:orientation:y [rad]", getIMUData().orientation.y);
+    PLOT("IMUModel:State:orientation:x [°]", Math::toDegrees(getIMUData().orientation.x));
+    PLOT("IMUModel:State:orientation:y [°]", Math::toDegrees(getIMUData().orientation.y));
+
+    bool gyro_update = !imuParameters.check_input_sensors || (lastGyrometerData.data != getGyrometerData().data);
+    bool acc_update = !imuParameters.check_input_sensors || (lastAccelerometerData.data != getAccelerometerData().data);
+
+    PLOT("IMUModel:InputUpdate:GyrometerData", gyro_update);
+    PLOT("IMUModel:InputUpdate:AccelerometerData", acc_update);
+
+    if (!imuParameters.check_input_sensors || (gyro_update && acc_update)) {
+       PLOT("IMUModel:InputUpdate:UpdateType", 3);
+    } else if(gyro_update) {
+       PLOT("IMUModel:InputUpdate:UpdateType", 2);
+    } else if(acc_update) {
+       PLOT("IMUModel:InputUpdate:UpdateType", 1);
+    } else {
+       PLOT("IMUModel:InputUpdate:UpdateType", 0);
+    }
 }
 
 void IMUModel::reloadParameters()
@@ -250,4 +346,11 @@ void IMUModel::reloadParameters()
     R_rotation_walk.setIdentity();
     R_rotation_walk.block<3,3>(0,0) *= imuParameters.rotation.walk.measurementNoiseAcc;
     R_rotation_walk.block<3,3>(3,3) *= imuParameters.rotation.walk.measurementNoiseGyro;
+}
+
+void IMUModel::reset_filter() {
+    ukf_rot.reset();
+    ukf_acc_global.reset();
+    integrated=Eigen::Quaterniond(1,0,0,0);
+    getIMUData().reset();
 }

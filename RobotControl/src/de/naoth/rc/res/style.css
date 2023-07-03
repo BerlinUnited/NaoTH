@@ -33,6 +33,40 @@ Button.export {
     -fx-pref-width: 30;
 }
 
+Button.copy {
+    /* image only button */
+    -fx-background-image: url(lucky/copy.png);
+    -fx-background-size: 10px 10px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-content-display: graphic-only;
+    -fx-pref-width: 16;
+}
+
+Button.pause,
+ToggleButton.pause
+{
+    /* image only button */
+    -fx-background-image: url(lucky/pause.png);
+    -fx-background-size: 10px 10px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-content-display: graphic-only;
+    -fx-pref-width: 16;
+}
+
+Button.play,
+ToggleButton.play
+{
+    /* image only button */
+    -fx-background-image: url(lucky/play.png);
+    -fx-background-size: 10px 10px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-content-display: graphic-only;
+    -fx-pref-width: 16;
+}
+
 /*******************************************************************************
  *                                                                             *
  * ModuleConfiurationDialog                                                    *

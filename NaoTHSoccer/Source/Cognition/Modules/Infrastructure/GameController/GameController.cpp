@@ -86,6 +86,19 @@ GameController::GameController()
     getPlayerInfo().playerNumber = config.getInt("team", name);
   }
 
+  if (config.hasKey("player", "InitialState")) {
+    const auto state  = config.getString("player", "InitialState");
+    const auto states = {PlayerInfo::initial,  PlayerInfo::ready,
+                         PlayerInfo::set,      PlayerInfo::playing,
+                         PlayerInfo::finished, PlayerInfo::penalized,
+                         PlayerInfo::unstiff};
+    for (const auto& s : states) {
+      if (state == PlayerInfo::toString(s)) {
+          getPlayerInfo().robotState = s;
+      }
+    }
+  }
+
   // print out the "final" player number for loggin purposes
   std::cout << "[PlayerInfo] " << "playerNumber: " << getPlayerInfo().playerNumber << std::endl;
 }
@@ -141,13 +154,11 @@ void GameController::execute()
     updateLEDs();
   }
 
-  // set teamcomm: whistle detected!
-  getTeamMessageData().custom.whistleDetected = getWhistlePercept().whistleDetected;
-
   // provide the return message
-  getGameReturnData().team = getPlayerInfo().teamNumber;
-  getGameReturnData().player = getPlayerInfo().playerNumber;
-  getGameReturnData().message = getWifiMode().wifiEnabled ? GameReturnData::alive : GameReturnData::dead;
+  getGameReturnData().teamNum = getPlayerInfo().teamNumber;
+  getGameReturnData().playerNum = getPlayerInfo().playerNumber;
+  // TODO: this is not correctly set
+  getGameReturnData().fallen = getWifiMode().wifiEnabled ? GameReturnData::ROBOT_CAN_PLAY : GameReturnData::ROBOT_FALLEN;
 } // end execute
 
 
@@ -316,7 +327,7 @@ void GameController::handleButtons()
 void GameController::handleHeadButtons()
 {
   if(getButtonState().buttons[ButtonState::HeadMiddle] == ButtonEvent::CLICKED
-    && (getPlayerInfo().robotState == PlayerInfo::initial || getPlayerInfo().robotState == PlayerInfo::finished))
+    && (getPlayerInfo().robotState == PlayerInfo::initial || getPlayerInfo().robotState == PlayerInfo::unstiff || getPlayerInfo().robotState == PlayerInfo::finished))
   {
     int playerNumber = getPlayerInfo().playerNumber;
     if(playerNumber <= 9)

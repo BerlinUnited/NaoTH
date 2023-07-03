@@ -16,6 +16,7 @@
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugPlot.h"
 #include "Tools/Debug/DebugModify.h"
+#include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/DebugParameterList.h"
 
 // representations
@@ -28,12 +29,14 @@
 #include "Representations/Modeling/BallModel.h"
 #include "Representations/Modeling/PathModel.h"
 #include "Representations/Debug/Stopwatch.h"
+#include "Representations/Modeling/ObstacleModel.h"
 
 
 BEGIN_DECLARE_MODULE(PathPlanner2018)
 PROVIDE(DebugPlot)
 PROVIDE(DebugRequest)
 PROVIDE(DebugModify)
+PROVIDE(DebugDrawings)
 PROVIDE(DebugParameterList)
 
 REQUIRE(FieldInfo)
@@ -41,6 +44,7 @@ REQUIRE(MultiBallPercept)
 REQUIRE(MotionStatus)
 REQUIRE(BallModel)
 REQUIRE(FrameInfo)
+REQUIRE(ObstacleModel)
 
 PROVIDE(PathModel)
 PROVIDE(MotionRequest)
@@ -66,6 +70,11 @@ private:
     {
       PARAMETER_REGISTER(readyForSideKickThresholdX)            = 4.0;
       PARAMETER_REGISTER(readyForSideKickThresholdY)            = 0.3;
+      PARAMETER_REGISTER(forwardKickThreshold_near.x)           = 25; // mm
+      PARAMETER_REGISTER(forwardKickThreshold_near.y)           = 25; // mm
+      PARAMETER_REGISTER(forwardKickThreshold_far.x)            = 50; // mm
+      PARAMETER_REGISTER(forwardKickThreshold_far.y)            = 25; // mm
+      //PARAMETER_REGISTER(nearApproachForwardKickBallPosOffsetX) = 110;
       PARAMETER_REGISTER(nearApproachSideKickBallPosOffsetX)    = 100;
       PARAMETER_REGISTER(sidekickOffsetY) = 40.0;
       PARAMETER_REGISTER(sideKickTime) = 300;
@@ -93,6 +102,9 @@ private:
 
     double readyForSideKickThresholdX;
     double readyForSideKickThresholdY;
+    Vector2d forwardKickThreshold_far;
+    Vector2d forwardKickThreshold_near;
+    //double nearApproachForwardKickBallPosOffsetX;
     double nearApproachSideKickBallPosOffsetX;
     double sidekickOffsetY;
     int sideKickTime;
@@ -134,6 +146,7 @@ private:
   bool nearApproach_forwardKick(const double offsetX, const double offsetY);
   bool nearApproach_sideKick(const Foot& foot, const double offsetX, const double offsetY);
   bool sidesteps(const Foot& foot, const double direction);
+  void avoid_obstacle(Pose2D target_point);
 
   void forwardKick();
   void sideKick(const Foot& foot);

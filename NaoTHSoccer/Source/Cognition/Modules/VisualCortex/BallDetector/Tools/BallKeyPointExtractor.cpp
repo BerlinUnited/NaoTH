@@ -15,46 +15,45 @@ BestPatchList::Patch BallKeyPointExtractor::refineKeyPoint(const BestPatchList::
   // todo needs a better place
   const int32_t FACTOR = getGameColorIntegralImage().FACTOR;
 
-  Vector2i min = patch.min / FACTOR;
-  Vector2i max = patch.max / FACTOR;
+
+  Vector2<unsigned int> min = patch.min / FACTOR;
+  Vector2<unsigned int> max = patch.max / FACTOR;
 
   // enlarge the search area
-  int outer_size = max.x - min.x;
+  unsigned int outer_size = max.x - min.x;
   //min.x -= outer_size/4;
   //min.y -= outer_size/4;
   //max.x += outer_size/4;
   //max.y += outer_size/4;
 
-  int inner_size = outer_size;
-
   BestPatchList::Patch maxPatch;
 
-  Vector2i point;
+  Vector2<unsigned int> point;
+
   // iterate different inner size
-  for(inner_size = outer_size/2; inner_size + inner_size/2 < outer_size; ++inner_size) 
+  for(unsigned int inner_size = outer_size/2; inner_size + inner_size/2 < outer_size; ++inner_size)
   {
-    int border = inner_size/4;
+    unsigned int border = inner_size/4;
 
     for(point.y = min.y+border; point.y + border + inner_size < max.y; ++point.y)
     {
       for(point.x = min.x+border; point.x + border + inner_size < max.x; ++point.x)
       {
-        int size = inner_size;
-        int inner = getGameColorIntegralImage().getSumForRect(point.x, point.y, point.x+size, point.y+size, 0);
-        double greenBelow = getGameColorIntegralImage().getDensityForRect(point.x, point.y+size, point.x+size, point.y+size+border, 1);
+        unsigned int inner = getGameColorIntegralImage().getSumForRect(point.x, point.y, point.x+inner_size, point.y+inner_size, 0);
+        double greenBelow = getGameColorIntegralImage().getDensityForRect(point.x, point.y+inner_size, point.x+inner_size, point.y+inner_size+border, 1);
 
-        if (inner*2 > size*size && greenBelow > 0.3)
+        if (inner*2 > inner_size*inner_size && greenBelow > 0.3)
         {
-          int outer = getGameColorIntegralImage().getSumForRect(point.x-border, point.y+size, point.x+size+border, point.y+size+border, 0);
-          double value = (double)(inner - (outer - inner))/((double)(size+border)*(size+border));
+          unsigned int outer = getGameColorIntegralImage().getSumForRect(point.x-border, point.y+inner_size, point.x+inner_size+border, point.y+inner_size+border, 0);
+          double value = (double)(inner - (outer - inner))/((double)(inner_size+border)*(inner_size+border));
 
           // scale the patch up to the image coordinates
           if(maxPatch.value == -1 || value > maxPatch.value)
           {
-            maxPatch.min.x = point.x-border;
-            maxPatch.min.y = point.y-border;
-            maxPatch.max.x = point.x+size+border;
-            maxPatch.max.y = point.y+size+border;
+            maxPatch.min.x = static_cast<int>(point.x-border);
+            maxPatch.min.y = static_cast<int>(point.y-border);
+            maxPatch.max.x = static_cast<int>(point.x+inner_size+border);
+            maxPatch.max.y = static_cast<int>(point.y+inner_size+border);
             maxPatch.value = value;
           }
         }

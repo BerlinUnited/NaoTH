@@ -17,7 +17,7 @@ PlayerInfo::PlayerInfo()
   teamNumber(0),
   teamColor(naoth::GameData::unknown_team_color),
   kickoff(false),
-  robotState(initial),
+  robotState(unstiff), // this was changed in 2021 from initial to unstiff
   robotSetPlay(set_none),
   gamePhase(normal),
   isPlayingStriker(false),

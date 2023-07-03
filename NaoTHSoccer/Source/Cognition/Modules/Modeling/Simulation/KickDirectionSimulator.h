@@ -1,11 +1,11 @@
 /**
 * @file KickDirectionSimulator.h
-* @author <a href="mailto:schlottb@informatik.hu-berlin.de">Benjamin Schlotter</a>
+* @author <a href="mailto:stella.a.schlotter@gmail.com">Stella Alice Schlotter</a>
 * Declaration of class KickDirectionSimulator
 */
 
-#ifndef _KickDirectionSimulator_H
-#define _KickDirectionSimulator_H
+#ifndef KickDirectionSimulator_H
+#define KickDirectionSimulator_H
 
 #include <ModuleFramework/Module.h>
 #include <ModuleFramework/ModuleManager.h>
@@ -17,7 +17,6 @@
 #include "Representations/Modeling/GoalModel.h"
 #include "Representations/Modeling/RobotPose.h"
 #include "Representations/Modeling/KickActionModel.h"
-#include "Representations/Modeling/ObstacleModel.h"
 #include "Representations/Modeling/SoccerStrategy.h"
 
 //Tools
@@ -26,7 +25,6 @@
 #include "Tools/DataStructures/RingBufferWithSum.h"
 #include <Tools/DataStructures/ParameterList.h>
 #include <Tools/Debug/DebugParameterList.h>
-#include "Tools/Debug/DebugModify.h"
 #include <Representations/Debug/Stopwatch.h>
 #include "Tools/Filters/AssymetricalBoolFilter.h"
 
@@ -37,7 +35,6 @@
 #include <Tools/Debug/DebugRequest.h>
 
 BEGIN_DECLARE_MODULE(KickDirectionSimulator)
-  PROVIDE(DebugModify)
   PROVIDE(DebugRequest)
   PROVIDE(DebugDrawings)
   PROVIDE(DebugParameterList)
@@ -45,14 +42,11 @@ BEGIN_DECLARE_MODULE(KickDirectionSimulator)
 
   REQUIRE(FrameInfo)
   REQUIRE(FieldInfo)  
-  REQUIRE(ObstacleModel)
   REQUIRE(BallModel)
   REQUIRE(RobotPose)
-  //REQUIRE(SelfLocGoalModel)
 
-  //Hack?
+  //Hack: dont provide two representations. There must be a better way
   PROVIDE(SoccerStrategy)
-
   PROVIDE(KickActionModel)
 END_DECLARE_MODULE(KickDirectionSimulator)
 
@@ -157,4 +151,4 @@ public:
   double m_min;
 };
 
-#endif  /* _KickDirectionSimulator_H */
+#endif  /* KickDirectionSimulator_H */

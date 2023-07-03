@@ -28,10 +28,14 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 
 /**
  * @author Philipp Strobel <philippstrobel@posteo.de>
@@ -65,6 +69,8 @@ public class RepresentationPanel
     @FXML ToggleButton btnBinary;
     @FXML TextArea content;
     @FXML TextField search;
+    @FXML HBox additionalActions;
+    @FXML ToggleButton additionalActionsPauseBtn;
     
     /** Some shortcuts */
     private final KeyCombination shortcutCognition = new KeyCodeCombination(KeyCode.C, KeyCombination.ALT_DOWN, KeyCombination.SHIFT_DOWN);
@@ -296,7 +302,52 @@ public class RepresentationPanel
             search(false);
         }
     }
-    
+
+    /**
+     * Is called, if the mouse enters/exits the textarea.
+     * Shows and hides additional action buttons.
+     *
+     * @param m the mouse event (entered/exited)
+     */
+    @FXML
+    private void fxAdditionalActions(MouseEvent m) {
+        if (m.getEventType() == MouseEvent.MOUSE_ENTERED) {
+            additionalActions.setVisible(true);
+        } else if (m.getEventType() == MouseEvent.MOUSE_EXITED) {
+            additionalActions.setVisible(false);
+        }
+    }
+
+    /**
+     * Is called, if the pause button is pressed and changes the button icon by
+     * switching the style classes.
+     */
+    @FXML
+    private void fxAdditionalActionsPause() {
+        if (additionalActionsPauseBtn.isSelected()) {
+            additionalActionsPauseBtn.getStyleClass().add("play");
+            additionalActionsPauseBtn.getStyleClass().remove("pause");
+        } else {
+            additionalActionsPauseBtn.getStyleClass().add("pause");
+            additionalActionsPauseBtn.getStyleClass().remove("play");
+        }
+    }
+
+    /**
+     * Is called, if the copy button is pressed and copies the current content
+     * to the system clipboard.
+     */
+    @FXML
+    private void fxAdditionalActionsCopy() {
+        // only copy available content (not empty)
+        if (content.getLength() > 0) {
+            ClipboardContent cc = new ClipboardContent();
+            cc.putString(content.getText());
+
+            Clipboard.getSystemClipboard().setContent(cc);
+        }
+    }
+
     /**
      * Searches the content for the search string.
      * 
@@ -412,6 +463,9 @@ public class RepresentationPanel
     private void subscribeRepresentation(ListView<String> list) {
         // unsubscribe previous listener
         unsubscribeRepresentation();
+        // reset pause button
+        additionalActionsPauseBtn.setSelected(false);
+        fxAdditionalActionsPause();
         // only Cognition and Motion can be subscribed
         if (list != null && source.get() != Source.Cognition && source.get() != Source.Motion) {
             return;
@@ -470,6 +524,9 @@ public class RepresentationPanel
      */
     private void updateContent(String text) {
         Platform.runLater(() -> {
+            // the pause button is pressed, skip updating the content area
+            if (additionalActionsPauseBtn.isSelected()) { return; }
+
             // remember selection/search before replace text
             String selection = content.getSelectedText();
             if (!selection.isEmpty()) {

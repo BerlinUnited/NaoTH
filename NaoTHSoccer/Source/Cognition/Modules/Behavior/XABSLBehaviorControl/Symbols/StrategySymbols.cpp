@@ -29,7 +29,6 @@ void StrategySymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("players.own_closest_to_ball.time_since_last_seen", &getOwnClosestToBallTimeSinceLastSeen);
   engine.registerDecimalInputSymbol("players.own_closest_to_ball.distance_to_ball", &getOwnClosestToBallDistanceToBall);
 
-
   // SPL defender pose
   engine.registerDecimalInputSymbol("defense.simplePose.translation.x", &simpleDefensePoseX);
   engine.registerDecimalInputSymbol("defense.simplePose.translation.y", &simpleDefensePoseY);
@@ -43,8 +42,6 @@ void StrategySymbols::registerSymbols(xabsl::Engine& engine)
   // goalie positioning
   engine.registerDecimalInputSymbol("goalie.guardline.x", &goalieGuardPositionX);
   engine.registerDecimalInputSymbol("goalie.guardline.y", &goalieGuardPositionY);
-  //engine.registerDecimalInputSymbol("penalty_goalie.pos.x", &penaltyGoalieGuardPositionX);
-  //engine.registerDecimalInputSymbol("penalty_goalie.pos.y", &penaltyGoalieGuardPositionY);
   engine.registerDecimalInputSymbol("goalie.defensive.x", &goalieDefensivePositionX);
   engine.registerDecimalInputSymbol("goalie.defensive.y", &goalieDefensivePositionY);
   engine.registerDecimalInputSymbol("goalie.defensive.a", &goalieDefensivePositionA);
@@ -70,7 +67,6 @@ void StrategySymbols::registerSymbols(xabsl::Engine& engine)
   }
 
   engine.registerEnumeratedInputSymbol("attack.best_action", "attack.action_type", &getBestAction);
-
   //engine.registerDecimalInputSymbol("attack.best_action.direction", &(getKickActionModel().rotation));
 
   // the position of the opponents free kick; it is only valid if x != 0 && y != 0
@@ -187,65 +183,6 @@ Vector2d StrategySymbols::calculateGoalieGuardPosition()
   return result;
 }
 
-/*
-Vector2d StrategySymbols::calculatePenaltyGoalieGuardPosition()
-{
-  const Vector2d goalCenter(getFieldInfo().xPosOwnGroundline, 0);
-  const Vector2d& ballPos = getRobotPose()*getBallModel().getFuturePosition(5);
-
-  Math::LineSegment goal2BallLine(goalCenter, ballPos);
-
-  Vector2d p1(0,getFieldInfo().yPosLeftGoalpost);
-  Vector2d p2(getFieldInfo().xPosOwnPenaltyArea-250, getFieldInfo().yPosLeftGoalpost+250);
-  Vector2d p3(getFieldInfo().xPosOwnPenaltyArea-250, getFieldInfo().yPosRightGoalpost-250);
-  Vector2d p4(0,getFieldInfo().yPosRightGoalpost);
-
-  Math::LineSegment l1(p1, p2);
-  Math::LineSegment l2(p2, p3);
-  Math::LineSegment l3(p4, p3);
-
-  Math::LineSegment lines[3];
-  lines[0] = l1;
-  lines[1] = l2;
-  lines[2] = l3;
-
-  std::vector<Math::Intersection> intersections;
-  for(int i=0; i < 3; i++)
-  {
-    Math::Intersection inter(goal2BallLine,lines[i]);
-    intersections.push_back(inter);
-  }
-
-  double distances[3];
-  for(int i=0; i < 3; i++)
-  {
-    distances[i] = (intersections[i].pos - goalCenter).abs();
-  }
-
-  int minIndex = -1;
-  double currentMin = std::numeric_limits<double>::max();
-  for(int i=0; i < 3; i++)
-  {
-    if(intersections[i].type != Math::Intersection::none && (minIndex == -1 && distances[i] < currentMin))
-    {
-      minIndex = i;
-      currentMin = distances[i];
-    }
-  }
-
-  if(minIndex >= 0)
-  {
-    return intersections[minIndex].pos;
-  }
-  else
-  {
-    // fallback, goto middle
-
-    Vector2d result(getFieldInfo().xPosOwnPenaltyArea-250,0.0);
-    return result;
-  }
-}
-*/
 
 double StrategySymbols::goalieGuardPositionX()
 {
@@ -257,17 +194,6 @@ double StrategySymbols::goalieGuardPositionY()
   return theInstance->calculateGoalieGuardPosition().y;
 }
 
-/*
-double StrategySymbols::penaltyGoalieGuardPositionX()
-{
-  return theInstance->calculatePenaltyGoalieGuardPosition().x;
-}
-
-double StrategySymbols::penaltyGoalieGuardPositionY()
-{
-  return theInstance->calculatePenaltyGoalieGuardPosition().y;
-}
-*/
 
 Pose2D StrategySymbols::calculateGoalieDefensivePosition()
 {
@@ -290,7 +216,12 @@ Pose2D StrategySymbols::calculateGoalieDefensivePosition()
     // y = m*x
     double y = m*x;
     //std::cout << "a="<<a<<" w="<<std::atan(a)<<" r="<
-    return Pose2D(std::atan2(y,x),x + theInstance->getFieldInfo().xPosOwnGroundline, y);
+    Pose2D result(std::atan2(y,x),x + theInstance->getFieldInfo().xPosOwnGroundline, y);
+
+    // make preview because this position is used to be walked to
+    result = result + getMotionStatus().plannedMotion.hip;
+  
+    return result;
 }
 
 double StrategySymbols::goalieDefensivePositionX()
@@ -305,7 +236,7 @@ double StrategySymbols::goalieDefensivePositionY()
 
 double StrategySymbols::goalieDefensivePositionA()
 {
-    return theInstance->goalieDefensivePosition.rotation;
+    return Math::toDegrees(theInstance->goalieDefensivePosition.rotation);
 }
 
 bool StrategySymbols::getApproachingWithRightFoot()
@@ -422,20 +353,6 @@ Pose2D StrategySymbols::calculateDefensePose()
   Pose2D g(ownGoal.angle(), ownGoal.x, ownGoal.y);
   g -= getMotionStatus().plannedMotion.hip;
   ownGoal = g.translation;
-//  double d = ownGoal.abs();
-//  Vector2d p = ballModel.position - ownGoal;
-//  if ( p.abs() > d )
-//  {
-//   p = p.normalize(d) + ownGoal;
-//   double k = 0.2;
-//   defPose.translation = p * (1-k) + ballModel.position*k;
-//   defPose.rotation = ballModel.position.angle();
-//  }
-//  else
-//  {
-//    defPose.translation = (ballModel.position+ownGoal)*0.5;
-//    defPose.rotation = defPose.translation.angle();
-//  }
 
   Vector2d pM = getBallModel().positionPreview * 0.5;
   Vector2d nM = pM;

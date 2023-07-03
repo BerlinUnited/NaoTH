@@ -98,11 +98,12 @@ private:
     Parameters() : ParameterList("GameLogger")
     {
       PARAMETER_REGISTER(logAudioData) = false;
-      PARAMETER_REGISTER(logBallCandidates) = false;
+      PARAMETER_REGISTER(logBallCandidates) = true;
       PARAMETER_REGISTER(logBodyStatus) = false;
-      PARAMETER_REGISTER(logPlainImages) = false;
-      PARAMETER_REGISTER(logPlainImagesDelay) = 2000;
+      PARAMETER_REGISTER(logPlainImages) = true;
+      PARAMETER_REGISTER(logPlainImagesDelay) = 2000; // ms
       PARAMETER_REGISTER(logUltraSound) = false;
+      PARAMETER_REGISTER(logDirPath) = "/tmp";
       syncWithConfig();
     }
 
@@ -112,6 +113,7 @@ private:
     bool logPlainImages;
     int logPlainImagesDelay;
     bool logUltraSound;
+    std::string logDirPath;
   } params;
 
 private:
@@ -130,8 +132,6 @@ private:
   // audio data
   unsigned long lastAudioDataTimestamp;
   FrameInfo timeOfLastCapture;
-
-  CameraInfo::CameraID lastRecordedPlainImageID;
 };
 
 #endif // GAMELOGGER_H

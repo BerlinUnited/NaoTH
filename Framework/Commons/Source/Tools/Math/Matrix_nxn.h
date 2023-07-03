@@ -380,22 +380,21 @@ public:
     Matrix_nxn<T, N> m(*this);
     
     // initialize ranking vector
-    Vector_n<int, N> ranking;
-    int i;
-    for (i = 0; i < (int)N; ++i)
+    Vector_n<unsigned int, N> ranking;
+    for (unsigned int i = 0; i < N; ++i)
       ranking[i] = i;
     
     T z = T();
-    int c;
-    int r;
-    for (c = 0; c < (int)N-1; ++c)
+    unsigned int c;
+    unsigned int r;
+    for (c = 0; c < N-1; ++c)
     {
       // find row containing highest value
-      int maxRow = c;
+      unsigned int maxRow = c;
       T maxValue = m[ranking[maxRow]][c];
       if (maxValue < z)
         maxValue = -maxValue;
-      for (r = c+1; r < (int)N; ++r)
+      for (r = c+1; r < N; ++r)
       {
         T value = m[ranking[r]][c];
         if (value < z)
@@ -421,7 +420,7 @@ public:
       */
       
       // swap rows in ranking
-      int temp = ranking[c];
+      unsigned int temp = ranking[c];
       ranking[c] = ranking[maxRow];
       ranking[maxRow] = temp;
       
@@ -453,7 +452,7 @@ public:
         
         // change matrix
         m[ranking[r]][c] = T();
-        for (int c2 = c+1; c2 < (int)N; ++c2)
+        for (unsigned int c2 = c+1; c2 < N; ++c2)
         {
           sub = factor*m[ranking[c]][c2];
           if (MVTools::isNearInf(sub))
@@ -484,11 +483,13 @@ public:
     // matrix has triangle form
     // calculate solutions
     b[ranking[N-1]] /= m[ranking[N-1]][N-1];
-    for (r = N-2; r >= 0; --r)
+    for (unsigned int j = 0; j <= N-2; ++j)
     {
+      r = N-2 - j;
       T sum = T();
-      for (c = r+1; c < (int)N; ++c)
+      for (c = r+1; c < N; ++c) {
         sum += m[ranking[r]][c] * b[ranking[c]];
+      }
       if (MVTools::isNearInf(sum))
       {
         if (MVTools::isNearPosInf(sum))

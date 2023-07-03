@@ -84,7 +84,9 @@ private:
       PARAMETER_ANGLE_REGISTER(max_head_velocity_walk_slow) = 120; // deg/s velocity when walking slow
       PARAMETER_REGISTER(walk_fast_speed_threshold) = 40; // ~mm/s walking speed of the robot. Faster than this is considered fast walking
 
-      PARAMETER_ANGLE_REGISTER(at_rest_threshold) = 0.3;
+      PARAMETER_REGISTER(timeThresholdForHeadStuck) = 1000; // ms
+
+      PARAMETER_ANGLE_REGISTER(at_rest_threshold) = 1;
       PARAMETER_ANGLE_REGISTER(at_rest_threshold_walking) = 10;
       PARAMETER_ANGLE_REGISTER(at_target_threshold) = 3;
 
@@ -99,6 +101,8 @@ private:
     double max_head_velocity_walk_fast;
     double max_head_velocity_walk_slow;
     double walk_fast_speed_threshold;
+
+    int timeThresholdForHeadStuck;
 
     double at_rest_threshold;
     double at_rest_threshold_walking;
@@ -174,6 +178,8 @@ private:
   naoth::JointData theJointData;
   KinematicChain theKinematicChain;
 
+  void updateHeadTargetReached();
+
   bool trajectoryHeadMove(const std::vector<Vector3d>& points);
   //void gotoPointOnTheGround(const Vector2d& target);
 
@@ -197,9 +203,10 @@ private:
   void export_g();
 
   // for providing head_target_reached and head_got_stuck
-  Vector2d motion_target, last_motion_target;
-  HeadMotionRequest::HeadMotionID last_id;
+  Vector2d motion_target;
+  Vector2d last_yaw_pitch_command;
   RingBufferWithSum<Vector2d, 10> absolute_velocity_buffer;
+  FrameInfo lastFrameInfoWhenHeadMovedOrOnTarget;
 };
 
 #endif  /* _HeadMotionEngine_H */

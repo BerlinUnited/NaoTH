@@ -16,19 +16,23 @@
 #include "DebugCommunication/DebugServer.h"
 #include "PlatformInterface/PlatformInterface.h"
 #include <ModuleFramework/ModuleManager.h>
+#include <Tools/Communication/Network/SPLGameController.h>
+#include <Tools/Communication/Network/BroadCaster.h>
+#include <Tools/Communication/Network/UDPReceiver.h>
 
 // simple robot
 #include <Representations/Infrastructure/JointData.h>
 #include <Representations/Infrastructure/FSRData.h>
 #include <Representations/Infrastructure/AccelerometerData.h>
+#include <Representations/Infrastructure/TeamMessageData.h>
 
 extern ModuleManager* getModuleManager(Cognition* c);
 
 class DummySimulator : public naoth::PlatformInterface
 {
 public:
-  DummySimulator(bool backendMode, bool realTime, unsigned short port);
-  virtual ~DummySimulator(){}
+  DummySimulator(bool backendMode, unsigned short port);
+  virtual ~DummySimulator();
 
   virtual std::string getBodyID() const { return "dummy-simulator"; }
   virtual std::string getBodyNickName() const { return "naoth"; }
@@ -38,6 +42,8 @@ public:
   virtual unsigned int getBasicTimeStep() const { return 20; }
 
   void main();
+  void enableGameController();
+  void enableTeamComm(std::string interface = "wlan0");
 
   static const unsigned int frameExecutionTime = 33;
 
@@ -107,6 +113,14 @@ public: // a dummy robot simulator
     data.rawData.z = Math::g;
   }
 
+  // teamcomm stuff
+  void get(TeamMessageDataIn& data) { theTeamCommListener->receive(data.data); }
+  void set(const TeamMessageDataOut& data) { theTeamCommSender->send(data.data); }
+
+  // gamecontroller stuff
+  void get(GameData& data){ theGameController->get(data); }
+  void set(const GameReturnData& data) { theGameController->set(data); }
+
   /*
   void get(BatteryData& data);
   void get(FSRData& data);
@@ -135,6 +149,9 @@ public:
 private:
   DebugServer theDebugServer;
   naoth::FrameInfo theFrameInfo;
+  SPLGameController* theGameController = nullptr;
+  BroadCaster* theTeamCommSender = nullptr;
+  UDPReceiver* theTeamCommListener = nullptr;
 };
 
 #endif  /* _DUMMY_SIMULATOR_H */

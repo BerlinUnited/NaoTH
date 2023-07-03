@@ -6,8 +6,8 @@
  *
  */
 
-#ifndef _Motion_h_
-#define _Motion_h_
+#ifndef MOTION_H
+#define MOTION_H
 
 #include <PlatformInterface/Callable.h>
 #include <PlatformInterface/PlatformInterface.h>
@@ -23,7 +23,6 @@
 #include "SensorFilter/InertiaSensorCalibrator.h"
 #include "SensorFilter/InertiaSensorFilter.h"
 #include "SensorFilter/IMUModel.h"
-#include "SensorFilter/ArmCollisionDetector.h"
 #include "SensorFilter/ArmCollisionDetector2018.h"
 #include "SensorFilter/BodyCollisionDetector.h"
 #include "SensorFilter/BumperCollisionDetector.h"
@@ -186,7 +185,6 @@ private: // motion modules
   ModuleCreator<KinematicChainProviderMotion>* theKinematicChainProvider;
   ModuleCreator<IMUModel>* theIMUModel;
 
-  ModuleCreator<ArmCollisionDetector>* theArmCollisionDetector;
   ModuleCreator<ArmCollisionDetector2018>* theArmCollisionDetector2018;
   ModuleCreator<BodyCollisionDetector>* theBodyCollisionDetector;
   ModuleCreator<BumperCollisionDetector>* theBumperCollisionDetector;
@@ -227,5 +225,5 @@ private:
 };
 
 
-#endif  // _Motion_h_
+#endif  // MOTION_H
 

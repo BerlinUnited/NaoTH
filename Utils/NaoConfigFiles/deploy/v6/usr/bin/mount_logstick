@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Heinrich says it was only used for remote games in 2021 - it has nothing to do with our log stick
+
 # print all commands just in case
 set -x #echo on
 

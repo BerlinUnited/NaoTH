@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# was run manually during robocup 2021
+
 # print all commands just in case
 set -x #echo on
 

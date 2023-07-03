@@ -166,6 +166,8 @@ function qtc.build_configuration(prj, cfg, cfgCounter, platform)
                         _p(5, "<valuelist type=\"QVariantList\" key=\"GenericProjectManager.GenericMakeStep.BuildTargets\"/>")
 
                         _p(5, "<value type=\"bool\" key=\"GenericProjectManager.GenericMakeStep.Clean\">false</value>")
+                        -- set -j argument to 4 per default. It can be changed in the qtcreator settings
+                        _p(5, "<value type=\"qlonglong\" key=\"GenericProjectManager.GenericMakeStep.JobCount\">4</value>")
                         _p(5, "<value type=\"QString\" key=\"GenericProjectManager.GenericMakeStep.MakeArguments\">config=%s %s</value>", cfg.shortname, prj.name)
                         _p(5, "<value type=\"QString\" key=\"GenericProjectManager.GenericMakeStep.MakeCommand\"></value>")
                         _p(5, "<value type=\"bool\" key=\"ProjectExplorer.BuildStep.Enabled\">true</value>")

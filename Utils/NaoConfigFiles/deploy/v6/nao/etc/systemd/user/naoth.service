@@ -3,11 +3,12 @@ Description = NaoTH
 After = dev-video0.device dev-video1.device lola_adaptor.service
 Wants = dev-video0.device dev-video1.device lola_adaptor.service
 Requires = lola_adaptor.service
+Requires = pulseaudio.service
 ConditionPathExists=/home/nao/bin/naoth
 
 [Service]
 Type=idle
-ExecStart = /home/nao/bin/naoth
+ExecStart = /home/nao/bin/naoth > >(exec logger -t "naoth[INFO]" -p local3.info) 2> >(exec logger -t "naoth[ERROR]" -p local3.warning)
 EnvironmentFile=/etc/conf.d/naoth
 #CPUAccounting=true
 #CPUShares=8192
@@ -15,4 +16,4 @@ LimitRTPRIO=55
 Slice=naoqi.slice
 
 [Install]
-WantedBy = multi-user.target
+WantedBy = default.target

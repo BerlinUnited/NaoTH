@@ -1,7 +1,7 @@
 /**
 * @file DeadMotion.h
 *
-* @author <a href="mailto:schlottb@informatik.hu-berlin.de">Schlotter, Benjamin</a>
+* @author <a href="mailto:schlottb@informatik.hu-berlin.de">Schlotter, Stella Alice</a>
 * fall motion disable all the motor joints, i.e set the hardness to 0, except the head joints
 */
 

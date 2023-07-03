@@ -11,17 +11,14 @@ void PathSymbols::registerSymbols(xabsl::Engine& engine)
 {
   // PathPlanner2018Routine
   engine.registerEnumElement("path2018.routine", "path2018.routine.none",              static_cast<int>(PathModel::PathPlanner2018Routine::NONE));
-  engine.registerEnumElement("path2018.routine", "path2018.routine.move_around_ball2",  static_cast<int>(PathModel::PathPlanner2018Routine::MOVE_AROUND_BALL2));
-  engine.registerEnumElement("path2018.routine", "path2018.routine.forwardkick",  static_cast<int>(PathModel::PathPlanner2018Routine::FORWARDKICK));
+  engine.registerEnumElement("path2018.routine", "path2018.routine.avoid",             static_cast<int>(PathModel::PathPlanner2018Routine::AVOID));
+  engine.registerEnumElement("path2018.routine", "path2018.routine.move_around_ball2", static_cast<int>(PathModel::PathPlanner2018Routine::MOVE_AROUND_BALL2));  
+  engine.registerEnumElement("path2018.routine", "path2018.routine.forwardkick",       static_cast<int>(PathModel::PathPlanner2018Routine::FORWARDKICK));
   engine.registerEnumElement("path2018.routine", "path2018.routine.sidekick_left",     static_cast<int>(PathModel::PathPlanner2018Routine::SIDEKICK_LEFT));
   engine.registerEnumElement("path2018.routine", "path2018.routine.sidekick_right",    static_cast<int>(PathModel::PathPlanner2018Routine::SIDEKICK_RIGHT));
-  engine.registerEnumElement("path2018.routine", "path2018.routine.sidestep",    static_cast<int>(PathModel::PathPlanner2018Routine::SIDESTEP));
+  engine.registerEnumElement("path2018.routine", "path2018.routine.sidestep",          static_cast<int>(PathModel::PathPlanner2018Routine::SIDESTEP));
 
   engine.registerEnumeratedOutputSymbol("path2018.routine", "path2018.routine", &setPathRoutine2018, &getPathRoutine2018);
-
-  // go to ball: distance and yOffset
-  engine.registerDecimalOutputSymbol("path.distance", &getPathModel().distance);
-  engine.registerDecimalOutputSymbol("path.yOffset", &getPathModel().yOffset);  //TODO delete me
 
   // move around ball: direction and radius
   //engine.registerDecimalOutputSymbol("path.direction", &getPathModel().direction); // TODO this is in degrees should be converted here somehow

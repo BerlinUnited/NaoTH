@@ -13,10 +13,6 @@
 #ifndef _LolaData_h_
 #define _LolaData_h_
 
-
-// TODO: what is it for?
-//#define MSGPACK_USE_DEFINE_MAP 
-
 #include <msgpack.hpp>
 #include <msgpack/fbuffer.hpp>
 #include <msgpack/unpack.hpp>

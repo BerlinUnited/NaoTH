@@ -10,6 +10,7 @@
 #define _Polygon_H_
 
 #include "Tools/Math/Vector2.h"
+#include "Tools/Math/Pose2D.h"
 
 #include "ConvexHull.h"
 
@@ -42,6 +43,12 @@ class Polygon
 
     Vector2<T>& operator[] (size_t i) { return points[i]; }
     const Vector2<T>& operator[] (size_t i) const { return points[i]; }
+
+    void transform(Pose2T<T> transformation) {
+        for(auto& p : points) {
+            p = transformation * p;
+        }
+    }
 
   public:
     Polygon() {}

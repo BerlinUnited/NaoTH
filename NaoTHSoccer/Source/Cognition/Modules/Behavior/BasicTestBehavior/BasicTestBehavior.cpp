@@ -76,7 +76,8 @@ BasicTestBehavior::BasicTestBehavior()
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:ParallelKinematik:stepper", "parallel_stepper", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:ParallelKinematik:dance", "parallel_dance", false);
 
-  DEBUG_REQUEST_REGISTER("BasicTestBehavior:sound:test", "it is what it is...", false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:sound:test_play", "it is what it is...", false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:sound:test_tts", "test text to speech with \":hallo world\"", false);
 
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:led:HeadFrontLeft0", "it is what it is...", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:led:HeadFrontLeft1", "it is what it is...", false);
@@ -106,8 +107,12 @@ void BasicTestBehavior::execute()
   testLED();
 
   getSoundPlayData().soundFile = "";
-  DEBUG_REQUEST("BasicTestBehavior:sound:test",
+  DEBUG_REQUEST("BasicTestBehavior:sound:test_play",
     getSoundPlayData().soundFile = "victory.wav";
+  );
+
+  DEBUG_REQUEST("BasicTestBehavior:sound:test_tts",
+    getSoundPlayData().soundFile = ":hello world";
   );
 
   DEBUG_REQUEST("BasicTestBehavior:arms:arms_back",
@@ -464,7 +469,6 @@ void BasicTestBehavior::testAudio()
   );
 
   DEBUG_REQUEST("BasicTestBehavior:audio:capture",
-  	  getAudioControl().numChannels = 4;
-	  getAudioControl().capture = true;
+    getAudioControl().capture = true;
   );
 }

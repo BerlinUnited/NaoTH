@@ -158,7 +158,10 @@ void StandMotion::execute()
       }
 
       // correct the pose needs to be corrected (also before leaving stand)
-      if ( getMotionRequest().id != getId() || !relaxedPoseIsStillOk()) {
+      if ( getMotionRequest().id != getId() || 
+           !relaxedPoseIsStillOk() ||
+           getMotionRequest().disable_relaxed_stand) 
+      {
         fullCorrection = false; // only adjust the com, not the feet
         state = GotoStandPose;
       } 

@@ -6,11 +6,13 @@
 * original from BH-2011
 */
 
-#ifndef _InertiaSensorFilter_H_
-#define _InertiaSensorFilter_H_
+#ifndef InertiaSensorFilter_H
+#define InertiaSensorFilter_H
 
 
 #include "Tools/Math/Matrix2x2.h"
+#include "Tools/Math/Matrix3x3.h"
+#include "Tools/Math/Matrix3x2.h"
 #include "Tools/Math/Pose3D.h"
 #include "Tools/Math/RotationMatrix.h"
 
@@ -27,7 +29,7 @@
 #include "Representations/Modeling/InertialModel.h"
 #include "Representations/Modeling/KinematicChain.h"
 
-#include "Matrix3x2.h"
+
 
 #include "Tools/Debug/DebugModify.h"
 #include "Tools/Debug/DebugPlot.h"
@@ -182,4 +184,4 @@ private:
   }
 };
 
-#endif //_InertiaSensorFilter_H_
+#endif //InertiaSensorFilter_H

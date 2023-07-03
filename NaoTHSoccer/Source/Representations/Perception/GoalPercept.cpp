@@ -24,7 +24,7 @@ void Serializer<GoalPercept>::serialize(const GoalPercept& representation, std::
   g.mutable_goalcentroid()->set_z(representation.goalCentroid.z);
 
   // numberOfSeenPosts
-  g.set_numberofseenposts(representation.numberOfSeenPosts);
+  g.set_numberofseenposts(static_cast<int>(representation.numberOfSeenPosts));
 
   // post
   for(unsigned int i=0; i < representation.numberOfSeenPosts && i < representation.MAXNUMBEROFPOSTS; i++)
@@ -88,11 +88,11 @@ void Serializer<GoalPercept>::deserialize(std::istream& stream, GoalPercept& rep
   // numberOfSeenPosts
   if(g.has_numberofseenposts())
   {
-    representation.numberOfSeenPosts = g.numberofseenposts();
+    representation.numberOfSeenPosts = static_cast<unsigned int>(g.numberofseenposts());
   }
 
   // post
-  for(unsigned int i=0; i < (unsigned int)g.post_size() && i < representation.numberOfSeenPosts && i < representation.MAXNUMBEROFPOSTS; i++)
+  for(int i=0; i < g.post_size() && static_cast<unsigned int>(i) < representation.numberOfSeenPosts && i < representation.MAXNUMBEROFPOSTS; i++)
   {
     const naothmessages::GoalPercept::GoalPost& p = g.post(i);
     GoalPercept::GoalPost& post = representation.post[i];

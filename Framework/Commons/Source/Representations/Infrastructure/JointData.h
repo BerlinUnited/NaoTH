@@ -5,8 +5,8 @@
  * Created on 2. Januar 2009, 16:15
  */
 
-#ifndef _JointData_H_
-#define _JointData_H_
+#ifndef JOINTDATA_H
+#define JOINTDATA_H
 
 #include <string>
 
@@ -99,6 +99,15 @@ class JointData
 
     bool isLegStiffnessOn() const;
     
+    /**
+    * For each join verify that the stiffness value is valid, i.e., 
+    *       v \in [0, 1] or v == -1
+    * @return -1  - if all values are valid
+    *         idx - JointID of the first joint with the invalid stiffness value
+    * 
+    * @usage
+    *   assert(jointData.checkStiffness() == -1);
+    */
     int checkStiffness() const;
 
     void set(JointID joint, const double value, const double max_delta) {
@@ -165,5 +174,5 @@ class JointData
   };
 }
 
-#endif  /* _JointData_H_ */
+#endif  /* JOINTDATA_H */
 

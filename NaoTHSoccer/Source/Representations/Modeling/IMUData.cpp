@@ -20,6 +20,8 @@ void Serializer<IMUData>::serialize(const IMUData& representation, std::ostream&
   DataConversion::toMessage(representation.orientation, *(msg.mutable_orientation()));
   DataConversion::toMessage(representation.orientation_rotvec, *(msg.mutable_orientation_rotvec()));
 
+  msg.set_has_been_reset(representation.has_been_reset);
+
   google::protobuf::io::OstreamOutputStream buf(&stream);
   msg.SerializeToZeroCopyStream(&buf);
 }
@@ -41,4 +43,6 @@ void Serializer<IMUData>::deserialize(std::istream& stream, IMUData& representat
   DataConversion::fromMessage(msg.rotational_velocity_sensor(), representation.rotational_velocity_sensor);
   DataConversion::fromMessage(msg.orientation(), representation.orientation);
   DataConversion::fromMessage(msg.orientation_rotvec(), representation.orientation_rotvec);
+
+  representation.has_been_reset = msg.has_been_reset();
 }
