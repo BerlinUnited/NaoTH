@@ -59,8 +59,12 @@ void TeamCommEventDecision::byDistance()
 
     const auto& role = getRoleDecisionModel().getRole(getPlayerInfo().playerNumber);
 
-    double distance = 1.0;
-    if (Roles::isDefender(role.role))
+    double distance = 1000.0;
+    if (Roles::isGoalie(role.role))
+    {
+        distance = params.byDistance_goalie;
+    }
+    else if (Roles::isDefender(role.role))
     {
         distance = params.byDistance_defender;
     }

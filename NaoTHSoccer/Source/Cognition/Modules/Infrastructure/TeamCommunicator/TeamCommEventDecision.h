@@ -74,9 +74,10 @@ private:
         Pose2D byDistance_lastPose; // not configurable
         unsigned int byDistance_lastSentTimestamp = 0; // not configurable
         unsigned int byDistance_minInterval = 0; // safety condition, min interval we're allowed to send a new message
-        double byDistance_defender          = 0.5;
-        double byDistance_midfielder        = 0.75;
-        double byDistance_forward           = 1.0;
+        double byDistance_goalie            = 250.0;
+        double byDistance_defender          = 500.0;
+        double byDistance_midfielder        = 750.0;
+        double byDistance_forward           = 1000.0;
 
         std::string decision_method;
         void (TeamCommEventDecision::*decisionMethod)();

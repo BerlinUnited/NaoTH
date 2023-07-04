@@ -58,6 +58,11 @@ bool Roles::isRoleActive(Roles::Static r) const
     return std::find(active.begin(), active.end(), r) != active.end();
 }
 
+bool Roles::isGoalie(Static r)
+{
+    return r == goalie;
+}
+
 bool Roles::isDefender(Static r)
 {
     return r == defender_left || r == defender_center || r == defender_right;
