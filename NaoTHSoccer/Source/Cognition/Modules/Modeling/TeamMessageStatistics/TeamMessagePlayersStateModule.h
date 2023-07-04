@@ -8,12 +8,14 @@
 #include "Representations/Modeling/TeamState.h"
 #include "Representations/Modeling/TeamMessagePlayersState.h"
 #include "Representations/Modeling/TeamMessageStatistics.h"
+#include "Representations/Infrastructure/GameData.h"
 
 
 BEGIN_DECLARE_MODULE(TeamMessagePlayersStateModule)
   REQUIRE(TeamState)
   REQUIRE(FrameInfo)
   REQUIRE(TeamMessageStatistics)
+  REQUIRE(GameData)
 
   PROVIDE(DebugParameterList)
   PROVIDE(TeamMessagePlayersState)
@@ -60,9 +62,9 @@ public:
                 break;
         }
         // Active
-        determineActiveStates();
+        (this->*params.activeMethod)();
         // is playing?
-        determinePlayingStates();
+        (this->*params.playingMethod)();
     }
 
 private:
@@ -135,6 +137,18 @@ private:
     }
 
     /**
+     * @brief Always assume the players are active and not penalized.
+     */
+    void determineActiveStatesAlways()
+    {
+        for (const auto& it: getTeamState().players)
+        {
+            getTeamMessagePlayersState().data[it.first].active = true;
+            getTeamMessagePlayersState().data[it.first].penalized = false;
+        }
+    }
+
+    /**
      * @brief Determines the 'playing' state of the players.
      *        A player is currently 'playing', if he's not fallen and ready to walk.
      *        There could be other indicators, like de-localised robots.
@@ -142,6 +156,15 @@ private:
     void determinePlayingStates() {
         for (const auto& it: getTeamState().players) {
             getTeamMessagePlayersState().data[it.first].playing = !it.second.fallen() && it.second.readyToWalk();
+        }
+    }
+
+    /**
+     * @brief Always assume a player can actively play.
+     */
+    void determinePlayingStatesAlways() {
+        for (const auto& it: getTeamState().players) {
+            getTeamMessagePlayersState().data[it.first].playing = true;
         }
     }
 
@@ -153,6 +176,12 @@ private:
             PARAMETER_REGISTER(calculationMethod)            = 1;
             PARAMETER_REGISTER(maxTimeLastMessageReceived)   = 2000;
             PARAMETER_REGISTER(maxMessageReceivingIndicator) = 0.85;
+
+            // default, always
+            PARAMETER_REGISTER(active_method, &Parameters::setActiveMethod) = "default";
+            // default, always
+            PARAMETER_REGISTER(playing_method, &Parameters::setPlayingMethod) = "default";
+            
             // load from the file after registering all parameters
             syncWithConfig();
         }
@@ -164,6 +193,24 @@ private:
         int maxTimeLastMessageReceived;
         /** */
         double maxMessageReceivingIndicator;
+
+        std::string active_method;
+        void (TeamMessagePlayersStateModule::*activeMethod)();
+        void setActiveMethod(std::string method)
+        {
+            if(method == "default")         { activeMethod = &TeamMessagePlayersStateModule::determineActiveStates; }
+            else if (method == "always")    { activeMethod = &TeamMessagePlayersStateModule::determineActiveStatesAlways; }
+            else                            { activeMethod = &TeamMessagePlayersStateModule::determineActiveStates; }
+        }
+
+        std::string playing_method;
+        void (TeamMessagePlayersStateModule::*playingMethod)();
+        void setPlayingMethod(std::string method)
+        {
+            if(method == "default")         { playingMethod = &TeamMessagePlayersStateModule::determinePlayingStates; }
+            else if(method == "always")     { playingMethod = &TeamMessagePlayersStateModule::determinePlayingStatesAlways; }
+            else                            { playingMethod = &TeamMessagePlayersStateModule::determinePlayingStates; }
+        }
    } params;
 };
 
