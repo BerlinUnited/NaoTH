@@ -7,6 +7,7 @@
 #include "Classifier/Model1.h"
 #include "Classifier/Fy1500_Conf.h"
 #include "Classifier/FrugallyDeep.h"
+#include "Classifier/fy_1500_new2_new_dataset.h"
 
 using namespace std;
 
@@ -310,7 +311,7 @@ std::map<string, std::shared_ptr<AbstractCNNFinder> > MultiPassBallDetector::cre
   // register classifiers
   result.insert({ "fy1500_conf", std::make_shared<Fy1500_Conf>() });
   result.insert({ "model1", std::make_shared<Model1>() });
-
+  result.insert({ "rc23v1", std::make_shared<fy_1500_new2_new_dataset>() });
   result.insert({ "fdeep_fy1300", std::make_shared<FrugallyDeep>("fy1300.json")});
   result.insert({ "fdeep_fy1500", std::make_shared<FrugallyDeep>("fy1500.json")});
 
