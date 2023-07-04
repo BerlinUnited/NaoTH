@@ -1,5 +1,8 @@
 /** 
-Scan mode for looking at the ball/searching for the ball 
+  Scan mode for looking at the ball/searching for the ball
+
+  This version used angles as limits for turning right/left
+  
 */
 option search_for_ball
 {
@@ -67,12 +70,11 @@ option search_for_ball
     }
     action
     {
-        head.point_in_world.x = 160;
-        head.point_in_world.y = -200;
-        head.point_in_world.z = 0;
-        head.motion_type = look_at_world_point;
+        head.motion_type = goto_angle;
+        head.target_angle.x = -40;
+        head.target_angle.y = 21;
 
-        head.angleVelocity = 60; // will be reseted in basic_play
+        head.angleVelocity = 50;
     }
   }
 
@@ -89,12 +91,11 @@ option search_for_ball
     }
     action
     {
-      head.point_in_world.x = 160;
-      head.point_in_world.y = 200;
-      head.point_in_world.z = 0;
-      head.motion_type = look_at_world_point;
+      head.motion_type = goto_angle;
+      head.target_angle.x = 40;
+      head.target_angle.y = 21;
 
-      head.angleVelocity = 60; // will be reseted in basic_play
+      head.angleVelocity = 50;
     }
   }
 
@@ -114,12 +115,11 @@ option search_for_ball
     }
     action
     {
-        head.point_in_world.x = 400;
-        head.point_in_world.y = -500;
-        head.point_in_world.z = 0;
-        head.motion_type = look_at_world_point;
+        head.motion_type = goto_angle;
+        head.target_angle.x = -100;
+        head.target_angle.y = 0;
 
-        head.angleVelocity = 60; // will be reseted in basic_play
+        head.angleVelocity = 50; // will be reseted in basic_play
     }
   }
 
@@ -136,10 +136,13 @@ option search_for_ball
     }
     action
     {
-      head.point_in_world.x = 400;
-      head.point_in_world.y = 500;
-      head.point_in_world.z = 0;
-      head.motion_type = look_at_world_point;
+      //.point_in_world.x = 500;
+      //head.point_in_world.y = 150;
+      //head.point_in_world.z = 0;
+      //head.motion_type = look_at_world_point;
+      head.motion_type = goto_angle;
+      head.target_angle.x = 100;
+      head.target_angle.y = 0;
 
       head.angleVelocity = 60; // will be reseted in basic_play
     }
