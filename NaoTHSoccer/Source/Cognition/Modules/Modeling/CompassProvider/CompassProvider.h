@@ -55,6 +55,7 @@ BEGIN_DECLARE_MODULE(CompassProvider)
   REQUIRE(CameraMatrixTop)
 
   REQUIRE(LineGraphPercept)
+  REQUIRE(LineGraphPerceptTop)
 
   REQUIRE(RansacLinePercept)
 
