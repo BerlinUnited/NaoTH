@@ -1,5 +1,9 @@
 /*
-  This is just a test for the head control
+  This is a test for the head control. The "search_for_ball" option can be used with different parameters.
+  The search_for_ball option is exclusively called via a head.control_mode.
+
+  
+  See Options/HeadControl/head_control.xabsl file for more information
 */
 
 option search_for_ball_test
