@@ -188,9 +188,12 @@ option search_for_ball
           goto search_for_ball_left;
         else
           goto search_for_ball_right;
-      } else if(@look_around && state_time > 3000 && vector.abs(x=ball.preview.x, y=ball.preview.y) > @look_at_ball_when_distance)
+      }
+      // if we looked at the ball long enough and the ball is far enough AND the flag allows for looking around then we will look around
+      // this might be helpful for localisation
+      else if(@look_around && state_time > 3000 && vector.abs(x=ball.preview.x, y=ball.preview.y) > @look_at_ball_when_distance)
       {
-        //goto look_around_state;
+        // decide in which direction to look first
         if ( search_for_ball.last_look_around_direction_was_left )
           goto look_right;
         else 
@@ -206,7 +209,6 @@ option search_for_ball
       head.point_in_world.y = ball.y * clip(value=ball.distance, min=250, max=500) / ball.distance;
       head.point_in_world.z = ball.radius;
 
-      // look at ball fast!
       head.angleVelocity = 300;
     }
   }
