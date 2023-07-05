@@ -40,6 +40,7 @@ option passive_ball_not_seen_responsive
   state turn_around {
     decision {
       else if(state_time > 4000 || ball.team.is_valid)
+      // WTF: warum nicht auf team ball schauen
         goto look_around;
       else
         stay;
