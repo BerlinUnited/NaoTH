@@ -5,6 +5,7 @@
 #include "Tools/DataStructures/ParameterList.h"
 #include "Tools/Debug/DebugParameterList.h"
 #include "Representations/Infrastructure/FrameInfo.h"
+#include "Representations/Modeling/PlayerInfo.h"
 #include "Representations/Modeling/TeamState.h"
 #include "Representations/Modeling/TeamMessagePlayersState.h"
 #include "Representations/Modeling/TeamMessageStatistics.h"
@@ -16,6 +17,7 @@ BEGIN_DECLARE_MODULE(TeamMessagePlayersStateModule)
   REQUIRE(FrameInfo)
   REQUIRE(TeamMessageStatistics)
   REQUIRE(GameData)
+  REQUIRE(PlayerInfo)
 
   PROVIDE(DebugParameterList)
   PROVIDE(TeamMessagePlayersState)
@@ -184,7 +186,12 @@ private:
      */
     void determinePlayingStatesAlways() {
         for (const auto& it: getTeamState().players) {
-            getTeamMessagePlayersState().data[it.first].playing = true;
+            // I know the state for sure only for me
+            if (getPlayerInfo().playerNumber == it.first) {
+                getTeamMessagePlayersState().data[it.first].playing = !it.second.fallen() && it.second.readyToWalk();
+            } else {
+                getTeamMessagePlayersState().data[it.first].playing = true;
+            }
         }
     }
 
