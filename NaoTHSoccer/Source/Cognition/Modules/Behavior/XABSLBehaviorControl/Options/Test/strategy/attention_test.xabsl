@@ -1,0 +1,46 @@
+/*
+  This is a test for the head control using the attention agent. 
+*/
+
+option attention_test
+{  
+  
+  common decision
+  {
+    if(!body.ready_to_walk || game.current_mode != playing)
+      goto idle;
+  }
+  
+
+  initial state idle
+  {
+    decision
+    {
+      else if(game.current_mode == playing)
+        goto pay_attention;
+      else
+        stay;
+    }
+    action
+    {
+    }
+  }
+
+  state pay_attention
+  {
+    decision {
+      else
+        stay;
+    }
+    action {
+      motion.type = stand;
+
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = attention.mi_point.x;
+      head.point_in_world.y = attention.mi_point.y;
+      head.point_in_world.z = ball.radius;
+
+      head.angleVelocity = 300;
+    }
+  }
+}

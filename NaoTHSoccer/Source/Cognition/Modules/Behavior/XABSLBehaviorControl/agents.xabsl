@@ -113,6 +113,7 @@ include "Options/Test/agent/passive_behavior_test_agent.xabsl";
 include "Options/Test/agent/striker_change_test_agent.xabsl";
 include "Options/Test/agent/search_test_agent.xabsl";
 include "Options/Test/agent/search_for_ball_agent.xabsl";
+include "Options/Test/agent/attention_agent.xabsl";
 
 // Pathplanner
 include "Options/Test/PathPlaner/path_move_around_ball_test.xabsl";
@@ -131,6 +132,7 @@ include "Options/Test/PathPlannerAgents/pathplanner2018_striker_agent.xabsl";
 include "Options/Test/strategy/striker_change_test.xabsl";
 include "Options/Test/strategy/search_ball_test.xabsl";
 include "Options/Test/strategy/search_for_ball_test.xabsl";
+include "Options/Test/strategy/attention_test.xabsl";
 
 // Walk
 include "Options/Test/walk/dribble.xabsl";
@@ -207,3 +209,4 @@ agent bumper_collision_agent("bumper_collision_agent", bumper_collision_agent);
 agent search_test_agent("search_test_agent",search_test_agent);
 agent search_for_ball_agent("search_for_ball_agent",search_for_ball_agent);
 agent search_only_looking_for_ball("only_ball_looking_agent",only_ball_looking_agent);
+agent attention_agent("attention_agent",attention_agent);
