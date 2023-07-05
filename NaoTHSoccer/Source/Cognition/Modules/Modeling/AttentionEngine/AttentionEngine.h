@@ -14,6 +14,7 @@
 #include "Representations/Modeling/GoalModel.h"
 #include "Representations/Modeling/ObstacleModel.h"
 #include "Representations/Modeling/KinematicChain.h"
+#include "Representations/Modeling/AttentionModel.h"
 
 // debug
 #include "Tools/Debug/DebugRequest.h"
@@ -28,16 +29,16 @@ BEGIN_DECLARE_MODULE(AttentionEngine)
     PROVIDE(DebugRequest)
     PROVIDE(DebugDrawings)
     PROVIDE(DebugModify)
-    PROVIDE(RobotPose)
-    PROVIDE(SelfLocGoalModel)
-    PROVIDE(BallModel)
-    PROVIDE(ObstacleModel)
+
+    PROVIDE(AttentionModel)
 END_DECLARE_MODULE(AttentionEngine)
 
 class AttentionEngine: public AttentionEngineBase
 {
 public:
  AttentionEngine();
+
+ bool go_left;
 
  ~AttentionEngine();
 

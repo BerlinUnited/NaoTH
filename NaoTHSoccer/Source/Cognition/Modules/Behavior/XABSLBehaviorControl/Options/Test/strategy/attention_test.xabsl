@@ -33,6 +33,7 @@ option attention_test
         stay;
     }
     action {
+      head.control_mode=none;
       motion.type = stand;
 
       head.motion_type = look_at_world_point;
@@ -40,7 +41,7 @@ option attention_test
       head.point_in_world.y = attention.mi_point.y;
       head.point_in_world.z = ball.radius;
 
-      head.angleVelocity = 300;
+      head.angleVelocity = 60;
     }
   }
 }
