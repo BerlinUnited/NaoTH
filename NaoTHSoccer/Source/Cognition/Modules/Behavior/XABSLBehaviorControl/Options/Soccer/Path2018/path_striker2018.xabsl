@@ -100,21 +100,19 @@ option path_striker2018
   {
     decision
     {
-    // long kick is ignored/not included in action selection
-    //else if(attack.best_action == kick_long)
-    //    goto long_kick;
-    else if(attack.best_action == kick_short)
-    {
-      goto forwardkick;
-    }
-    else if(attack.best_action == sidekick_left)
-      //goto sidekick_left;
-      stay;
-    else if(attack.best_action == sidekick_right)
-      //goto sidekick_right;
-      stay;
-    else
-      stay;
+      // long kick is ignored/not included in action selection
+      //else if(attack.best_action == kick_long)
+      //    goto long_kick;
+      else if(attack.best_action == kick_short)
+        goto forwardkick;
+      else if(attack.best_action == sidekick_left)
+        //goto sidekick_left;
+        stay;
+      else if(attack.best_action == sidekick_right)
+        //goto sidekick_right;
+        stay;
+      else
+        stay;
     }
     action
     {
