@@ -22,7 +22,7 @@ set -x
 # NETWORK_WLAN_MASK="255.255.0.0"
 # NETWORK_WLAN_BROADCAST="10.0.255.255"
 
-# CUSTOM:
+# NAONET:
 WLAN_SSID="NAONET"
 WLAN_PW="a1b0a1b0a1"
 WLAN_IP="10.0.4"
@@ -33,6 +33,11 @@ WLAN_BROADCAST="10.0.255.255"
 ETH_IP="192.168.13"
 ETH_MASK="255.255.255.0"
 ETH_BROADCAST="192.168.13.255"
+
+# play sound
+su nao -c "/usr/bin/paplay /home/nao/naoqi/Media/usb_start.wav"
+
+naoth stop
 
 
 HEAD_ID=$(cat /sys/qi/head_id)
@@ -77,6 +82,5 @@ EOF
 
 netplan apply
 
-restart 
-echo "restarting . . ."
-naoth restart
+echo "start naoth"
+naoth start
