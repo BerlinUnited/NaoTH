@@ -59,9 +59,11 @@ private:
             
             // params for the distance decision method
             PARAMETER_REGISTER(byDistance_minInterval) = 0;
-            PARAMETER_REGISTER(byDistance_defender) = 0.5;
-            PARAMETER_REGISTER(byDistance_midfielder) = 0.75;
-            PARAMETER_REGISTER(byDistance_forward) = 1.0;
+            PARAMETER_REGISTER(byDistance_goalie) = 250.0;
+            PARAMETER_REGISTER(byDistance_defender) = 500.0;
+            PARAMETER_REGISTER(byDistance_midfielder) = 750.0;
+            PARAMETER_REGISTER(byDistance_forward) = 1000.0;
+            PARAMETER_REGISTER(byDistance_striker) = 100.0;
 
             // load from the file after registering all parameters
             syncWithConfig();
