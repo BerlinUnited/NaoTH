@@ -7,62 +7,45 @@
 
 #include "XabslFileInputSource.h"
 
-XabslFileInputSource::XabslFileInputSource(std::string file)
-{
-  this->file = file;
-}
-
-XabslFileInputSource::~XabslFileInputSource()
-{
-}
-
 bool XabslFileInputSource::open()
 {
-  try
-  {
+  try {
     inFile.open(file.c_str(), std::ifstream::in);
     skipComments();
-  }
-  catch(...)
-  {
+  } catch(...) {
     return false;
   }
   return inFile.is_open();
-}//end open
+}
 
 void XabslFileInputSource::close()
 {
   inFile.close();
-}//end close
+}
 
 double XabslFileInputSource::readValue()
 {
   double d;
   inFile >> d;
   return d;
-}//end readValue
+}
 
 bool XabslFileInputSource::readString(char* destination, int maxLength)
 {
-
-  if(inFile.eof())
-  {
+  if(inFile.eof()) {
     return false;
   }
 
-  try
-  {
+  try {
     skipWhiteSpace();
-    inFile.width(maxLength+1);
+    inFile.width(maxLength + 1);
     inFile >> destination;
-  }
-  catch(...)
-  {
+  } catch(...) {
     return false;
   }
 
   return true;
-}//end readString
+}
 
 void XabslFileInputSource::skipComments()
 {
@@ -72,7 +55,7 @@ void XabslFileInputSource::skipComments()
     inFile.ignore(256, '\n');
     c = static_cast<char>(inFile.peek());
   }
-}//end skipComments
+}
 
 void XabslFileInputSource::skipWhiteSpace()
 {
@@ -82,4 +65,4 @@ void XabslFileInputSource::skipWhiteSpace()
     inFile.ignore(1);
     c = static_cast<char>(inFile.peek());
   }
-}//end skipWhiteSpace
+}

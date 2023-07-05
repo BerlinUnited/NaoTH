@@ -4,6 +4,8 @@
 #		- plays "usb_stop.wav" in the beginning
 #		- plays "1.wav" if a copy-error occurred (game.log, Config/)
 #		- plays "nicknacknuck.wav" at the end
+# IMPORTANT: Only for Naos with Ubuntu
+
 
 # define functions
 check_for_errors() {

@@ -5,8 +5,8 @@
  * Created on 9. Januar 2009, 21:31
  */
 
-#ifndef _XABSLBehaviorControl_H
-#define _XABSLBehaviorControl_H
+#ifndef XABSLBEHAVIORCONTROL_H
+#define XABSLBEHAVIORCONTROL_H
 
 #include <ModuleFramework/Module.h>
 #include <ModuleFramework/ModuleManager.h>
@@ -18,13 +18,6 @@
 #include "Tools/Xabsl/XabslFileInputSource.h"
 #include "Tools/Debug/DebugRequest.h"
 #include <DebugCommunication/DebugCommandManager.h>
-/*
-
-#include "Representations/Modeling/BodyState.h"
-#include "Representations/Infrastructure/CameraSettings.h"
-
-#include "PlatformInterface/Platform.h"
-*/
 
 #include "Representations/Modeling/BehaviorStateComplete.h"
 #include "Representations/Modeling/BehaviorStateSparse.h"
@@ -68,17 +61,15 @@ private:
 
 BEGIN_DECLARE_MODULE(XABSLBehaviorControl)
   REQUIRE(FrameInfo)
-  REQUIRE(SelfLocGoalModel)
-  REQUIRE(BallModel)
-  REQUIRE(PlayerInfo)
+
+  // TODO: move somewhere else. This is used only for debug drawings.
   REQUIRE(MotionStatus)
-  REQUIRE(FieldInfo)
   REQUIRE(RobotPose)
-  REQUIRE(CompassDirection)
   REQUIRE(MotionRequest)
 
   PROVIDE(BehaviorStateSparse)
   PROVIDE(BehaviorStateComplete)
+
   PROVIDE(DebugRequest)
   PROVIDE(DebugDrawings)
   PROVIDE(StopwatchManager)
@@ -124,9 +115,6 @@ private:
   // TODO: remove this member
   std::string agentName;
 
-  /** time passed into the xabsl engine */
-  unsigned int xabslTime;
-
   // needed for serialization
   std::vector<double> inputDecimalBuffer;
   std::vector<bool> inputBooleanBuffer;
@@ -158,4 +146,4 @@ private:
   ModuleCreator<RemoteSymbols>* theRemoteSymbols;
 };
 
-#endif  /* _XABSLBehaviorControl_H */
+#endif  // XABSLBEHAVIORCONTROL_H
