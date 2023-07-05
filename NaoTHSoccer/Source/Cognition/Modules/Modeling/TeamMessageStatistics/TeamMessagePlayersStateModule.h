@@ -149,6 +149,26 @@ private:
     }
 
     /**
+     * @brief The gamecontroller sends the active penalties of all players.
+     *        Since all inactive players are penalized, we can set the active state based on the gc messages 
+     *        (the player must also be "alive").
+     */
+    void determineActiveStatesGameController()
+    {
+        const auto& state   = getTeamMessagePlayersState().data;
+        const auto& players = getGameData().ownTeam.players;
+        for (size_t index = 0; index < players.size(); ++index)
+        {
+            auto n = index + 1;
+            if (state.find(n) != state.cend())
+            {
+                getTeamMessagePlayersState().data[n].active = getTeamMessagePlayersState().isAlive(n) && !players[index].isPenalized();
+                getTeamMessagePlayersState().data[n].penalized = players[index].isPenalized();
+            }
+        }
+    }
+
+    /**
      * @brief Determines the 'playing' state of the players.
      *        A player is currently 'playing', if he's not fallen and ready to walk.
      *        There could be other indicators, like de-localised robots.
@@ -177,7 +197,7 @@ private:
             PARAMETER_REGISTER(maxTimeLastMessageReceived)   = 2000;
             PARAMETER_REGISTER(maxMessageReceivingIndicator) = 0.85;
 
-            // default, always
+            // default, gc, always
             PARAMETER_REGISTER(active_method, &Parameters::setActiveMethod) = "default";
             // default, always
             PARAMETER_REGISTER(playing_method, &Parameters::setPlayingMethod) = "default";
@@ -200,6 +220,7 @@ private:
         {
             if(method == "default")         { activeMethod = &TeamMessagePlayersStateModule::determineActiveStates; }
             else if (method == "always")    { activeMethod = &TeamMessagePlayersStateModule::determineActiveStatesAlways; }
+            else if (method == "gc")        { activeMethod = &TeamMessagePlayersStateModule::determineActiveStatesGameController; }
             else                            { activeMethod = &TeamMessagePlayersStateModule::determineActiveStates; }
         }
 
