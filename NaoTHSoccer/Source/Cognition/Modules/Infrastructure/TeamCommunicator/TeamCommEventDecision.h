@@ -78,6 +78,7 @@ private:
         double byDistance_defender          = 500.0;
         double byDistance_midfielder        = 750.0;
         double byDistance_forward           = 1000.0;
+        double byDistance_striker           = 100.0;
 
         std::string decision_method;
         void (TeamCommEventDecision::*decisionMethod)();

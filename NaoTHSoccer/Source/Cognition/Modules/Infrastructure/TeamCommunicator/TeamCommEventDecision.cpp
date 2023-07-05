@@ -77,6 +77,11 @@ void TeamCommEventDecision::byDistance()
         distance = params.byDistance_forward;
     }
 
+    // if i am striker, i send more often
+    if (role.dynamic == Roles::striker) {
+        distance = params.byDistance_striker;
+    }
+
     // send new message only if the robot moved some distance
     if ((getRobotPose() - params.byDistance_lastPose).translation.abs() > distance)
     {
@@ -93,6 +98,4 @@ void TeamCommEventDecision::byDistance()
         // update timestamp for the safety condition
         params.byDistance_lastSentTimestamp = getFrameInfo().getTime();
     }
-    // TODO: do we allow a role change?
-    // TODO: how do we handle the striker decision
 }
