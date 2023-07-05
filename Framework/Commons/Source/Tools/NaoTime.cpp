@@ -50,13 +50,16 @@ const unsigned long long NaoTime::startingTimeInMilliSeconds = getSystemTimeInMi
 unsigned long long NaoTime::getSystemTimeInMicroSeconds()
 {
   #ifdef WIN32
-    LARGE_INTEGER highPerformanceTick;
-    LARGE_INTEGER freq;
-    if(QueryPerformanceCounter(&highPerformanceTick) && QueryPerformanceFrequency(&freq)) {
-      double inSeconds = ((double) highPerformanceTick.LowPart) / ((double) freq.LowPart);
-      return static_cast<unsigned long long>(inSeconds * 1000000.0);
+    // https://learn.microsoft.com/en-us/windows/win32/sysinfo/acquiring-high-resolution-time-stamps
+    // Get the frequency once and check if high-resolution performance counter is supported.
+    static LARGE_INTEGER s_frequency;
+    static BOOL supported = QueryPerformanceFrequency(&s_frequency);
+    if (supported) {
+      LARGE_INTEGER now;
+      QueryPerformanceCounter(&now);
+      return (1000000LL * now.QuadPart) / s_frequency.QuadPart;
     } else {
-      return 0;
+      return GetTickCount64();
     }
   #else // NAO, Linux, MAC
   

@@ -123,12 +123,9 @@ void V4lCameraHandler::init(const std::string& camDevice, CameraInfo::CameraID c
     shutdown();
   }
   
-  // initialize parameter manager
+  // reset the camera just in case
   if (isV6) {
     resetV6Camera();
-    settingsManager = std::make_shared<CameraSettingsV6Manager>();
-  } else {
-    settingsManager = std::make_shared<CameraSettingsV5Manager>();
   }
 
   currentCamera = camID;
@@ -140,6 +137,13 @@ void V4lCameraHandler::init(const std::string& camDevice, CameraInfo::CameraID c
   setFrameRate(30);
   mapBuffers();
   
+  // initialize parameter manager
+  if (isV6) {
+    settingsManager = std::make_shared<CameraSettingsV6Manager>(fd, cameraName);
+  } else {
+    settingsManager = std::make_shared<CameraSettingsV5Manager>(fd, cameraName);
+  }
+
   // DEBUG: read and print available controls 
   settingsManager->enumerate_controls(fd);
   
@@ -326,6 +330,7 @@ void V4lCameraHandler::startCapturing()
   currentBuf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
   currentBuf.memory = V4L2_MEMORY_MMAP;
 
+  // Activates the stream
   enum v4l2_buf_type type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
   VERIFY(-1 != ioctl(fd, VIDIOC_STREAMON, &type));
 
@@ -375,7 +380,17 @@ int V4lCameraHandler::readFrame()
     currentBuf.memory = V4L2_MEMORY_MMAP;
   }
   
-  // poll: suspend execution until the driver has captured data
+  // poll: "wait for some event on a file descriptor"
+  // In our case: suspend execution until the driver has captured data.
+  // This is necessary to make sure that there is a valid buffer that we
+  // can retrieve in the following step.
+  //
+  // The events that we are waiting for:
+  //   POLLIN  - There is data to read.
+  //   POLLPRI - There is some exceptional condition on the file descriptor.
+  // https://man7.org/linux/man-pages/man2/ppoll.2.html
+  // specific events in v4l
+  // https://www.linuxtv.org/downloads/v4l-dvb-apis-old/func-poll.html
   pollfd pollfds[1] =
   {
     {fd, POLLIN | POLLPRI, 0},
@@ -537,6 +552,7 @@ void V4lCameraHandler::get(Image& theImage)
 
 void V4lCameraHandler::getCameraSettings(CameraSettings &data, bool update)
 {
+  //FIXME: this seems to be never executed, because update is never set to true
   if (update)
   {
     std::cout << LOG << "V4L camera settings are updated" << std::endl;
@@ -547,35 +563,34 @@ void V4lCameraHandler::getCameraSettings(CameraSettings &data, bool update)
 
 void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
 {
-  if (framesSinceStart < 5)
-  {
-    // do nothing if no image was retrieved yet
+  ASSERT_MSG(settingsManager, "No settingsManager was set.");
+
+  // TODO: move the initialization of the parameters into a separate function which 
+  // is executed once at the start
+
+  // HACK: wait for some frames bevore setting parameters
+  // to give the camera driver some time. This seeps to increase the chance
+  // that the parameters are actually applied 
+  constexpr int framesToWait = 5;
+
+  if (framesSinceStart < framesToWait) {
     std::cerr << LOG << "CAN NOT SET PARAMETERS YET, WAITING ..." << std::endl;
     return;
-  }
-  else if (framesSinceStart == 5)
-  {
+  } else if (framesSinceStart == framesToWait) {
+    // initialize parameters
     internalUpdateCameraSettings();
-    if (settingsManager)
-    {
-      settingsManager->apply(fd, cameraName, data, true);
-    }
-  }
-  else
-  {
-    if (settingsManager)
-    {
-      settingsManager->apply(fd, cameraName, data);
-    }
+    // force apply settins
+    settingsManager->apply(data, true);
+  } else {
+    // update: only apply changed settings 
+    settingsManager->apply(data);
   }
 } // end setAllCameraParams
 
 void V4lCameraHandler::internalUpdateCameraSettings()
 {
-  if (settingsManager)
-  {
-    settingsManager->query(fd, cameraName, currentSettings);
-  }
+  ASSERT_MSG(settingsManager, "No settingsManager was set.");
+  settingsManager->query(currentSettings);
 }
 
 // https://01.org/linuxgraphics/gfx-docs/drm/media/uapi/v4l/capture.c.html

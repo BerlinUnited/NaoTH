@@ -8,7 +8,7 @@ option path_turn_to_attack_direction
         stay;
     }
     
-    action{
+    action {
       path2018.routine = move_around_ball2;
       path.direction = attack.direction.preview;
       path.radius = 210;

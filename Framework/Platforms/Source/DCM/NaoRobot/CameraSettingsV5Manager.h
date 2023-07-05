@@ -1,5 +1,10 @@
-#ifndef _CameraSettingsV5Manager_H_
-#define _CameraSettingsV5Manager_H_
+/**
+* @file CameraSettingsV5Manager.h
+*
+*/
+
+#ifndef CAMERASETTINGSV5MANAGER_H
+#define CAMERASETTINGSV5MANAGER_H
 
 #include "V4LCameraSettingsManager.h"
 #include <Representations/Infrastructure/CameraSettings.h>
@@ -7,17 +12,20 @@
 class CameraSettingsV5Manager : public V4LCameraSettingsManager
 {
 public:
-  CameraSettingsV5Manager();
+  CameraSettingsV5Manager(int cameraFd, const std::string& cameraName);
 
-  virtual void query(int cameraFd, const std::string& cameraName, naoth::CameraSettings &settings);
-  virtual void apply(int cameraFd, const std::string& cameraName, const naoth::CameraSettings &settings, bool force = false);
+  virtual void query(naoth::CameraSettings &settings);
+  virtual void apply(const naoth::CameraSettings &settings, bool force = false);
 
 private:
   naoth::CameraSettings current;
   bool initialized;
 
+  int cameraFd;
+  std::string cameraName;
+
 private:
   int getAutoExposureGridID(size_t i, size_t j);
 };
 
-#endif // _CameraSettingsV5Manager_H_
+#endif // CAMERASETTINGSV5MANAGER_H

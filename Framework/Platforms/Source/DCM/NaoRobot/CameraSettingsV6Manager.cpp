@@ -15,10 +15,13 @@ extern "C"
 
 using namespace naoth;
 
-CameraSettingsV6Manager::CameraSettingsV6Manager()
-    : initialized(false)
-{
-}
+CameraSettingsV6Manager::CameraSettingsV6Manager(int cameraFd,
+                                                 const std::string& cameraName)
+    : 
+  initialized(false), 
+  cameraFd(cameraFd), 
+  cameraName(cameraName) 
+{}
 
 /*
 Control 10094849: Exposure, Auto
@@ -55,7 +58,7 @@ V4L2_CID_EXPOSURE_ABSOLUTE (integer)
     10000 for 1 second and 100000 for 10 seconds.
 */
 
-void CameraSettingsV6Manager::query(int cameraFd, const std::string& cameraName, CameraSettings &all)
+void CameraSettingsV6Manager::query(CameraSettings &all)
 {
   V6CameraSettings& settings(all.v6);
   
@@ -97,7 +100,7 @@ void CameraSettingsV6Manager::query(int cameraFd, const std::string& cameraName,
   current = settings;
 }
 
-void CameraSettingsV6Manager::apply(int cameraFd, const std::string& cameraName, const CameraSettings &all, bool force)
+void CameraSettingsV6Manager::apply(const CameraSettings &all, bool force)
 {
   const V6CameraSettings& settings(all.v6);
   

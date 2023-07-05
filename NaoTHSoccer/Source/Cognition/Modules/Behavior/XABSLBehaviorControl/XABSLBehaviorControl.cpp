@@ -31,7 +31,6 @@ XABSLBehaviorControl::XABSLBehaviorControl()
     "return the value of a symbol. usage behavior:get_symbol <symbol_name>", this);
 
   DEBUG_REQUEST_REGISTER("XABSL:draw_motion_request", "draw the motion intention of the robot on the field", false);
-  DEBUG_REQUEST_REGISTER("XABSL:draw_foot_decision", "visualize the foot decision", false);
 
 
 #define REGISTER_MODULE(module, enable) \
@@ -84,12 +83,11 @@ void XABSLBehaviorControl::loadBehaviorFromFile(std::string file, std::string ag
   // reset the error handler
   theErrorHandler.errorsOccurred = false;
   
-
-  // (is it necessary?)
+  // Delete and creata new engine every time when a new behavior file is loaded. Just in case :)
   // delete the old engine if avaliable
   delete theEngine;
   // create a new engine 
-  theEngine = xabsl::EngineFactory<XABSLBehaviorControl>::create(theErrorHandler, this->xabslTime); 
+  theEngine = xabsl::EngineFactory<XABSLBehaviorControl>::create(theErrorHandler, getFrameInfo());
   //
   registerXABSLSymbols();
 
@@ -123,9 +121,6 @@ void XABSLBehaviorControl::loadBehaviorFromFile(std::string file, std::string ag
 
 void XABSLBehaviorControl::execute()
 {
-  // ATTENTION: it has to be set before xabsl engine is executed!!!
-  xabslTime = getFrameInfo().getTime();
-
   // execute the behavior
   if(theEngine != NULL && !theErrorHandler.errorsOccurred)
   {
@@ -155,31 +150,6 @@ void XABSLBehaviorControl::execute()
 
 void XABSLBehaviorControl::draw()
 {
-  DEBUG_REQUEST("XABSL:draw_foot_decision",
-    //18.02.2012
-    Vector2<double> oppGoal = getSelfLocGoalModel().getOppGoal(getCompassDirection(), getFieldInfo()).calculateCenter();
-    Vector2<double> ballPose = getBallModel().position;
-
-    FIELD_DRAWING_CONTEXT;
-
-    PEN("FFFFFF", 20);
-    CIRCLE(oppGoal.x, oppGoal.y, 50);
-    LINE(0,0,oppGoal.x,oppGoal.y);
-
-    // normal vector to the RIGHT side
-    oppGoal.rotateRight().normalize(200);
-
-    ARROW(0,0, oppGoal.x, oppGoal.y);
-
-    bool kick_with_right_foot = oppGoal*ballPose > 0;
-
-    if(kick_with_right_foot) {
-      TEXT_DRAWING( - 100, - 100, "RIGHT");
-    } else {
-      TEXT_DRAWING( - 100, - 100, "LEFT");
-    }
-  );
-
 
   DEBUG_REQUEST("XABSL:draw_motion_request",
     FIELD_DRAWING_CONTEXT;
