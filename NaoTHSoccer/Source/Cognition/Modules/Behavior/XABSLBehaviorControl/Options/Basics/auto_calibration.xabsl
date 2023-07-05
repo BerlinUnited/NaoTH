@@ -1,0 +1,41 @@
+
+option auto_calibration
+{
+  initial state start
+  {
+    decision {
+      if(state_time > 500) 
+        goto calibrate;
+      else
+        stay;
+    }
+    action {
+      motion.type = stand;
+      head.control_mode = look_straight_ahead;
+      sound.request = start_calibration;
+    }
+  }
+
+  state calibrate
+  {
+    decision {
+        stay;
+    }
+    action {
+      motion.type = stand;
+      head.control_mode = look_straight_ahead;
+      // activate calibration
+      strategy.automatic_calibration = true;
+    }
+  }
+
+  // TODO: this is not used now we need report 
+  // back that calibration was done
+  target state finish 
+  {
+    action{
+      motion.type = stand;
+      head.control_mode = look_straight_ahead;
+    }
+  }
+}

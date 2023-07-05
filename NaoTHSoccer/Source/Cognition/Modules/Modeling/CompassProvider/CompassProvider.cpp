@@ -57,7 +57,7 @@ void CompassProvider::execute()
   }
   */
 
-  ASSERT(getRansacLinePercept().edgelLineIDs.size() == getLineGraphPercept().edgelsOnField.size());
+  ASSERT(getRansacLinePercept().edgelLineIDs.size() == getLineGraphPercept().edgelsOnField.size() + getLineGraphPerceptTop().edgelsOnField.size() );
   // fill the compas
   if((int)getLineGraphPercept().edgelsOnField.size() > params.minimalNumberOfPairs)
   {
@@ -79,6 +79,25 @@ void CompassProvider::execute()
     }
   }
 
+  if((int)getLineGraphPerceptTop().edgelsOnField.size() > params.minimalNumberOfPairs)
+  {
+    getProbabilisticQuadCompas().setSmoothing(params.quadCompasSmoothingFactor);
+    for(size_t j = 0; j < getLineGraphPerceptTop().edgelsOnField.size(); ++j)
+    {
+      //const EdgelPair& edgelPair = edgelPairs[j];
+      //const Vector2d& edgelLeft = edgelProjections[edgelPair.left];
+      //const Vector2d& edgelRight = edgelProjections[edgelPair.right];
+
+      // TODO: mean difference?
+      //double r = (edgelProjectionsBegin[edgelPair.left] - edgelProjectionsBegin[edgelPair.right]).angle();
+
+      if(getRansacLinePercept().edgelLineIDs[j+getLineGraphPercept().edgelsOnField.size()] > -1) {
+        double r = getLineGraphPerceptTop().edgelsOnField[j].direction.angle();
+        //getProbabilisticQuadCompas().add(r, edgelPair.sim);
+        getProbabilisticQuadCompas().add(r);
+      }
+    }
+  }
 
   getProbabilisticQuadCompas().normalize();
 

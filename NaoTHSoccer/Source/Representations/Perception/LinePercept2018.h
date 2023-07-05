@@ -8,6 +8,7 @@
 #include "Tools/LinesTable.h"
 
 #include "Tools/DataStructures/Serializer.h"
+#include "Tools/DataStructures/Printable.h"
 
 class MiddleCircle
 {
@@ -41,6 +42,7 @@ public:
   }
 };
 
+
 // RansacLineDetector
 class RansacLinePercept : public LinePercept2018
 {
@@ -54,6 +56,26 @@ public:
   }
 };
 
+
+class RansacLinePerceptImage: public naoth::Printable
+{
+public:
+  std::vector<Math::LineSegment> imageFieldLineSegments;
+
+  void reset()
+  {
+    imageFieldLineSegments.clear();
+  }
+
+  virtual void print(std::ostream& stream) const
+  {
+    stream << "number = " << imageFieldLineSegments.size() << std::endl;
+  }
+};
+
+class RansacLinePerceptImageTop : public RansacLinePerceptImage{};
+
+
 namespace naoth
 {
 template<>
@@ -65,12 +87,14 @@ class Serializer<RansacLinePercept>
 };
 }
 
+
 // RansacLineDetectorOnGraphs
 class ShortLinePercept : public LinePercept2018
 {
   public:
     //
 };
+
 
 namespace naoth
 {
@@ -82,6 +106,7 @@ class Serializer<ShortLinePercept>
   static void deserialize(std::istream& stream, ShortLinePercept& object);
 };
 }
+
 
 // RansacLineDetectorOnGraphs
 class VirtualLinePercept : public LinePercept2018
@@ -116,10 +141,6 @@ public:
   std::vector<LineIntersection> intersections;
   MiddleCircle middleCircle;
 };
-
-
-
-
 
 
 class RansacCirclePercept2018 : public MiddleCircle{};

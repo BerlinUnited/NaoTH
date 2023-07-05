@@ -100,5 +100,7 @@ namespace strategy("Strategy Symbols") {
   // position for opp kickoff
   float input strategy.position.opp.x;
   float input strategy.position.opp.y;
+
+  bool output strategy.automatic_calibration;
 }
   

@@ -8,28 +8,44 @@
 
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugModify.h"
+#include <Tools/Debug/DebugImageDrawings.h>
 #include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/DebugParameterList.h"
+#include "Tools/CameraGeometry.h"
 
 #include "ransac_tools.h"
 
 #include "Representations/Infrastructure/FieldInfo.h"
 #include "Representations/Perception/LineGraphPercept.h"
 #include "Representations/Perception/LinePercept2018.h"
+#include <Representations/Infrastructure/CameraInfo.h>
+#include <Representations/Perception/CameraMatrix.h>
 
+#include "Tools/DoubleCamHelpers.h"
 #include "Ellipse.h"
 
 BEGIN_DECLARE_MODULE(RansacLineDetector)
-PROVIDE(DebugRequest)
-PROVIDE(DebugModify)
-PROVIDE(DebugDrawings)
-PROVIDE(DebugParameterList)
+  PROVIDE(DebugRequest)
+  PROVIDE(DebugModify)
+  PROVIDE(DebugDrawings)
+  PROVIDE(DebugParameterList)
+  PROVIDE(DebugImageDrawings)
+  PROVIDE(DebugImageDrawingsTop)
 
-REQUIRE(LineGraphPercept)
-REQUIRE(FieldInfo)
+  REQUIRE(LineGraphPercept)
+  REQUIRE(LineGraphPerceptTop)
+  REQUIRE(FieldInfo)
 
-PROVIDE(RansacLinePercept)
-PROVIDE(RansacCirclePercept2018)
+  REQUIRE(CameraInfo)
+  REQUIRE(CameraInfoTop)
+  REQUIRE(CameraMatrix)
+  REQUIRE(CameraMatrixTop)
+
+  PROVIDE(RansacLinePercept)
+  PROVIDE(RansacCirclePercept2018)
+
+  PROVIDE(RansacLinePerceptImage)
+  PROVIDE(RansacLinePerceptImageTop)
 END_DECLARE_MODULE(RansacLineDetector)
 
 class RansacLineDetector: public RansacLineDetectorBase
@@ -38,7 +54,45 @@ public:
 RansacLineDetector();
 ~RansacLineDetector();
 
-virtual void execute();
+
+virtual void execute(CameraInfo::CameraID id, const std::vector<Edgel>& edgelsOnField,
+                     RansacLinePercept& ransacLinePercept,
+                     RansacCirclePercept2018& ransacCirclePercept,
+                     RansacLinePerceptImage& ransacLinePerceptImage);
+
+void execute()
+{
+  // local representation which are required to determine
+  // the field lines in the image but won't be "exported"
+  // to the blackboard
+  RansacLinePercept dumpRLP;
+  RansacCirclePercept2018 dumpRCP;
+  RansacLinePerceptImage dumpRLPImage;
+
+  // determine lines in images
+  execute(CameraInfo::Bottom, getLineGraphPercept().edgelsOnField,
+          dumpRLP, dumpRCP, getRansacLinePerceptImage());
+
+  dumpRLP.reset();
+  dumpRCP.reset();
+
+  execute(CameraInfo::Top, getLineGraphPerceptTop().edgelsOnField,
+          dumpRLP, dumpRCP, getRansacLinePerceptImageTop());
+
+  // determine RansacLinePercept and RansacCirclePercept2018 depending
+  // on both, i.e. top and bottom, camera edgles on the field. Note that
+  // this might enable the robot to detect lines which start in one image
+  // and end in the other image which might be benefitial for e.g. self-localization
+  getRansacLinePercept().reset();
+  getRansacCirclePercept2018().reset();
+
+  std::vector<Edgel> allEdgelsOnField(getLineGraphPercept().edgelsOnField);
+  allEdgelsOnField.insert(allEdgelsOnField.end(),
+                          getLineGraphPerceptTop().edgelsOnField.begin(),
+                          getLineGraphPerceptTop().edgelsOnField.end());
+  execute(CameraInfo::numOfCamera, allEdgelsOnField,
+          getRansacLinePercept(), getRansacCirclePercept2018(), dumpRLPImage);
+}
 
 private:
 class Parameters: public ParameterList
@@ -115,10 +169,12 @@ private: // detectors
 ransac::RansacLine lineRansac;
 ransac::RansacCircle circleRansac;
 
-void find_middle_circle(std::vector<size_t>& inlier_idx);
-void find_field_lines(std::vector<size_t>& inlier_idx);
+void find_middle_circle(std::vector<size_t>& inlier_idx, std::vector<Edgel> edgelsOnField, RansacCirclePercept2018& ransacCirclePercept);
+void find_field_lines(std::vector<size_t>& inlier_idx, std::vector<Edgel> edgelsOnField, RansacLinePercept& ransacLinePercepts);
 
-int ransacEllipse(Ellipse& result);
+void project_lines_on_image(RansacLinePercept& ransacLinePercept, RansacLinePerceptImage& ransacLinePerceptImage) const;
+
+int ransacEllipse(Ellipse& result, std::vector<Edgel> edgelsOnField);
 
 private: // helper methods
 
@@ -136,6 +192,11 @@ size_t choose_random_from(std::vector<size_t> &vec, int ith)  const {
     std::swap(vec[random_pos], vec[ith-1]);
     return vec[ith-1];
 }
+
+  CameraInfo::CameraID cameraID;
+  
+  DOUBLE_CAM_REQUIRE(RansacLineDetector, CameraInfo);
+  DOUBLE_CAM_REQUIRE(RansacLineDetector, CameraMatrix);
 };
 
 #endif // RANSACLINEDETECTOR_H

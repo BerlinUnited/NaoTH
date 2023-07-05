@@ -42,6 +42,8 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
 {
   cameraID = id;
 
+  getLineGraphPercept().reset();
+
   calculatePairsAndNeigbors(getScanLineEdgelPercept().pairs, edgelPairs, edgelNeighbors, params.edgelSimThreshold);
 
 

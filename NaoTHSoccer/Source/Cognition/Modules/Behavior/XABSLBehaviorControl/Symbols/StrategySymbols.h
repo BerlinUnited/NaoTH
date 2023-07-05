@@ -21,6 +21,8 @@
 #include "Representations/Modeling/RoleDecisionModel.h"
 #include "Representations/Modeling/TeamMessagePlayersState.h"
 
+#include "Representations/Modeling/CalibrationRequest.h"
+
 #include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugModify.h"
@@ -45,6 +47,7 @@ BEGIN_DECLARE_MODULE(StrategySymbols)
   REQUIRE(RoleDecisionModel)
   REQUIRE(TeamMessagePlayersState)
 
+  PROVIDE(CalibrationRequest)
   PROVIDE(DebugRequest)
   PROVIDE(DebugDrawings)
   PROVIDE(DebugModify)

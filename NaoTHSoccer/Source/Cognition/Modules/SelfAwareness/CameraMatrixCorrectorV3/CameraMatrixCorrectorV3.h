@@ -15,11 +15,13 @@
 #include "Representations/Modeling/InertialModel.h"
 #include "Representations/Modeling/CameraMatrixOffset.h"
 #include "Representations/Perception/LineGraphPercept.h"
+#include "Representations/Perception/LinePercept2018.h"
 
 #include "Representations/Modeling/KinematicChain.h"
 
 #include "Representations/Motion/Request/HeadMotionRequest.h"
 #include "Representations/Motion/Request/MotionRequest.h"
+#include "Representations/Motion/MotionStatus.h"
 
 #include "Representations/Infrastructure/SoundData.h"
 
@@ -35,8 +37,11 @@
 #include "Tools/Debug/DebugPlot.h"
 #include "Representations/Infrastructure/FrameInfo.h"
 
+#include "Representations/Modeling/CalibrationRequest.h"
+#include "Representations/Modeling/PlayerInfo.h"
+
 #include <Tools/Math/Optimizer.h>
-#include "CamMatErrorFunctionV3.h"
+#include "LineCamMatErrorFunctionV3.h"
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
@@ -50,12 +55,18 @@ BEGIN_DECLARE_MODULE(CameraMatrixCorrectorV3)
 
   // data needed for calibration
   REQUIRE(LineGraphPercept)
+  REQUIRE(RansacLinePerceptImage)
+  REQUIRE(RansacLinePerceptImageTop)
   REQUIRE(KinematicChain)
   REQUIRE(SensorJointData)
   REQUIRE(InertialModel)
   REQUIRE(FieldInfo)
   REQUIRE(CameraInfo)
   REQUIRE(CameraInfoTop)
+  REQUIRE(PlayerInfo)
+  REQUIRE(MotionStatus)
+
+  REQUIRE(CalibrationRequest)
 
   PROVIDE(HeadMotionRequest)
   PROVIDE(MotionRequest)
@@ -83,6 +94,7 @@ private:
   Parameter cam_mat_offsets;
   Optimizer::BoundedVariable<Parameter> bounds;
 
+  typedef LineCamMatErrorFunctionV3 CamMatErrorFunctionV3;
   CamMatErrorFunctionV3 theCamMatErrorFunctionV3;
 
   Optimizer::GaussNewtonMinimizer<CamMatErrorFunctionV3, Parameter>* minimizer;
@@ -147,6 +159,10 @@ private:
               PARAMETER_REGISTER(global_pose.position.y) = 0;
               PARAMETER_ANGLE_REGISTER(global_pose.orientation) = 0;
 
+
+              PARAMETER_ANGLE_REGISTER(maxHeadVelocity) = 20;
+              PARAMETER_REGISTER(minimizationStopError) = 0.01;
+
               syncWithConfig();
           }
 
@@ -174,6 +190,8 @@ private:
               double   orientation;
           } global_pose;
 
+          double maxHeadVelocity;
+          double minimizationStopError;
   } cmc_params;
 };
 
