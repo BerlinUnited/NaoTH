@@ -48,7 +48,7 @@ WLAN_SUBNET_MASK="16"
 LAN_IP="192.168.13"
 LAN_SUBNET_MASK="16"
 
-cat - <<EOF > /etc/netplan/test.yaml
+cat - <<EOF > /etc/netplan/default.yaml
 network:
   version: 2
   renderer: networkd
