@@ -21,7 +21,7 @@ option go_to_and_keep_passive_position{
           && abs(value=robot_pose.planned.rotation - @rot) < 10 )
         goto behave_passive;
       else
-        go_with_search_for_ball;
+        goto go_with_search_for_ball;
 	  }
 	  action {
       go_to_point_with_USOA(x=@x, y=@y, rot=@rot);
