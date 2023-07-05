@@ -1,6 +1,8 @@
 #!/bin/sh 
 set -x
 
+# For Ubuntu
+
 # CONFIG:
 # (IPs in form "xxx.xxx.xxx"!)
 
