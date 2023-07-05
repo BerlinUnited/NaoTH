@@ -1,44 +1,8 @@
-#!/bin/sh 
+#!/bin/bash
 set -x
-
-# For Ubuntu
-
-# CONFIG:
-# (IPs in form "xxx.xxx.xxx"!)
-
-# some defaults:
-
-# # NAONET:
-# NETWORK_WLAN_SSID="NAONET"
-# NETWORK_WLAN_PW="a1b0a1b0a1"
-# NETWORK_WLAN_IP="10.0.4"
-# NETWORK_WLAN_MASK="255.255.0.0"
-# NETWORK_WLAN_BROADCAST="10.0.255.255"
-
-# # SPL_B:
-# NETWORK_WLAN_SSID="SPL_A"
-# NETWORK_WLAN_PW="Nao?!Nao?!"
-# NETWORK_WLAN_IP="10.0.4"
-# NETWORK_WLAN_MASK="255.255.0.0"
-# NETWORK_WLAN_BROADCAST="10.0.255.255"
-
-# NAONET:
-WLAN_SSID="NAONET"
-WLAN_PW="a1b0a1b0a1"
-WLAN_IP="10.0.4"
-WLAN_MASK="255.255.0.0"
-WLAN_BROADCAST="10.0.255.255"
-
-
-ETH_IP="192.168.13"
-ETH_MASK="255.255.255.0"
-ETH_BROADCAST="192.168.13.255"
 
 # play sound
 su nao -c "/usr/bin/paplay /home/nao/naoqi/Media/usb_start.wav"
-
-naoth stop
-
 
 HEAD_ID=$(cat /sys/qi/head_id)
 N=$(grep "$HEAD_ID" /opt/naoth/robots.cfg | sed 's/.*=\([0-9]\+\)/\1/')
@@ -49,6 +13,10 @@ WLAN_SSID="NAONET"
 WLAN_PW="a1b0a1b0a1"
 WLAN_IP="10.0.4"
 WLAN_SUBNET_MASK="16"
+
+# e.g. for a competition set the following
+# WLAN_SSID="SPL_A"
+# WLAN_PW="Nao?!Nao?!"
 
 LAN_IP="192.168.13"
 LAN_SUBNET_MASK="16"
@@ -82,5 +50,4 @@ EOF
 
 netplan apply
 
-echo "start naoth"
-naoth start
+su nao -c "/usr/bin/paplay /home/nao/naoqi/Media/usb_stop.wav"
