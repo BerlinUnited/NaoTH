@@ -68,19 +68,19 @@ public:
       PARAMETER_REGISTER(max_skip_cells) = 1;
       PARAMETER_REGISTER(min_successive_green) = 3;
 
-      PARAMETER_REGISTER(proportion_of_green) = .5;
-      PARAMETER_REGISTER(end_proportion_of_green) = .3;
+      PARAMETER_REGISTER(proportion_of_green) = 0.5;
+      PARAMETER_REGISTER(end_proportion_of_green) = 0.3;
 
       PARAMETER_REGISTER(positive_score) = 1;
       PARAMETER_REGISTER(negative_score) = -1;
 
       // number of columns and rows in the grid
-      PARAMETER_REGISTER(top.column_count) = 32;
-      PARAMETER_REGISTER(top.row_count) = 24;
+      PARAMETER_REGISTER(top.column_count)    = 32;
+      PARAMETER_REGISTER(top.row_count)       = 24;
       PARAMETER_REGISTER(bottom.column_count) = 22;
-      PARAMETER_REGISTER(bottom.row_count) = 14;
+      PARAMETER_REGISTER(bottom.row_count)    = 14;
 
-      PARAMETER_REGISTER(top.set_image_as_field) = false;
+      PARAMETER_REGISTER(top.set_image_as_field)    = false;
       PARAMETER_REGISTER(bottom.set_image_as_field) = false;
       syncWithConfig();
     }
