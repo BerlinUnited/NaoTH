@@ -6,7 +6,7 @@
   It goes from low right -> high left -> high right -> low left -> low right
   
 */
-option search_for_ball
+option search_for_ball2
 {
   bool @force_ball_model_check; // false by default
   bool @look_around;
@@ -22,9 +22,9 @@ option search_for_ball
       else if(@use_teamball && ball.team.is_valid)
         goto look_at_teamball;
       else if(ball.last_known.y > 0)
-        goto search_for_ball_left;
+        goto search_for_ball_left_low;
       else
-        goto search_for_ball_right;
+        goto search_for_ball_right_low;
     }
     action 
     {
@@ -41,9 +41,9 @@ option search_for_ball
         if(@use_teamball && ball.team.is_valid)
           goto look_at_teamball;
         else if(ball.last_known.y > 0)
-          goto search_for_ball_left;
+          goto search_for_ball_left_low;
         else
-          goto search_for_ball_right;
+          goto search_for_ball_right_low;
       } else
         stay;
     }
@@ -157,9 +157,9 @@ option search_for_ball
         else {
           // I cannt see the ball anymore, must have been a mirage => go back, where I came from
           if(ball.angle > 0)
-            goto search_for_ball_left;
+            goto search_for_ball_left_low;
           else
-            goto search_for_ball_right;
+            goto search_for_ball_right_low;
         }
       }
       else
@@ -185,9 +185,9 @@ option search_for_ball
         if(@use_teamball && ball.team.is_valid)
           goto look_at_teamball;
         else if(ball.last_known.y > 0)
-          goto search_for_ball_left;
+          goto search_for_ball_left_low;
         else
-          goto search_for_ball_right;
+          goto search_for_ball_right_low;
       }
       // if we looked at the ball long enough and the ball is far enough AND the flag allows for looking around then we will look around
       // this might be helpful for localisation
@@ -267,7 +267,8 @@ option search_for_ball
         goto look_at_ball_percept;
       /* NOTE: the teamball could get invalid in the 3s - evtl. we should also check for validity??? */
       else if ( state_time > 3000 )
-        goto search_for_ball_left;
+        //FIXME
+        goto search_for_ball_left_low;
       else 
         stay; 
     }

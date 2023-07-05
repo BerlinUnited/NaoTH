@@ -45,6 +45,7 @@ include "Options/HeadControl/look_at_ball_percept.xabsl";
 include "Options/HeadControl/look_at_preview_angle.xabsl";
 include "Options/HeadControl/look_at_team_ball.xabsl";
 include "Options/HeadControl/search_for_ball.xabsl";
+include "Options/HeadControl/search_for_ball2.xabsl";
 
 // Remote
 include "Options/Remote/spl_remote_agent.xabsl";
@@ -111,6 +112,7 @@ include "Options/Test/agent/only_ball_looking_agent.xabsl";
 include "Options/Test/agent/passive_behavior_test_agent.xabsl";
 include "Options/Test/agent/striker_change_test_agent.xabsl";
 include "Options/Test/agent/search_test_agent.xabsl";
+include "Options/Test/agent/search_for_ball_agent.xabsl";
 
 // Pathplanner
 include "Options/Test/PathPlaner/path_move_around_ball_test.xabsl";
@@ -128,6 +130,7 @@ include "Options/Test/PathPlannerAgents/pathplanner2018_striker_agent.xabsl";
 // Strategy
 include "Options/Test/strategy/striker_change_test.xabsl";
 include "Options/Test/strategy/search_ball_test.xabsl";
+include "Options/Test/strategy/search_for_ball_test.xabsl";
 
 // Walk
 include "Options/Test/walk/dribble.xabsl";
@@ -202,4 +205,5 @@ agent bumper_collision_agent("bumper_collision_agent", bumper_collision_agent);
 
 // Test agents search
 agent search_test_agent("search_test_agent",search_test_agent);
+agent search_for_ball_agent("search_for_ball_agent",search_for_ball_agent);
 agent search_only_looking_for_ball("only_ball_looking_agent",only_ball_looking_agent);
