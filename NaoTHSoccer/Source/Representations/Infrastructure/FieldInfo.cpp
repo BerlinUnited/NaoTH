@@ -38,7 +38,7 @@ FieldInfo::FieldInfo() : ParameterList("FieldInfo")
 
   PARAMETER_REGISTER(goalBoxAsLines) = true;
 
-  PARAMETER_REGISTER(goalBoxPresent) = false;
+  PARAMETER_REGISTER(goalBoxPresent) = true;
 
   syncWithConfig();
 

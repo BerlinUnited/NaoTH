@@ -94,9 +94,9 @@ private:
 
     Parameters() : ParameterList("GoalDetectorV2Parameters")
     {
-      PARAMETER_REGISTER(threshold) = 140;
-      PARAMETER_REGISTER(thresholdGradient) = 7;
-      PARAMETER_REGISTER(minGoodPoints) = 3;
+      PARAMETER_REGISTER(threshold) = 160;
+      PARAMETER_REGISTER(thresholdGradient) = 10;
+      PARAMETER_REGISTER(minGoodPoints) = 4;
 
       PARAMETER_REGISTER(colorRegionDeviation) = 2;
       PARAMETER_REGISTER(thresholdFeatureSimilarity) = 0.8;

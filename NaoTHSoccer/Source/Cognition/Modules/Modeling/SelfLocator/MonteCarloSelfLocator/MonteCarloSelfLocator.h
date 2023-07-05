@@ -131,8 +131,8 @@ private: // local types
       PARAMETER_REGISTER(processNoiseAngle) = 0.1;
 
       PARAMETER_REGISTER(updateByOdometryWhenBlind) = true;
-      PARAMETER_REGISTER(updateByOdometryRelative) = false;
-      PARAMETER_REGISTER(motionNoise) = false;
+      PARAMETER_REGISTER(updateByOdometryRelative) = true;
+      PARAMETER_REGISTER(motionNoise) = true;
       PARAMETER_REGISTER(motionNoiseDistance) = 5.0;
       PARAMETER_REGISTER(motionNoiseAngle) = 0.01;
       PARAMETER_REGISTER(motionNoiseDistanceRelative) = 0.1;
