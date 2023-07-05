@@ -209,6 +209,7 @@ void CameraMatrixCorrectorV3::execute()
 
       DEBUG_REQUEST("CameraMatrixV3:manual:collect_calibration_data",
         collectingData();
+        getMotionRequest().disable_relaxed_stand = true;
       );
 
       DEBUG_REQUEST_ON_DEACTIVE("CameraMatrixV3:manual:collect_calibration_data",
