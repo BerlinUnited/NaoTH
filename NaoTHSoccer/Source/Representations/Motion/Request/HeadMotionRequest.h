@@ -44,6 +44,7 @@ public:
 
     goto_angle,
     look_at_point,
+    random,
     numOfHeadMotion
   };
 
