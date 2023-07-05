@@ -72,6 +72,10 @@ void execute()
   // determine lines in images
   execute(CameraInfo::Bottom, getLineGraphPercept().edgelsOnField,
           dumpRLP, dumpRCP, getRansacLinePerceptImage());
+
+  dumpRLP.reset();
+  dumpRCP.reset();
+
   execute(CameraInfo::Top, getLineGraphPerceptTop().edgelsOnField,
           dumpRLP, dumpRCP, getRansacLinePerceptImageTop());
 
