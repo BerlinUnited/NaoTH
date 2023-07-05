@@ -52,8 +52,15 @@ void TeamCommEventReceiver::handleMessage(const std::string& data)
     }
 
     auto& state = getTeamState().getPlayer(message.number());
+
+    // only update team state, if we've got a new message
+    if (message.has_messagetimestamp() && message.messagetimestamp() <= state.messageTimestamp) {
+        return;
+    }
+
     state.messageFrameInfo = getFrameInfo();
     state.messageParsed    = naoth::NaoTime::getSystemTimeInMilliSeconds();
+    state.messageTimestamp = message.messagetimestamp();
 
     if (message.ntprequest().size() > 0) {
         auto ntpRequests = std::vector<TeamMessageNTP::Request>(message.ntprequest_size());
