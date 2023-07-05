@@ -6,6 +6,7 @@
 
 #include <Representations/Infrastructure/FrameInfo.h>
 #include <Representations/Infrastructure/Image.h>
+#include <Representations/Infrastructure/ImageJPEG.h>
 #include <Representations/Infrastructure/UltraSoundData.h>
 #include <Representations/Infrastructure/RobotInfo.h>
 #include <Representations/Modeling/BehaviorStateComplete.h>
@@ -48,7 +49,9 @@ BEGIN_DECLARE_MODULE(GameLogger)
 
   REQUIRE(Image)
   REQUIRE(ImageTop)
-
+  REQUIRE(ImageJPEG)
+  REQUIRE(ImageJPEGTop)
+  
   REQUIRE(OdometryData)
   REQUIRE(CameraMatrix)
   REQUIRE(CameraMatrixTop)
@@ -100,6 +103,7 @@ private:
       PARAMETER_REGISTER(logAudioData) = false;
       PARAMETER_REGISTER(logBallCandidates) = true;
       PARAMETER_REGISTER(logBodyStatus) = false;
+      PARAMETER_REGISTER(logJPEGImages) = false;
       PARAMETER_REGISTER(logPlainImages) = true;
       PARAMETER_REGISTER(logPlainImagesDelay) = 2000; // ms
       PARAMETER_REGISTER(logUltraSound) = false;
@@ -110,6 +114,7 @@ private:
     bool logAudioData;
     bool logBallCandidates;
     bool logBodyStatus;
+    bool logJPEGImages;
     bool logPlainImages;
     int logPlainImagesDelay;
     bool logUltraSound;
