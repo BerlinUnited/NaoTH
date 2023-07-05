@@ -18,7 +18,7 @@
 #include "Tools/Debug/DebugPlot.h"
 #include "Tools/Debug/DebugRequest.h"
 
-#include "Representations/Modeling/TeamMessage.h"
+#include "Representations/Modeling/TeamState.h"
 #include "Representations/Modeling/TeamMessageStatistics.h"
 
 
@@ -29,7 +29,7 @@ BEGIN_DECLARE_MODULE(TeamMessageStatisticsModule)
   
   REQUIRE(FrameInfo)
   REQUIRE(PlayerInfo)
-  REQUIRE(TeamMessage)
+  REQUIRE(TeamState)
 
   PROVIDE(TeamMessageStatistics)
 END_DECLARE_MODULE(TeamMessageStatisticsModule)

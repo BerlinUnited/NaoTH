@@ -50,7 +50,10 @@ void TeamCommReceiver::execute()
       getTeamMessageData().teamNumber == getPlayerInfo().teamNumber) 
   {
     // copying our own (old) message to the inbox
-    getTeamMessage().data[getPlayerInfo().playerNumber] = getTeamMessageData();
+    auto& myself = getTeamMessage().data[getPlayerInfo().playerNumber];
+    myself = getTeamMessageData();
+    myself.timestampParsed = naoth::NaoTime::getSystemTimeInMilliSeconds();
+    updateTeamState(myself);
   }
 
   // marking the begin of the outgoing message
@@ -105,6 +108,26 @@ void TeamCommReceiver::handleMessage(const std::string& data)
 
   // copy the message to the blackboard
   getTeamMessage().data[msg.playerNumber] = msg;
+  updateTeamState(msg);
+}
+
+void TeamCommReceiver::updateTeamState(const TeamMessageData& msg)
+{
+  auto& player            = getTeamState().getPlayer(msg.playerNumber);
+  player.messageFrameInfo = msg.frameInfo;
+  player.messageParsed    = msg.timestampParsed;
+  player.messageTimestamp = msg.custom.timestamp;
+  player.ntpRequests      = msg.custom.ntpRequests;
+  player.state            = msg.custom.robotState;
+  player.fallen           = msg.fallen;
+  player.readyToWalk      = msg.custom.readyToWalk;
+  player.pose             = msg.pose;
+  player.ballAge          = msg.ballAge;
+  player.ballPosition     = msg.ballPosition;
+  player.timeToBall       = msg.custom.timeToBall;
+  player.wantsToBeStriker = msg.custom.wantsToBeStriker;
+  player.wasStriker       = msg.custom.wasStriker;
+  player.robotRole        = msg.custom.robotRole;
 }
 
 bool TeamCommReceiver::parseFromSplMessageString(const std::string &data, SPLStandardMessage& spl)

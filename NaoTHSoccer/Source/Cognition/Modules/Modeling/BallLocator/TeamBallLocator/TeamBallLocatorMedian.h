@@ -18,8 +18,7 @@
 
 // Representations
 #include "Representations/Modeling/PlayerInfo.h"
-#include "Representations/Modeling/TeamMessage.h"
-#include "Representations/Modeling/TeamMessageData.h"
+#include "Representations/Modeling/TeamState.h"
 #include "Representations/Modeling/TeamMessagePlayersState.h"
 #include "Representations/Modeling/RobotPose.h"
 #include "Representations/Modeling/TeamBallModel.h"
@@ -36,14 +35,13 @@ BEGIN_DECLARE_MODULE(TeamBallLocatorMedian)
   PROVIDE(DebugParameterList)
   
   REQUIRE(PlayerInfo)
-  REQUIRE(TeamMessage)
+  REQUIRE(TeamState)
   REQUIRE(TeamMessagePlayersState)
   REQUIRE(RobotPose)
   REQUIRE(GameData)
   REQUIRE(FrameInfo)
 
   PROVIDE(TeamBallModel)
-  PROVIDE(TeamMessageData)
 END_DECLARE_MODULE(TeamBallLocatorMedian)
 
 class TeamBallLocatorMedian : protected TeamBallLocatorMedianBase
@@ -89,7 +87,7 @@ class TeamBallLocatorMedian : protected TeamBallLocatorMedianBase
   private:
     std::vector<Vector2dTS> ballPosHist;
     std::vector<Vector2dTS> ownballPosHist;
-    std::map<unsigned int, unsigned int> lastMessages;
+    std::map<unsigned int, unsigned long long> lastMessages;
 };
 
 #endif //__TeamBallLocatorMedian_h_

@@ -9,8 +9,7 @@
 #include "Representations/Infrastructure/GameData.h"
 #include "Representations/Infrastructure/Roles.h"
 
-#include "Representations/Modeling/TeamMessage.h"
-#include "Representations/Modeling/TeamMessageData.h"
+#include "Representations/Modeling/TeamState.h"
 #include "Representations/Modeling/TeamMessagePlayersState.h"
 #include "Representations/Modeling/PlayerInfo.h"
 #include "Representations/Modeling/RoleDecisionModel.h"
@@ -33,10 +32,8 @@ BEGIN_DECLARE_MODULE(RoleDecisionDynamic)
   REQUIRE(GameData)
   REQUIRE(PlayerInfo)
 //  REQUIRE(SoccerStrategy)
-  REQUIRE(TeamMessage)
+  REQUIRE(TeamState)
   REQUIRE(TeamMessagePlayersState)
-
-  REQUIRE(TeamMessageData)
 
   PROVIDE(RoleDecisionModel)
 END_DECLARE_MODULE(RoleDecisionDynamic);
@@ -90,7 +87,7 @@ private:
 
         // striker function, returns an indicator who's fastest
         std::string strikerIndicator;
-        double (RoleDecisionDynamic::*strikerIndicatorFn)(const TeamMessageData&);
+        double (RoleDecisionDynamic::*strikerIndicatorFn)(const TeamState::Player&);
 
         double striker_ball_lost_time;
         double striker_ball_bonus_time;
@@ -106,7 +103,7 @@ private:
 
         // decides, whether the goalie gets striker or not
         std::string goalie_striker_decision;
-        bool (RoleDecisionDynamic::*strikerGoalieDecisionFn)(const TeamMessageData*, std::vector<RoleDecisionDynamic::Striker>&);
+        bool (RoleDecisionDynamic::*strikerGoalieDecisionFn)(const TeamState::Player*, std::vector<RoleDecisionDynamic::Striker>&);
 
         double goalie_striker_ball_distance;
         double goalie_striker_min_x_pos;
@@ -167,11 +164,11 @@ private:
     void decideGoalieSupporter(std::map<unsigned int, Roles::Dynamic>& roles);
     void decideSupporter(std::map<unsigned int, Roles::Dynamic>& roles);
 
-    void checkStriker(const TeamMessageData& msg, const double& indicator, const Vector2d& ball, std::vector<Striker>& striker, bool force = false);
+    void checkStriker(const TeamState::Player& player, const double& indicator, const Vector2d& ball, std::vector<Striker>& striker, bool force = false);
     bool checkSameBall(const Striker &s, const Vector2d& ball, double r);
 
-    bool goalieStrikerDecisionWants(const TeamMessageData *goalie, std::vector<Striker>& striker);
-    bool goalieStrikerDecisionCondition(const TeamMessageData *goalie, std::vector<Striker>& striker);
+    bool goalieStrikerDecisionWants(const TeamState::Player *goalie, std::vector<Striker>& striker);
+    bool goalieStrikerDecisionCondition(const TeamState::Player *goalie, std::vector<Striker>& striker);
 
     /* Different radius methods for the same ball check. */
     double ballDifferenceRadiusConstant(double /*d*/) { return params.striker_ball_difference_distance; }
@@ -179,8 +176,8 @@ private:
     double ballDifferenceRadiusConstantLinear(double d) { return std::max(ballDifferenceRadiusConstant(d), ballDifferenceRadiusLinear(d)); }
 
     /* Various evaluation functions who is faster to the ball for the striker decision. */
-    double strikerIndicatorDistance(const TeamMessageData& msg);
-    double strikerIndicatorTimeToBall(const TeamMessageData& msg);
+    double strikerIndicatorDistance(const TeamState::Player& player);
+    double strikerIndicatorTimeToBall(const TeamState::Player& player);
 
     /* Various evaluation functions, if another striker is already defending the goal. */
     bool defendingGoalDirectLine(const Vector2d& ball, const Vector2d& player_pos) const;

@@ -327,26 +327,38 @@ class SimsparkController(threading.Thread):
         """
         env = self.__environment
         for item in data:
-            if len(item) == 2:
+            try:
                 if item[0] == 'messages':
-                    if len(item) > 1:
-                        # TODO: save messages of players
-                        '''
-                        if item[0] not in self.__environment: self.__environment[item[0]] = {}
-                        self.__environment[item[0]][] = {}
-                        print(item)
-                        '''
-                        pass
+                    # count messages only during the game phase
+                    if len(item) > 1 and self.get_playMode() not in ['BeforeKickOff']:
+                        for m in item[1:]:
+                            # check if the format is the expected
+                            if len(m) == 4\
+                                    and len(m[1]) == 2 and m[1][0] == 'side'\
+                                    and len(m[2]) == 2 and m[2][0] == 'ip'\
+                                    and len(m[3]) == 2 and m[3][0] == 'num':
+                                # init messages environment
+                                if 'messages' not in env:
+                                    env['messages'] = {
+                                        '1': {'cnt': 0},
+                                        '2': {'cnt': 0}
+                                    }
+                                # only update/count, if message changed
+                                if m[3][1] not in env['messages'][m[1][1]] or env['messages'][m[1][1]][m[3][1]] != m[0]:
+                                    if m[1][1] == '1':  # side 1 / left
+                                        env['messages'][m[1][1]]['cnt'] += 1
+                                        env['messages'][m[1][1]][m[3][1]] = m[0]
+                                    elif m[1][1] == '2':  # side 2 / right
+                                        env['messages'][m[1][1]]['cnt'] += 1
+                                        env['messages'][m[1][1]][m[3][1]] = m[0]
+                elif item[0] in ['FieldLength', 'FieldWidth', 'FieldHeight', 'GoalWidth', 'GoalDepth', 'GoalHeight', 'FreeKickDistance', 'WaitBeforeKickOff', 'AgentRadius', 'BallRadius', 'BallMass', 'RuleGoalPauseTime', 'RuleKickInPauseTime', 'RuleHalfTime', 'time']:
+                    env[item[0]] = float(item[1])
+                elif item[0] in ['half', 'score_left', 'score_right', 'play_mode']:
+                    env[item[0]] = int(item[1])
                 else:
-                    try:
-                        if item[0] in ['FieldLength', 'FieldWidth', 'FieldHeight', 'GoalWidth', 'GoalDepth', 'GoalHeight', 'FreeKickDistance', 'WaitBeforeKickOff', 'AgentRadius', 'BallRadius', 'BallMass', 'RuleGoalPauseTime', 'RuleKickInPauseTime', 'RuleHalfTime', 'time']:
-                            env[item[0]] = float(item[1])
-                        elif item[0] in ['half', 'score_left', 'score_right', 'play_mode']:
-                            env[item[0]] = int(item[1])
-                        else:
-                            env[item[0]] = item[1]
-                    except Exception as e:
-                        logging.warning("Exception while updating environment: %s\n%s", e, str(item))
+                    env[item[0]] = item[1:]
+            except Exception as e:
+                logging.warning("Exception while updating environment: %s\n%s", e, str(item))
         self.__environment = env
 
     def __update_scene(self, data):
@@ -518,13 +530,32 @@ class SimsparkController(threading.Thread):
         """
         return self.__get_environment('team_left') if side == 'Left' else self.__get_environment('team_right')
 
+    def get_playModes(self):
+        """
+        Returns the play modes of the simulation.
+
+        :return:    the available play modes
+        """
+        return self.__get_environment('play_modes')
+
     def get_playMode(self):
         """
         Returns the play mode of the simulation.
 
         :return:    the current play mode
         """
-        return self.__get_environment('play_mode')
+        modes = self.get_playModes()
+        mode = self.__get_environment('play_mode')
+        return modes[mode] if modes and len(modes) > mode else mode
+
+    def get_messageCount(self):
+        """
+        Returns the number of messages of each team.
+
+        :return:    number of messages per team
+        """
+        messages = self.__get_environment('messages')
+        return [messages['1']['cnt'], messages['2']['cnt']] if messages else [0, 0]
 
     def cmd_dropball(self):
         """Schedules the '(dropBall)' trainer command for the simspark instance."""

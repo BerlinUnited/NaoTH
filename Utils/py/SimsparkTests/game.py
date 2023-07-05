@@ -422,6 +422,9 @@ class Log:
     def log_ball(self, run, time, ball):
         pass
 
+    def log_messages(self, run, time, message_cnt):
+        pass
+
     def log_player(self, run, time, players):
         pass
 
@@ -534,6 +537,9 @@ class LogStd(Log):
     def log_ball(self, run, time, ball):
         print("Run: {}\tTime: {}\tBall: {}, {}".format(run, time, ball['x'], ball['y']))
 
+    def log_messages(self, run, time, message_cnt):
+        print("Run: {}\tTime: {}\tLeft: {}, Right: {}".format(run, time, message_cnt[0], message_cnt[1]))
+
     def log_player(self, run, time, players):
         players_left = []
         players_right = []
@@ -559,19 +565,24 @@ def createLog(log: str):
     return LogStd()
 
 
-def prepare_game(s):
+def prepare_game(s, left: Config.Team, right: Config.Team):
     # Left team
-    s.cmd_agentMove(1, -3.5, 3.2, r=-180, t='Left')
-    s.cmd_agentMove(2, -2.5, 3.2, r=-180, t='Left')
-    s.cmd_agentMove(3, -1.5, 3.2, r=-180, t='Left')
-    s.cmd_agentMove(4, -3.0, -3.2, r=0, t='Left')
-    s.cmd_agentMove(5, -2.0, -3.2, r=0, t='Left')
+    l_side = round(left.players / 2)
+    l_space = round(3.5/l_side)
+    for n in range(l_side):
+        #print(n + 1, -4.0 + n * l_space, 3.2, -180, 'Left')
+        s.cmd_agentMove(n + 1, -4.0 + n * l_space, 3.2, r=-180, t='Left')
+    for n in range(l_side, min(left.players, l_side*2)):
+        #print(n + 1, -4.0 + (n - l_side) * l_space, -3.2, 0, 'Left')
+        s.cmd_agentMove(n + 1, -4.0 + (n - l_side) * l_space, -3.2, r=0, t='Left')
+
     # Right team
-    s.cmd_agentMove(1, 3.5, -3.2, r=0, t='Right')
-    s.cmd_agentMove(2, 2.5, -3.2, r=0, t='Right')
-    s.cmd_agentMove(3, 1.5, -3.2, r=0, t='Right')
-    s.cmd_agentMove(4, 3.0, 3.2, r=-180, t='Right')
-    s.cmd_agentMove(5, 2.0, 3.2, r=-180, t='Right')
+    r_side = round(right.players / 2)
+    r_space = round(3.5/r_side)
+    for n in range(r_side):
+        s.cmd_agentMove(n + 1, 4.0 - n * r_space, 3.2, r=-180, t='Right')
+    for n in range(r_side, min(right.players, r_side*2)):
+        s.cmd_agentMove(n + 1, 4.0 - (n - r_side) * r_space, -3.2, r=0, t='Right')
 
 
 def wait_half(r, s, half_time, log:Log=None, i:multiprocessing.Event=None):
@@ -585,6 +596,7 @@ def wait_half(r, s, half_time, log:Log=None, i:multiprocessing.Event=None):
         # make sure we got a new time frame to log
         if log and t != _:
             log.log_ball(r, t, s.get_ball())
+            log.log_messages(r, t, s.get_messageCount())
             log.log_player(r, t, s.get_robots())
         t = _
 
@@ -664,14 +676,16 @@ if __name__ == "__main__":
             a.wait_connected()
 
         # it takes sometimes a while until simspark got the correct player number
+        logging.debug('Wait for player numbers')
         for t, a in agents: wait_for(lambda: s.get_robot(a.number, t) is not None, 0.3)
 
         # wait until the player is on the field
+        logging.debug('Wait for players ready')
         for t, a in agents: wait_for(lambda: s.get_robot(a.number, t) is not None and s.get_robot(a.number, t)['z'] <= 0.4, 0.3)
 
         wait_pause(config.pauseBeforeGame) # wait, before starting game
 
-        prepare_game(s)     # move agents to ready location
+        prepare_game(s, left, right)     # move agents to ready location
         s.cmd_kickoff()     # start first half
         wait_half(r, s, 600, log, interrupt)   # wait for half complete
 
@@ -683,7 +697,7 @@ if __name__ == "__main__":
 
         wait_pause(config.pauseHalfTime) # wait, before starting next half
 
-        prepare_game(s)     # move agents to ready location
+        prepare_game(s, left, right)     # move agents to ready location
         s.cmd_kickoff()     # start first half
         wait_half(r, s, 1200, log, interrupt)  # wait for half complete
 

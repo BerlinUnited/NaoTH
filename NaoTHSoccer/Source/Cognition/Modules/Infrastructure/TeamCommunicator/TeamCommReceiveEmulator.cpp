@@ -18,11 +18,9 @@ void TeamCommReceiveEmulator::execute() {
   //If enough time has passed, place another message in the inbox
   if (nextMessageTime <= getFrameInfo().getTime()) {
     
-    TeamMessageData messageData;
-    messageData.playerNumber = robotNumber;
-    messageData.frameInfo = getFrameInfo();
-
-    getTeamMessage().data[messageData.playerNumber] = messageData;
+    auto player = getTeamState().getPlayer(robotNumber);
+    player.messageFrameInfo = getFrameInfo();
+    player.messageParsed    = naoth::NaoTime::getSystemTimeInMilliSeconds();
 
     //Generate the frame number, at which we are going to receive the next message
     if (parameters.normalDistribution) {

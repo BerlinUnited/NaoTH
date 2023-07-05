@@ -1586,11 +1586,10 @@ void SimSparkController::say()
 
 bool SimSparkController::hear(const sexp_t* sexp)
 {
-    size_t minMsgSize = (sizeof(SPLStandardMessage) - SPL_STANDARD_MESSAGE_DATA_SIZE);
     std::vector<const sexp_t*> data;
 
-    // the actual message is last, collect all preceding values
-    while(sexp->val_used < minMsgSize) {
+    // collect all data first in order to determine which version we've got
+    while(sexp) {
         data.push_back(sexp);
         sexp = sexp->next;
     }
@@ -1626,7 +1625,7 @@ bool SimSparkController::hear(const sexp_t* sexp)
     }
 
     string msg;
-    if (SexpParser::parseValue(sexp, msg) && !msg.empty() && msg != ""){
+    if (SexpParser::parseValue(data[idx++], msg) && !msg.empty() && msg != ""){
         theTeamMessageDataIn.data.push_back(msg);
     } else {
         std::cerr << "[SimSparkController Hear] can not parse message" << std::endl;

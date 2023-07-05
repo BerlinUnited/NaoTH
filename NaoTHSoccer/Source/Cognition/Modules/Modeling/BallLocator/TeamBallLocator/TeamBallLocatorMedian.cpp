@@ -24,45 +24,45 @@ TeamBallLocatorMedian::~TeamBallLocatorMedian()
 void TeamBallLocatorMedian::execute()
 {
   // collect all balls seen by teammates and myself
-  for (auto const& it: getTeamMessage().data) {
+  for (const auto& it: getTeamState().players) {
     if(it.first != getPlayerInfo().playerNumber)
     {
       const unsigned int& playerNumber = it.first;
-      const TeamMessageData& msg = it.second;
+      const auto& player = it.second;
 
       // check if the robot is able to play (inactive robots)
       if(!getTeamMessagePlayersState().isPlaying(playerNumber)) { continue; }
       
       // -1 means "ball never seen" and only "new" messages
-      if(msg.ballAge >= 0 && lastMessages[playerNumber] < msg.frameInfo.getTime())
+      if(player.ballAge() >= 0 && lastMessages[playerNumber] < player.ballAge.time())
       {
-        lastMessages[playerNumber] = msg.frameInfo.getTime();
+        lastMessages[playerNumber] = player.ballAge.time();
         // global position of the ball and time last seen
         Vector2dTS ballPosTS;
-        ballPosTS.vec = msg.pose * msg.ballPosition;
-        ballPosTS.t = msg.frameInfo.getTime() - static_cast<int>(msg.ballAge);
+        ballPosTS.vec = player.pose() * player.ballPosition();
+        ballPosTS.t = player.ballAge.time() - static_cast<int>(player.ballAge());
         // collect balls
         ballPosHist.push_back(ballPosTS);
 
         // set time to the latest received message
-        if (msg.frameInfo.getTime() > getTeamBallModel().time )
+        if (player.ballAge.time() > getTeamBallModel().time )
         {
-          getTeamBallModel().time = msg.frameInfo.getTime();
+          getTeamBallModel().time = player.ballAge.time();
         }
       }
     } else {
       // me myself and only "new" messages
       const unsigned int& playerNumber = it.first;
-      const TeamMessageData& msg = it.second;
+      const auto& player = it.second;
       
       // -1 means "ball never seen"
-      if(msg.ballAge >= 0 && lastMessages[playerNumber] < msg.frameInfo.getTime())
+      if(player.ballAge() >= 0 && lastMessages[playerNumber] < player.ballAge.time())
       {
-        lastMessages[playerNumber] = msg.frameInfo.getTime();
+        lastMessages[playerNumber] = player.ballAge.time();
         // global position of the ball and time last seen
         Vector2dTS ballPosTS;
-        ballPosTS.vec = msg.pose * msg.ballPosition;
-        ballPosTS.t = msg.frameInfo.getTime() - static_cast<int>(msg.ballAge);
+        ballPosTS.vec = player.pose() * player.ballPosition();
+        ballPosTS.t = player.ballAge.time() - static_cast<int>(player.ballAge());
         // collect balls
         ownballPosHist.push_back(ballPosTS);
       }

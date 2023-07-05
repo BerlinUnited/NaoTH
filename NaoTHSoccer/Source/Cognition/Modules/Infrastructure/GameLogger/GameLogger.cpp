@@ -108,7 +108,7 @@ void GameLogger::execute()
         LOGSTUFF(BallCandidatesTop);
       }
 
-      LOGSTUFF(TeamMessage);
+      LOGSTUFF(TeamState);
 
 
       // keep the audio device open for some time

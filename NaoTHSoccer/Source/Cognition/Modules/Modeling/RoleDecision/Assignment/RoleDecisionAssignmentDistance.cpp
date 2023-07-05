@@ -18,13 +18,13 @@ RoleDecisionAssignmentDistance::~RoleDecisionAssignmentDistance()
 void RoleDecisionAssignmentDistance::execute()
 {
     // skip "first frame"! (until i add myself to teamcomm)
-    if(getTeamMessage().data.find(getPlayerInfo().playerNumber) == getTeamMessage().data.end()) { return; }
+    if(!getTeamState().hasPlayer(getPlayerInfo().playerNumber)) { return; }
 
     //
     if(getPlayerInfo().robotState == PlayerInfo::initial)
     {
         // set predefined roles
-        for (const auto& i : getTeamMessage().data) {
+        for (const auto& i: getTeamState().players) {
             roleChange(i.first, params.assignment_role[i.first]);
         }
     } else {
@@ -49,7 +49,7 @@ void RoleDecisionAssignmentDistance::execute()
         (this->*params.changingFunc)(new_roles);
 
         // players, which doesn't got a (new) role, gets the 'unknown' role assigned
-        for (const auto& i : getTeamMessage().data) {
+        for (const auto& i: getTeamState().players) {
             if(new_roles.find(i.first) == new_roles.cend()) {
                 roleChange(i.first, Roles::unknown);
             }
@@ -69,8 +69,8 @@ void RoleDecisionAssignmentDistance::keepGoalie(std::map<unsigned int, Roles::St
 {
     // find the goalie in the teammessages with the lowest playernumber
     unsigned int goalie_msg = std::numeric_limits<unsigned int>::max();
-    for(const auto& v : getTeamMessage().data) {
-        if(v.second.custom.robotRole.role == Roles::goalie && goalie_msg > v.first) {
+    for (const auto& v: getTeamState().players) {
+        if(v.second.robotRole().role == Roles::goalie && goalie_msg > v.first) {
             goalie_msg = v.first;
         }
     }
@@ -100,7 +100,7 @@ void RoleDecisionAssignmentDistance::withPriority(std::map<unsigned int, Roles::
     // retrieve assignable roles
     std::vector<Roles::Static> assignable_roles(getRoles().active);
     // the priority of roles is defined by the order of the active roles!
-    for(const auto& v : getTeamMessage().data) {
+    for(const auto& v : getTeamState().players) {
         if(getTeamMessagePlayersState().isActive(v.first) && new_roles.find(v.first) != new_roles.cend()) {
             // remove already assigned roles
             auto r = std::remove(assignable_roles.begin(), assignable_roles.end(), new_roles.at(v.first));
@@ -110,10 +110,10 @@ void RoleDecisionAssignmentDistance::withPriority(std::map<unsigned int, Roles::
     // determine the distance between each robot/role and assign the role nearest to the robot
     for (const auto& r : assignable_roles) {
         std::pair<unsigned int, double> smallest(0, std::numeric_limits<double>::max());
-        for (const auto& i : getTeamMessage().data) {
+        for (const auto& i : getTeamState().players) {
             // only active players and players without an role yet, are used for this role assignment
             if(getTeamMessagePlayersState().isActive(i.first) && new_roles.find(i.first) == new_roles.cend()) {
-                double distance = (getRoleDecisionModel().roles_position[r].home - i.second.pose.translation).abs2();
+                double distance = (getRoleDecisionModel().roles_position[r].home - i.second.pose().translation).abs2();
                 if(distance < smallest.second) {
                     smallest.first = i.first;
                     smallest.second = distance;
@@ -190,7 +190,7 @@ void RoleDecisionAssignmentDistance::findOptimalTeamAssignment(const std::vector
             auto role = roles[c];
             auto role_pos = getRoleDecisionModel().getStaticRolePosition(role).home;
             auto player = players[r];
-            auto player_pos = getTeamMessage().data.at(player).pose.translation;
+            auto player_pos = getTeamState().getPlayer(player).pose().translation;
             m(r,c) = static_cast<int>((role_pos - player_pos).abs2());
         }
     }

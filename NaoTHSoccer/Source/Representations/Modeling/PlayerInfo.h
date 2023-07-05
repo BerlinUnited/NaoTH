@@ -8,6 +8,8 @@
 #include "Tools/DataStructures/Printable.h"
 #include <Tools/Debug/NaoTHAssert.h>
 
+typedef unsigned int PlayerNumber;
+
 /** Any relevant information about the game state for the player */
 class PlayerInfo : public naoth::Printable
 {
