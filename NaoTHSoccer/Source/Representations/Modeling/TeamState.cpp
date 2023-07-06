@@ -63,6 +63,9 @@ void Serializer<TeamState>::serialize(const TeamState& r, std::ostream& stream)
         msg->mutable_robotrole()->set_role_dynamic((naothmessages::RobotRoleDynamic)player.robotRole().dynamic);
         msg->set_robotroleupdate(player.robotRole.time());
     }
+
+    google::protobuf::io::OstreamOutputStream buf(&stream);
+    state.SerializeToZeroCopyStream(&buf);
 }
 
 void Serializer<TeamState>::deserialize(std::istream& stream, TeamState& r)

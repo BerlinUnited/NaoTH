@@ -100,6 +100,9 @@ template<> class Serializer<TeamMessageDecision>
             decision.set_send_wantstobestriker(representation.send_wantsToBeStriker());
             decision.set_send_wasstriker(representation.send_wasStriker());
             decision.set_send_robotrole(representation.send_robotRole());
+
+            google::protobuf::io::OstreamOutputStream buf(&stream);
+            decision.SerializeToZeroCopyStream(&buf);
         }
 
         static void deserialize(std::istream& stream, TeamMessageDecision& representation)
