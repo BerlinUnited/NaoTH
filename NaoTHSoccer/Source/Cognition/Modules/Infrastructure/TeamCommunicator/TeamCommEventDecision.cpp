@@ -24,17 +24,18 @@ void TeamCommEventDecision::byInterval()
 {
     if ((unsigned int)getFrameInfo().getTimeSince(params.byInterval_lastSentTimestamp) > params.byInterval_interval)
     {
-        getTeamMessageDecision().send_ntpRequests.set();
         getTeamMessageDecision().send_state.set();
         getTeamMessageDecision().send_fallen.set();
         getTeamMessageDecision().send_readyToWalk.set();
         getTeamMessageDecision().send_pose.set();
         getTeamMessageDecision().send_ballAge.set();
         getTeamMessageDecision().send_ballPosition.set();
-        getTeamMessageDecision().send_timeToBall.set();
-        getTeamMessageDecision().send_wantsToBeStriker.set();
-        getTeamMessageDecision().send_wasStriker.set();
-        getTeamMessageDecision().send_robotRole.set();
+        // NOTE: the following infos are not required --> reduced message size!
+        //getTeamMessageDecision().send_ntpRequests.set();
+        //getTeamMessageDecision().send_timeToBall.set();
+        //getTeamMessageDecision().send_wantsToBeStriker.set();
+        //getTeamMessageDecision().send_wasStriker.set();
+        //getTeamMessageDecision().send_robotRole.set();
 
         params.byInterval_lastSentTimestamp = getFrameInfo().getTime();
     }
