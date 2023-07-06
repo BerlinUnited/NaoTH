@@ -77,6 +77,7 @@ void PathPlanner2018::execute()
   case PathModel::PathPlanner2018Routine::MOVE_AROUND_BALL2:
     //TODO maybe use a parameter to select the actual routine that is executed when move around is set from the behavior???
     moveAroundBall2(getPathModel().direction, getPathModel().radius, getPathModel().stable);
+    //moveAroundBall(getPathModel().direction, getPathModel().radius, getPathModel().stable);
     break;
   case PathModel::PathPlanner2018Routine::FORWARDKICK:
     if (nearApproach_forwardKick(params.forwardKickOffset.x, params.forwardKickOffset.y))
@@ -112,6 +113,73 @@ void PathPlanner2018::execute()
   PLOT("PathPlanner:buffer_size", static_cast<double>(stepBuffer.size()));
 }
 
+void PathPlanner2018::moveAroundBall(const double direction, const double radius, const bool stable)
+{
+  if (stepBuffer.empty())
+  {
+    Vector2d ballPos    = getBallModel().positionPreview;
+    double ballRotation = ballPos.angle();
+    double ballDistance = ballPos.abs();
+
+    double direction_deg = Math::toDegrees(direction);
+    if (direction_deg > -10 && direction_deg <= 0){
+      direction_deg = -10;
+    }
+    if (direction_deg < 10 && direction_deg > 0){
+      direction_deg = 10;
+    }
+
+    double min1;
+    double min2;
+    double max1;
+    double max2;
+    if (direction_deg <= 0)
+    {
+      // turn left
+      min1 = 0.0;
+      min2 = 0.0;
+      max1 = 45.0;
+      max2 = 100.0;
+    }
+    else {
+      // turn right
+      min1 = -45;
+      min2 = -100;
+      max1 = 0;
+      max2 = 0;
+    }
+
+    double stepX = (ballDistance - radius) * std::cos(ballRotation);
+    // Math::clamp(-direction, min1, max1) ==> safe guard for xabsl input
+    // outer clamp geht von -radius zu 0
+    double stepY = Math::clamp(radius * std::tan(Math::fromDegrees(Math::clamp(-direction_deg, min1, max1))), min2, max2) * std::cos(ballRotation);
+
+    Pose2D pose = { ballRotation, stepX, stepY };
+
+    StepBufferElement move_around_step;
+    move_around_step.debug_name = "move_around_step";
+    move_around_step.setPose(pose);
+    move_around_step.setStepType(StepType::WALKSTEP);
+
+    if (stable){
+      move_around_step.setCharacter(params.moveAroundBallCharacterStable);
+    }
+    else{
+      move_around_step.setCharacter(params.moveAroundBallCharacter);
+    }
+
+    move_around_step.setScale(1.0);
+    move_around_step.setCoordinate(Coordinate::Hip);
+    move_around_step.setFoot(Foot::NONE);
+    move_around_step.setSpeedDirection(Math::fromDegrees(0.0));
+    move_around_step.setRestriction(RestrictionMode::SOFT);
+    move_around_step.setProtected(false);
+    move_around_step.setTime(250);
+
+    addStep(move_around_step);
+  }
+}
+
 void PathPlanner2018::moveAroundBall2(const double direction, const double radius, const bool stable) 
 {
  if (stepBuffer.empty())
@@ -121,7 +189,9 @@ void PathPlanner2018::moveAroundBall2(const double direction, const double radiu
     Pose2D target_pose;
 
     // the point just behind the ball in the direction of the attack
-    Vector2d target_point = getBallModel().positionPreview - Vector2d(radius, 0.0).rotate(direction);
+    // //todo: check
+    //Vector2d target_point = getBallModel().positionPreview - Vector2d(radius, 0.0).rotate(direction);
+    Vector2d target_point = getBallModel().positionPreview - Vector2d(cos(direction), sin(direction)) * radius;
 
     // reset target_reached flag if we moved too much away from target position
     if(target_point.abs() > 0.5 * step_radius
