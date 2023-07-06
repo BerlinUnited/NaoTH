@@ -26,22 +26,12 @@
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Modeling/PlayerInfo.h"
 #include "Representations/Infrastructure/Roles.h"
+#include "Representations/Modeling/TeamMessageNTP.h"
 
 using namespace naoth;
 
 // this key is sent with every team message to indicate that the message belongs to us
 #define NAOTH_TEAMCOMM_MESAGE_KEY "naoth"
-
-/** Contains data for a NTP request. */
-struct NtpRequest
-{
-    NtpRequest(unsigned int p = 0, unsigned long long s = 0, unsigned long long r = 0)
-        : playerNumber(p), sent(s), received(r)
-    {}
-    unsigned int playerNumber;
-    unsigned long long sent;
-    unsigned long long received;
-};
 
 // this message is communicated as the user part of the standard spl message
 class TeamMessageCustom : public naoth::Printable 
@@ -78,7 +68,7 @@ public:
   bool whistleDetected;       // whether the robot heard/detected the whistle
   int whistleCount;           // who many whistle the robot detected
   Vector2d teamBall;          // global position of the team ball for visualization in RC!!
-  std::vector<NtpRequest> ntpRequests; // ntp requests to teammates
+  std::vector<TeamMessageNTP::Request> ntpRequests; // ntp requests to teammates
   Vector2d ballVelocity;      // velocity of the ball
   // opponents ?
 

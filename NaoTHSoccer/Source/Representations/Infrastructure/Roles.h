@@ -69,6 +69,10 @@ public:
     static Dynamic getDynamicRole(std::string name);
 
     bool isRoleActive(Static r) const;
+    static bool isGoalie(Static r);
+    static bool isDefender(Static r);
+    static bool isMidfielder(Static r);
+    static bool isForward(Static r);
 
     virtual void print(std::ostream& stream) const;
 };

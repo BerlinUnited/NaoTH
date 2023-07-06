@@ -17,7 +17,7 @@
 #include "Representations/Modeling/CompassDirection.h"
 #include "Representations/Infrastructure/GameData.h"
 #include "Representations/Infrastructure/Roles.h"
-#include "Representations/Modeling/TeamMessage.h"
+#include "Representations/Modeling/TeamState.h"
 #include "Representations/Modeling/RoleDecisionModel.h"
 #include "Representations/Modeling/TeamMessagePlayersState.h"
 
@@ -41,7 +41,7 @@ BEGIN_DECLARE_MODULE(StrategySymbols)
   REQUIRE(CompassDirection)
   REQUIRE(KickActionModel)
   REQUIRE(GameData)
-  REQUIRE(TeamMessage)
+  REQUIRE(TeamState)
   REQUIRE(RoleDecisionModel)
   REQUIRE(TeamMessagePlayersState)
 

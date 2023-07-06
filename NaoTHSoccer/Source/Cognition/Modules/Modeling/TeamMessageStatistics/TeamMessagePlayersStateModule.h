@@ -5,15 +5,19 @@
 #include "Tools/DataStructures/ParameterList.h"
 #include "Tools/Debug/DebugParameterList.h"
 #include "Representations/Infrastructure/FrameInfo.h"
-#include "Representations/Modeling/TeamMessage.h"
+#include "Representations/Modeling/PlayerInfo.h"
+#include "Representations/Modeling/TeamState.h"
 #include "Representations/Modeling/TeamMessagePlayersState.h"
 #include "Representations/Modeling/TeamMessageStatistics.h"
+#include "Representations/Infrastructure/GameData.h"
 
 
 BEGIN_DECLARE_MODULE(TeamMessagePlayersStateModule)
-  REQUIRE(TeamMessage)
+  REQUIRE(TeamState)
   REQUIRE(FrameInfo)
   REQUIRE(TeamMessageStatistics)
+  REQUIRE(GameData)
+  REQUIRE(PlayerInfo)
 
   PROVIDE(DebugParameterList)
   PROVIDE(TeamMessagePlayersState)
@@ -60,17 +64,17 @@ public:
                 break;
         }
         // Active
-        determineActiveStates();
+        (this->*params.activeMethod)();
         // is playing?
-        determinePlayingStates();
+        (this->*params.playingMethod)();
     }
 
 private:
     /**
      * @brief Determines the 'dead/alive' status for each player we received a message from.
      */
-    void calc(bool (TeamMessagePlayersStateModule::*func)(const TeamMessageData&) const) {
-        for(const auto& it : getTeamMessage().data) {
+    void calc(bool (TeamMessagePlayersStateModule::*func)(const TeamState::Player&) const) {
+        for (const auto& it: getTeamState().players) {
             getTeamMessagePlayersState().data[it.first].alive = (this->*func)(it.second);
         }
     }
@@ -86,12 +90,12 @@ private:
      * @param player    the player the 'dead' status should be determined for
      * @return true|false   whether the player is 'dead' or not
      */
-    bool messageIndicator(const TeamMessageData& data) const {
+    bool messageIndicator(const TeamState::Player& player) const {
         const auto& stats = getTeamMessageStatistics();
-        if(stats.isStatisticsActive(data.playerNumber)) {
-            return stats.getMessageIndicator(data.playerNumber) <= params.maxMessageReceivingIndicator;
+        if(stats.isStatisticsActive(player.number)) {
+            return stats.getMessageIndicator(player.number) <= params.maxMessageReceivingIndicator;
         }
-        return messageLastReceived(data);
+        return messageLastReceived(player);
     }
 
     /**
@@ -101,8 +105,8 @@ private:
      * @param player    the player the 'alive' status should be determined for
      * @return true|false   whether the player is 'dead' or 'alive'
      */
-    bool messageLastReceived(const TeamMessageData& data) const {
-        return getFrameInfo().getTimeSince(data.frameInfo) <= params.maxTimeLastMessageReceived;
+    bool messageLastReceived(const TeamState::Player& player) const {
+        return (naoth::NaoTime::getSystemTimeInMilliSeconds() - player.messageParsed) <= params.maxTimeLastMessageReceived;
     }
 
     /**
@@ -112,9 +116,9 @@ private:
      * @param player    the player the 'alive' status should be determined for
      * @return true|false   whether the player is 'dead' or 'alive'
      */
-    bool messageSimple(const TeamMessageData& data) const {
+    bool messageSimple(const TeamState::Player& player) const {
         // HACK: prevent 'unused-parameter' warning
-        return &data == &data;
+        return &player == &player;
     }
 
     /**
@@ -123,14 +127,46 @@ private:
      *        ('ready','set','playing').
      */
     void determineActiveStates() {
-        for(const auto& it : getTeamMessage().data) {
+        for (const auto& it: getTeamState().players) {
             auto& active = getTeamMessagePlayersState().data[it.first].active;
             active = getTeamMessagePlayersState().isAlive(it.first) && (
-                        it.second.custom.robotState == PlayerInfo::ready ||
-                        it.second.custom.robotState == PlayerInfo::set ||
-                        it.second.custom.robotState == PlayerInfo::playing
+                        it.second.state() == PlayerInfo::ready ||
+                        it.second.state() == PlayerInfo::set ||
+                        it.second.state() == PlayerInfo::playing
                     );
-            getTeamMessagePlayersState().data[it.first].penalized = it.second.custom.robotState == PlayerInfo::penalized;
+            getTeamMessagePlayersState().data[it.first].penalized = it.second.state() == PlayerInfo::penalized;
+        }
+    }
+
+    /**
+     * @brief Always assume the players are active and not penalized.
+     */
+    void determineActiveStatesAlways()
+    {
+        for (const auto& it: getTeamState().players)
+        {
+            getTeamMessagePlayersState().data[it.first].active = true;
+            getTeamMessagePlayersState().data[it.first].penalized = false;
+        }
+    }
+
+    /**
+     * @brief The gamecontroller sends the active penalties of all players.
+     *        Since all inactive players are penalized, we can set the active state based on the gc messages 
+     *        (the player must also be "alive").
+     */
+    void determineActiveStatesGameController()
+    {
+        const auto& state   = getTeamMessagePlayersState().data;
+        const auto& players = getGameData().ownTeam.players;
+        for (size_t index = 0; index < players.size(); ++index)
+        {
+            auto n = index + 1;
+            if (state.find(n) != state.cend())
+            {
+                getTeamMessagePlayersState().data[n].active = getTeamMessagePlayersState().isAlive(n) && !players[index].isPenalized();
+                getTeamMessagePlayersState().data[n].penalized = players[index].isPenalized();
+            }
         }
     }
 
@@ -140,8 +176,22 @@ private:
      *        There could be other indicators, like de-localised robots.
      */
     void determinePlayingStates() {
-        for(const auto& it : getTeamMessage().data) {
-            getTeamMessagePlayersState().data[it.first].playing = !it.second.fallen && it.second.custom.readyToWalk;
+        for (const auto& it: getTeamState().players) {
+            getTeamMessagePlayersState().data[it.first].playing = !it.second.fallen() && it.second.readyToWalk();
+        }
+    }
+
+    /**
+     * @brief Always assume a player can actively play.
+     */
+    void determinePlayingStatesAlways() {
+        for (const auto& it: getTeamState().players) {
+            // I know the state for sure only for me
+            if (getPlayerInfo().playerNumber == it.first) {
+                getTeamMessagePlayersState().data[it.first].playing = !it.second.fallen() && it.second.readyToWalk();
+            } else {
+                getTeamMessagePlayersState().data[it.first].playing = true;
+            }
         }
     }
 
@@ -153,6 +203,12 @@ private:
             PARAMETER_REGISTER(calculationMethod)            = 1;
             PARAMETER_REGISTER(maxTimeLastMessageReceived)   = 2000;
             PARAMETER_REGISTER(maxMessageReceivingIndicator) = 0.85;
+
+            // default, gc, always
+            PARAMETER_REGISTER(active_method, &Parameters::setActiveMethod) = "default";
+            // default, always
+            PARAMETER_REGISTER(playing_method, &Parameters::setPlayingMethod) = "default";
+            
             // load from the file after registering all parameters
             syncWithConfig();
         }
@@ -164,6 +220,25 @@ private:
         int maxTimeLastMessageReceived;
         /** */
         double maxMessageReceivingIndicator;
+
+        std::string active_method;
+        void (TeamMessagePlayersStateModule::*activeMethod)();
+        void setActiveMethod(std::string method)
+        {
+            if(method == "default")         { activeMethod = &TeamMessagePlayersStateModule::determineActiveStates; }
+            else if (method == "always")    { activeMethod = &TeamMessagePlayersStateModule::determineActiveStatesAlways; }
+            else if (method == "gc")        { activeMethod = &TeamMessagePlayersStateModule::determineActiveStatesGameController; }
+            else                            { activeMethod = &TeamMessagePlayersStateModule::determineActiveStates; }
+        }
+
+        std::string playing_method;
+        void (TeamMessagePlayersStateModule::*playingMethod)();
+        void setPlayingMethod(std::string method)
+        {
+            if(method == "default")         { playingMethod = &TeamMessagePlayersStateModule::determinePlayingStates; }
+            else if(method == "always")     { playingMethod = &TeamMessagePlayersStateModule::determinePlayingStatesAlways; }
+            else                            { playingMethod = &TeamMessagePlayersStateModule::determinePlayingStates; }
+        }
    } params;
 };
 

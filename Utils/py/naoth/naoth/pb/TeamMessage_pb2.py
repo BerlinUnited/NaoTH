@@ -22,7 +22,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='TeamMessage.proto',
   package='naothmessages',
   syntax='proto2',
-  serialized_pb=_b('\n\x11TeamMessage.proto\x12\rnaothmessages\x1a\x11\x43ommonTypes.proto\x1a\x1f\x46ramework-Representations.proto\"\x90\x01\n\tRobotRole\x12\x41\n\x0brole_static\x18\x01 \x02(\x0e\x32\x1e.naothmessages.RobotRoleStatic:\x0crole_unknown\x12@\n\x0crole_dynamic\x18\x02 \x02(\x0e\x32\x1f.naothmessages.RobotRoleDynamic:\trole_none\"L\n\x08Opponent\x12\x14\n\tplayerNum\x18\x01 \x02(\x05:\x01\x30\x12*\n\x0bposeOnField\x18\x02 \x01(\x0b\x32\x15.naothmessages.Pose2D\"A\n\x03Ntp\x12\x14\n\tplayerNum\x18\x01 \x02(\x05:\x01\x30\x12\x0f\n\x04sent\x18\x02 \x01(\x04:\x01\x30\x12\x13\n\x08received\x18\x03 \x01(\x04:\x01\x30\"\x8e\x01\n\x05\x44rops\x12\x1b\n\x10\x64ropNoSplMessage\x18\x01 \x01(\r:\x01\x30\x12\x19\n\x0e\x64ropNotOurTeam\x18\x02 \x01(\r:\x01\x30\x12\x1b\n\x10\x64ropNotParseable\x18\x03 \x01(\r:\x01\x30\x12\x16\n\x0b\x64ropKeyFail\x18\x04 \x01(\r:\x01\x30\x12\x18\n\rdropMonotonic\x18\x05 \x01(\r:\x01\x30\"\x98\x05\n\x11\x42UUserTeamMessage\x12\x17\n\x06\x62odyID\x18\x01 \x01(\t:\x07unknown\x12\x12\n\ntimeToBall\x18\x02 \x01(\r\x12\x19\n\nwasStriker\x18\x03 \x01(\x08:\x05\x66\x61lse\x12\x1e\n\x0bisPenalized\x18\x04 \x01(\x08:\x05\x66\x61lseB\x02\x18\x01\x12*\n\topponents\x18\x05 \x03(\x0b\x32\x17.naothmessages.Opponent\x12\x19\n\nteamNumber\x18\x06 \x01(\r:\x01\x30\x42\x02\x18\x01\x12\x18\n\rbatteryCharge\x18\x07 \x01(\x02:\x01\x31\x12\x16\n\x0btemperature\x18\x08 \x01(\x02:\x01\x30\x12\x14\n\ttimestamp\x18\t \x01(\x04:\x01\x30\x12\x1f\n\x10wantsToBeStriker\x18\n \x01(\x08:\x05\x66\x61lse\x12\x19\n\x0e\x63puTemperature\x18\x0b \x01(\x02:\x01\x30\x12\x1e\n\x0fwhistleDetected\x18\x0c \x01(\x08:\x05\x66\x61lse\x12\x17\n\x0cwhistleCount\x18\r \x01(\x05:\x01\x30\x12.\n\x08teamBall\x18\x0e \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12&\n\nntpRequest\x18\x0f \x03(\x0b\x32\x12.naothmessages.Ntp\x12\x32\n\x0c\x62\x61llVelocity\x18\x10 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12\x36\n\nrobotState\x18\x11 \x01(\x0e\x32\x19.naothmessages.RobotState:\x07initial\x12+\n\trobotRole\x18\x12 \x01(\x0b\x32\x18.naothmessages.RobotRole\x12\x13\n\x0breadyToWalk\x18\x13 \x01(\x08\x12\x11\n\x03key\x18\x64 \x01(\t:\x04none\"\xee\x03\n\x0bTeamMessage\x12-\n\x04\x64\x61ta\x18\x01 \x03(\x0b\x32\x1f.naothmessages.TeamMessage.Data\x12)\n\x0bmessageDrop\x18\x02 \x01(\x0b\x32\x14.naothmessages.Drops\x1a\x84\x03\n\x04\x44\x61ta\x12\x14\n\tplayerNum\x18\x01 \x01(\r:\x01\x30\x12\x39\n\tteamColor\x18\x0b \x01(\x0e\x32\x18.naothmessages.TeamColor:\x08\x62lueTeamB\x02\x18\x01\x12#\n\x04pose\x18\x03 \x01(\x0b\x32\x15.naothmessages.Pose2D\x12\x13\n\x07\x62\x61llAge\x18\x04 \x01(\x05:\x02-1\x12\x32\n\x0c\x62\x61llPosition\x18\x05 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12\x32\n\x0c\x62\x61llVelocity\x18\x06 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12\x15\n\x06\x66\x61llen\x18\n \x01(\x08:\x05\x66\x61lse\x12.\n\x04user\x18\x08 \x01(\x0b\x32 .naothmessages.BUUserTeamMessage\x12+\n\tframeInfo\x18\t \x01(\x0b\x32\x18.naothmessages.FrameInfo\x12\x15\n\nteamNumber\x18\x0c \x01(\r:\x01\x30*\xb2\x01\n\tTeamColor\x12\x0c\n\x08\x62lueTeam\x10\x00\x12\x0b\n\x07redTeam\x10\x01\x12\x0e\n\nyellowTeam\x10\x02\x12\r\n\tblackTeam\x10\x03\x12\r\n\twhiteTeam\x10\x04\x12\r\n\tgreenTeam\x10\x05\x12\x0e\n\norangeTeam\x10\x06\x12\x0e\n\npurpleTeam\x10\x07\x12\r\n\tbrownTeam\x10\x08\x12\x0c\n\x08grayTeam\x10\t\x12\x10\n\x0binvalidTeam\x10\xff\x01*d\n\nRobotState\x12\x0b\n\x07initial\x10\x00\x12\t\n\x05ready\x10\x01\x12\x07\n\x03set\x10\x02\x12\x0b\n\x07playing\x10\x03\x12\x0c\n\x08\x66inished\x10\x04\x12\r\n\tpenalized\x10\x05\x12\x0b\n\x07unstiff\x10\x06*\x98\x02\n\x0fRobotRoleStatic\x12\x16\n\x12role_defender_left\x10\x00\x12\x18\n\x14role_defender_center\x10\x01\x12\x17\n\x13role_defender_right\x10\x02\x12\x18\n\x14role_midfielder_left\x10\x03\x12\x1a\n\x16role_midfielder_center\x10\x04\x12\x19\n\x15role_midfielder_right\x10\x05\x12\x15\n\x11role_forward_left\x10\x06\x12\x17\n\x13role_forward_center\x10\x07\x12\x16\n\x12role_forward_right\x10\x08\x12\x0f\n\x0brole_goalie\x10\t\x12\x10\n\x0crole_unknown\x10\n*b\n\x10RobotRoleDynamic\x12\r\n\trole_none\x10\x00\x12\x12\n\x0erole_supporter\x10\x01\x12\x19\n\x15role_goalie_supporter\x10\x02\x12\x10\n\x0crole_striker\x10\x03\x42\x1b\n\x19\x64\x65.naoth.rc.core.messages')
+  serialized_pb=_b('\n\x11TeamMessage.proto\x12\rnaothmessages\x1a\x11\x43ommonTypes.proto\x1a\x1f\x46ramework-Representations.proto\"\x90\x01\n\tRobotRole\x12\x41\n\x0brole_static\x18\x01 \x02(\x0e\x32\x1e.naothmessages.RobotRoleStatic:\x0crole_unknown\x12@\n\x0crole_dynamic\x18\x02 \x02(\x0e\x32\x1f.naothmessages.RobotRoleDynamic:\trole_none\"L\n\x08Opponent\x12\x14\n\tplayerNum\x18\x01 \x02(\x05:\x01\x30\x12*\n\x0bposeOnField\x18\x02 \x01(\x0b\x32\x15.naothmessages.Pose2D\"A\n\x03Ntp\x12\x14\n\tplayerNum\x18\x01 \x02(\x05:\x01\x30\x12\x0f\n\x04sent\x18\x02 \x01(\x04:\x01\x30\x12\x13\n\x08received\x18\x03 \x01(\x04:\x01\x30\"\x8e\x01\n\x05\x44rops\x12\x1b\n\x10\x64ropNoSplMessage\x18\x01 \x01(\r:\x01\x30\x12\x19\n\x0e\x64ropNotOurTeam\x18\x02 \x01(\r:\x01\x30\x12\x1b\n\x10\x64ropNotParseable\x18\x03 \x01(\r:\x01\x30\x12\x16\n\x0b\x64ropKeyFail\x18\x04 \x01(\r:\x01\x30\x12\x18\n\rdropMonotonic\x18\x05 \x01(\r:\x01\x30\"\x98\x05\n\x11\x42UUserTeamMessage\x12\x17\n\x06\x62odyID\x18\x01 \x01(\t:\x07unknown\x12\x12\n\ntimeToBall\x18\x02 \x01(\r\x12\x19\n\nwasStriker\x18\x03 \x01(\x08:\x05\x66\x61lse\x12\x1e\n\x0bisPenalized\x18\x04 \x01(\x08:\x05\x66\x61lseB\x02\x18\x01\x12*\n\topponents\x18\x05 \x03(\x0b\x32\x17.naothmessages.Opponent\x12\x19\n\nteamNumber\x18\x06 \x01(\r:\x01\x30\x42\x02\x18\x01\x12\x18\n\rbatteryCharge\x18\x07 \x01(\x02:\x01\x31\x12\x16\n\x0btemperature\x18\x08 \x01(\x02:\x01\x30\x12\x14\n\ttimestamp\x18\t \x01(\x04:\x01\x30\x12\x1f\n\x10wantsToBeStriker\x18\n \x01(\x08:\x05\x66\x61lse\x12\x19\n\x0e\x63puTemperature\x18\x0b \x01(\x02:\x01\x30\x12\x1e\n\x0fwhistleDetected\x18\x0c \x01(\x08:\x05\x66\x61lse\x12\x17\n\x0cwhistleCount\x18\r \x01(\x05:\x01\x30\x12.\n\x08teamBall\x18\x0e \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12&\n\nntpRequest\x18\x0f \x03(\x0b\x32\x12.naothmessages.Ntp\x12\x32\n\x0c\x62\x61llVelocity\x18\x10 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12\x36\n\nrobotState\x18\x11 \x01(\x0e\x32\x19.naothmessages.RobotState:\x07initial\x12+\n\trobotRole\x18\x12 \x01(\x0b\x32\x18.naothmessages.RobotRole\x12\x13\n\x0breadyToWalk\x18\x13 \x01(\x08\x12\x11\n\x03key\x18\x64 \x01(\t:\x04none\"\xee\x03\n\x0bTeamMessage\x12-\n\x04\x64\x61ta\x18\x01 \x03(\x0b\x32\x1f.naothmessages.TeamMessage.Data\x12)\n\x0bmessageDrop\x18\x02 \x01(\x0b\x32\x14.naothmessages.Drops\x1a\x84\x03\n\x04\x44\x61ta\x12\x14\n\tplayerNum\x18\x01 \x01(\r:\x01\x30\x12\x39\n\tteamColor\x18\x0b \x01(\x0e\x32\x18.naothmessages.TeamColor:\x08\x62lueTeamB\x02\x18\x01\x12#\n\x04pose\x18\x03 \x01(\x0b\x32\x15.naothmessages.Pose2D\x12\x13\n\x07\x62\x61llAge\x18\x04 \x01(\x05:\x02-1\x12\x32\n\x0c\x62\x61llPosition\x18\x05 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12\x32\n\x0c\x62\x61llVelocity\x18\x06 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12\x15\n\x06\x66\x61llen\x18\n \x01(\x08:\x05\x66\x61lse\x12.\n\x04user\x18\x08 \x01(\x0b\x32 .naothmessages.BUUserTeamMessage\x12+\n\tframeInfo\x18\t \x01(\x0b\x32\x18.naothmessages.FrameInfo\x12\x15\n\nteamNumber\x18\x0c \x01(\r:\x01\x30\"\xd0\x06\n\tTeamState\x12\x30\n\x07players\x18\x01 \x03(\x0b\x32\x1f.naothmessages.TeamState.Player\x1a\x90\x06\n\x06Player\x12\x11\n\x06number\x18\x01 \x01(\r:\x01\x30\x12\x32\n\x10messageFrameInfo\x18\x02 \x01(\x0b\x32\x18.naothmessages.FrameInfo\x12\x15\n\rmessageParsed\x18\x03 \x01(\x04\x12\x18\n\x10messageTimestamp\x18\x04 \x01(\x04\x12&\n\nntpRequest\x18\x05 \x03(\x0b\x32\x12.naothmessages.Ntp\x12\x18\n\x10ntpRequestUpdate\x18\x06 \x01(\x04\x12\x36\n\nrobotState\x18\x07 \x01(\x0e\x32\x19.naothmessages.RobotState:\x07initial\x12\x18\n\x10robotStateUpdate\x18\x08 \x01(\x04\x12\x15\n\x06\x66\x61llen\x18\t \x01(\x08:\x05\x66\x61lse\x12\x14\n\x0c\x66\x61llenUpdate\x18\n \x01(\x04\x12\x13\n\x0breadyToWalk\x18\x0b \x01(\x08\x12\x19\n\x11readyToWalkUpdate\x18\x0c \x01(\x04\x12#\n\x04pose\x18\r \x01(\x0b\x32\x15.naothmessages.Pose2D\x12\x12\n\nposeUpdate\x18\x0e \x01(\x04\x12\x13\n\x07\x62\x61llAge\x18\x0f \x01(\x05:\x02-1\x12\x15\n\rballAgeUpdate\x18\x10 \x01(\x04\x12\x32\n\x0c\x62\x61llPosition\x18\x11 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12\x1a\n\x12\x62\x61llPositionUpdate\x18\x12 \x01(\x04\x12\x12\n\ntimeToBall\x18\x13 \x01(\r\x12\x18\n\x10timeToBallUpdate\x18\x14 \x01(\x04\x12\x1f\n\x10wantsToBeStriker\x18\x15 \x01(\x08:\x05\x66\x61lse\x12\x1e\n\x16wantsToBeStrikerUpdate\x18\x16 \x01(\x04\x12\x19\n\nwasStriker\x18\x17 \x01(\x08:\x05\x66\x61lse\x12\x18\n\x10wasStrikerUpdate\x18\x18 \x01(\x04\x12+\n\trobotRole\x18\x19 \x01(\x0b\x32\x18.naothmessages.RobotRole\x12\x17\n\x0frobotRoleUpdate\x18\x1a \x01(\x04*\xb2\x01\n\tTeamColor\x12\x0c\n\x08\x62lueTeam\x10\x00\x12\x0b\n\x07redTeam\x10\x01\x12\x0e\n\nyellowTeam\x10\x02\x12\r\n\tblackTeam\x10\x03\x12\r\n\twhiteTeam\x10\x04\x12\r\n\tgreenTeam\x10\x05\x12\x0e\n\norangeTeam\x10\x06\x12\x0e\n\npurpleTeam\x10\x07\x12\r\n\tbrownTeam\x10\x08\x12\x0c\n\x08grayTeam\x10\t\x12\x10\n\x0binvalidTeam\x10\xff\x01*d\n\nRobotState\x12\x0b\n\x07initial\x10\x00\x12\t\n\x05ready\x10\x01\x12\x07\n\x03set\x10\x02\x12\x0b\n\x07playing\x10\x03\x12\x0c\n\x08\x66inished\x10\x04\x12\r\n\tpenalized\x10\x05\x12\x0b\n\x07unstiff\x10\x06*\x98\x02\n\x0fRobotRoleStatic\x12\x16\n\x12role_defender_left\x10\x00\x12\x18\n\x14role_defender_center\x10\x01\x12\x17\n\x13role_defender_right\x10\x02\x12\x18\n\x14role_midfielder_left\x10\x03\x12\x1a\n\x16role_midfielder_center\x10\x04\x12\x19\n\x15role_midfielder_right\x10\x05\x12\x15\n\x11role_forward_left\x10\x06\x12\x17\n\x13role_forward_center\x10\x07\x12\x16\n\x12role_forward_right\x10\x08\x12\x0f\n\x0brole_goalie\x10\t\x12\x10\n\x0crole_unknown\x10\n*b\n\x10RobotRoleDynamic\x12\r\n\trole_none\x10\x00\x12\x12\n\x0erole_supporter\x10\x01\x12\x19\n\x15role_goalie_supporter\x10\x02\x12\x10\n\x0crole_striker\x10\x03\x42\x1b\n\x19\x64\x65.naoth.rc.core.messages')
   ,
   dependencies=[CommonTypes__pb2.DESCRIPTOR,Framework__Representations__pb2.DESCRIPTOR,])
 
@@ -79,8 +79,8 @@ _TEAMCOLOR = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=1690,
-  serialized_end=1868,
+  serialized_start=2541,
+  serialized_end=2719,
 )
 _sym_db.RegisterEnumDescriptor(_TEAMCOLOR)
 
@@ -122,8 +122,8 @@ _ROBOTSTATE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=1870,
-  serialized_end=1970,
+  serialized_start=2721,
+  serialized_end=2821,
 )
 _sym_db.RegisterEnumDescriptor(_ROBOTSTATE)
 
@@ -181,8 +181,8 @@ _ROBOTROLESTATIC = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=1973,
-  serialized_end=2253,
+  serialized_start=2824,
+  serialized_end=3104,
 )
 _sym_db.RegisterEnumDescriptor(_ROBOTROLESTATIC)
 
@@ -212,8 +212,8 @@ _ROBOTROLEDYNAMIC = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=2255,
-  serialized_end=2353,
+  serialized_start=3106,
+  serialized_end=3204,
 )
 _sym_db.RegisterEnumDescriptor(_ROBOTROLEDYNAMIC)
 
@@ -728,6 +728,242 @@ _TEAMMESSAGE = _descriptor.Descriptor(
   serialized_end=1687,
 )
 
+
+_TEAMSTATE_PLAYER = _descriptor.Descriptor(
+  name='Player',
+  full_name='naothmessages.TeamState.Player',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='number', full_name='naothmessages.TeamState.Player.number', index=0,
+      number=1, type=13, cpp_type=3, label=1,
+      has_default_value=True, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='messageFrameInfo', full_name='naothmessages.TeamState.Player.messageFrameInfo', index=1,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='messageParsed', full_name='naothmessages.TeamState.Player.messageParsed', index=2,
+      number=3, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='messageTimestamp', full_name='naothmessages.TeamState.Player.messageTimestamp', index=3,
+      number=4, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='ntpRequest', full_name='naothmessages.TeamState.Player.ntpRequest', index=4,
+      number=5, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='ntpRequestUpdate', full_name='naothmessages.TeamState.Player.ntpRequestUpdate', index=5,
+      number=6, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='robotState', full_name='naothmessages.TeamState.Player.robotState', index=6,
+      number=7, type=14, cpp_type=8, label=1,
+      has_default_value=True, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='robotStateUpdate', full_name='naothmessages.TeamState.Player.robotStateUpdate', index=7,
+      number=8, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='fallen', full_name='naothmessages.TeamState.Player.fallen', index=8,
+      number=9, type=8, cpp_type=7, label=1,
+      has_default_value=True, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='fallenUpdate', full_name='naothmessages.TeamState.Player.fallenUpdate', index=9,
+      number=10, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='readyToWalk', full_name='naothmessages.TeamState.Player.readyToWalk', index=10,
+      number=11, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='readyToWalkUpdate', full_name='naothmessages.TeamState.Player.readyToWalkUpdate', index=11,
+      number=12, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='pose', full_name='naothmessages.TeamState.Player.pose', index=12,
+      number=13, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='poseUpdate', full_name='naothmessages.TeamState.Player.poseUpdate', index=13,
+      number=14, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='ballAge', full_name='naothmessages.TeamState.Player.ballAge', index=14,
+      number=15, type=5, cpp_type=1, label=1,
+      has_default_value=True, default_value=-1,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='ballAgeUpdate', full_name='naothmessages.TeamState.Player.ballAgeUpdate', index=15,
+      number=16, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='ballPosition', full_name='naothmessages.TeamState.Player.ballPosition', index=16,
+      number=17, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='ballPositionUpdate', full_name='naothmessages.TeamState.Player.ballPositionUpdate', index=17,
+      number=18, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='timeToBall', full_name='naothmessages.TeamState.Player.timeToBall', index=18,
+      number=19, type=13, cpp_type=3, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='timeToBallUpdate', full_name='naothmessages.TeamState.Player.timeToBallUpdate', index=19,
+      number=20, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='wantsToBeStriker', full_name='naothmessages.TeamState.Player.wantsToBeStriker', index=20,
+      number=21, type=8, cpp_type=7, label=1,
+      has_default_value=True, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='wantsToBeStrikerUpdate', full_name='naothmessages.TeamState.Player.wantsToBeStrikerUpdate', index=21,
+      number=22, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='wasStriker', full_name='naothmessages.TeamState.Player.wasStriker', index=22,
+      number=23, type=8, cpp_type=7, label=1,
+      has_default_value=True, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='wasStrikerUpdate', full_name='naothmessages.TeamState.Player.wasStrikerUpdate', index=23,
+      number=24, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='robotRole', full_name='naothmessages.TeamState.Player.robotRole', index=24,
+      number=25, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='robotRoleUpdate', full_name='naothmessages.TeamState.Player.robotRoleUpdate', index=25,
+      number=26, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1754,
+  serialized_end=2538,
+)
+
+_TEAMSTATE = _descriptor.Descriptor(
+  name='TeamState',
+  full_name='naothmessages.TeamState',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='players', full_name='naothmessages.TeamState.players', index=0,
+      number=1, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[_TEAMSTATE_PLAYER, ],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1690,
+  serialized_end=2538,
+)
+
 _ROBOTROLE.fields_by_name['role_static'].enum_type = _ROBOTROLESTATIC
 _ROBOTROLE.fields_by_name['role_dynamic'].enum_type = _ROBOTROLEDYNAMIC
 _OPPONENT.fields_by_name['poseOnField'].message_type = CommonTypes__pb2._POSE2D
@@ -746,12 +982,21 @@ _TEAMMESSAGE_DATA.fields_by_name['frameInfo'].message_type = Framework__Represen
 _TEAMMESSAGE_DATA.containing_type = _TEAMMESSAGE
 _TEAMMESSAGE.fields_by_name['data'].message_type = _TEAMMESSAGE_DATA
 _TEAMMESSAGE.fields_by_name['messageDrop'].message_type = _DROPS
+_TEAMSTATE_PLAYER.fields_by_name['messageFrameInfo'].message_type = Framework__Representations__pb2._FRAMEINFO
+_TEAMSTATE_PLAYER.fields_by_name['ntpRequest'].message_type = _NTP
+_TEAMSTATE_PLAYER.fields_by_name['robotState'].enum_type = _ROBOTSTATE
+_TEAMSTATE_PLAYER.fields_by_name['pose'].message_type = CommonTypes__pb2._POSE2D
+_TEAMSTATE_PLAYER.fields_by_name['ballPosition'].message_type = CommonTypes__pb2._DOUBLEVECTOR2
+_TEAMSTATE_PLAYER.fields_by_name['robotRole'].message_type = _ROBOTROLE
+_TEAMSTATE_PLAYER.containing_type = _TEAMSTATE
+_TEAMSTATE.fields_by_name['players'].message_type = _TEAMSTATE_PLAYER
 DESCRIPTOR.message_types_by_name['RobotRole'] = _ROBOTROLE
 DESCRIPTOR.message_types_by_name['Opponent'] = _OPPONENT
 DESCRIPTOR.message_types_by_name['Ntp'] = _NTP
 DESCRIPTOR.message_types_by_name['Drops'] = _DROPS
 DESCRIPTOR.message_types_by_name['BUUserTeamMessage'] = _BUUSERTEAMMESSAGE
 DESCRIPTOR.message_types_by_name['TeamMessage'] = _TEAMMESSAGE
+DESCRIPTOR.message_types_by_name['TeamState'] = _TEAMSTATE
 DESCRIPTOR.enum_types_by_name['TeamColor'] = _TEAMCOLOR
 DESCRIPTOR.enum_types_by_name['RobotState'] = _ROBOTSTATE
 DESCRIPTOR.enum_types_by_name['RobotRoleStatic'] = _ROBOTROLESTATIC
@@ -807,6 +1052,21 @@ TeamMessage = _reflection.GeneratedProtocolMessageType('TeamMessage', (_message.
   ))
 _sym_db.RegisterMessage(TeamMessage)
 _sym_db.RegisterMessage(TeamMessage.Data)
+
+TeamState = _reflection.GeneratedProtocolMessageType('TeamState', (_message.Message,), dict(
+
+  Player = _reflection.GeneratedProtocolMessageType('Player', (_message.Message,), dict(
+    DESCRIPTOR = _TEAMSTATE_PLAYER,
+    __module__ = 'TeamMessage_pb2'
+    # @@protoc_insertion_point(class_scope:naothmessages.TeamState.Player)
+    ))
+  ,
+  DESCRIPTOR = _TEAMSTATE,
+  __module__ = 'TeamMessage_pb2'
+  # @@protoc_insertion_point(class_scope:naothmessages.TeamState)
+  ))
+_sym_db.RegisterMessage(TeamState)
+_sym_db.RegisterMessage(TeamState.Player)
 
 
 DESCRIPTOR.has_options = True

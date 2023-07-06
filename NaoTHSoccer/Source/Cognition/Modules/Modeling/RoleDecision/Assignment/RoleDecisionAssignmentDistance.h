@@ -10,7 +10,7 @@
 
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Infrastructure/Roles.h"
-#include "Representations/Modeling/TeamMessage.h"
+#include "Representations/Modeling/TeamState.h"
 #include "Representations/Modeling/TeamMessageStatistics.h"
 #include "Representations/Modeling/TeamMessagePlayersState.h"
 #include "Representations/Modeling/PlayerInfo.h"
@@ -25,7 +25,7 @@ BEGIN_DECLARE_MODULE(RoleDecisionAssignmentDistance)
   REQUIRE(GameData)
   REQUIRE(Roles)
   REQUIRE(PlayerInfo)
-  REQUIRE(TeamMessage)
+  REQUIRE(TeamState)
   REQUIRE(TeamMessageStatistics)
   REQUIRE(TeamMessagePlayersState)
 

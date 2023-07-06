@@ -22,20 +22,23 @@ TeamMessageStatisticsModule::~TeamMessageStatisticsModule()
 
 void TeamMessageStatisticsModule::execute() {
     //Check, from which robots we have received a message, and update the corresponding statistics
-    for(auto const &it : getTeamMessage().data) {
-        const TeamMessageData& data = it.second;
+    for (const auto& it: getTeamState().players) {
+        const auto& playerNumber = it.first;
+        TeamMessageStatistics::Player& player = getTeamMessageStatistics().getPlayer(playerNumber);
+        
         // skip my own messages
-        if(data.playerNumber == getPlayerInfo().playerNumber) {
+        if(playerNumber == getPlayerInfo().playerNumber) {
+            player.indicator_messageReceived_upToNow = 0.0;
+            player.lastStatisticsUpdate = it.second.messageFrameInfo;
             continue;
         }
-        TeamMessageStatistics::Player& player = getTeamMessageStatistics().getPlayer(data.playerNumber);
 
         double currentMessageInterval = getFrameInfo().getTimeSince(player.lastStatisticsUpdate);
 
         // Update only with newer information
-        if(data.frameInfo > player.lastStatisticsUpdate)
+        if(it.second.messageFrameInfo > player.lastStatisticsUpdate)
         {
-            auto& buffer = playerBuffer[data.playerNumber];
+            auto& buffer = playerBuffer[playerNumber];
 
             if(buffer.size() == 0) {
                 // "ignore" the first message interval, most likely it's too high and distorts the statistics
@@ -55,7 +58,7 @@ void TeamMessageStatisticsModule::execute() {
             player.varianceMsgInterval = buffer.getVariance(player.avgMsgInterval);
 
             // set last update time
-            player.lastStatisticsUpdate = data.frameInfo;
+            player.lastStatisticsUpdate = it.second.messageFrameInfo;
             player.lastMsgInterval = 0;
             player.numOfMessages++;
             player.indicator_messageReceived_upToNow = 0.0;

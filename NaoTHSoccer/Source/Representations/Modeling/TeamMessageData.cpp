@@ -291,7 +291,7 @@ void TeamMessageCustom::parseFromProto(const naothmessages::BUUserTeamMessage &u
         teamBall.y = std::numeric_limits<double>::infinity();
     }
 
-    ntpRequests = std::vector<NtpRequest>(userData.ntprequest_size());
+    ntpRequests = std::vector<TeamMessageNTP::Request>(userData.ntprequest_size());
     if(userData.ntprequest_size() > 0) {
         for(int i=0; i < userData.ntprequest_size(); i++) {
             auto& request = userData.ntprequest((int)i);
