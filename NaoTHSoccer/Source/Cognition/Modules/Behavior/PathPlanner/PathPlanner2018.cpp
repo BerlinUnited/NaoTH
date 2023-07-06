@@ -74,10 +74,12 @@ void PathPlanner2018::execute()
   case PathModel::PathPlanner2018Routine::AVOID:
     avoid_obstacle(getPathModel().target_point);
     break;
+  case PathModel::PathPlanner2018Routine::MOVE_AROUND_BALL_OLD:
+    moveAroundBall(getPathModel().direction, getPathModel().radius, getPathModel().stable);
+    break;
   case PathModel::PathPlanner2018Routine::MOVE_AROUND_BALL2:
     //TODO maybe use a parameter to select the actual routine that is executed when move around is set from the behavior???
     moveAroundBall2(getPathModel().direction, getPathModel().radius, getPathModel().stable);
-    //moveAroundBall(getPathModel().direction, getPathModel().radius, getPathModel().stable);
     break;
   case PathModel::PathPlanner2018Routine::FORWARDKICK:
     if (nearApproach_forwardKick(params.forwardKickOffset.x, params.forwardKickOffset.y))

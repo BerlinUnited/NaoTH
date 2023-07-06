@@ -5,6 +5,7 @@ namespace path_symbols("PathPlanner Symbols") {
   {
     none,
     avoid,
+    move_around_ball_old,
     move_around_ball2,
     forwardkick,
     sidekick_left,
