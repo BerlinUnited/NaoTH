@@ -12,6 +12,7 @@
 #include "Tools/Math/Vector2.h"
 #include "Tools/Math/Vector3.h"
 #include "Tools/Debug/DebugParameterList.h"
+#include "Tools/StringTools.h"
 
 #include <PlatformInterface/Platform.h>
 #include <string>
@@ -170,6 +171,10 @@ class FootTrajectoryGenerator2018Parameters: public ParameterList{
         PARAMETER_REGISTER(useSplineFootTrajectoryForSideKicks) = true;
         PARAMETER_REGISTER(sideKickWidth) = 70;
 
+        PARAMETER_REGISTER(x_values, &FootTrajectoryGenerator2018Parameters::parseSplineValuesX) = "0,0,0";
+        PARAMETER_REGISTER(y_values, &FootTrajectoryGenerator2018Parameters::parseSplineValuesY) = "0,0,0";
+        PARAMETER_REGISTER(z_values, &FootTrajectoryGenerator2018Parameters::parseSplineValuesZ) = "0,0,0";
+
         // By y030:
         PARAMETER_REGISTER(sideKickWidth) = 70;
 
@@ -181,6 +186,37 @@ class FootTrajectoryGenerator2018Parameters: public ParameterList{
       bool   useSplineFootTrajectory;
       bool   useSplineFootTrajectoryForSideKicks;
       double sideKickWidth;
+
+      std::string x_values;
+      std::string y_values;
+      std::string z_values;
+
+      std::vector<double> spline_x;
+      std::vector<double> spline_y;
+      std::vector<double> spline_z;
+
+  private:
+
+      void parseSplineValuesX(std::string values_string){
+          parseSplineValues(values_string, spline_x);
+      }
+
+      void parseSplineValuesY(std::string values_string){
+          parseSplineValues(values_string, spline_y);
+      }
+
+      void parseSplineValuesZ(std::string values_string){
+          parseSplineValues(values_string, spline_z);
+      }
+
+      void parseSplineValues(std::string values_string, std::vector<double>& values_double) {
+          std::vector<std::string> parts = StringTools::split(values_string, ',');
+          values_double.clear();
+          for(const std::string& part : parts) {
+              values_double.push_back(std::stod(part));
+          }
+      }
+
 };
 
 class HipRotationOffsetModifierParameters: public ParameterList{
