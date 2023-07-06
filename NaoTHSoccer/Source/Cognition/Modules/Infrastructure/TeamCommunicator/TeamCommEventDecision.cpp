@@ -80,6 +80,12 @@ void TeamCommEventDecision::byDistance()
     // if i am striker, i send more often
     if (role.dynamic == Roles::striker) {
         distance = params.byDistance_striker;
+
+        // the striker should send a message regularly, even if he didn't move far enough
+        if ((unsigned int)getFrameInfo().getTimeSince(params.byDistance_striker_last_ts) < params.byDistance_striker_minInterval)
+        {
+            distance = 0.0;
+        }
     }
 
     // send new message only if the robot moved some distance
@@ -97,5 +103,6 @@ void TeamCommEventDecision::byDistance()
 
         // update timestamp for the safety condition
         params.byDistance_lastSentTimestamp = getFrameInfo().getTime();
+        params.byDistance_striker_last_ts = getFrameInfo().getTime();
     }
 }
