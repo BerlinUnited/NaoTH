@@ -14,6 +14,9 @@
 #include "Representations/Infrastructure/GameData.h"
 #include "Representations/Infrastructure/WifiMode.h"
 
+#include "Representations/Modeling/RobotPose.h"
+#include "Representations/Modeling/BallModel.h"
+
 using namespace naoth;
 
 BEGIN_DECLARE_MODULE(GameController)
@@ -23,6 +26,9 @@ BEGIN_DECLARE_MODULE(GameController)
   REQUIRE(FrameInfo)
   REQUIRE(WhistlePercept)
   REQUIRE(WifiMode)
+
+  REQUIRE(RobotPose)
+  REQUIRE(BallModel)
 
   PROVIDE(GameData)
   PROVIDE(PlayerInfo)
