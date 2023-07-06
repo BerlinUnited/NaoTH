@@ -199,8 +199,27 @@ void CNNBallDetector::calculateCandidates()
         }
       }
 
-      PatchWork::multiplyBrightness((cameraID == CameraInfo::Top) ? 
-            params.brightnessMultiplierTop : params.brightnessMultiplierBottom, patch);
+      if (cameraID == CameraInfo::Top)
+      {
+        double average = 0;
+        double number = 0;
+        for(unsigned int i = 0; i < patch.data.size(); i++) 
+        {
+          average += patch.data[i].pixel.y;
+          number++;
+        }
+
+        if(average / number < 50) {
+          PatchWork::multiplyBrightness(params.brightnessMultiplierTopDark, patch);
+        } else {
+          PatchWork::multiplyBrightness(params.brightnessMultiplierTop, patch);
+        }
+      } else {
+        PatchWork::multiplyBrightness(params.brightnessMultiplierBottom, patch);
+      }
+
+      //PatchWork::multiplyBrightness((cameraID == CameraInfo::Top) ? 
+      //      params.brightnessMultiplierTop : params.brightnessMultiplierBottom, patch);
 
       DEBUG_REQUEST("Vision:CNNBallDetector:drawPatchInImage",
         unsigned int offsetX = patch.min.x;
