@@ -80,6 +80,7 @@ void TeamCommSender::fillMessageBeforeSending() const
 
     // TODO: can we make it more separate?
     msg.custom.timestamp = naoth::NaoTime::getSystemTimeInMilliSeconds();
+    msg.custom.ntpRequests      = getTeamMessageNTP().requests;
     msg.custom.wantsToBeStriker = getRoleDecisionModel().wantsToBeStriker;
     msg.custom.wasStriker = getRoleDecisionModel().isStriker(getPlayerInfo().playerNumber);
 

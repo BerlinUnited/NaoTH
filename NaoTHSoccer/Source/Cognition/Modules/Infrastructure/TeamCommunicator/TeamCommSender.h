@@ -11,6 +11,7 @@
 #include <Representations/Infrastructure/RobotInfo.h>
 #include "Representations/Modeling/RobotPose.h"
 #include "Representations/Modeling/BallModel.h"
+#include "Representations/Modeling/TeamMessageNTP.h"
 #include "Representations/Modeling/TeamMessage.h"
 #include "Representations/Modeling/TeamMessageData.h"
 #include "Representations/Modeling/BodyState.h"
@@ -47,6 +48,7 @@ BEGIN_DECLARE_MODULE(TeamCommSender)
   REQUIRE(TeamBallModel)
   REQUIRE(WifiMode)
   REQUIRE(WhistlePercept)
+  REQUIRE(TeamMessageNTP)
 
   PROVIDE(TeamMessageData)
   PROVIDE(TeamMessageDataOut)

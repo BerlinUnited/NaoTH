@@ -56,7 +56,7 @@ public:
       teamNumber(0),
       playerNumber(0),
       // HACK: this number sed to be set by a parameter
-      playersPerTeam(5),
+      playersPerTeam(7),
       teamName("unknown"),
       playLeftSide(true),
       kickoff(false),

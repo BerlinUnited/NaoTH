@@ -19,32 +19,32 @@ void TeamBallLocatorCanopyCluster::execute() {
     std::vector<Ball> balls;
 
     // iterate over all robots(messages) and collect 'valid' balls
-    for (auto const& i : getTeamMessage().data) {
-        unsigned int playerNumber = i.first;
-        const TeamMessageData& msg = i.second;
+    for (const auto& it: getTeamState().players) {
+        unsigned int playerNumber = it.first;
+        const auto& player = it.second;
 
         // check if the robot is able to play (inactive robots)
         if(params.enablePlayingCheck && !getTeamMessagePlayersState().isPlaying(playerNumber)) { continue; }
 
         // ballage + network delay
-        double ballAge = msg.ballAge;
+        double ballAge = player.ballAge();
         if(params.enableNtpAdjustment && getTeamMessageNTP().isNtpActive(playerNumber)) {
-            ballAge += static_cast<double>(getTeamMessageNTP().getTimeInMilliSeconds(playerNumber) - msg.custom.timestamp);
+            ballAge += static_cast<double>(getTeamMessageNTP().getTimeInMilliSeconds(playerNumber) - player.messageTimestamp);
         }
 
         DEBUG_REQUEST("TeamBallLocatorCanopyCluster:draw_all_balls",
             FIELD_DRAWING_CONTEXT;
             PEN("666666", 20);
-            auto drawing_position = msg.pose * msg.ballPosition;
+            auto drawing_position = player.pose() * player.ballPosition();
             CIRCLE(drawing_position.x, drawing_position.y, 50);
             TEXT_DRAWING(drawing_position.x+100, drawing_position.y+100, playerNumber);
             TEXT_DRAWING(drawing_position.x+100, drawing_position.y-100, ballAge);
         );
 
         // -1 means "ball never seen", ballAge (incl. network delay) should be small
-        if(msg.ballAge >= 0 && ballAge <= params.maxBallAge)
+        if(player.ballAge() >= 0 && ballAge <= params.maxBallAge)
         {
-            Vector2d globalBallPosition = msg.pose * msg.ballPosition;
+            Vector2d globalBallPosition = player.pose() * player.ballPosition();
 
             // if activated via parameter, skip balls, which are outside the field!
             if(!params.ballsAreOnlyValidOnField || getFieldInfo().insideCarpet(globalBallPosition) ) {

@@ -11,7 +11,7 @@
 
 #include <ModuleFramework/Module.h>
 
-#include "Representations/Modeling/TeamMessage.h"
+#include "Representations/Modeling/TeamState.h"
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Infrastructure/FieldInfo.h"
 #include "Representations/Modeling/PlayerInfo.h"
@@ -39,7 +39,7 @@ BEGIN_DECLARE_MODULE(CleanRoleDecision)
   REQUIRE(FieldInfo)
   REQUIRE(PlayerInfo)
   REQUIRE(SoccerStrategy)
-  REQUIRE(TeamMessage)
+  REQUIRE(TeamState)
   REQUIRE(TeamMessagePlayersState)
   REQUIRE(BodyState)
   REQUIRE(BallModel)

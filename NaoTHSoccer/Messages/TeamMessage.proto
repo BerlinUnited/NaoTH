@@ -124,3 +124,48 @@ message TeamMessage
   repeated Data data = 1;
   optional Drops messageDrop = 2;
 }
+
+message TeamState
+{
+  message Player
+  {
+    optional uint32 number = 1 [default=0];
+    optional FrameInfo messageFrameInfo = 2;
+    optional uint64 messageParsed = 3;
+    optional uint64 messageTimestamp = 4;
+
+    repeated Ntp ntpRequest = 5;
+    optional uint64 ntpRequestUpdate = 6;
+
+    optional RobotState robotState = 7 [default=initial];
+    optional uint64 robotStateUpdate = 8;
+
+    optional bool fallen = 9 [default=false];
+    optional uint64 fallenUpdate = 10;
+
+    optional bool readyToWalk = 11;
+    optional uint64 readyToWalkUpdate = 12;
+
+    optional Pose2D pose = 13;
+    optional uint64 poseUpdate = 14;
+    
+    optional int32 ballAge = 15 [default=-1];
+    optional uint64 ballAgeUpdate = 16;
+
+    optional DoubleVector2 ballPosition = 17;
+    optional uint64 ballPositionUpdate = 18;
+
+    optional uint32 timeToBall = 19;
+    optional uint64 timeToBallUpdate = 20;
+
+    optional bool wantsToBeStriker = 21 [default=false];
+    optional uint64 wantsToBeStrikerUpdate = 22;
+
+    optional bool wasStriker = 23 [default=false];
+    optional uint64 wasStrikerUpdate = 24;
+
+    optional RobotRole robotRole = 25;
+    optional uint64 robotRoleUpdate = 26;
+  }
+  repeated Player players = 1;
+}
