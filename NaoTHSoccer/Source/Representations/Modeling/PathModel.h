@@ -26,6 +26,7 @@ public:
   {
     NONE,
     AVOID,
+    MOVE_AROUND_BALL_OLD,
     MOVE_AROUND_BALL2,
     FORWARDKICK,
     SIDEKICK_LEFT,
@@ -52,6 +53,9 @@ public:
         break;
     case PathPlanner2018Routine::AVOID:
       path_type2018 = "avoid";
+      break;
+    case PathPlanner2018Routine::MOVE_AROUND_BALL_OLD:
+      path_type2018 = "move_around_ball_old";
       break;
     case PathPlanner2018Routine::MOVE_AROUND_BALL2:
       path_type2018 = "move_around_ball";
