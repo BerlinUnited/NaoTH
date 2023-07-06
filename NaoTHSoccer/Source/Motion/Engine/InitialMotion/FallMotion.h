@@ -16,13 +16,15 @@
 #include <Representations/Infrastructure/RobotInfo.h>
 #include "Representations/Motion/Request/MotionRequest.h"
 #include <Representations/Infrastructure/JointData.h>
+#include <Representations/Modeling/IMUData.h>
 
 
 BEGIN_DECLARE_MODULE(FallMotion)
   REQUIRE(RobotInfo)
   REQUIRE(SensorJointData)
   REQUIRE(MotionRequest)
-  
+  REQUIRE(IMUData)
+
   PROVIDE(MotionLock)
   PROVIDE(MotorJointData)
 END_DECLARE_MODULE(FallMotion)
