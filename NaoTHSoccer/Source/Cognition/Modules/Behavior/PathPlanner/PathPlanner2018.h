@@ -68,32 +68,49 @@ private:
   public:
     Parameters() : ParameterList("PathPlanner2018")
     {
+      // general
+      PARAMETER_REGISTER(stepLength) = 80.0;
+
+      // nearApproach_sideKick()
       PARAMETER_REGISTER(readyForSideKickThresholdX)            = 4.0;
       PARAMETER_REGISTER(readyForSideKickThresholdY)            = 0.3;
+      PARAMETER_REGISTER(nearApproachSideKickBallPosOffsetX)    = 100;
+      PARAMETER_REGISTER(sidekickOffsetY)                       = 40.0;
+
+      // sideKick()
+      PARAMETER_REGISTER(sideKickTime)                          = 300;
+
+
+      // nearApproach_forwardKick
       PARAMETER_REGISTER(forwardKickThreshold_near.x)           = 25; // mm
       PARAMETER_REGISTER(forwardKickThreshold_near.y)           = 25; // mm
       PARAMETER_REGISTER(forwardKickThreshold_far.x)            = 50; // mm
       PARAMETER_REGISTER(forwardKickThreshold_far.y)            = 25; // mm
-      //PARAMETER_REGISTER(nearApproachForwardKickBallPosOffsetX) = 110;
-      PARAMETER_REGISTER(nearApproachSideKickBallPosOffsetX)    = 100;
-      PARAMETER_REGISTER(sidekickOffsetY) = 40.0;
-      PARAMETER_REGISTER(sideKickTime) = 300;
 
-      PARAMETER_REGISTER(farToNearApproachThreshold)            = 10.0;
-
-      //Parameters for 2019 - needs cleanup
-      PARAMETER_REGISTER(moveAroundBallCharacter) = 1.0;
-      PARAMETER_REGISTER(moveAroundBallCharacterStable) = 0.3;
-
-      PARAMETER_REGISTER(stepLength) = 80.0;
-      PARAMETER_REGISTER(nearApproach_step_character) = 0.3;
+      PARAMETER_REGISTER(forwardKickThreshold.x) = 50; // mm
+      PARAMETER_REGISTER(forwardKickThreshold.y) = 30; // mm
 
       PARAMETER_REGISTER(forwardKickOffset.x) = 120; // mm
       PARAMETER_REGISTER(forwardKickOffset.y) = 0; // mm
-      PARAMETER_REGISTER(forwardKickThreshold.x) = 50; // mm
-      PARAMETER_REGISTER(forwardKickThreshold.y) = 25; // mm
-      PARAMETER_REGISTER(forwardKickAdaptive) = false; // mm
+
+      PARAMETER_REGISTER(nearApproach_step_character) = 0.3;
+
+      //??
+      //PARAMETER_REGISTER(nearApproachForwardKickBallPosOffsetX) = 110;
+
+      // forwardKick()
+      PARAMETER_REGISTER(forwardKickAdaptive) = true; // mm
       PARAMETER_REGISTER(forwardKickTime) = 300;
+
+      // farApproach()
+      PARAMETER_REGISTER(farToNearApproachThreshold)            = 10.0;
+
+      //Parameters for 2019 - needs cleanup
+
+      // moveAroundBall2()
+      PARAMETER_REGISTER(moveAroundBallCharacter) = 1.0;
+      PARAMETER_REGISTER(moveAroundBallCharacterStable) = 0.3;
+
 
       syncWithConfig();
     }
