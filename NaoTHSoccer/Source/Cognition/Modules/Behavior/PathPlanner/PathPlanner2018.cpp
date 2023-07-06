@@ -189,7 +189,9 @@ void PathPlanner2018::moveAroundBall2(const double direction, const double radiu
     Pose2D target_pose;
 
     // the point just behind the ball in the direction of the attack
-    Vector2d target_point = getBallModel().positionPreview - Vector2d(radius, 0.0).rotate(direction);
+    // //todo: check
+    //Vector2d target_point = getBallModel().positionPreview - Vector2d(radius, 0.0).rotate(direction);
+    Vector2d target_point = getBallModel().positionPreview - Vector2d(cos(direction), sin(direction)) * radius;
 
     // reset target_reached flag if we moved too much away from target position
     if(target_point.abs() > 0.5 * step_radius
