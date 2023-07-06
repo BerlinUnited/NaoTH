@@ -160,18 +160,19 @@ void SPLGameController::set(const naoth::GameReturnData& data)
   std::unique_lock<std::mutex> lock(returnDataMutex, std::try_to_lock);
   if ( lock.owns_lock() )
   {
-    if(data.fallen == GameReturnData::ROBOT_FALLEN) {
-      // set to invalid data to avoid sending the message
-      dataOut.playerNum = 0;
-      dataOut.teamNum = 0;
-      dataOut.fallen = data.fallen;
-    } else {
-      dataOut.playerNum = (uint8_t)data.playerNum;
-      dataOut.teamNum = (uint8_t)data.teamNum;
-      dataOut.fallen = data.fallen;
-    }
-  }
+    dataOut.playerNum = (uint8_t)data.playerNum;
+    dataOut.teamNum   = (uint8_t)data.teamNum;
+    dataOut.fallen    = data.fallen;
 
+    dataOut.pose[0]   = (float) data.pose.translation.x;
+    dataOut.pose[1]   = (float) data.pose.translation.y;
+    dataOut.pose[2]   = (float) data.pose.rotation;
+
+    // in seconds (only if positive)!
+    dataOut.ballAge   = (float) ((data.ballAge < 0)? data.ballAge : data.ballAge / 1000.0);
+    dataOut.ball[0]   = (float) data.ballPosition.x;
+    dataOut.ball[1]   = (float) data.ballPosition.y;
+  }
 }
 
 SPLGameController::~SPLGameController()

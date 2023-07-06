@@ -13,6 +13,9 @@
 #include <string>
 #include <vector>
 
+#include "Tools/Math/Vector2.h"
+#include "Tools/Math/Pose2D.h"
+
 #include "Tools/DataStructures/Printable.h"
 #include "Representations/Infrastructure/Configuration.h"
 #include <MessagesSPL/RoboCupGameControlData.h>
@@ -221,6 +224,10 @@ public:
   
   FallenState fallen;  // 1 means that the robot is fallen, 0 means that the robot can play
 
+  // copy from team message
+  Pose2D pose;                // robot pose
+  double ballAge;             // milliseconds since this robot last saw the ball. -1 if we haven't seen it
+  Vector2d ballPosition;      // position of ball relative to the robot coordinates in millimeters; 0,0 is in centre of the robot
 
   /*
   // NOT YET implemented

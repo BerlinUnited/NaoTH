@@ -159,6 +159,12 @@ void GameController::execute()
   getGameReturnData().playerNum = getPlayerInfo().playerNumber;
   // TODO: this is not correctly set
   getGameReturnData().fallen = getWifiMode().wifiEnabled ? GameReturnData::ROBOT_CAN_PLAY : GameReturnData::ROBOT_FALLEN;
+
+  getGameReturnData().pose = getRobotPose();
+
+  // here in milliseconds (conversion to seconds is in TeamMessageData::createSplMessage())
+  getGameReturnData().ballAge = getFrameInfo().getTimeSince(getBallModel().getFrameInfoWhenBallWasSeen().getTime());
+  getGameReturnData().ballPosition = getBallModel().position;
 } // end execute
 
 
