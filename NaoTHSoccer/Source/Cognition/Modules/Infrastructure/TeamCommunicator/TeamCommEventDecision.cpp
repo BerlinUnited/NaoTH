@@ -24,17 +24,18 @@ void TeamCommEventDecision::byInterval()
 {
     if ((unsigned int)getFrameInfo().getTimeSince(params.byInterval_lastSentTimestamp) > params.byInterval_interval)
     {
-        getTeamMessageDecision().send_ntpRequests.set();
         getTeamMessageDecision().send_state.set();
         getTeamMessageDecision().send_fallen.set();
         getTeamMessageDecision().send_readyToWalk.set();
         getTeamMessageDecision().send_pose.set();
         getTeamMessageDecision().send_ballAge.set();
         getTeamMessageDecision().send_ballPosition.set();
-        getTeamMessageDecision().send_timeToBall.set();
-        getTeamMessageDecision().send_wantsToBeStriker.set();
-        getTeamMessageDecision().send_wasStriker.set();
-        getTeamMessageDecision().send_robotRole.set();
+        // NOTE: the following infos are not required --> reduced message size!
+        //getTeamMessageDecision().send_ntpRequests.set();
+        //getTeamMessageDecision().send_timeToBall.set();
+        //getTeamMessageDecision().send_wantsToBeStriker.set();
+        //getTeamMessageDecision().send_wasStriker.set();
+        //getTeamMessageDecision().send_robotRole.set();
 
         params.byInterval_lastSentTimestamp = getFrameInfo().getTime();
     }
@@ -42,11 +43,6 @@ void TeamCommEventDecision::byInterval()
 
 void TeamCommEventDecision::byDistance()
 {
-    // there is no limit/budget in the initial phase; use this phase for syncing
-    if (getGameData().gameState == GameData::initial) {
-        getTeamMessageDecision().send_ntpRequests.set();
-    }
-
     // if the robot is not playing (eg. penalized), do not send any message
     if (getPlayerInfo().robotState != PlayerInfo::playing) {
         return;
@@ -55,6 +51,14 @@ void TeamCommEventDecision::byDistance()
     // as kind of safety set a lower bound how often we can send messages
     if ((unsigned int)getFrameInfo().getTimeSince(params.byDistance_lastSentTimestamp) < params.byDistance_minInterval) {
         return;
+    }
+
+    // use the initial phase phase for syncing
+    if (getGameData().gameState == GameData::initial)
+    {
+        getTeamMessageDecision().send_ntpRequests.set();
+        // update timestamp for the safety condition
+        params.byDistance_lastSentTimestamp = getFrameInfo().getTime();
     }
 
     const auto& role = getRoleDecisionModel().getRole(getPlayerInfo().playerNumber);
