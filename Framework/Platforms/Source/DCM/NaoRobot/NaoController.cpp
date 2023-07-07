@@ -24,7 +24,8 @@ NaoController::NaoController(bool nao6)
     theTeamCommSender(NULL),
     theTeamCommListener(NULL),
     theRemoteCommandListener(NULL),
-    theDebugServer(NULL)
+    theDebugServer(NULL),
+    theDebugSender(NULL)
 {
   // init shared memory
   // sensor data
@@ -101,7 +102,9 @@ NaoController::NaoController(bool nao6)
   // teamcomm
   registerInput<TeamMessageDataIn>(*this);
   registerOutput<const TeamMessageDataOut>(*this);
-
+  // register team debug
+  registerOutput<const TeamMessageDebug>(*this);
+  
   registerInput<RemoteMessageDataIn>(*this);
 
   // debug comm
@@ -159,6 +162,7 @@ NaoController::NaoController(bool nao6)
   theDebugServer = new DebugServer();
   theDebugServer->start(static_cast<unsigned short>(debug_port));
 
+  theDebugSender = new UDPSender("192.168.13.5", 10704, "UDPDebug");
 
   std::cout << "[NaoController] " << "Init SPLGameController"<<endl;
   theGameController = new SPLGameController();
@@ -186,6 +190,7 @@ NaoController::~NaoController()
   delete theTeamCommListener;
   delete theGameController;
   delete theDebugServer;
+  delete theDebugSender;
 }
 
 void NaoController::set(const CameraSettingsRequest &request)

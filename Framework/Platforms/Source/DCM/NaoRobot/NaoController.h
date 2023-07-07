@@ -34,10 +34,12 @@
 #include "Tools/Communication/Network/SPLGameController.h"
 #include "Tools/Communication/Network/BroadCaster.h"
 #include "Tools/Communication/Network/UDPReceiver.h"
+#include "Tools/Communication/Network/UDPSender.h"
 
 // representations
 #include <Representations/Infrastructure/FrameInfo.h>
 #include "Representations/Infrastructure/TeamMessageData.h"
+#include "Representations/Infrastructure/TeamMessageDebug.h"
 #include "Representations/Infrastructure/RemoteMessageData.h"
 #include "Representations/Infrastructure/GameData.h"
 #include "Representations/Infrastructure/SoundData.h"
@@ -99,6 +101,9 @@ public:
   // gamecontroller stuff
   void get(GameData& data){ theGameController->get(data); }
   void set(const GameReturnData& data) { theGameController->set(data); }
+
+  // team debug stuff
+  void set(const TeamMessageDebug& data) { theDebugSender->send(data.data); }
 
   // debug comm
   void get(DebugMessageInCognition& data) { theDebugServer->getDebugMessageInCognition(data); }
@@ -201,6 +206,7 @@ protected:
   V4lCameraHandler theTopCameraHandler;
   
   SoundControl *theSoundHandler;
+  UDPSender* theDebugSender;
   BroadCaster* theTeamCommSender;
   UDPReceiver* theTeamCommListener;
   UDPReceiver* theRemoteCommandListener;
