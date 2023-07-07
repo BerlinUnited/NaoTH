@@ -98,6 +98,7 @@
 #include "Modules/Modeling/SelfLocator/OdometrySelfLocator/OdometrySelfLocator.h"
 #include "Modules/Modeling/GoalModel/DummyActiveGoalLocator/DummyActiveGoalLocator.h"
 #include "Modules/Modeling/GoalModel/WholeGoalLocator/WholeGoalLocator.h"
+#include "Modules/Modeling/AttentionEngine/AttentionEngine.h"
 
 // role decisions
 #include "Modules/Modeling/RoleDecision/RolesProvider.h"
@@ -274,6 +275,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(KickDirectionSimulator);
   REGISTER_MODULE(Simulation);
   REGISTER_MODULE(StaticDebugModelProvider);
+  REGISTER_MODULE(AttentionEngine);
 
   // behavior
   REGISTER_MODULE(BasicTestBehavior);

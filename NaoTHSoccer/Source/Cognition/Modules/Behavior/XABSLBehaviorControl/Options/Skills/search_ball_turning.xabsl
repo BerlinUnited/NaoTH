@@ -31,9 +31,6 @@ option search_ball_turning
     }
     action
     {
-      
-//head.control_mode =  search_for_ball;
-
       head.control_mode =  look_at_preview_angle;
  
       motion.type = walk;
