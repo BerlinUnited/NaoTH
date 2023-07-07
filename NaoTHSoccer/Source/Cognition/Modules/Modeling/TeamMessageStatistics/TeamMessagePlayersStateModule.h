@@ -157,6 +157,13 @@ private:
      */
     void determineActiveStatesGameController()
     {
+        // if don't have valid data from gamecontroller, assume everybody is active (eg. for tests on the robot)
+        if (!getGameData().valid)
+        {
+            determineActiveStatesAlways();
+            return;
+        }
+
         const auto& state   = getTeamMessagePlayersState().data;
         const auto& players = getGameData().ownTeam.players;
         for (size_t index = 0; index < players.size(); ++index)

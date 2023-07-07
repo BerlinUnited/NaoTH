@@ -7,8 +7,6 @@ option pathplanner2018_forwardkick
       goto idle;
     else if(situation_abortable && !ball.know_where_itis)
       goto search;
-
-
   }
 
   initial state idle 
@@ -31,7 +29,7 @@ option pathplanner2018_forwardkick
   {
     decision 
     {
-      else if (action_done)
+      else if (ball.know_where_itis && ball.distance < 500)
         goto pathplanner_go;
       else
         stay;
@@ -39,7 +37,10 @@ option pathplanner2018_forwardkick
     action{
       situation_abortable = true;
       path2018.routine = none;
-      search_ball();
+      
+      //search_ball();
+      motion.type = stand;
+      head.control_mode = search_for_ball;
     }
   }
 
@@ -55,7 +56,6 @@ option pathplanner2018_forwardkick
     action 
     {
       head.control_mode = look_at_ball_percept;
-
       path2018.routine = forwardkick;
     }
   }
@@ -77,16 +77,19 @@ option pathplanner2018_forwardkick
     }
   }
 
-  state stand{
-  decision{
-      else {
+  state stand
+  {
+    decision 
+    {
+      else if (state_time > 1000)
+        goto search;
+      else
         stay;
-      }
     }
     action
     {
       motion.type = stand;
     }  
   }
-
+  
 }

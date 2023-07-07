@@ -52,6 +52,9 @@ extern RobotRoleDefaultTypeInternal _RobotRole_default_instance_;
 class TeamMessage;
 class TeamMessageDefaultTypeInternal;
 extern TeamMessageDefaultTypeInternal _TeamMessage_default_instance_;
+class TeamMessageDecision;
+class TeamMessageDecisionDefaultTypeInternal;
+extern TeamMessageDecisionDefaultTypeInternal _TeamMessageDecision_default_instance_;
 class TeamMessage_Data;
 class TeamMessage_DataDefaultTypeInternal;
 extern TeamMessage_DataDefaultTypeInternal _TeamMessage_Data_default_instance_;
@@ -1361,6 +1364,217 @@ class TeamMessage : public ::google::protobuf::Message /* @@protoc_insertion_poi
 };
 // -------------------------------------------------------------------
 
+class TeamMessageDecision : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:naothmessages.TeamMessageDecision) */ {
+ public:
+  TeamMessageDecision();
+  virtual ~TeamMessageDecision();
+
+  TeamMessageDecision(const TeamMessageDecision& from);
+
+  inline TeamMessageDecision& operator=(const TeamMessageDecision& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  #if LANG_CXX11
+  TeamMessageDecision(TeamMessageDecision&& from) noexcept
+    : TeamMessageDecision() {
+    *this = ::std::move(from);
+  }
+
+  inline TeamMessageDecision& operator=(TeamMessageDecision&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+  #endif
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _internal_metadata_.unknown_fields();
+  }
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return _internal_metadata_.mutable_unknown_fields();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const TeamMessageDecision& default_instance();
+
+  static inline const TeamMessageDecision* internal_default_instance() {
+    return reinterpret_cast<const TeamMessageDecision*>(
+               &_TeamMessageDecision_default_instance_);
+  }
+  static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
+    7;
+
+  void Swap(TeamMessageDecision* other);
+  friend void swap(TeamMessageDecision& a, TeamMessageDecision& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline TeamMessageDecision* New() const PROTOBUF_FINAL { return New(NULL); }
+
+  TeamMessageDecision* New(::google::protobuf::Arena* arena) const PROTOBUF_FINAL;
+  void CopyFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void MergeFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void CopyFrom(const TeamMessageDecision& from);
+  void MergeFrom(const TeamMessageDecision& from);
+  void Clear() PROTOBUF_FINAL;
+  bool IsInitialized() const PROTOBUF_FINAL;
+
+  size_t ByteSizeLong() const PROTOBUF_FINAL;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) PROTOBUF_FINAL;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const PROTOBUF_FINAL;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const PROTOBUF_FINAL;
+  int GetCachedSize() const PROTOBUF_FINAL { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const PROTOBUF_FINAL;
+  void InternalSwap(TeamMessageDecision* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const PROTOBUF_FINAL;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // required bool send_ntpRequests = 1 [default = false];
+  bool has_send_ntprequests() const;
+  void clear_send_ntprequests();
+  static const int kSendNtpRequestsFieldNumber = 1;
+  bool send_ntprequests() const;
+  void set_send_ntprequests(bool value);
+
+  // required bool send_state = 2 [default = false];
+  bool has_send_state() const;
+  void clear_send_state();
+  static const int kSendStateFieldNumber = 2;
+  bool send_state() const;
+  void set_send_state(bool value);
+
+  // required bool send_fallen = 3 [default = false];
+  bool has_send_fallen() const;
+  void clear_send_fallen();
+  static const int kSendFallenFieldNumber = 3;
+  bool send_fallen() const;
+  void set_send_fallen(bool value);
+
+  // required bool send_readyToWalk = 4 [default = false];
+  bool has_send_readytowalk() const;
+  void clear_send_readytowalk();
+  static const int kSendReadyToWalkFieldNumber = 4;
+  bool send_readytowalk() const;
+  void set_send_readytowalk(bool value);
+
+  // required bool send_pose = 5 [default = false];
+  bool has_send_pose() const;
+  void clear_send_pose();
+  static const int kSendPoseFieldNumber = 5;
+  bool send_pose() const;
+  void set_send_pose(bool value);
+
+  // required bool send_ballAge = 6 [default = false];
+  bool has_send_ballage() const;
+  void clear_send_ballage();
+  static const int kSendBallAgeFieldNumber = 6;
+  bool send_ballage() const;
+  void set_send_ballage(bool value);
+
+  // required bool send_ballPosition = 7 [default = false];
+  bool has_send_ballposition() const;
+  void clear_send_ballposition();
+  static const int kSendBallPositionFieldNumber = 7;
+  bool send_ballposition() const;
+  void set_send_ballposition(bool value);
+
+  // required bool send_timeToBall = 8 [default = false];
+  bool has_send_timetoball() const;
+  void clear_send_timetoball();
+  static const int kSendTimeToBallFieldNumber = 8;
+  bool send_timetoball() const;
+  void set_send_timetoball(bool value);
+
+  // required bool send_wantsToBeStriker = 9 [default = false];
+  bool has_send_wantstobestriker() const;
+  void clear_send_wantstobestriker();
+  static const int kSendWantsToBeStrikerFieldNumber = 9;
+  bool send_wantstobestriker() const;
+  void set_send_wantstobestriker(bool value);
+
+  // required bool send_wasStriker = 10 [default = false];
+  bool has_send_wasstriker() const;
+  void clear_send_wasstriker();
+  static const int kSendWasStrikerFieldNumber = 10;
+  bool send_wasstriker() const;
+  void set_send_wasstriker(bool value);
+
+  // required bool send_robotRole = 11 [default = false];
+  bool has_send_robotrole() const;
+  void clear_send_robotrole();
+  static const int kSendRobotRoleFieldNumber = 11;
+  bool send_robotrole() const;
+  void set_send_robotrole(bool value);
+
+  // @@protoc_insertion_point(class_scope:naothmessages.TeamMessageDecision)
+ private:
+  void set_has_send_ntprequests();
+  void clear_has_send_ntprequests();
+  void set_has_send_state();
+  void clear_has_send_state();
+  void set_has_send_fallen();
+  void clear_has_send_fallen();
+  void set_has_send_readytowalk();
+  void clear_has_send_readytowalk();
+  void set_has_send_pose();
+  void clear_has_send_pose();
+  void set_has_send_ballage();
+  void clear_has_send_ballage();
+  void set_has_send_ballposition();
+  void clear_has_send_ballposition();
+  void set_has_send_timetoball();
+  void clear_has_send_timetoball();
+  void set_has_send_wantstobestriker();
+  void clear_has_send_wantstobestriker();
+  void set_has_send_wasstriker();
+  void clear_has_send_wasstriker();
+  void set_has_send_robotrole();
+  void clear_has_send_robotrole();
+
+  // helper for ByteSizeLong()
+  size_t RequiredFieldsByteSizeFallback() const;
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::internal::HasBits<1> _has_bits_;
+  mutable int _cached_size_;
+  bool send_ntprequests_;
+  bool send_state_;
+  bool send_fallen_;
+  bool send_readytowalk_;
+  bool send_pose_;
+  bool send_ballage_;
+  bool send_ballposition_;
+  bool send_timetoball_;
+  bool send_wantstobestriker_;
+  bool send_wasstriker_;
+  bool send_robotrole_;
+  friend struct protobuf_TeamMessage_2eproto::TableStruct;
+};
+// -------------------------------------------------------------------
+
 class TeamState_Player : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:naothmessages.TeamState.Player) */ {
  public:
   TeamState_Player();
@@ -1402,7 +1616,7 @@ class TeamState_Player : public ::google::protobuf::Message /* @@protoc_insertio
                &_TeamState_Player_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    7;
+    8;
 
   void Swap(TeamState_Player* other);
   friend void swap(TeamState_Player& a, TeamState_Player& b) {
@@ -1771,7 +1985,7 @@ class TeamState : public ::google::protobuf::Message /* @@protoc_insertion_point
                &_TeamState_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    8;
+    9;
 
   void Swap(TeamState* other);
   friend void swap(TeamState& a, TeamState& b) {
@@ -3255,6 +3469,274 @@ inline void TeamMessage::set_allocated_messagedrop(::naothmessages::Drops* messa
 
 // -------------------------------------------------------------------
 
+// TeamMessageDecision
+
+// required bool send_ntpRequests = 1 [default = false];
+inline bool TeamMessageDecision::has_send_ntprequests() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void TeamMessageDecision::set_has_send_ntprequests() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void TeamMessageDecision::clear_has_send_ntprequests() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void TeamMessageDecision::clear_send_ntprequests() {
+  send_ntprequests_ = false;
+  clear_has_send_ntprequests();
+}
+inline bool TeamMessageDecision::send_ntprequests() const {
+  // @@protoc_insertion_point(field_get:naothmessages.TeamMessageDecision.send_ntpRequests)
+  return send_ntprequests_;
+}
+inline void TeamMessageDecision::set_send_ntprequests(bool value) {
+  set_has_send_ntprequests();
+  send_ntprequests_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.TeamMessageDecision.send_ntpRequests)
+}
+
+// required bool send_state = 2 [default = false];
+inline bool TeamMessageDecision::has_send_state() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void TeamMessageDecision::set_has_send_state() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void TeamMessageDecision::clear_has_send_state() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void TeamMessageDecision::clear_send_state() {
+  send_state_ = false;
+  clear_has_send_state();
+}
+inline bool TeamMessageDecision::send_state() const {
+  // @@protoc_insertion_point(field_get:naothmessages.TeamMessageDecision.send_state)
+  return send_state_;
+}
+inline void TeamMessageDecision::set_send_state(bool value) {
+  set_has_send_state();
+  send_state_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.TeamMessageDecision.send_state)
+}
+
+// required bool send_fallen = 3 [default = false];
+inline bool TeamMessageDecision::has_send_fallen() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void TeamMessageDecision::set_has_send_fallen() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void TeamMessageDecision::clear_has_send_fallen() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void TeamMessageDecision::clear_send_fallen() {
+  send_fallen_ = false;
+  clear_has_send_fallen();
+}
+inline bool TeamMessageDecision::send_fallen() const {
+  // @@protoc_insertion_point(field_get:naothmessages.TeamMessageDecision.send_fallen)
+  return send_fallen_;
+}
+inline void TeamMessageDecision::set_send_fallen(bool value) {
+  set_has_send_fallen();
+  send_fallen_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.TeamMessageDecision.send_fallen)
+}
+
+// required bool send_readyToWalk = 4 [default = false];
+inline bool TeamMessageDecision::has_send_readytowalk() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void TeamMessageDecision::set_has_send_readytowalk() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void TeamMessageDecision::clear_has_send_readytowalk() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline void TeamMessageDecision::clear_send_readytowalk() {
+  send_readytowalk_ = false;
+  clear_has_send_readytowalk();
+}
+inline bool TeamMessageDecision::send_readytowalk() const {
+  // @@protoc_insertion_point(field_get:naothmessages.TeamMessageDecision.send_readyToWalk)
+  return send_readytowalk_;
+}
+inline void TeamMessageDecision::set_send_readytowalk(bool value) {
+  set_has_send_readytowalk();
+  send_readytowalk_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.TeamMessageDecision.send_readyToWalk)
+}
+
+// required bool send_pose = 5 [default = false];
+inline bool TeamMessageDecision::has_send_pose() const {
+  return (_has_bits_[0] & 0x00000010u) != 0;
+}
+inline void TeamMessageDecision::set_has_send_pose() {
+  _has_bits_[0] |= 0x00000010u;
+}
+inline void TeamMessageDecision::clear_has_send_pose() {
+  _has_bits_[0] &= ~0x00000010u;
+}
+inline void TeamMessageDecision::clear_send_pose() {
+  send_pose_ = false;
+  clear_has_send_pose();
+}
+inline bool TeamMessageDecision::send_pose() const {
+  // @@protoc_insertion_point(field_get:naothmessages.TeamMessageDecision.send_pose)
+  return send_pose_;
+}
+inline void TeamMessageDecision::set_send_pose(bool value) {
+  set_has_send_pose();
+  send_pose_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.TeamMessageDecision.send_pose)
+}
+
+// required bool send_ballAge = 6 [default = false];
+inline bool TeamMessageDecision::has_send_ballage() const {
+  return (_has_bits_[0] & 0x00000020u) != 0;
+}
+inline void TeamMessageDecision::set_has_send_ballage() {
+  _has_bits_[0] |= 0x00000020u;
+}
+inline void TeamMessageDecision::clear_has_send_ballage() {
+  _has_bits_[0] &= ~0x00000020u;
+}
+inline void TeamMessageDecision::clear_send_ballage() {
+  send_ballage_ = false;
+  clear_has_send_ballage();
+}
+inline bool TeamMessageDecision::send_ballage() const {
+  // @@protoc_insertion_point(field_get:naothmessages.TeamMessageDecision.send_ballAge)
+  return send_ballage_;
+}
+inline void TeamMessageDecision::set_send_ballage(bool value) {
+  set_has_send_ballage();
+  send_ballage_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.TeamMessageDecision.send_ballAge)
+}
+
+// required bool send_ballPosition = 7 [default = false];
+inline bool TeamMessageDecision::has_send_ballposition() const {
+  return (_has_bits_[0] & 0x00000040u) != 0;
+}
+inline void TeamMessageDecision::set_has_send_ballposition() {
+  _has_bits_[0] |= 0x00000040u;
+}
+inline void TeamMessageDecision::clear_has_send_ballposition() {
+  _has_bits_[0] &= ~0x00000040u;
+}
+inline void TeamMessageDecision::clear_send_ballposition() {
+  send_ballposition_ = false;
+  clear_has_send_ballposition();
+}
+inline bool TeamMessageDecision::send_ballposition() const {
+  // @@protoc_insertion_point(field_get:naothmessages.TeamMessageDecision.send_ballPosition)
+  return send_ballposition_;
+}
+inline void TeamMessageDecision::set_send_ballposition(bool value) {
+  set_has_send_ballposition();
+  send_ballposition_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.TeamMessageDecision.send_ballPosition)
+}
+
+// required bool send_timeToBall = 8 [default = false];
+inline bool TeamMessageDecision::has_send_timetoball() const {
+  return (_has_bits_[0] & 0x00000080u) != 0;
+}
+inline void TeamMessageDecision::set_has_send_timetoball() {
+  _has_bits_[0] |= 0x00000080u;
+}
+inline void TeamMessageDecision::clear_has_send_timetoball() {
+  _has_bits_[0] &= ~0x00000080u;
+}
+inline void TeamMessageDecision::clear_send_timetoball() {
+  send_timetoball_ = false;
+  clear_has_send_timetoball();
+}
+inline bool TeamMessageDecision::send_timetoball() const {
+  // @@protoc_insertion_point(field_get:naothmessages.TeamMessageDecision.send_timeToBall)
+  return send_timetoball_;
+}
+inline void TeamMessageDecision::set_send_timetoball(bool value) {
+  set_has_send_timetoball();
+  send_timetoball_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.TeamMessageDecision.send_timeToBall)
+}
+
+// required bool send_wantsToBeStriker = 9 [default = false];
+inline bool TeamMessageDecision::has_send_wantstobestriker() const {
+  return (_has_bits_[0] & 0x00000100u) != 0;
+}
+inline void TeamMessageDecision::set_has_send_wantstobestriker() {
+  _has_bits_[0] |= 0x00000100u;
+}
+inline void TeamMessageDecision::clear_has_send_wantstobestriker() {
+  _has_bits_[0] &= ~0x00000100u;
+}
+inline void TeamMessageDecision::clear_send_wantstobestriker() {
+  send_wantstobestriker_ = false;
+  clear_has_send_wantstobestriker();
+}
+inline bool TeamMessageDecision::send_wantstobestriker() const {
+  // @@protoc_insertion_point(field_get:naothmessages.TeamMessageDecision.send_wantsToBeStriker)
+  return send_wantstobestriker_;
+}
+inline void TeamMessageDecision::set_send_wantstobestriker(bool value) {
+  set_has_send_wantstobestriker();
+  send_wantstobestriker_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.TeamMessageDecision.send_wantsToBeStriker)
+}
+
+// required bool send_wasStriker = 10 [default = false];
+inline bool TeamMessageDecision::has_send_wasstriker() const {
+  return (_has_bits_[0] & 0x00000200u) != 0;
+}
+inline void TeamMessageDecision::set_has_send_wasstriker() {
+  _has_bits_[0] |= 0x00000200u;
+}
+inline void TeamMessageDecision::clear_has_send_wasstriker() {
+  _has_bits_[0] &= ~0x00000200u;
+}
+inline void TeamMessageDecision::clear_send_wasstriker() {
+  send_wasstriker_ = false;
+  clear_has_send_wasstriker();
+}
+inline bool TeamMessageDecision::send_wasstriker() const {
+  // @@protoc_insertion_point(field_get:naothmessages.TeamMessageDecision.send_wasStriker)
+  return send_wasstriker_;
+}
+inline void TeamMessageDecision::set_send_wasstriker(bool value) {
+  set_has_send_wasstriker();
+  send_wasstriker_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.TeamMessageDecision.send_wasStriker)
+}
+
+// required bool send_robotRole = 11 [default = false];
+inline bool TeamMessageDecision::has_send_robotrole() const {
+  return (_has_bits_[0] & 0x00000400u) != 0;
+}
+inline void TeamMessageDecision::set_has_send_robotrole() {
+  _has_bits_[0] |= 0x00000400u;
+}
+inline void TeamMessageDecision::clear_has_send_robotrole() {
+  _has_bits_[0] &= ~0x00000400u;
+}
+inline void TeamMessageDecision::clear_send_robotrole() {
+  send_robotrole_ = false;
+  clear_has_send_robotrole();
+}
+inline bool TeamMessageDecision::send_robotrole() const {
+  // @@protoc_insertion_point(field_get:naothmessages.TeamMessageDecision.send_robotRole)
+  return send_robotrole_;
+}
+inline void TeamMessageDecision::set_send_robotrole(bool value) {
+  set_has_send_robotrole();
+  send_robotrole_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.TeamMessageDecision.send_robotRole)
+}
+
+// -------------------------------------------------------------------
+
 // TeamState_Player
 
 // optional uint32 number = 1 [default = 0];
@@ -4014,6 +4496,8 @@ TeamState::players() const {
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
 #endif  // !PROTOBUF_INLINE_NOT_IN_HEADERS
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------
