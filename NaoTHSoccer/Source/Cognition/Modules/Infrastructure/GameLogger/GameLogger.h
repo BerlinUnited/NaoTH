@@ -105,7 +105,6 @@ private:
       PARAMETER_REGISTER(logPlainImages) = true;
       PARAMETER_REGISTER(logPlainImagesDelay) = 2000; // ms
       PARAMETER_REGISTER(logUltraSound) = false;
-      PARAMETER_REGISTER(logDirPath) = "/tmp";
       syncWithConfig();
     }
 
@@ -115,7 +114,6 @@ private:
     bool logPlainImages;
     int logPlainImagesDelay;
     bool logUltraSound;
-    std::string logDirPath;
   } params;
 
 private:
