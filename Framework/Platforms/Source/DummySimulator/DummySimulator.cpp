@@ -55,6 +55,11 @@ DummySimulator::~DummySimulator()
   {
     delete theTeamCommListener;
   }
+
+  if (theDebugSender != nullptr)
+  {
+    delete theDebugSender;
+  }
 }
 
 void DummySimulator::printHelp()
@@ -166,10 +171,13 @@ void DummySimulator::enableTeamComm(string interface)
     if (!interface.empty()) { interfaceName.assign(interface); }
 
     // start sender/receiver threads
-    theTeamCommSender = new BroadCaster(interfaceName, teamcomm_port);
+    theTeamCommSender   = new BroadCaster(interfaceName, teamcomm_port);
     theTeamCommListener = new UDPReceiver(teamcomm_port, TEAMCOMM_MAX_MSG_SIZE);
+    theDebugSender      = new UDPSender("127.0.0.1", 1234, "UDPDebug");
 
     // register teamcomm
     registerInput<TeamMessageDataIn>(*this);
     registerOutput<const TeamMessageDataOut>(*this);
+    // register team debug
+    registerOutput<const TeamMessageDebug>(*this);
 }
