@@ -7,6 +7,7 @@
 
 #include <mutex>
 #include <thread>
+#include <condition_variable>
 
 using namespace spl;
 
@@ -27,8 +28,8 @@ private:
   std::string name;
 
   std::string dataOut = "";
-  std::mutex  dataMutex;
-  std::mutex returnDataMutex;
+  std::mutex  dataOutMutex;
+  std::condition_variable dataOutCond;
 
   bool exiting = false;
   GCancellable* cancelable;

@@ -42,6 +42,7 @@ UDPSender::~UDPSender()
   std::cout << "[" << name << "] stop wait" << std::endl;
   // request the thread to stop
   exiting = true;
+  dataOutCond.notify_all();
 
   // notify all waiting connections to cancel
   g_cancellable_cancel(cancelable);
@@ -104,24 +105,22 @@ void UDPSender::send(const std::string& data)
     return;
   }
 
-  std::unique_lock<std::mutex> lock(returnDataMutex, std::try_to_lock);
-  if ( lock.owns_lock() )
+  std::unique_lock<std::mutex> lock(dataOutMutex, std::try_to_lock);
+  if (lock.owns_lock())
   {
     dataOut = data;
+    lock.unlock();
+    dataOutCond.notify_all();
   }
 }
 
 void UDPSender::socketSend(const std::string& data)
 {
-  if ( data.empty() ) {
-    return;
-  }
-
   GError *error = NULL;
   if(address != NULL)
   {
     gssize result = g_socket_send_to(socket, address, data.c_str(), data.size(), cancelable, &error);
-    if ( result != sizeof(data) ) {
+    if ( result != data.size() ) {
       std::cout << "[WARN] " << name << "::socketSend, sended size = " <<  result << std::endl;
     }
     if (error) {
@@ -135,10 +134,17 @@ void UDPSender::socketLoop()
 {
   while(!exiting && socket != NULL)
   {
+    std::unique_lock<std::mutex> lock(dataOutMutex);
+    // wait until it is necessary to send data
+    while (dataOut.empty() && !exiting && socket != NULL)
     {
-      std::lock_guard<std::mutex> lock(returnDataMutex);
-      socketSend(dataOut);
-      dataOut.clear();
+      dataOutCond.wait(lock);
+    }
+
+    if (!dataOut.empty())
+    {
+        socketSend(dataOut);
+        dataOut.clear();
     }
   }
 }
