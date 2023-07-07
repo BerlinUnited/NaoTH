@@ -82,7 +82,6 @@ private:
         double byDistance_midfielder        = 750.0;
         double byDistance_forward           = 1000.0;
         double byDistance_striker           = 100.0;
-        unsigned int byDistance_striker_last_ts = 0; // not configurable
         double byDistance_striker_minInterval   = 1000; // interval in ms, the striker should at least send a message
 
         std::string decision_method;

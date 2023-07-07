@@ -86,7 +86,8 @@ void TeamCommEventDecision::byDistance()
         distance = params.byDistance_striker;
 
         // the striker should send a message regularly, even if he didn't move far enough
-        if ((unsigned int)getFrameInfo().getTimeSince(params.byDistance_striker_last_ts) < params.byDistance_striker_minInterval)
+        if ((unsigned int)getFrameInfo().getTimeSince(params.byDistance_lastSentTimestamp) < params.byDistance_striker_minInterval
+            && getBallModel().position.abs() < params.byDistance_striker)
         {
             distance = 0.0;
         }
@@ -96,6 +97,7 @@ void TeamCommEventDecision::byDistance()
     if ((getRobotPose() - params.byDistance_lastPose).translation.abs() > distance)
     {
         getTeamMessageDecision().send_pose.set();
+        getTeamMessageDecision().send_wasStriker.set();
 
         // only send ball model, if it adds value
         if (getBallModel().knows) {
@@ -107,6 +109,5 @@ void TeamCommEventDecision::byDistance()
 
         // update timestamp for the safety condition
         params.byDistance_lastSentTimestamp = getFrameInfo().getTime();
-        params.byDistance_striker_last_ts = getFrameInfo().getTime();
     }
 }
