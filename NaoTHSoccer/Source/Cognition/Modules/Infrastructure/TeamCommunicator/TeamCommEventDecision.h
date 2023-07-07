@@ -64,7 +64,7 @@ private:
             PARAMETER_REGISTER(byDistance_midfielder) = 750.0;
             PARAMETER_REGISTER(byDistance_forward) = 1000.0;
             PARAMETER_REGISTER(byDistance_striker) = 100.0;
-            PARAMETER_REGISTER(byDistance_striker_minInterval) = 500;
+            PARAMETER_REGISTER(byDistance_striker_minInterval) = 1000;
 
             // load from the file after registering all parameters
             syncWithConfig();
@@ -83,7 +83,7 @@ private:
         double byDistance_forward           = 1000.0;
         double byDistance_striker           = 100.0;
         unsigned int byDistance_striker_last_ts = 0; // not configurable
-        double byDistance_striker_minInterval   = 500; // interval in ms, the striker should at least send a message
+        double byDistance_striker_minInterval   = 1000; // interval in ms, the striker should at least send a message
 
         std::string decision_method;
         void (TeamCommEventDecision::*decisionMethod)();
