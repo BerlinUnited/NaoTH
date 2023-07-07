@@ -329,6 +329,10 @@ void HeadMotionEngine::lookAtWorldPointCool(const Vector3d& origTarget)
     x = CameraGeometry::lookAtPoint(target, getCameraMatrix().translation.z);
   }
 
+  // HACK: for HULKS game RC23
+  if(x.y < Math::fromDegrees(21))
+    x.y = Math::fromDegrees(21);
+
   //moveByAngle(x);
   gotoAngle(x);
 }//end lookAtWorldPointCool
