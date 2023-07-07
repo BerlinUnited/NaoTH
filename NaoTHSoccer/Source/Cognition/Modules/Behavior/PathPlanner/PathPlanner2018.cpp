@@ -811,16 +811,35 @@ void PathPlanner2018::forwardKick()
       forward_kick_step.setPose({ 0.0, ballPos.x, ballPos.y }); // kick towards the ball
     }
 
+    // Experimental: for Gewaltkick
+    //               additional steps need to be be commented out
+    // forward_kick_step.setPose({ 0.0, 0.0, 0.0 });
+
     addStep(forward_kick_step);
 
     // The zero step
-    forward_kick_step.setStepType(StepType::ZEROSTEP);
-    addStep(forward_kick_step);
+    //forward_kick_step.setStepType(StepType::ZEROSTEP);
+    //addStep(forward_kick_step);
 
     // The retracting walk step
-    forward_kick_step.setPose({ 0.0, 0.0, 0.0 });
-    forward_kick_step.setStepType(StepType::WALKSTEP);
-    addStep(forward_kick_step);
+    //forward_kick_step.setPose({ 0.0, 0.0, 0.0 });
+    //forward_kick_step.setStepType(StepType::WALKSTEP);
+    //addStep(forward_kick_step);
+
+    StepBufferElement forward_correction_step("forward_correction_step");
+    forward_correction_step
+      .setPose({ 0.0, 0.0, 0.0 })
+      .setStepType(StepType::WALKSTEP)
+      .setCharacter(1.0)
+      .setScale(1.0)
+      .setCoordinate(Coordinate::Hip)
+      .setFoot(Foot::NONE)
+      .setSpeedDirection(Math::fromDegrees(0.0))
+      .setRestriction(RestrictionMode::HARD)
+      .setProtected(false)
+      .setTime(250);
+
+    addStep(forward_correction_step);
 
     kickPlanned = true;
   }
