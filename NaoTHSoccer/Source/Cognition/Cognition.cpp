@@ -316,6 +316,19 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
     setModuleEnabled(*name, active);
   }//end for
 
+  // Check if all the keys in the config do exist as modules. 
+  // PRECEDENT: RoboCup 2023 - the ultrasound obstacle detection was 
+  // not on because the module UltraSoundControl was renamed but the config was not adjusted.
+  // Only remove if you have a better solution.
+  bool allConfiguredModulesExist = true;
+  for(const std::string& module_name: config.getKeys("modules")) {
+    if(ModuleManager::getModule(module_name) == NULL) {
+      std::cerr << "ERROR: Module " << module_name << " is mentioned in the config, but not registered in cognition" << std::endl;
+      allConfiguredModulesExist = false;
+    }
+  }
+  ASSERT_MSG(allConfiguredModulesExist, "Some of the modules are mentioned in the config, but are not registered.")
+
   // auto-generate the execution list
   //calculateExecutionList();
 
