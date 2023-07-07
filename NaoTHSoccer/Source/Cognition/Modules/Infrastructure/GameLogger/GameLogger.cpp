@@ -106,6 +106,7 @@ void GameLogger::execute()
       }
 
       LOGSTUFF(TeamState);
+      LOGSTUFF(TeamMessageDecision);
 
 
       // keep the audio device open for some time

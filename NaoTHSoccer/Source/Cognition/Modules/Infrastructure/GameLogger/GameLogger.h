@@ -20,6 +20,7 @@
 #include <Representations/Modeling/OdometryData.h>
 #include <Representations/Perception/CameraMatrix.h>
 #include "Representations/Modeling/TeamState.h"
+#include "Representations/Modeling/TeamMessageDecision.h"
 #include "Representations/Modeling/BodyStatus.h"
 #include "Representations/Motion/MotionStatus.h"
 #include "Representations/Modeling/BallModel.h"
@@ -77,6 +78,7 @@ BEGIN_DECLARE_MODULE(GameLogger)
   REQUIRE(BallCandidatesTop)
 
   REQUIRE(TeamState)
+  REQUIRE(TeamMessageDecision)
 
   REQUIRE(AudioData)
   PROVIDE(AudioControl) // needed to keep the device open for a bit after it's requested to stop
