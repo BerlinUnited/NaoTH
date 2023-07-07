@@ -12,15 +12,17 @@ public:
     struct BooleanValue
     {
         public:
-            void set() { value = true; }
+            void set() { value = true; ++cnt; }
             void reset() { value = false; }
             const bool operator()() const { return value; }
             friend std::ostream& operator<<(std::ostream& stream, const BooleanValue& val) {
-                return stream << (val() ? "True" : "False");
+                return stream << (val() ? "True" : "False") << " (" << val.cnt << ")";
             }
+            unsigned int count() { return cnt; }
 
-        private:
+           private:
             bool value = false;
+            unsigned int cnt = 0;
     };
 
     /** ntp requests from teammates */
