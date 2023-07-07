@@ -56,9 +56,9 @@ DummySimulator::~DummySimulator()
     delete theTeamCommListener;
   }
 
-  if (theDebugSender != nullptr)
+  if (theTeamCommDebugger != nullptr)
   {
-    delete theDebugSender;
+    delete theTeamCommDebugger;
   }
 }
 
@@ -181,6 +181,6 @@ void DummySimulator::enableTeamComm(string interface)
 
 void DummySimulator::enableTeamCommDebug(string ip, unsigned int port)
 {
-    theDebugSender      = new UDPSender(ip, port, "UDPDebug");
+    theTeamCommDebugger = new UDPSender(ip, port, "TeamCommDebugger");
     registerOutput<const TeamMessageDebug>(*this);
 }

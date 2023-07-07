@@ -1,11 +1,8 @@
-
 #include "UDPSender.h"
 
 #include <PlatformInterface/Platform.h>
 #include "Tools/Communication/NetAddr.h"
 #include <Tools/ThreadUtil.h>
-
-#include <cstdlib>
 
 #ifdef WIN32
 #include <winsock.h>
@@ -23,7 +20,7 @@ UDPSender::UDPSender(std::string ip, unsigned int port, std::string name)
   GError* err = bindAddress();
   if(err)
   {
-    std::cout << "[WARN] could not listen for " << name << ": " << err->message << std::endl;
+    std::cout << "[WARN] " << name << " could not listen for " << ip << ":" << port << ": " << err->message << std::endl;
     socket = NULL;
     g_error_free(err);
   }
@@ -58,6 +55,7 @@ UDPSender::~UDPSender()
   if(address != NULL) {
     g_object_unref(address);
   }
+
   g_object_unref(cancelable);
   std::cout << "[" << name << "] stop done" << std::endl;
 }
@@ -148,4 +146,3 @@ void UDPSender::socketLoop()
     }
   }
 }
-

@@ -21,7 +21,7 @@ NaoController::NaoController(bool nao6)
     : 
     nao6(nao6),
     theSoundHandler(NULL),
-    theDebugSender(NULL),
+    theTeamCommDebugger(NULL),
     theTeamCommSender(NULL),
     theTeamCommListener(NULL),
     theRemoteCommandListener(NULL),
@@ -172,7 +172,7 @@ NaoController::NaoController(bool nao6)
   {
     debugPort = (unsigned int) config.getInt("teamcomm", "debug_port");
   }
-  theDebugSender = new UDPSender(debugIp, debugPort, "UDPDebug");
+  theTeamCommDebugger = new UDPSender(debugIp, debugPort, "TeamCommDebugger");
 
   std::cout << "[NaoController] " << "Init SPLGameController"<<endl;
   theGameController = new SPLGameController();
@@ -198,9 +198,9 @@ NaoController::~NaoController()
   delete theSoundHandler;
   delete theTeamCommSender;
   delete theTeamCommListener;
+  delete theTeamCommDebugger;
   delete theGameController;
   delete theDebugServer;
-  delete theDebugSender;
 }
 
 void NaoController::set(const CameraSettingsRequest &request)

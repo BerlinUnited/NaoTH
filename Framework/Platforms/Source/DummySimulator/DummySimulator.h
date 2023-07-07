@@ -125,7 +125,7 @@ public: // a dummy robot simulator
   void set(const GameReturnData& data) { theGameController->set(data); }
 
   // team debug stuff
-  void set(const TeamMessageDebug& data) { theDebugSender->send(data.data); }
+  void set(const TeamMessageDebug& data) { theTeamCommDebugger->send(data.data); }
 
   /*
   void get(BatteryData& data);
@@ -156,7 +156,7 @@ private:
   DebugServer theDebugServer;
   naoth::FrameInfo theFrameInfo;
   SPLGameController* theGameController = nullptr;
-  UDPSender* theDebugSender = nullptr;
+  UDPSender* theTeamCommDebugger = nullptr;
   BroadCaster* theTeamCommSender = nullptr;
   UDPReceiver* theTeamCommListener = nullptr;
 };

@@ -103,7 +103,7 @@ public:
   void set(const GameReturnData& data) { theGameController->set(data); }
 
   // team debug stuff
-  void set(const TeamMessageDebug& data) { theDebugSender->send(data.data); }
+  void set(const TeamMessageDebug& data) { theTeamCommDebugger->send(data.data); }
 
   // debug comm
   void get(DebugMessageInCognition& data) { theDebugServer->getDebugMessageInCognition(data); }
@@ -206,7 +206,7 @@ protected:
   V4lCameraHandler theTopCameraHandler;
   
   SoundControl *theSoundHandler;
-  UDPSender* theDebugSender;
+  UDPSender* theTeamCommDebugger;
   BroadCaster* theTeamCommSender;
   UDPReceiver* theTeamCommListener;
   UDPReceiver* theRemoteCommandListener;

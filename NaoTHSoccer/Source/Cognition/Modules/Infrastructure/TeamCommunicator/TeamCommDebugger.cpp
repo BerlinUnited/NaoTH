@@ -25,7 +25,7 @@ void TeamCommDebugger::execute()
 
       spl.fallen = (uint8_t) state.fallen();
 
-      // user defined data, this includes our own data
+      // user defined data
       naothmessages::BUUserTeamMessage userMsg;
       userMsg.set_bodyid(getRobotInfo().bodyID);
       userMsg.set_wasstriker(state.wasStriker());
@@ -65,11 +65,8 @@ void TeamCommDebugger::execute()
       spl.numOfDataBytes = static_cast<uint16_t>(userSize);
       userMsg.SerializeToArray(spl.data, static_cast<int>(userSize));
       
-      std::string msg;
       // copy only the part of the message which is actually used
-      msg.assign((char*)&spl, sizeof(SPLStandardMessage) - SPL_STANDARD_MESSAGE_DATA_SIZE + spl.numOfDataBytes);
-
-      getTeamMessageDebug().data = msg;
+      getTeamMessageDebug().data.assign((char*)&spl, sizeof(SPLStandardMessage) - SPL_STANDARD_MESSAGE_DATA_SIZE + spl.numOfDataBytes);
 
       // remember the last sending time
       lastSentTimestamp = getFrameInfo().getTime();

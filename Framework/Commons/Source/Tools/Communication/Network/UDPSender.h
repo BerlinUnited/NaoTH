@@ -2,7 +2,6 @@
 #define UDPSENDER_H
 
 #include <gio/gio.h>
-#include <MessagesSPL/RoboCupGameControlData.h>
 #include "Representations/Infrastructure/GameData.h"
 
 #include <mutex>
