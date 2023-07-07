@@ -1,7 +1,12 @@
 /** 
-Scan mode for looking at the ball/searching for the ball 
+  Scan mode for looking at the ball/searching for the ball
+
+  This version used angles as limits for turning right/left
+
+  It goes from low right -> high left -> high right -> low left -> low right
+  
 */
-option search_for_ball
+option search_for_ball2
 {
   bool @force_ball_model_check; // false by default
   bool @look_around;
@@ -17,9 +22,9 @@ option search_for_ball
       else if(@use_teamball && ball.team.is_valid)
         goto look_at_teamball;
       else if(ball.last_known.y > 0)
-        goto search_for_ball_left;
+        goto search_for_ball_left_low;
       else
-        goto search_for_ball_right;
+        goto search_for_ball_right_low;
     }
     action 
     {
@@ -36,9 +41,9 @@ option search_for_ball
         if(@use_teamball && ball.team.is_valid)
           goto look_at_teamball;
         else if(ball.last_known.y > 0)
-          goto search_for_ball_left;
+          goto search_for_ball_left_low;
         else
-          goto search_for_ball_right;
+          goto search_for_ball_right_low;
       } else
         stay;
     }
@@ -54,7 +59,7 @@ option search_for_ball
   }
 
   
-  state search_for_ball_right
+  state search_for_ball_right_low
   {
     decision
     {
@@ -67,34 +72,32 @@ option search_for_ball
     }
     action
     {
-        head.point_in_world.x = 160;
-        head.point_in_world.y = -200;
-        head.point_in_world.z = 0;
-        head.motion_type = look_at_world_point;
+        head.motion_type = goto_angle;
+        head.target_angle.x = -40;
+        head.target_angle.y = 21;
 
-        head.angleVelocity = 60; // will be reseted in basic_play
+        head.angleVelocity = 50;
     }
   }
 
-  state search_for_ball_left
+  state search_for_ball_left_low
   {
     decision
     {
       if (ball.percept.was_seen)
         goto look_at_ball_percept;
       else if(state_time > 0 && (head.target_reached || head.got_stuck))
-        goto search_for_ball_right;
+        goto search_for_ball_right_low;
       else
        stay;
     }
     action
     {
-      head.point_in_world.x = 160;
-      head.point_in_world.y = 200;
-      head.point_in_world.z = 0;
-      head.motion_type = look_at_world_point;
+      head.motion_type = goto_angle;
+      head.target_angle.x = 40;
+      head.target_angle.y = 21;
 
-      head.angleVelocity = 60; // will be reseted in basic_play
+      head.angleVelocity = 50;
     }
   }
 
@@ -108,18 +111,17 @@ option search_for_ball
         if(@use_teamball && ball.team.is_valid)
           goto look_at_teamball;
         else
-          goto search_for_ball_left;
+          goto search_for_ball_left_low;
       } else
        stay;
     }
     action
     {
-        head.point_in_world.x = 400;
-        head.point_in_world.y = -500;
-        head.point_in_world.z = 0;
-        head.motion_type = look_at_world_point;
+        head.motion_type = goto_angle;
+        head.target_angle.x = -100;
+        head.target_angle.y = 0;
 
-        head.angleVelocity = 60; // will be reseted in basic_play
+        head.angleVelocity = 50; // will be reseted in basic_play
     }
   }
 
@@ -136,12 +138,11 @@ option search_for_ball
     }
     action
     {
-      head.point_in_world.x = 400;
-      head.point_in_world.y = 500;
-      head.point_in_world.z = 0;
-      head.motion_type = look_at_world_point;
+      head.motion_type = goto_angle;
+      head.target_angle.x = 100;
+      head.target_angle.y = 0;
 
-      head.angleVelocity = 60; // will be reseted in basic_play
+      head.angleVelocity = 50;
     }
   }
     
@@ -156,9 +157,9 @@ option search_for_ball
         else {
           // I cannt see the ball anymore, must have been a mirage => go back, where I came from
           if(ball.angle > 0)
-            goto search_for_ball_left;
+            goto search_for_ball_left_low;
           else
-            goto search_for_ball_right;
+            goto search_for_ball_right_low;
         }
       }
       else
@@ -184,12 +185,15 @@ option search_for_ball
         if(@use_teamball && ball.team.is_valid)
           goto look_at_teamball;
         else if(ball.last_known.y > 0)
-          goto search_for_ball_left;
+          goto search_for_ball_left_low;
         else
-          goto search_for_ball_right;
-      } else if(@look_around && state_time > 3000 && vector.abs(x=ball.preview.x, y=ball.preview.y) > @look_at_ball_when_distance)
+          goto search_for_ball_right_low;
+      }
+      // if we looked at the ball long enough and the ball is far enough AND the flag allows for looking around then we will look around
+      // this might be helpful for localisation
+      else if(@look_around && state_time > 3000 && vector.abs(x=ball.preview.x, y=ball.preview.y) > @look_at_ball_when_distance)
       {
-        //goto look_around_state;
+        // decide in which direction to look first
         if ( search_for_ball.last_look_around_direction_was_left )
           goto look_right;
         else 
@@ -205,7 +209,6 @@ option search_for_ball
       head.point_in_world.y = ball.y * clip(value=ball.distance, min=250, max=500) / ball.distance;
       head.point_in_world.z = ball.radius;
 
-      // look at ball fast!
       head.angleVelocity = 300;
     }
   }
@@ -264,7 +267,8 @@ option search_for_ball
         goto look_at_ball_percept;
       /* NOTE: the teamball could get invalid in the 3s - evtl. we should also check for validity??? */
       else if ( state_time > 3000 )
-        goto search_for_ball_left;
+        //FIXME
+        goto search_for_ball_left_low;
       else 
         stay; 
     }

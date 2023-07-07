@@ -20,15 +20,13 @@ option go_to_and_keep_passive_position{
       else if ( vector.abs(x=robot_pose.planned.x - @x, y=robot_pose.planned.y - @y) < 200
           && abs(value=robot_pose.planned.rotation - @rot) < 10 )
         goto behave_passive;
-      else if (state_time > 4000)
-        goto go_with_search_for_ball;
       else
-        stay;
+        goto go_with_search_for_ball;
 	  }
 	  action {
       go_to_point_with_USOA(x=@x, y=@y, rot=@rot);
       
-      head.control_mode = look_around;
+      head.control_mode = search_for_ball;
 	  }
 	}
 

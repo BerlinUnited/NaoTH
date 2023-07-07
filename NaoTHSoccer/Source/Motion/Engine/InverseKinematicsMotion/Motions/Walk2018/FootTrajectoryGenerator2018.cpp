@@ -6,61 +6,63 @@
  */
 
 #include "FootTrajectoryGenerator2018.h"
-#include "Tools/Math/CubicSpline.h"
 
 using namespace std;
 
-void FootTrajectoryGenerator2018::execute(){
-    const Step& executingStep = getStepBuffer().first();
+void FootTrajectoryGenerator2018::execute()
+{
+  const Step& executingStep = getStepBuffer().first();
 
-    switch(executingStep.footStep.liftingFoot())
+  switch(executingStep.footStep.liftingFoot())
+  {
+    case FootStep::LEFT:
     {
-      case FootStep::LEFT:
-      {
-        getTargetCoMFeetPose().pose.feet.left = calculateLiftingFootPos(executingStep);
-        getTargetCoMFeetPose().pose.feet.right = executingStep.footStep.supFoot();
-        break;
-      }
-      case FootStep::RIGHT:
-      {
-        getTargetCoMFeetPose().pose.feet.left = executingStep.footStep.supFoot();
-        getTargetCoMFeetPose().pose.feet.right = calculateLiftingFootPos(executingStep);
-        break;
-      }
-      case FootStep::NONE:
-      {
-        getTargetCoMFeetPose().pose.feet = executingStep.footStep.begin();
-        break;
-      }
-      default: ASSERT(false);
+      getTargetCoMFeetPose().pose.feet.left  = calculateLiftingFootPos(executingStep);
+      getTargetCoMFeetPose().pose.feet.right = executingStep.footStep.supFoot();
+      break;
     }
+    case FootStep::RIGHT:
+    {
+      getTargetCoMFeetPose().pose.feet.left  = executingStep.footStep.supFoot();
+      getTargetCoMFeetPose().pose.feet.right = calculateLiftingFootPos(executingStep);
+      break;
+    }
+    case FootStep::NONE:
+    {
+      getTargetCoMFeetPose().pose.feet = executingStep.footStep.begin();
+      break;
+    }
+    default: ASSERT(false);
+  }
 
-    PLOT("Walk:trajectory:x",getTargetCoMFeetPose().pose.feet.left.translation.x);
-    PLOT("Walk:trajectory:y",getTargetCoMFeetPose().pose.feet.left.translation.y);
-    PLOT("Walk:trajectory:z",getTargetCoMFeetPose().pose.feet.left.translation.z);
+  PLOT("Walk:trajectory:x",getTargetCoMFeetPose().pose.feet.left.translation.x);
+  PLOT("Walk:trajectory:y",getTargetCoMFeetPose().pose.feet.left.translation.y);
+  PLOT("Walk:trajectory:z",getTargetCoMFeetPose().pose.feet.left.translation.z);
 }
 
 Pose3D FootTrajectoryGenerator2018::calculateLiftingFootPos(const Step& step) const
 {
   if ( step.type == Step::STEP_CONTROL && step.walkRequest.stepControl.type == WalkRequest::StepControlRequest::KICKSTEP)
   {
-    if (parameters.useSplineFootTrajectoryForSideKicks && step.walkRequest.stepControl.speedDirection != 0)
+    if (parameters.useSplineFootTrajectoryForSideKicks) //  && step.walkRequest.stepControl.speedDirection != 0)
     {
+      //std::cout << "Do the kick step - spline" << std::endl;
       return stepControlNew(
         step.footStep,
         step.executingCycle,
         step.samplesDoubleSupport,
         step.samplesSingleSupport,
         parameters.kickHeight,
-        0,
-        0,
+        0, //footPitchOffset
+        0, //footRollOffset
         step.walkRequest.stepControl.speedDirection,
         step.walkRequest.stepControl.scale,
         parameters.sideKickWidth
         );
     }
-    else
+    else // forward kick or useSplineFootTrajectoryForSideKicks == false
     {
+      //std::cout << "Do the kick step - sin/cos" << std::endl;
       return stepControl(
         step.footStep.footBegin(),
         step.footStep.footEnd(),
@@ -74,7 +76,7 @@ Pose3D FootTrajectoryGenerator2018::calculateLiftingFootPos(const Step& step) co
         step.walkRequest.stepControl.scale);
     }
   }
-  else
+  else //  (step.type == WALKSTEP (legacy)) or (stepControl.type == WALKSTEP or ZEROSTEP)
   {
     if(parameters.useSplineFootTrajectory)
     {
@@ -267,49 +269,91 @@ Pose3D FootTrajectoryGenerator2018::stepControlNew(
             targetFoot = end.right;
         }
 
+
+        // ------- Gewaltkick -------------
+        // Experimental: requires startFoot == targetFoot
+        // Additional parameters:
+        // 
+        // bezierZMP.offsetYForKicks=-30
+        // gewaltKickLength=50
+        // forwardKickTime=1000
+        // 
         // X trajectory
-        std::vector<double> xX;
-        std::vector<double> yX;
+        //std::vector<double> t_X = { 0.0, 0.125,  0.35,  0.5, 1.0 };
+        //std::vector<double> f_X = { 0.0,   0.0, -0.4,   1.1, 0.0 };
+
+        
+        // ------- Short Stepkick -------------
+        // simpleZMP.kickOffsetY = -20
+        // forwardKickTime = 340
+        // limits.maxCtrlLength = 80
+        // 
+        // X trajectory
+        std::vector<double> t_X = { 0.0,  0.25, 1.0 };
+        std::vector<double> f_X = { 0.0, -0.3,  1.0 };
+
         tk::spline theCubicSplineX;
-
-        xX = { 0.0, 0.125, 0.375, 1.0 };
-        yX = {0.0, 0.3, 0.75, 1.0 };
         theCubicSplineX.set_boundary(tk::spline::first_deriv, 0.0, tk::spline::first_deriv, 0.0, false);
-        theCubicSplineX.set_points(xX, yX);
+        theCubicSplineX.set_points(t_X, f_X);
 
+        // NOTE: no sidekicks are supported for now
         // Y trajectory
-        std::vector<double> xY = { 0.0, 0.25, 0.5, 0.75, 1.0 };
-        std::vector<double> yY = { 0.0, 0.5, 1.0, 0.5, 0.0 };
-
-        tk::spline theCubicSplineY;
-        theCubicSplineY.set_boundary(tk::spline::first_deriv, 0.0, tk::spline::first_deriv, 0.0, false);
-        theCubicSplineY.set_points(xY, yY);
+        //std::vector<double> t_Y = { 0.0, 0.25, 0.5, 0.75, 1.0 };
+        //std::vector<double> f_Y = { 0.0, 0.5,  1.0, 0.5,  0.0 };
+        //
+        //tk::spline theCubicSplineY;
+        //theCubicSplineY.set_boundary(tk::spline::first_deriv, 0.0, tk::spline::first_deriv, 0.0, false);
+        //theCubicSplineY.set_points(t_Y, f_Y);
 
         // Z trajectory
-        std::vector<double> xZ = { 0.0, 0.125, 0.35, 0.5, 0.65, 0.875, 1.0 };
-        std::vector<double> yZ = { 0.0, 0.275, 0.775, 1.0, 0.775, 0.275, 0.0 };
+        std::vector<double> t_Z = { 0.0, 0.125, 0.35,  0.5, 0.65,  0.875, 1.0 };
+        std::vector<double> f_Z = { 0.0, 0.275, 0.775, 1.0, 0.775, 0.275, 0.0 };
 
         tk::spline theCubicSplineZ;
         theCubicSplineZ.set_boundary(tk::spline::first_deriv, 2.0, tk::spline::first_deriv, -8.0, false);
-        theCubicSplineZ.set_points(xZ, yZ);
+        theCubicSplineZ.set_points(t_Z, f_Z);
 
-        double t = 1 - (doubleSupportBegin - cycle) / samplesSingleSupport;
-        double xp = (t < scale) ? (1 - cos(t / scale*Math::pi))*0.5 : 1.0;
-        double zp = (1 - cos(t*Math::pi2))*0.5;
+        // time in the single support phase: [0,1]
+        double t = 1.0 - (doubleSupportBegin - cycle) / samplesSingleSupport;
 
-        double splineX = theCubicSplineX(xp);
-        double splineY = theCubicSplineY(xp);
-        double splineZ = theCubicSplineZ(t);
+        // scale x/y trajectors velocity by scaling the time
+        //double t_xy_scaled = (t < scale) ? (1 - cos(t / scale*Math::pi))*0.5 : 1.0;
+        
+        // time scale: controlling the speed profile of the trajectory
+        std::vector<double> t_T = { 0.0, 0.5, 1.0 };
+        std::vector<double> f_T = { 0.0, 0.5, 1.0 };
 
+        tk::spline theCubicSplineT;
+        theCubicSplineT.set_boundary(tk::spline::first_deriv, 0.0, tk::spline::first_deriv, 0.0, false);
+        theCubicSplineT.set_points(t_T, f_T);
+
+        // calculate the scaled time
+        double t_xy_scaled = theCubicSplineT(t);
+
+        double s_Xt = theCubicSplineX(t_xy_scaled);
+        //double s_Yt = theCubicSplineY(t_xy_scaled);
+        double s_Zt = theCubicSplineZ(t);
+
+        // clculate the next position of the foot by interpolating between startFoot and targetFoot
         Pose3D foot;
+        // Experimental: preparation for the Gewaltkick
+        //foot.translation.x = (1 - s_Xt) * startFoot.translation.x + s_Xt * (targetFoot.translation.x + parameters.gewaltKickLength);
+        foot.translation.x = (1 - s_Xt) * startFoot.translation.x + s_Xt * targetFoot.translation.x;
+        foot.translation.y = (1 - s_Xt) * startFoot.translation.y + s_Xt * targetFoot.translation.y;
 
-        foot.translation.x = (1 - splineX) * startFoot.translation.x + splineX * targetFoot.translation.x;
-        foot.translation.y = (1 - xp) * startFoot.translation.y + xp * targetFoot.translation.y + /*step.liftingFoot() **/ splineY * sidekick_width * std::sin(-speedDirection);
-        foot.translation.z = startFoot.translation.z + splineZ*stepHeight;
+        // LEGACY: sidekicks
+        //foot.translation.y = (1 - t_xy_scaled) * startFoot.translation.y + t_xy_scaled * targetFoot.translation.y + /*step.liftingFoot() **/ s_Y * sidekick_width * std::sin(-speedDirection);
+        
+        foot.translation.z = startFoot.translation.z + s_Zt * stepHeight;
 
-        foot.rotation = RotationMatrix::getRotationX(footRollOffset * zp);
-        foot.rotation.rotateY(Math::sgn(targetFoot.translation.x - startFoot.translation.x) * footPitchOffset * zp);
-        RotationMatrix rot = RotationMatrix::interpolate(startFoot.rotation, targetFoot.rotation, xp);
+        // LEGACY?
+        // apply custom angles footRollOffset and footPitchOffset
+        double t_z_scaled  = (1 - cos(t*Math::pi2))*0.5;
+        foot.rotation = RotationMatrix::getRotationX(footRollOffset * t_z_scaled);
+        foot.rotation.rotateY(Math::sgn(targetFoot.translation.x - startFoot.translation.x) * footPitchOffset * t_z_scaled);
+
+        // apply the actual rotation trajectory
+        RotationMatrix rot = RotationMatrix::interpolate(startFoot.rotation, targetFoot.rotation, t_xy_scaled);
         foot.rotation *= rot;
 
         return step.supFoot()*foot;

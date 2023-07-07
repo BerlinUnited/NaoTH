@@ -58,10 +58,12 @@ private:
     Parameters() : ParameterList("SensorLogger")
     {
       PARAMETER_REGISTER(record_init) = false;
+      PARAMETER_REGISTER(log_path) = "/dev/shm/sensor.log";
       syncWithConfig();
     }
 
     bool record_init;
+    std::string log_path;
   } params;
 
 private:
