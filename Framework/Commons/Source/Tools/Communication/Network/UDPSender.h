@@ -26,7 +26,7 @@ private:
   unsigned int port;
   std::string name;
 
-  std::string dataOut = "Hello World";
+  std::string dataOut = "";
   std::mutex  dataMutex;
   std::mutex returnDataMutex;
 

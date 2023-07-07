@@ -29,7 +29,7 @@ UDPSender::UDPSender(std::string ip, unsigned int port, std::string name)
   }
   else
   {
-    std::cout << "[INFO] " << name << " start socket thread" << std::endl;
+    std::cout << "[INFO] " << name << " start socket thread for " << ip << ":" << port << std::endl;
     cancelable = g_cancellable_new();
     socketThread = std::thread(&UDPSender::socketLoop, this);
     ThreadUtil::setPriority(socketThread, ThreadUtil::Priority::lowest);
