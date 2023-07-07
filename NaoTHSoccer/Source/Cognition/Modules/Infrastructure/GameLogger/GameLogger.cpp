@@ -10,6 +10,7 @@ GameLogger::GameLogger()
   firstRecording(true),
   lastAudioDataTimestamp(0)
 {
+  // CAUTION: if you change this the collect stick needs to change as well
   const std::string gameLogPath = params.logDirPath + "/game.log";
   const std::string imageLogPath = params.logDirPath + "/images.log";
 
