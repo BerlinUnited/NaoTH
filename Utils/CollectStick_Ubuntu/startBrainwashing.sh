@@ -98,6 +98,15 @@ do
 	check_for_errors "Brainwasher:ERROR copying $f"
 done
 
+for f in $(find -L /tmp -type d -name media -prune -o -name "*.log")
+do
+	md5sum $f | sed -e "s#/tmp/##g" > "$f.md5"
+	cp "$f.md5" $f $target_path/
+	check_for_errors "Brainwasher:ERROR copying $f"
+done
+
+# we need a script to clean up home/nao so we dont get the log from old games
+
 for f in $(find -L /dev/shm -type d -name media -prune -o -name "*.log")
 do
 	md5sum $f | sed -e "s#/dev/shm/##g" > "$f.md5"
