@@ -46,6 +46,7 @@ public:
   void main();
   void enableGameController();
   void enableTeamComm(std::string interface = "wlan0");
+  void enableTeamCommDebug(std::string ip, unsigned int port);
 
   static const unsigned int frameExecutionTime = 33;
 
