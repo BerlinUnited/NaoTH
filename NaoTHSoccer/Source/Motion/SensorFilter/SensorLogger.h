@@ -58,7 +58,7 @@ private:
     Parameters() : ParameterList("SensorLogger")
     {
       PARAMETER_REGISTER(record_init) = false;
-      PARAMETER_REGISTER(log_path) = "/home/nao/sensor.log";
+      PARAMETER_REGISTER(log_path) = "/dev/shm/sensor.log";
       syncWithConfig();
     }
 
