@@ -30,7 +30,7 @@ FieldInfo::FieldInfo() : ParameterList("FieldInfo")
   PARAMETER_REGISTER(centerCircleRadius) = 750;
   PARAMETER_REGISTER(fieldLinesWidth) = 50;
 
-  PARAMETER_REGISTER(goalWidth) = 1400;
+  PARAMETER_REGISTER(goalWidth) = 1500;
   PARAMETER_REGISTER(goalHeight) = 800;
   PARAMETER_REGISTER(goalDepth) = 500;
   PARAMETER_REGISTER(goalpostRadius) = 50;
