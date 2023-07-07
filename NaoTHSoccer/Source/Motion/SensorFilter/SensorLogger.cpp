@@ -6,7 +6,7 @@ using namespace std;
 SensorLogger::SensorLogger()
 {
   getDebugParameterList().add(&params);
-  logfileManager.openFile(params.log_path);
+  logfileManager.openFile("/dev/shm/sensor.log");
 }
 
 SensorLogger::~SensorLogger()
