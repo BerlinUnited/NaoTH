@@ -19,12 +19,14 @@
 #include <Tools/Communication/Network/SPLGameController.h>
 #include <Tools/Communication/Network/BroadCaster.h>
 #include <Tools/Communication/Network/UDPReceiver.h>
+#include <Tools/Communication/Network/UDPSender.h>
 
 // simple robot
 #include <Representations/Infrastructure/JointData.h>
 #include <Representations/Infrastructure/FSRData.h>
 #include <Representations/Infrastructure/AccelerometerData.h>
 #include <Representations/Infrastructure/TeamMessageData.h>
+#include <Representations/Infrastructure/TeamMessageDebug.h>
 
 extern ModuleManager* getModuleManager(Cognition* c);
 
@@ -44,6 +46,7 @@ public:
   void main();
   void enableGameController();
   void enableTeamComm(std::string interface = "wlan0");
+  void enableTeamCommDebug(std::string ip, unsigned int port);
 
   static const unsigned int frameExecutionTime = 33;
 
@@ -121,6 +124,9 @@ public: // a dummy robot simulator
   void get(GameData& data){ theGameController->get(data); }
   void set(const GameReturnData& data) { theGameController->set(data); }
 
+  // team debug stuff
+  void set(const TeamMessageDebug& data) { theTeamCommDebugger->send(data.data); }
+
   /*
   void get(BatteryData& data);
   void get(FSRData& data);
@@ -150,6 +156,7 @@ private:
   DebugServer theDebugServer;
   naoth::FrameInfo theFrameInfo;
   SPLGameController* theGameController = nullptr;
+  UDPSender* theTeamCommDebugger = nullptr;
   BroadCaster* theTeamCommSender = nullptr;
   UDPReceiver* theTeamCommListener = nullptr;
 };

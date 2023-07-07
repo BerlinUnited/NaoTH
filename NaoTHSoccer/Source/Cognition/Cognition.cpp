@@ -34,6 +34,7 @@
 #include "Modules/Infrastructure/TeamCommunicator/TeamCommEventReceiver.h"
 #include "Modules/Infrastructure/TeamCommunicator/TeamCommEventSender.h"
 #include "Modules/Infrastructure/TeamCommunicator/TeamCommEventDecision.h"
+#include "Modules/Infrastructure/TeamCommunicator/TeamCommDebugger.h"
 #include "Modules/Infrastructure/TeamCommunicator/SimpleNetworkTimeProtocol.h"
 
 #include "Modules/Infrastructure/Debug/CameraDebug.h"
@@ -289,6 +290,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(TeamCommEventSender);
 
   // debug
+  REGISTER_MODULE(TeamCommDebugger);
   REGISTER_MODULE(GameLogger);
   REGISTER_MODULE(Debug);
   REGISTER_MODULE(FrameRateCheck);
