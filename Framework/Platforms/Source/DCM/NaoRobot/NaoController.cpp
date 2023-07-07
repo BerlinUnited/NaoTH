@@ -21,11 +21,11 @@ NaoController::NaoController(bool nao6)
     : 
     nao6(nao6),
     theSoundHandler(NULL),
+    theDebugSender(NULL),
     theTeamCommSender(NULL),
     theTeamCommListener(NULL),
     theRemoteCommandListener(NULL),
-    theDebugServer(NULL),
-    theDebugSender(NULL)
+    theDebugServer(NULL)
 {
   // init shared memory
   // sensor data
@@ -161,8 +161,18 @@ NaoController::NaoController(bool nao6)
   config.get("network", "debug_port", debug_port);
   theDebugServer = new DebugServer();
   theDebugServer->start(static_cast<unsigned short>(debug_port));
-
-  theDebugSender = new UDPSender("192.168.13.5", 10704, "UDPDebug");
+  
+  string debugIp = "127.0.0.1";
+  unsigned int debugPort = 10704;
+  if(config.hasKey("teamcomm", "debug_ip"))
+  {
+    debugIp = config.getString("teamcomm", "debug_ip");
+  }
+  if(config.hasKey("teamcomm", "debug_port") && config.getInt("teamcomm", "debug_port") > 0)
+  {
+    debugPort = (unsigned int) config.getInt("teamcomm", "debug_port");
+  }
+  theDebugSender = new UDPSender(debugIp, debugPort, "UDPDebug");
 
   std::cout << "[NaoController] " << "Init SPLGameController"<<endl;
   theGameController = new SPLGameController();
