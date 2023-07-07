@@ -16,6 +16,7 @@
 #include <Representations/Infrastructure/UltraSoundData.h>
 #include <Representations/Infrastructure/SoundData.h>
 #include <Representations/Infrastructure/TeamMessageData.h>
+#include <Representations/Infrastructure/TeamMessageDebug.h>
 #include <Representations/Infrastructure/DebugMessage.h>
 #include <Representations/Infrastructure/GameData.h>
 #include "Representations/Infrastructure/AudioControl.h"
@@ -40,6 +41,7 @@ BEGIN_DECLARE_MODULE(Actuator)
   REQUIRE(UltraSoundSendData)
   REQUIRE(MotionStatus)
   REQUIRE(TeamMessageDataOut)
+  REQUIRE(TeamMessageDebug)
   REQUIRE(DebugMessageOut)
   REQUIRE(FrameInfo)
   REQUIRE(CameraInfo)
