@@ -54,7 +54,7 @@ private:
   public: 
     Parameters(): ParameterList("TeamCommDebugger")
     {
-      PARAMETER_REGISTER(send_interval) = 1000;
+      PARAMETER_REGISTER(send_interval) = 2000;
       
       // load from the file after registering all parameters
       syncWithConfig();
