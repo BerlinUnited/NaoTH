@@ -46,6 +46,7 @@ include "Options/HeadControl/look_at_preview_angle.xabsl";
 include "Options/HeadControl/look_at_team_ball.xabsl";
 include "Options/HeadControl/search_for_ball.xabsl";
 include "Options/HeadControl/search_for_ball2.xabsl";
+include "Options/HeadControl/search_for_ball3.xabsl";
 
 // Remote
 include "Options/Remote/spl_remote_agent.xabsl";

@@ -9,6 +9,7 @@
 using namespace naoth;
 
 ArmCollisionDetector2018::ArmCollisionDetector2018()
+  : collisionFilterLeft(0.01, 0.1), collisionFilterRight(0.01, 0.1)
 {
     //Debug Requests
     //Debug Requests end
@@ -53,8 +54,10 @@ void ArmCollisionDetector2018::execute()
         getMotionRequest().armMotionRequest.id == ArmMotionRequest::arms_down;
     const bool motionModeOK = getMotionStatus().currentMotion == motion::walk || getMotionStatus().currentMotion == motion::stand;
 
+    const bool doingKick = getMotionStatus().currentMotion == motion::walk && getMotionRequest().walkRequest.stepControl.type == WalkRequest::StepControlRequest::KICKSTEP;
+
     // clear the joint command history in order to not check for collision while the robot is already executing a evasive movement for example
-    if (!armModeOK || !motionModeOK || !bodymodeOK)
+    if (!armModeOK || !motionModeOK || !bodymodeOK || doingKick)
     {
         jointDataBufferLeft.clear();
         jointDataBufferRight.clear();
@@ -94,7 +97,6 @@ void ArmCollisionDetector2018::execute()
             getCollisionPercept().timeCollisionArmLeft = getFrameInfo().getTime();
             jointDataBufferLeft.clear();
             collisionBufferLeft.clear();
-
         }
 
         // collision arm right
@@ -141,6 +143,8 @@ void ArmCollisionDetector2018::execute()
     }
 
 
+    collisionFilterLeft.setParameter(params.hysteresis_g0, params.hysteresis_g1);
+    collisionFilterRight.setParameter(params.hysteresis_g0, params.hysteresis_g1);
 
     //In this part we check for collision using the "Polygon method" 
 
@@ -151,17 +155,15 @@ void ArmCollisionDetector2018::execute()
         double er = (b - a);// er < 0 means collision from behind, er > 0 from front
         if (!refpolyL.isInside(Vector2d(a, er)))
         {
-            //collision
-            if (er < 0)
-            {
-                getCollisionPercept().lastCollisionDirection = "Back";
-            }
-            else
-            {
-                getCollisionPercept().lastCollisionDirection = "Front";
-            }
-            getCollisionPercept().timeCollisionArmLeft = getFrameInfo().getTime();
-            jointDataBufferLeft.clear();
+          bool probableCollision = er < 0;
+          //collision
+          if (collisionFilterLeft.update(probableCollision, 0.3, 0.7)) {
+              getCollisionPercept().lastCollisionDirection = "Back";
+          } else {
+              getCollisionPercept().lastCollisionDirection = "Front";
+          }
+          getCollisionPercept().timeCollisionArmLeft = getFrameInfo().getTime();
+          jointDataBufferLeft.clear();
         }
     }
 
@@ -172,17 +174,16 @@ void ArmCollisionDetector2018::execute()
         double er = (b - a); // er < 0 means collision from behind, er > 0 from front
         if (!refpolyR.isInside(Vector2d(a, er)))
         {
-            //collision
-            if (er < 0)
-            {
-                getCollisionPercept().lastCollisionDirection = "Back";
-            }
-            else
-            {
-                getCollisionPercept().lastCollisionDirection = "Front";
-            }
-            getCollisionPercept().timeCollisionArmRight = getFrameInfo().getTime();
-            jointDataBufferRight.clear();
+          bool probableCollision = er < 0;
+
+          //collision
+          if (collisionFilterRight.update(probableCollision, 0.3, 0.7)) {
+              getCollisionPercept().lastCollisionDirection = "Back";
+          } else {
+              getCollisionPercept().lastCollisionDirection = "Front";
+          }
+          getCollisionPercept().timeCollisionArmRight = getFrameInfo().getTime();
+          jointDataBufferRight.clear();
         }
     }
 
