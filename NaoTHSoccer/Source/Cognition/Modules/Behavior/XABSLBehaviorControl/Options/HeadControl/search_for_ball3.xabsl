@@ -73,7 +73,7 @@ option search_for_ball3
     action
     {
         head.motion_type = goto_angle;
-        head.target_angle.x = -65;
+        head.target_angle.x = -60;
         head.target_angle.y = 21;
 
         head.angleVelocity = 50;
@@ -94,7 +94,7 @@ option search_for_ball3
     action
     {
       head.motion_type = goto_angle;
-      head.target_angle.x = 65;
+      head.target_angle.x = 60;
       head.target_angle.y = 21;
 
       head.angleVelocity = 50;
