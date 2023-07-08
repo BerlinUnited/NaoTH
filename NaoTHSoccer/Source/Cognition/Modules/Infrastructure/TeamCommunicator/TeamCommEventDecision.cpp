@@ -84,12 +84,20 @@ void TeamCommEventDecision::byDistance()
     // if i am striker, i send more often
     if (role.dynamic == Roles::striker) {
         distance = params.byDistance_striker;
+
+        // the striker should send a message regularly, even if he didn't move far enough
+        if ((unsigned int)getFrameInfo().getTimeSince(params.byDistance_lastSentTimestamp) < params.byDistance_striker_minInterval
+            && getBallModel().position.abs() < params.byDistance_striker)
+        {
+            distance = 0.0;
+        }
     }
 
     // send new message only if the robot moved some distance
     if ((getRobotPose() - params.byDistance_lastPose).translation.abs() > distance)
     {
         getTeamMessageDecision().send_pose.set();
+        getTeamMessageDecision().send_wasStriker.set();
 
         // only send ball model, if it adds value
         if (getBallModel().knows) {
