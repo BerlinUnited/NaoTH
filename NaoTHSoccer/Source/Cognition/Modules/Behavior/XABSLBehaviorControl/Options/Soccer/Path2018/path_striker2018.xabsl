@@ -64,14 +64,14 @@ option path_striker2018
     }
   }
 
-  state goto_ball {
-    decision{
-
+  state goto_ball 
+  {
+    decision
+    {
       else if(vector.abs(x=ball.future.preview.x, y=ball.future.preview.y) < 300)
       {
-        if(attack.best_action == kick_short) {
+        if(attack.best_action == kick_short)
           goto forwardkick;
-        }
         else if(attack.best_action == sidekick_left)
           //goto sidekick_left;
           goto turn;
@@ -135,6 +135,8 @@ option path_striker2018
     }
     action
     {
+      arm.react_to_collision = false;
+      
       path2018.routine = forwardkick;
       situation_abortable = true;
       head.control_mode = search_for_ball;
@@ -152,6 +154,7 @@ option path_striker2018
     }
     action
     {
+      arm.react_to_collision = false;
       path2018.routine = sidekick_right;
       situation_abortable = true;
       head.control_mode = search_for_ball;
@@ -169,6 +172,7 @@ option path_striker2018
     }
     action
     {
+      arm.react_to_collision = false;
       path2018.routine = sidekick_left;
       situation_abortable = true;
       head.control_mode = search_for_ball;
@@ -186,6 +190,8 @@ option path_striker2018
     }
     action
     {
+      arm.react_to_collision = false;
+      
       path2018.routine = none;
       
       situation_abortable = false;
