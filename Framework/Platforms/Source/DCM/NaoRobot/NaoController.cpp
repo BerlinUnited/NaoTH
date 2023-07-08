@@ -21,6 +21,7 @@ NaoController::NaoController(bool nao6)
     : 
     nao6(nao6),
     theSoundHandler(NULL),
+    theTeamCommDebugger(NULL),
     theTeamCommSender(NULL),
     theTeamCommListener(NULL),
     theRemoteCommandListener(NULL),
@@ -101,7 +102,9 @@ NaoController::NaoController(bool nao6)
   // teamcomm
   registerInput<TeamMessageDataIn>(*this);
   registerOutput<const TeamMessageDataOut>(*this);
-
+  // register team debug
+  registerOutput<const TeamMessageDebug>(*this);
+  
   registerInput<RemoteMessageDataIn>(*this);
 
   // debug comm
@@ -158,7 +161,18 @@ NaoController::NaoController(bool nao6)
   config.get("network", "debug_port", debug_port);
   theDebugServer = new DebugServer();
   theDebugServer->start(static_cast<unsigned short>(debug_port));
-
+  
+  string debugIp = "127.0.0.1";
+  unsigned int debugPort = 10704;
+  if(config.hasKey("teamcomm", "debug_ip"))
+  {
+    debugIp = config.getString("teamcomm", "debug_ip");
+  }
+  if(config.hasKey("teamcomm", "debug_port") && config.getInt("teamcomm", "debug_port") > 0)
+  {
+    debugPort = (unsigned int) config.getInt("teamcomm", "debug_port");
+  }
+  theTeamCommDebugger = new UDPSender(debugIp, debugPort, "TeamCommDebugger");
 
   std::cout << "[NaoController] " << "Init SPLGameController"<<endl;
   theGameController = new SPLGameController();
@@ -184,6 +198,7 @@ NaoController::~NaoController()
   delete theSoundHandler;
   delete theTeamCommSender;
   delete theTeamCommListener;
+  delete theTeamCommDebugger;
   delete theGameController;
   delete theDebugServer;
 }
