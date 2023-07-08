@@ -26,21 +26,22 @@
 #include <Tools/Debug/DebugModify.h>
 #include <Tools/Debug/DebugParameterList.h>
 
+#include "Tools/Filters/AssymetricalBoolFilter.h"
 
 BEGIN_DECLARE_MODULE(ArmCollisionDetector2018)
-PROVIDE(DebugRequest)
-PROVIDE(DebugPlot)
-PROVIDE(DebugModify)
-PROVIDE(DebugParameterList)
+  PROVIDE(DebugRequest)
+  PROVIDE(DebugPlot)
+  PROVIDE(DebugModify)
+  PROVIDE(DebugParameterList)
 
-REQUIRE(FrameInfo)
-REQUIRE(MotorJointData)
-REQUIRE(SensorJointData)
-REQUIRE(MotionStatus)
-REQUIRE(MotionRequest)
-REQUIRE(BodyState)
+  REQUIRE(FrameInfo)
+  REQUIRE(MotorJointData)
+  REQUIRE(SensorJointData)
+  REQUIRE(MotionStatus)
+  REQUIRE(MotionRequest)
+  REQUIRE(BodyState)
 
-PROVIDE(CollisionPercept)
+  PROVIDE(CollisionPercept)
 END_DECLARE_MODULE(ArmCollisionDetector2018)
 
 class ArmCollisionDetector2018 : private ArmCollisionDetector2018Base
@@ -63,6 +64,9 @@ public:
             PARAMETER_REGISTER(maxErrorStand) = 0.02;
             PARAMETER_REGISTER(collect) = 32;
             PARAMETER_REGISTER(armRollError) = 0.06;
+
+            PARAMETER_REGISTER(hysteresis_g0) = 0.03;
+            PARAMETER_REGISTER(hysteresis_g1) = 0.5;
             syncWithConfig();
 
         }
@@ -72,6 +76,9 @@ public:
         double maxErrorStand;
         double armRollError;
         unsigned int collect;
+
+        double hysteresis_g0;
+        double hysteresis_g1;
     } params;
 
 private:
@@ -83,11 +90,13 @@ private:
     Math::Polygon<double> refpolyL;
     Math::Polygon<double> refpolyR;
 
-
     RingBuffer<double, 4> jointDataBufferLeftRoll;
     RingBuffer<double, 4> jointDataBufferRightRoll;
     RingBufferWithSum<double, 25> collisionBufferLeftRoll;
     RingBufferWithSum<double, 25> collisionBufferRightRoll;
+
+    AssymetricalBoolHysteresisFilter collisionFilterLeft;
+    AssymetricalBoolHysteresisFilter collisionFilterRight;
 };
 
 #endif
