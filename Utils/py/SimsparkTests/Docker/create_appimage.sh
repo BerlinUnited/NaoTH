@@ -174,12 +174,11 @@ create_appimage()
 
     # copy probably missing libs
     mkdir -p ./lib/
-    cp "$(find_lib libboost_system.so)" ./lib/
     cp "$(find_lib libboost_system.so.1.65.1)" ./lib/
     cp "$(find_lib libpng16.so)" ./lib/
     cp "$(find_lib libtiff.so)" ./lib/
     #cp "$(find_lib libjbig.so)" ./lib/
-    cp "$(find_lib libmng.so.2)" ./lib/
+    #cp "$(find_lib libmng.so)" ./lib/
     cp "$(find_lib libjpeg.so)" ./lib/
     cp "$(find_lib libicui18n.so)" ./lib/
     cp "$(find_lib ibicuuc.so)" ./lib/
@@ -187,67 +186,68 @@ create_appimage()
     cp "$(find_lib libcaca.so)" ./lib/
     cp "$(find_lib libasound.so)" ./lib/
     cp "$(find_lib libslang.so)" ./lib/
-    cp "$(find_lib libncursesw.so.5)" ./lib/
+    #cp "$(find_lib libncursesw.so)" ./lib/
     #cp "$(find_lib libtinfo.so)" ./lib/
     #cp "$(find_lib libnss_nis.so)" ./lib/
     cp "$(find_lib libruby-2.5.so.2.5)" ./lib/
-    cp "$(find_lib libboost_thread.so)" ./lib/
-    cp "$(find_lib libboost_regex.so)" ./lib/
-    cp "$(find_lib libode.so)" ./lib/
-    cp "$(find_lib libode.so.6)" ./lib/
-    cp "$(find_lib libIL.so)" ./lib/
-    cp "$(find_lib libSDL-1.2.so.0)" ./lib/
-    cp "$(find_lib libstdc++.so.6)" ./lib/
-    cp "$(find_lib libfreetype.so)" ./lib/
-    cp "$(find_lib libGLU.so)" ./lib/
-    cp "$(find_lib libGL.so)" ./lib/libGL.so.1
     cp "$(find_lib libboost_thread.so.1.65.1)" ./lib/
+    cp "$(find_lib libboost_regex.so)" ./lib/
+    cp "$(find_lib libode.so.6)" ./lib/
     cp "$(find_lib libIL.so.1)" ./lib/
+    cp "$(find_lib libSDL-1.2.so.0)" ./lib/
+    #cp "$(find_lib libstdc++.so.6)" ./lib/
+    cp "$(find_lib libfreetype.so)" ./lib/
+    #cp "$(find_lib libGLU.so)" ./lib/
+    #cp "$(find_lib libGL.so)" ./lib/libGL.so.1
+
+    #cp "$(find_lib libboost_thread.so.1.65.1)" ./lib/
+    #cp "$(find_lib libIL.so.1)" ./lib/
     cp "$(find_lib libtiff.so.5)" ./lib/
     cp "$(find_lib libjbig.so.0)" ./lib/
-    cp "$(find_lib libasound.so.2)" ./lib/
-    cp "$(find_lib libpulse-simple.so.0)" ./lib/
-    cp "$(find_lib libpulse.so.0)" ./lib/
-    cp "$(find_lib libXext.so.6)" ./lib/
-    cp "$(find_lib libcaca.so.0)" ./lib/
-    cp "$(find_lib libXcursor.so.1)" ./lib/
-    cp "$(find_lib libXrender.so.1)" ./lib/
-    cp "$(find_lib libXfixes.so.3)" ./lib/
-    cp "$(find_lib libGLX_mesa.so.0)" ./lib/
-    cp "$(find_lib libglapi.so.0)" ./lib/
-    cp "$(find_lib libdrm.so.2)" ./lib/
-    cp "$(find_lib libxcb-glx.so.0)" ./lib/
-    cp "$(find_lib libxcb-dri2.so.0)" ./lib/
+    #cp "$(find_lib libasound.so.2)" ./lib/
+    #cp "$(find_lib libpulse-simple.so.0)" ./lib/
+    #cp "$(find_lib libpulse.so.0)" ./lib/
+    #cp "$(find_lib libXext.so.6)" ./lib/
+    #cp "$(find_lib libcaca.so.0)" ./lib/
+    #cp "$(find_lib libXcursor.so.1)" ./lib/
+    #cp "$(find_lib libXrender.so.1)" ./lib/
+    #cp "$(find_lib libXfixes.so.3)" ./lib/
+    #cp "$(find_lib libGLX_mesa.so.0)" ./lib/
+    #cp "$(find_lib libglapi.so.0)" ./lib/
+    #cp "$(find_lib libdrm.so.2)" ./lib/
+    #cp "$(find_lib libxcb-glx.so.0)" ./lib/
+    #cp "$(find_lib libxcb-dri2.so.0)" ./lib/
+
     #cp "$(find_lib libgcc_s.so.1)" ./lib/
-    cp "$(find_lib libc.so.6)" ./lib/
-    cp "$(find_lib libpthread.so.0)" ./lib/
-    cp "$(find_lib libm.so.6)" ./lib/
-    cp "$(find_lib libfreetype.so.6)" ./lib/
-    cp "$(find_lib libGLU.so.1)" ./lib/
-    cp "$(find_lib libgmp.so.10)" ./lib/
-    cp "$(find_lib libdl.so.2)" ./lib/
-    cp "$(find_lib libcrypt.so.1)" ./lib/
-    cp "$(find_lib libz.so.1)" ./lib/
-    cp "$(find_lib libbz2.so.1.0)" ./lib/
-    cp "$(find_lib libpng16.so.16)" ./lib/
-    cp "$(find_lib libharfbuzz.so.0)" ./lib/
+    #cp "$(find_lib libc.so.6)" ./lib/
+    #cp "$(find_lib libpthread.so.0)" ./lib/
+    #cp "$(find_lib libm.so.6)" ./lib/
+    #cp "$(find_lib libfreetype.so.6)" ./lib/
+    #cp "$(find_lib libGLU.so.1)" ./lib/
+    #cp "$(find_lib libgmp.so.10)" ./lib/
+    #cp "$(find_lib libdl.so.2)" ./lib/
+    #cp "$(find_lib libcrypt.so.1)" ./lib/
+    #cp "$(find_lib libz.so.1)" ./lib/
+    #cp "$(find_lib libbz2.so.1.0)" ./lib/
+    #cp "$(find_lib libpng16.so.16)" ./lib/
+    #cp "$(find_lib libharfbuzz.so.0)" ./lib/
     #cp "$(find_lib libbrotlidec.so.1)" ./lib/
-    cp "$(find_lib liblcms2.so.2)" ./lib/
-    cp "$(find_lib libjpeg.so.8)" ./lib/
-    cp "$(find_lib libGLX.so.0)" ./lib/
-    cp "$(find_lib libGLdispatch.so.0)" ./lib/
-    cp "$(find_lib libOpenGL.so.0)" ./lib/
+    #cp "$(find_lib liblcms2.so.2)" ./lib/
+    #cp "$(find_lib libjpeg.so.8)" ./lib/
+    #cp "$(find_lib libGLX.so.0)" ./lib/
+    #cp "$(find_lib libGLdispatch.so.0)" ./lib/
+    #cp "$(find_lib libOpenGL.so.0)" ./lib/
     #cp "$(find_lib librt.so.1)" ./lib/
-    cp "$(find_lib libglib-2.0.so.0)" ./lib/
-    cp "$(find_lib libgraphite2.so.3)" ./lib/
+    #cp "$(find_lib libglib-2.0.so.0)" ./lib/
+    #cp "$(find_lib libgraphite2.so.3)" ./lib/
     #cp "$(find_lib libbrotlicommon.so.1)" ./lib/
-    cp "$(find_lib liblzma.so.5)" ./lib/
-    cp "$(find_lib libxcb.so.1)" ./lib/
-    cp "$(find_lib libXau.so.6)" ./lib/
-    cp "$(find_lib libXdmcp.so.6)" ./lib/
+    #cp "$(find_lib liblzma.so.5)" ./lib/
+    #cp "$(find_lib libxcb.so.1)" ./lib/
+    #cp "$(find_lib libXau.so.6)" ./lib/
+    #cp "$(find_lib libXdmcp.so.6)" ./lib/
     #cp "$(find_lib libgcc_s.so.1)" ./lib/
     #cp "$(find_lib libX11.so.6)" ./lib/
-    cp "$(find_lib libbsd.so.0)" ./lib/
+    #cp "$(find_lib libbsd.so.0)" ./lib/
 
     # some more libs, these should be generally available
     #cp /usr/lib/x86_64-linux-gnu/libgmp.so.10 ./lib/
