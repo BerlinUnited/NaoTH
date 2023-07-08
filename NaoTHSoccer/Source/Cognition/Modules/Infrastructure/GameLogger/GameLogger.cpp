@@ -99,7 +99,10 @@ void GameLogger::execute()
       LOGSTUFF(RansacLinePercept);
       LOGSTUFF(RansacCirclePercept2018);
       
-      
+      if(params.logJPEGImages) {
+        LOGSTUFF(ImageJPEG);
+        LOGSTUFF(ImageJPEGTop);
+      }
       
       if(params.logBallCandidates) {
         LOGSTUFF(BallCandidates);
