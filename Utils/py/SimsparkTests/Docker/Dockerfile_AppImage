@@ -24,12 +24,3 @@ COPY create_appimage.sh /root/
 
 WORKDIR /root
 ENTRYPOINT ["/root/create_appimage.sh"]
-
-# TODO: get appimage executable
-# TODO: copy build script to /root
-# TODO: make the script the entry and save Simspark to a dedicated location
-
-
-
-# docker build -t simspark -t simspark:0.7.3-naoth-6 .
-# docker run --rm -p 3200:3200 -p 3100:3100 simspark
