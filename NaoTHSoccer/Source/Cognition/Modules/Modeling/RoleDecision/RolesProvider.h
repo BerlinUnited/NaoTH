@@ -67,7 +67,7 @@ private:
             PARAMETER_REGISTER(forward_center_str,   &Parameters::parsePositionForwardCenter)   = " 1500,    0;  -500,    0; -1100,    0";
             PARAMETER_REGISTER(forward_right_str,    &Parameters::parsePositionForwardRight)    = " 1500,-1500;  -500,-1500; -1000, -750";
 
-            PARAMETER_REGISTER(active_str, &Parameters::parseActive) = "goalie;defender_left;forward_center;defender_right;midfielder_center"; //"all";
+            PARAMETER_REGISTER(active_str, &Parameters::parseActive) = "goalie;forward_center;defender_left;midfielder_center;defender_right;midfielder_right;midfielder_left"; //"all";
 
             // load from the file after registering all parameters
             syncWithConfig();

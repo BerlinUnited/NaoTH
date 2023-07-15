@@ -55,7 +55,7 @@ private:
             PARAMETER_REGISTER(decision_method, &Parameters::setDecisionMethod) = "interval";
 
             // params for the interval decision method
-            PARAMETER_REGISTER(byInterval_interval) = 400;
+            PARAMETER_REGISTER(byInterval_interval) = 2000;
             
             // params for the distance decision method
             PARAMETER_REGISTER(byDistance_minInterval) = 400;
@@ -63,7 +63,7 @@ private:
             PARAMETER_REGISTER(byDistance_defender) = 500.0;
             PARAMETER_REGISTER(byDistance_midfielder) = 750.0;
             PARAMETER_REGISTER(byDistance_forward) = 1000.0;
-            PARAMETER_REGISTER(byDistance_striker) = 100.0;
+            PARAMETER_REGISTER(byDistance_striker) = 250.0;
             PARAMETER_REGISTER(byDistance_striker_minInterval) = 1000;
 
             // load from the file after registering all parameters
@@ -72,7 +72,7 @@ private:
         virtual ~Parameters() {}
 
         unsigned int byInterval_lastSentTimestamp = 0; // not configurable
-        unsigned int byInterval_interval = 400;
+        unsigned int byInterval_interval = 2000;
 
         Pose2D byDistance_lastPose; // not configurable
         unsigned int byDistance_lastSentTimestamp = 0; // not configurable
@@ -81,7 +81,7 @@ private:
         double byDistance_defender          = 500.0;
         double byDistance_midfielder        = 750.0;
         double byDistance_forward           = 1000.0;
-        double byDistance_striker           = 100.0;
+        double byDistance_striker           = 250.0;
         double byDistance_striker_minInterval   = 1000; // interval in ms, the striker should at least send a message
 
         std::string decision_method;
