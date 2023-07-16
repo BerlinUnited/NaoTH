@@ -3,7 +3,43 @@ NOTE: currently the whole setup is only tested on linux and runs with python 3.6
 ```
 
 # Simspark Game
-* 
+
+With the `game.py` script it is possible to run complete games.  
+To do this, the following is required:
+* Python 3.6
+* SimSpark SPL
+  * the `simspark` executable must be available (e.g. locally compiled or as symlink to an AppImage)
+  * simspark is started automatically by the script
+  * if you want to use a containerised Simspark instance, you must start it manually
+* compiled `naoth-simspark`
+
+To get an overview of the available options, simply use the help ("-h") option:
+```shell
+Utils/py/SimsparkTests/game.py -h
+```
+
+The easiest way to start a game is as follows:
+```shell
+# cd into the default naoth directory
+cd NaoTHSoccer/
+# ... and start a game with the same config and executable for both teams
+../Utils/py/SimsparkTests/game.py
+```
+
+In order to configure different options, the best way is to let the script create a config file and then adjust the options to your needs:
+```shell
+Utils/py/SimsparkTests/game.py --write-config "my-config.cfg"
+```
+This allows us to set:
+* different naoth configs
+* use different executables
+* set the used ports (if multiple instances should run at the same time)
+* ...
+
+To start a game with the modified config, simply use:
+```shell
+Utils/py/SimsparkTests/game.py --config "my-config.cfg"
+```
 
 # Simspark Tests
 Currently, we only have one functioning setup of SimSpark that can be used for tests. It's located on the instituts gruenau servers.
@@ -68,7 +104,7 @@ Type '--help' for further information
 
 # Simspark
 
-Um SimSpark zum laufen zu bekommen ist es am einfachsten eines der vorkomililierten AppImages von XYZ zu verwenden oder via Dockerimage.
+The easiest way to run simspark is to download a precompiled AppImage from our [Github repository](https://github.com/BerlinUnited/SimSpark-SPL/releases) or use a Docker container (see below).
 
 ## Docker (Ubuntu 18.04)
 * the simspark application can be build and run in a docker container
