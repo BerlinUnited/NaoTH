@@ -7,6 +7,7 @@ NOTE: currently the whole setup is only tested on linux and runs with python 3.6
 With the `game.py` script it is possible to run complete games.  
 To do this, the following is required:
 * Python 3.6
+  * with the `naoth` package installed
 * SimSpark SPL
   * the `simspark` executable must be available (e.g. locally compiled or as symlink to an AppImage)
   * simspark is started automatically by the script
@@ -24,6 +25,7 @@ The easiest way to start a game is as follows:
 cd NaoTHSoccer/
 # ... and start a game with the same config and executable for both teams
 ../Utils/py/SimsparkTests/game.py
+# press Ctrl+C to cancel the game before it is finished. 
 ```
 
 In order to configure different options, the best way is to let the script create a config file and then adjust the options to your needs:
@@ -34,6 +36,7 @@ This allows us to set:
 * different naoth configs
 * use different executables
 * set the used ports (if multiple instances should run at the same time)
+* play multiple games in sequence 
 * ...
 
 To start a game with the modified config, simply use:
@@ -42,65 +45,30 @@ Utils/py/SimsparkTests/game.py --config "my-config.cfg"
 ```
 
 # Simspark Tests
-Currently, we only have one functioning setup of SimSpark that can be used for tests. It's located on the instituts gruenau servers.
 
-To run tests there do the following:
-- Login to any gruenau server as naoth user
-- `cd /vol/home-vol1/wissen/naoth/NaoTH/naoth-2020/Utils/py/SimsparkTests`
-- `python3 main.py -t OpponentPushingFreekick -s /vol/home-vol1/wissen/naoth/NaoTH/Simspark_v0.7.2-naoth-6.AppImage`
+It is also possible to test certain game situations or game setups, just like playing a full game.
+Therefore, the same setup is required:
+* Python 3.6
+* SimSpark SPL
+* compiled `naoth-simspark`
 
-To get a list of implemented tests run `python3 main.py -l`. The tests are implemented in `/vol/home-vol1/wissen/naoth/NaoTH/naoth-2020/Utils/py/SimsparkTests/Tests`. You can easily implement your own tests by using the existing ones as template.
+The following commands give an overview of the available options and test cases:
+```shell
+# print help message
+main.py -h
 
-The `-s` argument is the path to simspark. You have to use this. By default it find another simspark installed somewhere which throws errors.
-If you try run this on another system run the Simspark AppImage first to see if it works. You can expect output like this:
+# view available test cases
+main.py -l
 ```
-(MonitorServer) WARNING: SimulationServer not found.
-rcssserver3d (formerly simspark), a monolithic simulator 0.7.2-naoth-6
-Copyright (C) 2004 Markus Rollmann, 
-Universität Koblenz.
-Copyright (C) 2004-2016, The RoboCup Soccer Server Maintenance Group.
-
-Type '--help' for further information
-
-(SimulationServer) SimControlNode 'AgentControl' registered
-(AgentControl) Running in sync mode.
-(spark.rb) recording Logfile as 'sparkmonitor.log'
-(spark.rb) sparkSetupInput
-(spark.rb) using InputSystem 'InputSystemSDL'
-(InputServer) Init InputSystemSDL
-(InputServer) CreateDevice Keyboard
-(InputServer) CreateDevice Mouse
-(spark.rb) sparkSetupTimer
-(spark.rb) using TimerSystem 'TimerSystemBoost'
-(SimulationServer) SimControlNode 'InputControl' registered
-(SimulationServer) TimerSystem 'TimerSystemBoost' registered
-(bindings.rb) setting up bindings
-(spark.rb) sparkEnableLog logTarget=:cerr logType=eError
-(Light) ERROR: OpenGLServer not found
-(Light) ERROR: OpenGLServer not found
-(Material2DTexture) ERROR: cannot find TextureServer
-(Material2DTexture) ERROR: OpenGLServer not found.
-(Material2DTexture) ERROR: cannot find TextureServer
-(Material2DTexture) ERROR: OpenGLServer not found.
-(Material2DTexture) ERROR: cannot find TextureServer
-(Material2DTexture) ERROR: OpenGLServer not found.
-(Material2DTexture) ERROR: cannot find TextureServer
-(Material2DTexture) ERROR: OpenGLServer not found.
-(Material2DTexture) ERROR: cannot find TextureServer
-(Material2DTexture) ERROR: OpenGLServer not found.
-(Material2DTexture) ERROR: cannot find TextureServer
-(Material2DTexture) ERROR: OpenGLServer not found.
-(Material2DTexture) ERROR: cannot find TextureServer
-(Material2DTexture) ERROR: OpenGLServer not found.
-(Material2DTexture) ERROR: cannot find TextureServer
-(Material2DTexture) ERROR: OpenGLServer not found.
-(Material2DTexture) ERROR: cannot find TextureServer
-(Material2DTexture) ERROR: OpenGLServer not found.
-(Material2DTexture) ERROR: cannot find TextureServer
-(Material2DTexture) ERROR: OpenGLServer not found.
-(InputControl) ERROR: no FPSController found at '/usr/scene/camera/physics/controller'
-
+To run a test, simply execute:
+```shell
+# cd into the default naoth directory
+cd NaoTHSoccer/
+# ... and start a test (or multiple by naming them)
+../Utils/py/SimsparkTests/main.py -t PenaltyKicker
 ```
+
+New tests can be easily implemented by using an existing test as a template.
 
 # Simspark
 
@@ -187,16 +155,3 @@ COPY create_appimage.sh /root/
 WORKDIR /root
 ENTRYPOINT ["/root/create_appimage.sh"]
 ```
-
-## Old Notes from Philipp
-Do some Tests with:
-
-
-Run a game (or more) with:
-
-Do not forget to configure naoth!
-Enable/Disable neccessary modules and set parameters.
-
-Simspark can be run "headless", therefore modify rcsss...rb and set to false
-
-Another Simspark configuration is the simulated joint heating which can be turned off via ....
