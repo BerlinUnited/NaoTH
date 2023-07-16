@@ -27,10 +27,10 @@ def parseArguments():
                     'If an error occurred during the execution of a test, the exit code is increased by 100.\n'
                     'For eg., if 4 tests are scheduled, one fails and another throws an exception, the exit code is "101".',
         epilog= "Example:\n"
-                "\t{0} -t penalty_kicker\n\n"
-                "\tExecutes the 'penalty_kicker' test.\n\n"
-                "\t{0} -v -ns -na -t penalty_kicker\n\n"
-                "\tExecutes the 'penalty_kicker' test, but doesn't start the simspark nor the agent application. Both must be already started! Also the output is more verbose.\n\n"
+                "\t{0} -t PenaltyKicker\n\n"
+                "\tExecutes the 'PenaltyKicker' test.\n\n"
+                "\t{0} -v -ns -na -t PenaltyKicker\n\n"
+                "\tExecutes the 'PenaltyKicker' test, but doesn't start the simspark nor the agent application. Both must be already started! Also the output is more verbose.\n\n"
                 "\n\nNOTE:\n"
                 "For 'headless' execution you have to modify the 'rcssserverspl.rb' of your simspark installation and set '$enableInternalMonitor = false'."
                 "".format(os.path.basename(__file__)),
