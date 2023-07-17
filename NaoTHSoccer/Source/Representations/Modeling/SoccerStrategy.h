@@ -33,10 +33,10 @@ public:
   }
 
   /** formation position */
-  Vector2<double> formation;
+  Vector2d formation;
 
   /** direction of the attack (based on potential field, see: PotentialFieldProvider) */
-  Vector2<double> attackDirection; 
+  Vector2d attackDirection; 
 
   /** the shorest time, in which the robot can reach the ball [ms] */
   double timeToBall;
