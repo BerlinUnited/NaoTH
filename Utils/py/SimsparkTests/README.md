@@ -84,43 +84,6 @@ The easiest way to run simspark is to download a precompiled AppImage from our [
 * if another port for the monitor and/or agents should be used, the simspark arguments can be set (`--agent-port PORTNUM`, `--server-port PORTNUM`)
   * the container forwarded ports must be set accordingly
 
-Dockerfile:
-```docker
-FROM ubuntu:18.04
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libfreetype6 libode6 libsdl1.2debian ruby libdevil1c2 qt4-default nano \
-    libboost-regex1.65.1 libboost-system1.65.1 libboost-thread1.65.1 \
-    g++ cmake git libfreetype6-dev libode-dev libsdl-dev ruby-dev libdevil-dev libboost-dev libboost-thread-dev libboost-regex-dev libboost-system-dev libqt4-opengl-dev \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
-
-RUN git clone \
-      --depth 1 https://github.com/BerlinUnited/SimSpark-SPL.git /tmp/SimSpark \
-    && mkdir -p /tmp/SimSpark/spark/build \
-    && cd /tmp/SimSpark/spark/build \
-    && cmake -DRVDRAW=OFF -DCMAKE_CXX_FLAGS=-w .. \
-    && make -j$(nproc) \
-    && make install \
-    && ldconfig \
-    && mkdir -p /tmp/SimSpark/rcssserver3d/build \
-    && cd /tmp/SimSpark/rcssserver3d/build \
-    && cmake -DRVDRAW=OFF -DCMAKE_CXX_FLAGS=-w .. \
-    && make -j$(nproc) \
-    && make install && ldconfig \
-    && rm -fr /tmp/SimSpark \
-    && apt-get purge -y --auto-remove $buildDeps \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* \
-    && sed -i 's/\$enableInternalMonitor = true/\$enableInternalMonitor = false/g' /usr/local/share/rcssserver3d/rcssserverspl.rb
-
-ENV LD_LIBRARY_PATH=/usr/local/lib/simspark:/usr/local/lib/rcssserver3d
-
-ENTRYPOINT ["rcssserver3d"]
-
-EXPOSE 3100
-EXPOSE 3200
-```
-
 ## Docker (AppImage)
 * the simspark application can be build and run as [AppImage](https://github.com/AppImage) (self-contained application)
 * the AppImage is build with a docker container
@@ -134,24 +97,3 @@ EXPOSE 3200
       * `help`, `create`, `create -n`, `exit`
 * the container can be used multiple times to create a new AppImage
   * `docker start -ia simspark-appimage`
-
-Dockerfile:
-```docker
-FROM ubuntu:18.04
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libfreetype6 libode6 libsdl1.2debian ruby libdevil1c2 qt4-default nano file \
-    libboost-regex1.65.1 libboost-system1.65.1 libboost-thread1.65.1 \
-    g++ cmake git libfreetype6-dev libode-dev libsdl-dev ruby-dev libdevil-dev libboost-dev libboost-thread-dev libboost-regex-dev libboost-system-dev libqt4-opengl-dev \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
-
-ADD https://github.com/AppImage/AppImageKit/releases/download/13/appimagetool-x86_64.AppImage /root
-RUN chmod +x /root/appimagetool-x86_64.AppImage
-
-RUN git clone https://github.com/BerlinUnited/SimSpark-SPL.git /root/Simspark.Git
-
-COPY create_appimage.sh /root/
-
-WORKDIR /root
-ENTRYPOINT ["/root/create_appimage.sh"]
-```
