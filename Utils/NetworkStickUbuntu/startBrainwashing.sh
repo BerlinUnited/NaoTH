@@ -50,4 +50,3 @@ EOF
 
 netplan apply
 
-su nao -c "/usr/bin/paplay /home/nao/naoqi/Media/usb_stop.wav"
