@@ -27,6 +27,8 @@ public:
             const T& operator()() const { return data; }
             TimestampedData& operator=(const T& data) {
                 this->data = data;
+                //TODO: does this need to be a 64bit system time or can it be 32bit Nao-Time getNaoTimeInMilliSeconds()?
+                //      inside the modules we should always use the Nao-Time so that timestamps stay comparable.
                 this->lastUpdate = naoth::NaoTime::getSystemTimeInMilliSeconds();
                 return *this;
             }
@@ -61,6 +63,7 @@ public:
         /** the robot pose */
         TimestampedData<Pose2D> pose;
 
+        // TODO: why ballAge is double, but timeToBall unsigned int?
         /** ms since this robot last saw the ball. -1 if we haven't seen it */
         TimestampedData<double> ballAge = -1.0;
         /** position of ball relative to the robot coordinates in millimeters; 0,0 is in centre of the robot */
