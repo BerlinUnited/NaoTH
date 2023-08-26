@@ -73,6 +73,7 @@ Debug::Debug() : cognitionLogger("CognitionLog")
 
   getDebugParameterList().add(&params);
   getDebugParameterList().add(&getAudioControl());
+  getDebugParameterList().add(&getFieldInfo());
 }
 
 Debug::~Debug()
