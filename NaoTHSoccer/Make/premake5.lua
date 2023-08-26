@@ -69,13 +69,13 @@ workspace "NaoTHSoccer"
   -- these dependencies are included in the link lists of the binary projects
   naoth_links = {
       "opencv_core",
-      "opencv_ml",
       "opencv_imgproc",
-      "opencv_objdetect",
-      "opencv_dnn",
-      "opencv_calib3d",
-      "opencv_features2d",
-      "opencv_flann"
+      --"opencv_ml",
+      --"opencv_objdetect",
+      --"opencv_dnn",
+      --"opencv_calib3d",
+      --"opencv_features2d",
+      --"opencv_flann"
   }
   
   -- this is on by default in premake4 stuff
