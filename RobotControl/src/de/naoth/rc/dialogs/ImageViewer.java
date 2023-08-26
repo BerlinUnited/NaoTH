@@ -84,7 +84,7 @@ public class ImageViewer extends AbstractDialog
     @Override
     public void newFrame(BlackBoard b) 
     {
-        LogDataFrame f = b.get("Image");
+        LogDataFrame f = b.get(btRAW.isSelected()?"Image":"ImageJPEG");
         if(f != null) {
           ImageManagerBottomImpl im = new ImageManagerBottomImpl();
           JanusImage janusImage = im.convertByteArrayToType(f.getData());
@@ -93,7 +93,7 @@ public class ImageViewer extends AbstractDialog
           ImageViewer.this.imageCanvasBottom.repaint();
         }
         
-        f = b.get("ImageTop");
+        f = b.get(btRAW.isSelected()?"ImageTop":"ImageJPEGTop");
         if(f != null) {
           ImageManagerTopImpl im = new ImageManagerTopImpl();
           JanusImage janusImage = im.convertByteArrayToType(f.getData());
