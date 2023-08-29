@@ -102,7 +102,7 @@ bool TeamCommEventSender::createMessage() const
     }
     if (getTeamMessageDecision().send_ballAge()) {
         // TODO: check the type of myself.ballAge - does it have to be double?
-        message.set_ballage(static_cast<int>(myself.ballAge()));
+        message.set_ballage(static_cast<std::int32_t>(myself.ballAge()));
         send = true;
     }
     if (getTeamMessageDecision().send_ballPosition()) {

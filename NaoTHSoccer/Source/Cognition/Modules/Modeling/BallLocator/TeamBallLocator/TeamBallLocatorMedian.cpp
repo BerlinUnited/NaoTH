@@ -41,7 +41,8 @@ void TeamBallLocatorMedian::execute()
         Vector2dTS ballPosTS;
         ballPosTS.vec = player.pose() * player.ballPosition();
         // BUG: player.ballAge.time() returns a 64-bit system time (not a 32bit nao time) and is truncated to 32 bit.
-        ballPosTS.t = static_cast<unsigned int>(player.ballAge.time() - player.ballAge());
+        // NOTE: the static conversion to int is only to preserve previous logic. Neets to be checked.
+        ballPosTS.t = static_cast<unsigned int>(player.ballAge.time() - static_cast<int>(player.ballAge()));
         // collect balls
         ballPosHist.push_back(ballPosTS);
 
@@ -65,7 +66,8 @@ void TeamBallLocatorMedian::execute()
         Vector2dTS ballPosTS;
         ballPosTS.vec = player.pose() * player.ballPosition();
         // BUG: player.ballAge.time() returns a 64-bit system time (not a 32bit nao time) and is truncated to 32 bit.
-        ballPosTS.t = static_cast<unsigned int>(player.ballAge.time() - player.ballAge());
+        // NOTE: the static conversion to int is only to preserve previous logic. Neets to be checked.
+        ballPosTS.t = static_cast<unsigned int>(player.ballAge.time() - static_cast<int>(player.ballAge()));
         // collect balls
         ownballPosHist.push_back(ballPosTS);
       }
