@@ -40,14 +40,17 @@ void TeamBallLocatorMedian::execute()
         // global position of the ball and time last seen
         Vector2dTS ballPosTS;
         ballPosTS.vec = player.pose() * player.ballPosition();
-        ballPosTS.t = player.ballAge.time() - static_cast<int>(player.ballAge());
+        // BUG: player.ballAge.time() returns a 64-bit system time (not a 32bit nao time) and is truncated to 32 bit.
+        // NOTE: the static conversion to int is only to preserve previous logic. Neets to be checked.
+        ballPosTS.t = static_cast<unsigned int>(player.ballAge.time() - static_cast<int>(player.ballAge()));
         // collect balls
         ballPosHist.push_back(ballPosTS);
 
         // set time to the latest received message
         if (player.ballAge.time() > getTeamBallModel().time )
         {
-          getTeamBallModel().time = player.ballAge.time();
+          // BUG: player.ballAge.time() returns a 64-bit system time (not a 32bit nao time) and is truncated to 32 bit.
+          getTeamBallModel().time = static_cast<unsigned int>(player.ballAge.time());
         }
       }
     } else {
@@ -62,7 +65,9 @@ void TeamBallLocatorMedian::execute()
         // global position of the ball and time last seen
         Vector2dTS ballPosTS;
         ballPosTS.vec = player.pose() * player.ballPosition();
-        ballPosTS.t = player.ballAge.time() - static_cast<int>(player.ballAge());
+        // BUG: player.ballAge.time() returns a 64-bit system time (not a 32bit nao time) and is truncated to 32 bit.
+        // NOTE: the static conversion to int is only to preserve previous logic. Neets to be checked.
+        ballPosTS.t = static_cast<unsigned int>(player.ballAge.time() - static_cast<int>(player.ballAge()));
         // collect balls
         ownballPosHist.push_back(ballPosTS);
       }
