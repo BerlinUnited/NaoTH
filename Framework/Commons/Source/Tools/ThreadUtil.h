@@ -58,15 +58,21 @@ public:
 
   static bool setName(std::thread& t, const std::string& name)
   {
-  #ifdef _POSIX_THREADS
+
+  #ifdef _WIN32
+    // do nothing in windows
+
+  #elif __APPLE__
+    // macOS only uses one argument to set a thread name
+    pthread_setname_np(name.substr(0,15).c_str());
+
+  #elif _POSIX_THREADS
     // The thread name is a meaningful C language string, whose 
     // length is restricted to 16 characters,
     // including the terminating null byte ('\0')
     pthread_setname_np(t.native_handle(), name.substr(0,15).c_str());
     
-  #elif _WIN32
-    // do nothing in windows
-  #endif // _POSIX_THREADS
+  #endif // _WIN32
 
     return false;
   }
