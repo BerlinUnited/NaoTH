@@ -133,6 +133,9 @@ jar {
   
   // avoid empty directories caused by the modified resource structure
   includeEmptyDirs = false
+  
+  // exclude duplicate files
+  duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
 }
 
 startScripts {
