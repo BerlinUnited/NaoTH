@@ -63,8 +63,8 @@ public:
     // do nothing in windows
 
   #elif __APPLE__
-    // macOS only uses one argument to set a thread name
-    pthread_setname_np(name.substr(0,15).c_str());
+    // do nothing in macOS
+    // There is a function pthread_setname_np, but it can only be used from within the thread itself.
 
   #elif _POSIX_THREADS
     // The thread name is a meaningful C language string, whose 
