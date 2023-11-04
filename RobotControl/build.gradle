@@ -20,6 +20,8 @@ buildscript {
 
 apply plugin: 'application' // uses the java and distribution plugin
 
+compileJava {options.encoding = "UTF-8"} // set the encoding in case LANG / LC_ALL is not set on host
+
 // use the 'javafxplugin' based on the available java version
 def jVersion = JavaVersion.current()
 if (jVersion >= JavaVersion.VERSION_11) {
