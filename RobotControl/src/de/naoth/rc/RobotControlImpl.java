@@ -26,10 +26,13 @@ import java.io.*;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
 import java.lang.reflect.Field;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Arrays;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -84,13 +87,22 @@ public class RobotControlImpl extends javax.swing.JFrame
   
   // HACK: set the path to the native libs
   static 
-  {
-  	// load the logger properties
+  {  
+    // load the logger properties
+    // NOTE: this also prints a list of properties 
     InputStream stream = RobotControlImpl.class.getResourceAsStream("logging.properties");
     try {
         LogManager.getLogManager().readConfiguration(stream);
     } catch (IOException e) {
-        e.printStackTrace();
+        e.printStackTrace(System.err);
+    }
+    
+    // print the arguments that were passed to the JVM for debugging purposes
+    RuntimeMXBean runtimeMxBean = ManagementFactory.getRuntimeMXBean();
+    List<String> arguments = runtimeMxBean.getInputArguments();
+    System.out.println("-- JVM Options --");
+    for(String s: arguments) {
+        System.out.println( s );
     }
     
     try
@@ -126,7 +138,7 @@ public class RobotControlImpl extends javax.swing.JFrame
         System.getProperties().list(System.out);
 
     } catch (Throwable ex) {
-          Logger.getLogger(RobotControlImpl.class.getName()).log(Level.SEVERE, null, ex);
+          getLogger().log(Level.SEVERE, null, ex);
       }
   }
 
@@ -144,10 +156,10 @@ public class RobotControlImpl extends javax.swing.JFrame
     public static void addLibraryPath(String pathToAdd) throws Throwable {
         
         // Define black magic: IMPL_LOOKUP is "trusted" and can access prvae variables.
-		final Lookup original = MethodHandles.lookup();
-		final Field internal = Lookup.class.getDeclaredField("IMPL_LOOKUP");
-		internal.setAccessible(true);
-		final Lookup trusted = (Lookup) internal.get(original);
+        final Lookup original = MethodHandles.lookup();
+        final Field internal = Lookup.class.getDeclaredField("IMPL_LOOKUP");
+        internal.setAccessible(true);
+        final Lookup trusted = (Lookup) internal.get(original);
         
         // Invoke black magic. Get access to the private field usr_paths
         MethodHandle set = trusted.findStaticSetter(ClassLoader.class, "usr_paths", String[].class);
@@ -399,7 +411,7 @@ public class RobotControlImpl extends javax.swing.JFrame
                     try {
                         dialogRegistry.loadFromFile(f);
                     } catch (IOException ex) {
-                        Logger.getLogger(RobotControlImpl.class.getName()).log(Level.SEVERE, null, ex);
+                        getLogger().log(Level.SEVERE, null, ex);
                     }
                 } else {
                     JOptionPane.showMessageDialog(this, "The '"+source.getText()+"' dialog layout file doesn't exists!?", "Missing layout file", JOptionPane.ERROR_MESSAGE);
@@ -706,7 +718,7 @@ public class RobotControlImpl extends javax.swing.JFrame
                 createDialogConfigMenuItem(name);
             }
         } catch (IOException ex) {
-            Logger.getLogger(RobotControlImpl.class.getName()).log(Level.SEVERE, null, ex);
+            getLogger().log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_miSaveDialogConfigActionPerformed
 
@@ -759,7 +771,7 @@ public class RobotControlImpl extends javax.swing.JFrame
 //        props.setProperty(PluginManager.class, "cache.file", configlocation+"robot-control.jspf.cache");
 
         PluginManager pluginManager = PluginManagerFactory.createPluginManager(props);
-
+        
         try
         {
           // make sure the main frame if loaded first
