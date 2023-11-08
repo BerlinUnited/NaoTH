@@ -43,7 +43,7 @@ workspace "NaoTHSoccer"
 
   -- add general paths
   -- this mainly reflects the internal structure of the extern directory
-  sysincludedirs {
+  externalincludedirs {
     FRAMEWORK_PATH .. "/Commons/Source/Messages",
     
     EXTERN_PATH .. "/include",
@@ -231,7 +231,7 @@ workspace "NaoTHSoccer"
     group "Platform"
       dofile (FRAMEWORK_PATH .. "/Platforms/Make/NaoSMAL.lua")
         if AL_DIR ~= nil then
-          sysincludedirs {AL_DIR .. "/include"}
+          externalincludedirs {AL_DIR .. "/include"}
           syslibdirs {AL_DIR .. "/lib"}
         end
         vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/NaoSMAL" }

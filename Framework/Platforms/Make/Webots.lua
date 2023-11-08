@@ -22,6 +22,6 @@ project "Webots"
     "protobuf",
     "fftw3",
     "jpeg"
-   }
+  }
   
   targetname "naoth-webots"

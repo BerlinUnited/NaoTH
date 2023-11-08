@@ -24,6 +24,6 @@ project "SimSpark"
     "protobuf",
     "fftw3",
     "jpeg"
-   }
+  }
   
   targetname "naoth-simspark"
