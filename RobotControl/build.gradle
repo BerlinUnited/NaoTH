@@ -58,7 +58,10 @@ application.getMainClass().set('de.naoth.rc.RobotControlImpl')
 application.executableDir = '' // do not create a "bin" directory in install/zip
 application.applicationName = 'robotcontrol' // set the startscripts to lower case
 // HACK: show splashscreen for 'gradlew run'
-application.applicationDefaultJvmArgs = ['-splash:build/resources/de/naoth/rc/res/Splash.png']
+application.applicationDefaultJvmArgs = [
+  '-splash:build/resources/de/naoth/rc/res/Splash.png',
+  '-Djava.util.Arrays.useLegacyMergeSort=true'
+]
 
 // set the source directory and disable the other dirs
 sourceSets.main.java.srcDirs = ['src']
