@@ -2,12 +2,10 @@ project "Commons"
   kind "StaticLib"
   language "C++"
   
-  targetname "commons"
-  
   includedirs {
     "../Source/"
   }
-  sysincludedirs {
+  externalincludedirs {
     "../Source/Messages/"
   }
   
@@ -19,5 +17,5 @@ project "Commons"
     "../Source/**.hpp"
   }
   
-
+  targetname "commons"
   
