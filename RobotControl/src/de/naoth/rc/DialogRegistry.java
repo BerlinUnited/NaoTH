@@ -19,7 +19,6 @@ import bibliothek.gui.dock.common.perspective.SingleCDockablePerspective;
 import bibliothek.gui.dock.common.theme.ThemeMap;
 import de.naoth.rc.core.dialog.RCDialog;
 import java.awt.DefaultKeyboardFocusManager;
-import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -131,11 +130,8 @@ public class DialogRegistry {
         
         // create menu item (should never return null)
         
-        ActionListener action = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dockDialog(dialog);
-            }
+        ActionListener action = (ActionEvent e) -> {
+            dockDialog(dialog);
         };
         
         JMenuItem item = menuBar.addDialog(name, category, mnemonic);
@@ -144,6 +140,7 @@ public class DialogRegistry {
         this.accessPanel.registerDialog(name, category, action);
     }//end registerDialog
 
+    
     public void dockDialog(Dialog dialog) {
         // check if view already exists
         DialogDockable dockableDialog = (DialogDockable) this.control.getSingleDockable(dialog.getDisplayName());
@@ -152,21 +149,28 @@ public class DialogRegistry {
         if (dockableDialog == null) {
             dockableDialog = new DialogDockable(dialog);
             
+            // add the dialog to the controller
+            // NOTE: this needs to be done before we can modify its location
+            this.control.addDockable(dockableDialog);
+            
             // put the new dialog aside the currently focused one
             CDockable focusedDialog = this.control.getFocusedCDockable();
+            
+            // no dialg is focussed => chose the first if possible
             if(focusedDialog == null && this.control.getCDockableCount() > 0) {
                 focusedDialog = this.control.getCDockable(0);
             }
+            
             if (focusedDialog != null) {
-                dockableDialog.setLocation(focusedDialog.getBaseLocation().aside());
+                dockableDialog.setLocationsAside(focusedDialog);
             }
-            this.control.addDockable(dockableDialog);
         }
 
         dockableDialog.setVisible(true);
         this.control.getController().setFocusedDockable(dockableDialog.intern(), true);
     }//dockDialog
 
+    
     protected void disposeOnClose() {
         this.control.destroy();
     }
