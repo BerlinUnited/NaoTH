@@ -199,7 +199,7 @@ class Evaluator:
 
         # start dummy simulator
         cppyy.gbl.g_type_init()
-        self.sim = cppyy.gbl.DummySimulator(False, False, 5401)
+        self.sim = cppyy.gbl.DummySimulator(False, 5401)
         cppyy.gbl.naoth.Platform.getInstance().init(self.sim)
 
         # create the cognition and motion objects
