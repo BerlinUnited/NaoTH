@@ -151,7 +151,13 @@ workspace "NaoTHSoccer"
     
   -- additional defines for visual studio   
   filter {"system:windows", "action:vs*"}
-    defines {"WIN32", "NOMINMAX", "NOGDI", "EIGEN_DONT_ALIGN"}
+    defines {
+      "WIN32", 
+      "NOMINMAX", 
+      "NOGDI", 
+      "EIGEN_DONT_ALIGN", 
+      "_SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS" -- workaround: solves missing 'hash_compare' that was removed in MSVC 14.34.31932
+    }
     
     cppdialect "c++17"
     links {"ws2_32"}
