@@ -1,8 +1,7 @@
-# TODO add a lot more documentation
 stages:
- - test
- - build
- - deploy
+  - test
+  - build
+  - deploy
 
 default:
   image: $TOOLCHAIN_DOCKER_IMAGE
@@ -73,6 +72,8 @@ compile_nao_clang:
     name: "nao_clang"
     paths:
       - NaoTHSoccer/dist/
+      # we include the config folder of this job because it contains the built behavior, not sure
+      # what would happen if we included the config folder in the other job as well
       - NaoTHSoccer/Config/
 
 # this job must be named pages
