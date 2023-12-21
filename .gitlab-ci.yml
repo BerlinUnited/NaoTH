@@ -111,12 +111,17 @@ publish_naoth_docker:
   script:
     # getting docker-tag friendly version of the current branch name: replace / with underscore
     - branchname=`echo "${CI_COMMIT_REF_NAME}" | sed "s/\//_/g"`
+    # log into the gitlab registry with a ci token
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN scm.cms.hu-berlin.de:4567
+    # pull the same image we used in the jobs that built naoth binaries
     - docker pull $TOOLCHAIN_DOCKER_IMAGE
+    # 
     - docker create --name temp_container $TOOLCHAIN_DOCKER_IMAGE
-    - docker cp NaoTHSoccer/dist temp_container:/binaries/
+    #- docker cp NaoTHSoccer/dist temp_container:/binaries/
     - docker cp ./ temp_container:/naoth/repo/
+    #
     - docker commit temp_container scm.cms.hu-berlin.de:4567/berlinunited/naoth-2020:$branchname
+    # push the image with the branchname as tag
     - docker push scm.cms.hu-berlin.de:4567/berlinunited/naoth-2020:$branchname
 
 .publish_naoth_python_gitlab:
