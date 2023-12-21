@@ -48,7 +48,6 @@ compile_local_clang:
   - premake5 gmake2 --protoc
   - cd ../build/gmake2
   - make all -j 4
-  - /bin/bash ../make/compileBehavior.sh
   artifacts:
     expire_in: 4 weeks
     name: "local_gcc"
