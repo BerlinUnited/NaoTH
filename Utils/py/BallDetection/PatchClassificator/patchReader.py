@@ -56,69 +56,62 @@ def get_images(frame):
     image_bottom = frame["Image"]
     cm_bottom = frame["CameraMatrix"]
     cm_top = frame["CameraMatrixTop"]
-    return [frame.number, image_from_proto(image_bottom), image_from_proto(image_top), cm_bottom,
-            cm_top]
+
+    return [
+        frame.number, 
+        image_from_proto(image_bottom), 
+        image_from_proto(image_top), 
+        cm_bottom,
+        cm_top
+    ]
 
 
-def get_patches(frame):
-    ball_candidates = frame["BallCandidates"]
-    ball_candidates_top = frame["BallCandidatesTop"]
-    # print len(ball_candidates.patches), len(ball_candidates_top.patches)
-    return [ball_candidates_top]
+def get_ball_candidates(frame):
+    try:
+        ball_candidates_top = frame["BallCandidatesTop"]
+    except:
+        ball_candidates_top = None
+
+    try:
+        ball_candidates_bottom = frame["BallCandidates"]
+    except:
+        ball_candidates_bottom = None
+
+    return (ball_candidates_top, ball_candidates_bottom)
 
 
 def read_all_patches_from_log(fileName, type=0):
-    # initialize the parser
     my_parser = Parser()
-    # register the protobuf message name for the 'ImageTop'
+
+    # register the protobuf message names which are not defined in the log file by default
     my_parser.register("ImageTop", "Image")
     my_parser.register("BallCandidatesTop", "BallCandidates")
     my_parser.register("CameraMatrixTop", "CameraMatrix")
 
-    # get all the images from the logfile
-    # images = map(getPatches, LogReader(fileName, my_parser))
-
-    camera_index = []
+    camera_indices = []
     patches = []
+
     for frame in LogReader(fileName, my_parser):
-        try:
-            ball_candidates = frame["BallCandidates"]
-        except:
-            # this can happen at the end of the log where the frame is not fully recorded
-            print("An exception occurred")
-            continue
+        ball_candidates_top, ball_candidates_bottom = get_ball_candidates(frame)
 
-        if ball_candidates is None:
-            continue
-        #print(ball_candidates)
-        for p in ball_candidates.patches:
-            if p.type == type:
-                data = numpy.fromstring(p.data, dtype=numpy.uint8)
+        if ball_candidates_top is not None and ball_candidates_top.patches:
+            for p in ball_candidates_top.patches:
+                data = numpy.frombuffer(p.data, dtype=numpy.uint8)
                 patches.append(data)
-                camera_index.append([0])
+                camera_indices.append([1])
 
-
-        try:
-            ball_candidates_top = frame["BallCandidatesTop"]
-        except:
-            # this can happen at the end of the log where the frame is not fully recorded
-            print("An exception occurred")
-            continue
-        # TODO check if there is a difference here to the try block
-        if ball_candidates_top is None:
-            continue
-        for p in ball_candidates_top.patches:
-            if p.type == type:
-                data = numpy.fromstring(p.data, dtype=numpy.uint8)
+        if ball_candidates_bottom is not None and ball_candidates_bottom.patches:
+            for p in ball_candidates_bottom.patches:
+                data = numpy.frombuffer(p.data, dtype=numpy.uint8)
                 patches.append(data)
-                camera_index.append([1])
+                camera_indices.append([0])
 
-    return patches, camera_index
+    return patches, camera_indices
 
 
 if __name__ == "__main__":
     fileName = parse_arguments(sys.argv[1:])
     print(fileName)
 
-    patches = read_all_patches_from_log(fileName)
+    patches, camera_index = read_all_patches_from_log(fileName)
     print(len(patches))

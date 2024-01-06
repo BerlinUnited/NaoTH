@@ -5,7 +5,7 @@ import getopt
 import numpy as np
 import json
 import cv2
-import patchReader as patchReader
+from BallDetection.PatchClassificator.patchReader import read_all_patches_from_log
 
 patch_size = (24, 24)  # width, height
 
@@ -35,7 +35,7 @@ def parse_arguments(argv):
 
 def load_labels(file):
     # init with invalid label
-    tmp_labels = np.negative(np.ones((len(patchdata),), dtype=np.int))
+    tmp_labels = np.negative(np.ones((len(patchdata),), dtype=int))
 
     if os.path.isfile(file):
         with open(file, 'r') as data_file:
@@ -203,7 +203,7 @@ if __name__ == "__main__":
     print("Patches will be exported to %s" % (export_folder))
 
     """ type: 0-'Y', 1-'YUV', 2-'YUVC' """
-    patchdata, camera_index = patchReader.read_all_patches_from_log(logFilePath, type=2)
+    patchdata, camera_index = read_all_patches_from_log(logFilePath, type=2)
 
     if flag:
         export_patches_all(patchdata, camera_index, export_folder)

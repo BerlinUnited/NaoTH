@@ -4,8 +4,8 @@
 import os
 from argparse import ArgumentParser
 
-from naoth.log import Reader as LogReader
 from naoth.datasets import images
+from naoth.log import Reader as LogReader
 from naoth.pb.Framework_Representations_pb2 import Image
 
 
@@ -60,30 +60,20 @@ def create_image_log_dict(image_log, first_image_is_top):
     return images_dict
 
 
-if __name__ == "__main__":
-    parser = ArgumentParser(description='script for combining game.log and images.log files')
-    parser.add_argument("-g", "--glog", help='normal game.log')
-    parser.add_argument("-a", "--glog_all", help='Keep all frames from the game log.', action='store_true')
-    
-    parser.add_argument("-i", "--ilog", help='log containing the images')
-    parser.add_argument("-t", "--ilog_first_image_top", help='First image in the image log is from the top camera. Use it for older logfiles.', action='store_true')
-    
-    parser.add_argument("-o", "--olog", help='output log file', default="combined.log")
-    
-    args = parser.parse_args()
+def combine_logs(game_log, image_log, output_log, glog_all=False, ilog_first_image_top=False):
+    """
+    combines images.log and game.log files, such that the resulting log contains 
+    images, frameinfo and camera matrix data
+    """
 
-    image_log = args.ilog if args.ilog else images.load_data('image_log')
-    game_log = args.glog if args.glog else images.load_data('game_log')
+    print("Indexing image log (first image: {})".format("top" if ilog_first_image_top else "bottom"))
+    image_log_index = create_image_log_dict(image_log, ilog_first_image_top)
 
-    print("Indexing image log (first image: {})".format("top" if args.ilog_first_image_top else "bottom"))
-    image_log_index = create_image_log_dict(image_log, args.ilog_first_image_top)
-
-    print('Writing new log to: "{}"...'.format(args.olog))
-    with open(args.olog, 'wb') as output, open(image_log, 'rb') as image_log, LogReader(game_log) as reader:
+    print('Writing new log to: "{}"...'.format(output_log))
+    with open(output_log, 'wb') as output, open(image_log, 'rb') as image_log, LogReader(game_log) as reader:
         for frame in reader.read():
             # only write frames which have corresponding images
             if frame.number in image_log_index:
-                
                 # may contain 'ImageTop' and 'Image'
                 for image_name, (offset, size) in image_log_index[frame.number].items():
                     # load image data
@@ -101,12 +91,30 @@ if __name__ == "__main__":
 
                 # write the modified frame to the new log
                 output.write(bytes(frame))
-
-                # HACK: Frames are indexed by the log reader. Remove the image of already processed frames to preserve memory.
-                for image_name in image_log_index[frame.number]:
-                    frame.remove(image_name)
-                    
-            elif args.glog_all:
+            
+            elif glog_all:
                 # write unmodified frame to the new log
                 output.write(bytes(frame))
-                
+
+if __name__ == "__main__":
+    parser = ArgumentParser(description='script for combining game.log and images.log files')
+    parser.add_argument("-g", "--glog", help='normal game.log')
+    parser.add_argument("-a", "--glog_all", help='Keep all frames from the game log.', action='store_true')
+    
+    parser.add_argument("-i", "--ilog", help='log containing the images')
+    parser.add_argument("-t", "--ilog_first_image_top", help='First image in the image log is from the top camera. Use it for older logfiles.', action='store_true')
+    
+    parser.add_argument("-o", "--olog", help='output log file', default="combined.log")
+    
+    args = parser.parse_args()
+
+    image_log = args.ilog if args.ilog else images.load_data('image_log')
+    game_log = args.glog if args.glog else images.load_data('game_log')
+
+    combine_logs(
+        game_log, 
+        image_log, 
+        output_log=args.olog, 
+        glog_all=args.glog_all, 
+        ilog_first_image_top=args.ilog_first_image_top
+    )  
