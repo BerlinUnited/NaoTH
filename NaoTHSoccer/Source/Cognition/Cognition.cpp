@@ -34,6 +34,7 @@
 #include "Modules/Infrastructure/TeamCommunicator/TeamCommEventReceiver.h"
 #include "Modules/Infrastructure/TeamCommunicator/TeamCommEventSender.h"
 #include "Modules/Infrastructure/TeamCommunicator/TeamCommEventDecision.h"
+#include "Modules/Infrastructure/TeamCommunicator/TeamCommDebugger.h"
 #include "Modules/Infrastructure/TeamCommunicator/SimpleNetworkTimeProtocol.h"
 
 #include "Modules/Infrastructure/Debug/CameraDebug.h"
@@ -98,6 +99,7 @@
 #include "Modules/Modeling/SelfLocator/OdometrySelfLocator/OdometrySelfLocator.h"
 #include "Modules/Modeling/GoalModel/DummyActiveGoalLocator/DummyActiveGoalLocator.h"
 #include "Modules/Modeling/GoalModel/WholeGoalLocator/WholeGoalLocator.h"
+#include "Modules/Modeling/AttentionEngine/AttentionEngine.h"
 
 // role decisions
 #include "Modules/Modeling/RoleDecision/RolesProvider.h"
@@ -274,6 +276,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(KickDirectionSimulator);
   REGISTER_MODULE(Simulation);
   REGISTER_MODULE(StaticDebugModelProvider);
+  REGISTER_MODULE(AttentionEngine);
 
   // behavior
   REGISTER_MODULE(BasicTestBehavior);
@@ -287,6 +290,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(TeamCommEventSender);
 
   // debug
+  REGISTER_MODULE(TeamCommDebugger);
   REGISTER_MODULE(GameLogger);
   REGISTER_MODULE(Debug);
   REGISTER_MODULE(FrameRateCheck);
@@ -313,6 +317,19 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
     }
     setModuleEnabled(*name, active);
   }//end for
+
+  // Check if all the keys in the config do exist as modules. 
+  // PRECEDENT: RoboCup 2023 - the ultrasound obstacle detection was 
+  // not on because the module UltraSoundControl was renamed but the config was not adjusted.
+  // Only remove if you have a better solution.
+  bool allConfiguredModulesExist = true;
+  for(const std::string& module_name: config.getKeys("modules")) {
+    if(ModuleManager::getModule(module_name) == NULL) {
+      std::cerr << "ERROR: Module " << module_name << " is mentioned in the config, but not registered in cognition" << std::endl;
+      allConfiguredModulesExist = false;
+    }
+  }
+  ASSERT_MSG(allConfiguredModulesExist, "Some of the modules are mentioned in the config, but are not registered.")
 
   // auto-generate the execution list
   //calculateExecutionList();

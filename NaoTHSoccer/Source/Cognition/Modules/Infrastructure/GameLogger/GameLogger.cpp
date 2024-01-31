@@ -10,8 +10,9 @@ GameLogger::GameLogger()
   firstRecording(true),
   lastAudioDataTimestamp(0)
 {
-  const std::string gameLogPath = params.logDirPath + "/game.log";
-  const std::string imageLogPath = params.logDirPath + "/images.log";
+  // CAUTION: if you change this the collect stick needs to change as well
+  const std::string gameLogPath = "/home/nao/game.log";
+  const std::string imageLogPath = "/home/nao/images.log";
 
   logfileManager.openFile(gameLogPath);
   
@@ -98,7 +99,10 @@ void GameLogger::execute()
       LOGSTUFF(RansacLinePercept);
       LOGSTUFF(RansacCirclePercept2018);
       
-      
+      if(params.logJPEGImages) {
+        LOGSTUFF(ImageJPEG);
+        LOGSTUFF(ImageJPEGTop);
+      }
       
       if(params.logBallCandidates) {
         LOGSTUFF(BallCandidates);
@@ -106,6 +110,7 @@ void GameLogger::execute()
       }
 
       LOGSTUFF(TeamState);
+      LOGSTUFF(TeamMessageDecision);
 
 
       // keep the audio device open for some time

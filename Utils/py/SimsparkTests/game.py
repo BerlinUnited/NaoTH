@@ -566,23 +566,24 @@ def createLog(log: str):
 
 
 def prepare_game(s, left: Config.Team, right: Config.Team):
+    from math import ceil
     # Left team
-    l_side = round(left.players / 2)
+    l_side = ceil(left.players / 2)
     l_space = round(3.5/l_side)
     for n in range(l_side):
         #print(n + 1, -4.0 + n * l_space, 3.2, -180, 'Left')
-        s.cmd_agentMove(n + 1, -4.0 + n * l_space, 3.2, r=-180, t='Left')
+        s.cmd_agentMove(n + 1, -3.8 + n * l_space, 3.2, r=-180, t='Left')
     for n in range(l_side, min(left.players, l_side*2)):
         #print(n + 1, -4.0 + (n - l_side) * l_space, -3.2, 0, 'Left')
-        s.cmd_agentMove(n + 1, -4.0 + (n - l_side) * l_space, -3.2, r=0, t='Left')
+        s.cmd_agentMove(n + 1, -3.8 + (n - l_side) * l_space, -3.2, r=0, t='Left')
 
     # Right team
-    r_side = round(right.players / 2)
+    r_side = ceil(right.players / 2)
     r_space = round(3.5/r_side)
     for n in range(r_side):
-        s.cmd_agentMove(n + 1, 4.0 - n * r_space, 3.2, r=-180, t='Right')
+        s.cmd_agentMove(n + 1, 3.8 - n * r_space, 3.2, r=-180, t='Right')
     for n in range(r_side, min(right.players, r_side*2)):
-        s.cmd_agentMove(n + 1, 4.0 - (n - r_side) * r_space, -3.2, r=0, t='Right')
+        s.cmd_agentMove(n + 1, 3.8 - (n - r_side) * r_space, -3.2, r=0, t='Right')
 
 
 def wait_half(r, s, half_time, log:Log=None, i:multiprocessing.Event=None):

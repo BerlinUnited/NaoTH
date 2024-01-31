@@ -26,10 +26,13 @@ import java.io.*;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
 import java.lang.reflect.Field;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Arrays;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -80,17 +83,27 @@ public class RobotControlImpl extends javax.swing.JFrame
   
   private final GridBagConstraints statusPanelPluginsConstraints = new GridBagConstraints();
   
-  private final String RC_TITLE = "";
+  //FIXME: why is this needed?
+  //private final String RC_TITLE = "";
   
   // HACK: set the path to the native libs
   static 
-  {
-  	// load the logger properties
+  {  
+    // load the logger properties
+    // NOTE: this also prints a list of properties 
     InputStream stream = RobotControlImpl.class.getResourceAsStream("logging.properties");
     try {
         LogManager.getLogManager().readConfiguration(stream);
     } catch (IOException e) {
-        e.printStackTrace();
+        e.printStackTrace(System.err);
+    }
+    
+    // print the arguments that were passed to the JVM for debugging purposes
+    RuntimeMXBean runtimeMxBean = ManagementFactory.getRuntimeMXBean();
+    List<String> arguments = runtimeMxBean.getInputArguments();
+    System.out.println("-- JVM Options --");
+    for(String s: arguments) {
+        System.out.println( s );
     }
     
     try
@@ -123,10 +136,11 @@ public class RobotControlImpl extends javax.swing.JFrame
             addLibraryPath(bin.getAbsolutePath() + "/macos");
         }
         
+        // list all properteies
         System.getProperties().list(System.out);
 
     } catch (Throwable ex) {
-          Logger.getLogger(RobotControlImpl.class.getName()).log(Level.SEVERE, null, ex);
+          getLogger().log(Level.SEVERE, null, ex);
       }
   }
 
@@ -144,10 +158,10 @@ public class RobotControlImpl extends javax.swing.JFrame
     public static void addLibraryPath(String pathToAdd) throws Throwable {
         
         // Define black magic: IMPL_LOOKUP is "trusted" and can access prvae variables.
-		final Lookup original = MethodHandles.lookup();
-		final Field internal = Lookup.class.getDeclaredField("IMPL_LOOKUP");
-		internal.setAccessible(true);
-		final Lookup trusted = (Lookup) internal.get(original);
+        final Lookup original = MethodHandles.lookup();
+        final Field internal = Lookup.class.getDeclaredField("IMPL_LOOKUP");
+        internal.setAccessible(true);
+        final Lookup trusted = (Lookup) internal.get(original);
         
         // Invoke black magic. Get access to the private field usr_paths
         MethodHandle set = trusted.findStaticSetter(ClassLoader.class, "usr_paths", String[].class);
@@ -179,21 +193,18 @@ public class RobotControlImpl extends javax.swing.JFrame
     // load the configuration
     readConfigFromFile();
     
-    try
-    {
+    try {
       //UIManager.setLookAndFeel(new PlasticXPLookAndFeel());
       UIManager.setLookAndFeel(new CustomNimbusLookAndFeel(RobotControlImpl.this));
       // set explicitely the Nimbus colors to be used
       DockUI.getDefaultDockUI().registerColors("de.naoth.rc.CustomNimbusLookAndFeel", new Nimbus6u10());
     }
-    catch(UnsupportedLookAndFeelException ex)
-    {
+    catch(UnsupportedLookAndFeelException ex) {
       getLogger().log(Level.SEVERE, null, ex);
     }
     
     // icon
-    Image icon = Toolkit.getDefaultToolkit().getImage(
-      this.getClass().getResource("res/RobotControlLogo128.png"));
+    Image icon = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("res/RobotControlLogo128.png"));
     setIconImage(icon);
 
     initComponents();
@@ -307,13 +318,12 @@ public class RobotControlImpl extends javax.swing.JFrame
   private void splashScreenMessage(String message)
   {
     final SplashScreen splash = SplashScreen.getSplashScreen();
-    if(splash == null)
-    {
+    if(splash == null) {
       return;
     }
+    
     Graphics2D g = splash.createGraphics();
-    if(g == null)
-    {
+    if(g == null) {
       return;
     }
     
@@ -353,7 +363,7 @@ public class RobotControlImpl extends javax.swing.JFrame
   }//end checkConnected
   
   /**
-   * Reads all user-defined dialog configurations and creates appropiate menu items.
+   * Reads all user-defined dialog configurations and creates appropriate menu items.
    */
   private void setMenuDialogConfiguration() {
       String suffix = "_" + userLayoutFile.getName();
@@ -369,10 +379,10 @@ public class RobotControlImpl extends javax.swing.JFrame
    * Returns the user dialog configuration file for the given configuration name.
    * 
    * @param configName the name of the dialog configuration
-   * @return the File object of this dialog configuraiton
+   * @return the File object of this dialog configuration
    */
   private File createUserDialogConfigFile(String configName) {
-        return new File(userLayoutFile.getParent() + "/" + configName + "_" + userLayoutFile.getName());
+    return new File(userLayoutFile.getParent() + "/" + configName + "_" + userLayoutFile.getName());
   }
 
   /**
@@ -399,7 +409,7 @@ public class RobotControlImpl extends javax.swing.JFrame
                     try {
                         dialogRegistry.loadFromFile(f);
                     } catch (IOException ex) {
-                        Logger.getLogger(RobotControlImpl.class.getName()).log(Level.SEVERE, null, ex);
+                        getLogger().log(Level.SEVERE, null, ex);
                     }
                 } else {
                     JOptionPane.showMessageDialog(this, "The '"+source.getText()+"' dialog layout file doesn't exists!?", "Missing layout file", JOptionPane.ERROR_MESSAGE);
@@ -706,7 +716,7 @@ public class RobotControlImpl extends javax.swing.JFrame
                 createDialogConfigMenuItem(name);
             }
         } catch (IOException ex) {
-            Logger.getLogger(RobotControlImpl.class.getName()).log(Level.SEVERE, null, ex);
+            getLogger().log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_miSaveDialogConfigActionPerformed
 
@@ -743,7 +753,6 @@ public class RobotControlImpl extends javax.swing.JFrame
   {
     java.awt.EventQueue.invokeLater(new Runnable()
     {
-
       @Override
       public void run()
       {
@@ -759,7 +768,7 @@ public class RobotControlImpl extends javax.swing.JFrame
 //        props.setProperty(PluginManager.class, "cache.file", configlocation+"robot-control.jspf.cache");
 
         PluginManager pluginManager = PluginManagerFactory.createPluginManager(props);
-
+        
         try
         {
           // make sure the main frame if loaded first
@@ -774,26 +783,27 @@ public class RobotControlImpl extends javax.swing.JFrame
           
           // JFX plugins
           {
+            // find the parent top directory called 'robotcontrol'
             File parentDir = selfFile.getParentFile();
-            while(parentDir != null && !"robotcontrol".equalsIgnoreCase(parentDir.getName()))
-            {
+            while(parentDir != null && !"robotcontrol".equalsIgnoreCase(parentDir.getName())) {
               parentDir = parentDir.getParentFile();
             }
+            
+            // check for JFX plugins in the directory 'JFXPlugins'
             if(parentDir != null)
             {
               File jfxCandidate = new File(parentDir, "JFXPlugins/dist");
               File[] jarFiles = jfxCandidate.listFiles(new FileFilter()
               {
                 @Override
-                public boolean accept(File pathname)
-                {
+                public boolean accept(File pathname) {
                   return pathname.isFile() && pathname.getName().endsWith(".jar");
                 }
               });
+              
               if(jarFiles != null)
               {
-                for (File j : jarFiles)
-                {
+                for (File j : jarFiles) {
                   pluginManager.addPluginsFrom(j.toURI());
                 }
               }
@@ -801,19 +811,16 @@ public class RobotControlImpl extends javax.swing.JFrame
           }
           
           
-          
           // relative "plugins/" directory
           File workingDirectoryPlugin = new File("plugins/");
-          if(workingDirectoryPlugin.isDirectory())
-          {
+          if(workingDirectoryPlugin.isDirectory()) {
             pluginManager.addPluginsFrom(workingDirectoryPlugin.toURI());
           }
 
           //
           File userHomePlugin = new File(System.getProperty("user.home")
             + "/.naoth/robotcontrol/plugins/");
-          if(userHomePlugin.isDirectory())
-          {
+          if(userHomePlugin.isDirectory()){
             pluginManager.addPluginsFrom(userHomePlugin.toURI());
           }
 

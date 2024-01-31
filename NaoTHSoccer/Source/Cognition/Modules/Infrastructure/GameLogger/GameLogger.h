@@ -6,6 +6,7 @@
 
 #include <Representations/Infrastructure/FrameInfo.h>
 #include <Representations/Infrastructure/Image.h>
+#include <Representations/Infrastructure/ImageJPEG.h>
 #include <Representations/Infrastructure/UltraSoundData.h>
 #include <Representations/Infrastructure/RobotInfo.h>
 #include <Representations/Modeling/BehaviorStateComplete.h>
@@ -20,6 +21,7 @@
 #include <Representations/Modeling/OdometryData.h>
 #include <Representations/Perception/CameraMatrix.h>
 #include "Representations/Modeling/TeamState.h"
+#include "Representations/Modeling/TeamMessageDecision.h"
 #include "Representations/Modeling/BodyStatus.h"
 #include "Representations/Motion/MotionStatus.h"
 #include "Representations/Modeling/BallModel.h"
@@ -48,7 +50,9 @@ BEGIN_DECLARE_MODULE(GameLogger)
 
   REQUIRE(Image)
   REQUIRE(ImageTop)
-
+  REQUIRE(ImageJPEG)
+  REQUIRE(ImageJPEGTop)
+  
   REQUIRE(OdometryData)
   REQUIRE(CameraMatrix)
   REQUIRE(CameraMatrixTop)
@@ -77,6 +81,7 @@ BEGIN_DECLARE_MODULE(GameLogger)
   REQUIRE(BallCandidatesTop)
 
   REQUIRE(TeamState)
+  REQUIRE(TeamMessageDecision)
 
   REQUIRE(AudioData)
   PROVIDE(AudioControl) // needed to keep the device open for a bit after it's requested to stop
@@ -100,20 +105,20 @@ private:
       PARAMETER_REGISTER(logAudioData) = false;
       PARAMETER_REGISTER(logBallCandidates) = true;
       PARAMETER_REGISTER(logBodyStatus) = false;
+      PARAMETER_REGISTER(logJPEGImages) = false;
       PARAMETER_REGISTER(logPlainImages) = true;
       PARAMETER_REGISTER(logPlainImagesDelay) = 2000; // ms
       PARAMETER_REGISTER(logUltraSound) = false;
-      PARAMETER_REGISTER(logDirPath) = "/tmp";
       syncWithConfig();
     }
 
     bool logAudioData;
     bool logBallCandidates;
     bool logBodyStatus;
+    bool logJPEGImages;
     bool logPlainImages;
     int logPlainImagesDelay;
     bool logUltraSound;
-    std::string logDirPath;
   } params;
 
 private:

@@ -13,7 +13,7 @@ option penalty_goalie
     action
     {
       motion.type = stand;
-      head.control_mode = search_for_ball;
+      head.control_mode = search_for_ball_goalie;
     }
   }
 
@@ -37,7 +37,7 @@ option penalty_goalie
   { 
     decision
     {
-      if (state_time > 5000)
+      if (executed_motion.target_reached && state_time > 2000)
           goto block_middle;
         else 
           stay;

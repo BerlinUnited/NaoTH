@@ -125,6 +125,21 @@ message TeamMessage
   optional Drops messageDrop = 2;
 }
 
+message TeamMessageDecision
+{
+  required bool send_ntpRequests = 1 [default=false];
+  required bool send_state = 2 [default=false];
+  required bool send_fallen = 3 [default=false];
+  required bool send_readyToWalk = 4 [default=false];
+  required bool send_pose = 5 [default=false];
+  required bool send_ballAge = 6 [default=false];
+  required bool send_ballPosition = 7 [default=false];
+  required bool send_timeToBall = 8 [default=false];
+  required bool send_wantsToBeStriker = 9 [default=false];
+  required bool send_wasStriker = 10 [default=false];
+  required bool send_robotRole = 11 [default=false];
+}
+
 message TeamState
 {
   message Player

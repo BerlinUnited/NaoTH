@@ -25,6 +25,7 @@ void Actuator::init(naoth::ProcessInterface& platformInterface, const naoth::Pla
   REG_OUTPUT(CameraSettingsRequestTop);
   REG_OUTPUT(SoundPlayData);
   REG_OUTPUT(TeamMessageDataOut);
+  REG_OUTPUT(TeamMessageDebug);
   REG_OUTPUT(DebugMessageOut);
   REG_OUTPUT(GameReturnData);
 

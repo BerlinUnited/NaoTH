@@ -14,6 +14,7 @@ build.xml
 build-impl.xml
 genfiles.properties
 *.class
+NaoSCP/bin
 
 #python
 *.pyc

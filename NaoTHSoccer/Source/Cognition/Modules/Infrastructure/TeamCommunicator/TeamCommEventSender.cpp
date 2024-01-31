@@ -49,7 +49,8 @@ void TeamCommEventSender::updateMyself() const
       myself.ballPosition = {std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity()};
   }
 
-  myself.timeToBall       = getSoccerStrategy().timeToBall;
+  // TODO: check the types of myself.timeToBall and getSoccerStrategy().timeToBall
+  myself.timeToBall       = static_cast<unsigned int>(getSoccerStrategy().timeToBall);
   myself.wantsToBeStriker = getRoleDecisionModel().wantsToBeStriker;
   myself.wasStriker       = getRoleDecisionModel().isStriker(getPlayerInfo().playerNumber);
   myself.robotRole        = getRoleDecisionModel().getRole(getPlayerInfo().playerNumber);
@@ -100,7 +101,8 @@ bool TeamCommEventSender::createMessage() const
         send = true;
     }
     if (getTeamMessageDecision().send_ballAge()) {
-        message.set_ballage(myself.ballAge());
+        // TODO: check the type of myself.ballAge - does it have to be double?
+        message.set_ballage(static_cast<std::int32_t>(myself.ballAge()));
         send = true;
     }
     if (getTeamMessageDecision().send_ballPosition()) {

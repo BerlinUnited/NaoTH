@@ -930,7 +930,11 @@ void MonteCarloSelfLocator::updateByStartPositions(SampleSet& sampleSet) const
 
   /*---- HACK BEGIN ----*/
   LineDensity startingLine;
-  if(getPlayerInfo().playerNumber == 1 || getPlayerInfo().playerNumber == 2 || getPlayerInfo().playerNumber == 3) {
+  if(
+    getPlayerInfo().playerNumber == 1 || 
+    getPlayerInfo().playerNumber == 2 || 
+    getPlayerInfo().playerNumber == 3 || 
+    getPlayerInfo().playerNumber == 4) {
       startingLine = leftStartingLine;
   } else {
       startingLine = rightStartingLine;

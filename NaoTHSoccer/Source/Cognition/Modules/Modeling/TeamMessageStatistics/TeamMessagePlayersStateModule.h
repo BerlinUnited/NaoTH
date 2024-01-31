@@ -157,6 +157,13 @@ private:
      */
     void determineActiveStatesGameController()
     {
+        // if don't have valid data from gamecontroller, assume everybody is active (eg. for tests on the robot)
+        if (!getGameData().valid)
+        {
+            determineActiveStatesAlways();
+            return;
+        }
+
         const auto& state   = getTeamMessagePlayersState().data;
         const auto& players = getGameData().ownTeam.players;
         for (size_t index = 0; index < players.size(); ++index)
@@ -200,14 +207,14 @@ private:
     {
     public:
         Parameters(): ParameterList("TeamMessagePlayerIsAliveModule") {
-            PARAMETER_REGISTER(calculationMethod)            = 1;
+            PARAMETER_REGISTER(calculationMethod)            = 2;
             PARAMETER_REGISTER(maxTimeLastMessageReceived)   = 2000;
             PARAMETER_REGISTER(maxMessageReceivingIndicator) = 0.85;
 
             // default, gc, always
-            PARAMETER_REGISTER(active_method, &Parameters::setActiveMethod) = "default";
+            PARAMETER_REGISTER(active_method, &Parameters::setActiveMethod) = "gc";
             // default, always
-            PARAMETER_REGISTER(playing_method, &Parameters::setPlayingMethod) = "default";
+            PARAMETER_REGISTER(playing_method, &Parameters::setPlayingMethod) = "always";
             
             // load from the file after registering all parameters
             syncWithConfig();

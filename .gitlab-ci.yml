@@ -1,8 +1,7 @@
-# TODO add a lot more documentation
 stages:
- - test
- - build
- - deploy
+  - test
+  - build
+  - deploy
 
 default:
   image: $TOOLCHAIN_DOCKER_IMAGE
@@ -73,6 +72,9 @@ compile_nao_clang:
     name: "nao_clang"
     paths:
       - NaoTHSoccer/dist/
+      # we include the config folder of this job because it contains the built behavior, not sure
+      # what would happen if we included the config folder in the other job as well
+      - NaoTHSoccer/Config/
 
 # this job must be named pages
 pages:
@@ -97,7 +99,8 @@ publish_naoth_docker:
   services:
     - docker:dind
   dependencies:
-    # you can either export the gcc or the clang binaries for now
+    # select the job you want the artifacts from
+    # https://docs.gitlab.com/ee/ci/yaml/#dependencies
     - compile_local_clang
     - compile_nao_clang  
   rules:
@@ -108,12 +111,21 @@ publish_naoth_docker:
   script:
     # getting docker-tag friendly version of the current branch name: replace / with underscore
     - branchname=`echo "${CI_COMMIT_REF_NAME}" | sed "s/\//_/g"`
+    # log into the gitlab registry with a ci token
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN scm.cms.hu-berlin.de:4567
+    # pull the same image we used in the jobs that built naoth binaries
     - docker pull $TOOLCHAIN_DOCKER_IMAGE
+    # creates a container inside this job container based on the image
     - docker create --name temp_container $TOOLCHAIN_DOCKER_IMAGE
-    - docker cp NaoTHSoccer/dist temp_container:/binaries/
+    # copy the current folder (always the repo this file is in) inside the container
     - docker cp ./ temp_container:/naoth/repo/
+    # copy the binaries from the artifact inside the repo folder inside the new container
+    - docker cp NaoTHSoccer/dist temp_container:/naoth/repo/
+    # copy the configs from the artifacts to the repo folder
+    - docker cp NaoTHSoccer/Config/ temp_container:/naoth/repo/
+    # make an image out of the container
     - docker commit temp_container scm.cms.hu-berlin.de:4567/berlinunited/naoth-2020:$branchname
+    # push the image with the branchname as tag
     - docker push scm.cms.hu-berlin.de:4567/berlinunited/naoth-2020:$branchname
 
 .publish_naoth_python_gitlab:

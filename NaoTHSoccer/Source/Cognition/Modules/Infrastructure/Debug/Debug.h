@@ -65,7 +65,6 @@ BEGIN_DECLARE_MODULE(Debug)
   PROVIDE(DebugPlot)
   PROVIDE(DebugDrawings3D)
 
-  REQUIRE(FieldInfo)
   REQUIRE(FrameInfo)
   PROVIDE(Image)
   PROVIDE(ImageTop)
@@ -73,6 +72,7 @@ BEGIN_DECLARE_MODULE(Debug)
   PROVIDE(ImageJPEG)
   PROVIDE(ImageJPEGTop)
 
+  PROVIDE(FieldInfo)
   PROVIDE(AudioControl)
 
   // 3D drawings

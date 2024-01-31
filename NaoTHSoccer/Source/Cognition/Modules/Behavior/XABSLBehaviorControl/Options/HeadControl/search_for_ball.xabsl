@@ -1,4 +1,6 @@
-/** Scan mode for looking at the ball/searching for the ball */
+/** 
+Scan mode for looking at the ball/searching for the ball 
+*/
 option search_for_ball
 {
   bool @force_ball_model_check; // false by default
@@ -10,18 +12,18 @@ option search_for_ball
   {
     decision 
     {
-	    if((ball.see_where_itis || @force_ball_model_check) && abs(value=ball.angle) < 60)
-	      goto try_to_look_at_the_old_ball;
+      if((ball.see_where_itis || @force_ball_model_check) && abs(value=ball.angle) < 60)
+        goto try_to_look_at_the_old_ball;
       else if(@use_teamball && ball.team.is_valid)
         goto look_at_teamball;
       else if(ball.last_known.y > 0)
         goto search_for_ball_left;
       else
         goto search_for_ball_right;
-	  }
-	  action 
-	  {
-	  }
+    }
+    action 
+    {
+    }
   }
 
   state try_to_look_at_the_old_ball
@@ -31,12 +33,12 @@ option search_for_ball
       if (ball.percept.was_seen)
         goto look_at_ball_percept;
       else if (state_time > 2000) {
-	      if(@use_teamball && ball.team.is_valid)
-	        goto look_at_teamball;
-	      else if(ball.last_known.y > 0)
-	        goto search_for_ball_left;
-	      else
-	        goto search_for_ball_right;
+        if(@use_teamball && ball.team.is_valid)
+          goto look_at_teamball;
+        else if(ball.last_known.y > 0)
+          goto search_for_ball_left;
+        else
+          goto search_for_ball_right;
       } else
         stay;
     }
@@ -179,12 +181,12 @@ option search_for_ball
     decision
     {
       if (!ball.see_where_itis) {
-	      if(@use_teamball && ball.team.is_valid)
-	        goto look_at_teamball;
-	      else if(ball.last_known.y > 0)
-	        goto search_for_ball_left;
-	      else
-	        goto search_for_ball_right;
+        if(@use_teamball && ball.team.is_valid)
+          goto look_at_teamball;
+        else if(ball.last_known.y > 0)
+          goto search_for_ball_left;
+        else
+          goto search_for_ball_right;
       } else if(@look_around && state_time > 3000 && vector.abs(x=ball.preview.x, y=ball.preview.y) > @look_at_ball_when_distance)
       {
         //goto look_around_state;

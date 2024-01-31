@@ -26,6 +26,9 @@
 *.html   text
 *.xabsl  text
 
+# gradlew is a bash script
+gradlew  text eol=lf
+
 # keep the message files allways with the originally generated line endings
 # NOTE: exception for *_pb2.py: 
 #       protoc enerates *_pb2.py files with system line endings

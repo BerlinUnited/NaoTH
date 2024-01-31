@@ -178,6 +178,9 @@ class FootTrajectoryGenerator2018Parameters: public ParameterList{
         // By y030:
         PARAMETER_REGISTER(sideKickWidth) = 70;
 
+        // Experimental: preparations for the Gewaltkick
+        //PARAMETER_REGISTER(gewaltKickLength) = 80;
+        
         syncWithConfig();
       }
 
@@ -217,6 +220,8 @@ class FootTrajectoryGenerator2018Parameters: public ParameterList{
           }
       }
 
+      // Experimental: preparations for the Gewaltkick
+      //double gewaltKickLength;
 };
 
 class HipRotationOffsetModifierParameters: public ParameterList{

@@ -2,7 +2,7 @@
 // NOTE: can not use the default script dependencies, since it doesn't allow dynamic modifications
 plugins {
   id 'application' // uses the java and distribution plugin
-  id 'org.openjfx.javafxplugin' version '0.0.9'
+  id 'org.openjfx.javafxplugin' version '0.1.0'
 }
 */
 
@@ -14,11 +14,13 @@ buildscript {
     }
   }
   dependencies {
-    classpath 'org.openjfx:javafx-plugin:0.0.9'
+    classpath 'org.openjfx:javafx-plugin:0.1.0'
   }
 }
 
 apply plugin: 'application' // uses the java and distribution plugin
+
+compileJava {options.encoding = "UTF-8"} // set the encoding in case LANG / LC_ALL is not set on host
 
 // use the 'javafxplugin' based on the available java version
 def jVersion = JavaVersion.current()
@@ -58,7 +60,10 @@ application.getMainClass().set('de.naoth.rc.RobotControlImpl')
 application.executableDir = '' // do not create a "bin" directory in install/zip
 application.applicationName = 'robotcontrol' // set the startscripts to lower case
 // HACK: show splashscreen for 'gradlew run'
-application.applicationDefaultJvmArgs = ['-splash:build/resources/de/naoth/rc/res/Splash.png']
+application.applicationDefaultJvmArgs = [
+  '-splash:build/resources/de/naoth/rc/res/Splash.png',
+  '-Djava.util.Arrays.useLegacyMergeSort=true'
+]
 
 // set the source directory and disable the other dirs
 sourceSets.main.java.srcDirs = ['src']
@@ -133,6 +138,9 @@ jar {
   
   // avoid empty directories caused by the modified resource structure
   includeEmptyDirs = false
+  
+  // exclude duplicate files
+  duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
 }
 
 startScripts {

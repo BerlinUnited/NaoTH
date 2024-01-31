@@ -4,6 +4,9 @@ if not premake.checkVersion(premake._VERSION, ">=5.0.0-alpha12") then
   os.exit()
 end
 
+print("INFO: Premake Path:")
+print("  " .. premake.path)
+
 
 require "tools/clean_action" -- get custom clean action
 require "tools/tools"
@@ -43,7 +46,7 @@ workspace "NaoTHSoccer"
 
   -- add general paths
   -- this mainly reflects the internal structure of the extern directory
-  sysincludedirs {
+  externalincludedirs {
     FRAMEWORK_PATH .. "/Commons/Source/Messages",
     
     EXTERN_PATH .. "/include",
@@ -69,13 +72,13 @@ workspace "NaoTHSoccer"
   -- these dependencies are included in the link lists of the binary projects
   naoth_links = {
       "opencv_core",
-      "opencv_ml",
       "opencv_imgproc",
-      "opencv_objdetect",
-      "opencv_dnn",
-      "opencv_calib3d",
-      "opencv_features2d",
-      "opencv_flann"
+      --"opencv_ml",
+      --"opencv_objdetect",
+      --"opencv_dnn",
+      --"opencv_calib3d",
+      --"opencv_features2d",
+      --"opencv_flann"
   }
   
   -- this is on by default in premake4 stuff
@@ -151,7 +154,13 @@ workspace "NaoTHSoccer"
     
   -- additional defines for visual studio   
   filter {"system:windows", "action:vs*"}
-    defines {"WIN32", "NOMINMAX", "NOGDI", "EIGEN_DONT_ALIGN"}
+    defines {
+      "WIN32", 
+      "NOMINMAX", 
+      "NOGDI", 
+      "EIGEN_DONT_ALIGN", 
+      "_SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS" -- workaround: solves missing 'hash_compare' that was removed in MSVC 14.34.31932
+    }
     
     cppdialect "c++17"
     links {"ws2_32"}
@@ -231,7 +240,7 @@ workspace "NaoTHSoccer"
     group "Platform"
       dofile (FRAMEWORK_PATH .. "/Platforms/Make/NaoSMAL.lua")
         if AL_DIR ~= nil then
-          sysincludedirs {AL_DIR .. "/include"}
+          externalincludedirs {AL_DIR .. "/include"}
           syslibdirs {AL_DIR .. "/lib"}
         end
         vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/NaoSMAL" }

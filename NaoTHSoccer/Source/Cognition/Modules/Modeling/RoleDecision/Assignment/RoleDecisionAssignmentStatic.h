@@ -49,7 +49,7 @@ private:
         Parameters(): ParameterList("RoleDecisionAssignmentStatic")
         {
             // the used assignments, they don't have to be the active roles
-            PARAMETER_REGISTER(assignment, &Parameters::parseAssignment) = "1:goalie;2:defender_left;3:forward_center;4:defender_right;5:midfielder_center;6:midfielder_right";
+            PARAMETER_REGISTER(assignment, &Parameters::parseAssignment) = "1:goalie;2:defender_left;3:midfielder_center;4:midfielder_left;5:defender_right;6:midfielder_right;7:forward_center";
             // load from the file after registering all parameters
             syncWithConfig();
         }

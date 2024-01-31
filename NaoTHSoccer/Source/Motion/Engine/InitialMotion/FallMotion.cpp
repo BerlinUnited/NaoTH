@@ -52,6 +52,21 @@ void FallMotion::execute()
     }
   }
 
+  if (getIMUData().rotation.y > Math::fromDegrees(10)) // backwards
+  {
+    freeStiffness[JointData::HeadYaw] = 0.3;
+    freeStiffness[JointData::HeadPitch] = 0.3;
+    getMotorJointData().position[JointData::HeadYaw]   = Math::fromDegrees(0);
+    getMotorJointData().position[JointData::HeadPitch] = Math::fromDegrees(-40);
+  } else if (getIMUData().rotation.y < Math::fromDegrees(-10)) {
+    freeStiffness[JointData::HeadYaw] = 0.3;
+    freeStiffness[JointData::HeadPitch] = 0.3;
+    getMotorJointData().position[JointData::HeadYaw]   = Math::fromDegrees(0);
+    getMotorJointData().position[JointData::HeadPitch] = Math::fromDegrees(30);
+  }
+
+  
+
   // set joint free
   setStiffness(getMotorJointData(), getSensorJointData(), freeStiffness, 10);
 

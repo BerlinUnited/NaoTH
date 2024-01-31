@@ -22,10 +22,11 @@ public:
   // position of the most interesting point in robot coords
   Vector2<double> mostInterestingPoint;
 
-
   virtual void print(std::ostream& stream) const
   {
     stream << "AttentionModel";
+    stream << "mostInterestingPoint x: " <<  mostInterestingPoint.x << "\n";
+    stream << "mostInterestingPoint y: " <<  mostInterestingPoint.y;
   }//end print
 };
 
