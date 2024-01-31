@@ -4,6 +4,9 @@ if not premake.checkVersion(premake._VERSION, ">=5.0.0-alpha12") then
   os.exit()
 end
 
+print("INFO: Premake Path:")
+print("  " .. premake.path)
+
 
 require "tools/clean_action" -- get custom clean action
 require "tools/tools"

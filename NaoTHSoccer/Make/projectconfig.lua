@@ -68,7 +68,7 @@ end
 assert(FRAMEWORK_PATH ~= nil and os.isdir(FRAMEWORK_PATH), 
 	"a valid FRAMEWORK_PATH is needed for compilation.")
   
--- do we need it?
+-- make output colorful if possible
 dofile (FRAMEWORK_PATH .. "/BuildTools/ansicolors.lua")
 
 print("INFO: list raw path configuration")
