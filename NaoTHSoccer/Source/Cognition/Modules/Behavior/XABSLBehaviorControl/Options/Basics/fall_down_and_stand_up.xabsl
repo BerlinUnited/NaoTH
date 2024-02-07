@@ -7,9 +7,14 @@ option fall_down_and_stand_up
       // HACK: no standup in init
       if(executed_motion.type == init)
         stay;
-      else if(abs(value=sensor.inertial.y)>30
-          || abs(value=sensor.inertial.x)>30)
-        goto falling;
+      else if(abs(value=sensor.inertial.y)>25 || abs(value=sensor.inertial.x)>20)
+      {
+        if(sensor.inertial.y > 0)
+          goto falling_front;
+        else
+          goto falling_back;
+//          goto falling;
+      }
       else
         stay;
     }      
@@ -20,6 +25,90 @@ option fall_down_and_stand_up
       // remember the arms position for the case the robot falls backwards
       // (used by stand up)
       arm.control_mode_before_fall = arm.control_mode;
+    }
+  }
+
+  state falling_front
+  {
+    decision
+    {
+      if (executed_motion.type == save_fall_front)
+        goto falling_front_wait;
+      else 
+        stay;
+    }
+    action
+    {
+      body.ready_to_walk = false;
+      motion.execute_immediately = true;
+      motion.type = save_fall_front;
+      arm.react_to_collision = false;
+
+      // enable only for special occasions
+      //sound.request = (state_time < 100)?weeeee:off;
+    }
+  }
+
+  state falling_front_wait
+  {
+    decision
+    {
+      if (state_time > 2000 && executed_motion.type == falling)
+        goto stand_up;
+      else 
+        stay;
+    }
+    action
+    {
+      body.ready_to_walk = false;
+      //motion.execute_immediately = true;
+      motion.type = falling;
+      arm.react_to_collision = false;
+
+      // enable only for special occasions
+      //sound.request = (state_time < 100)?weeeee:off;
+    }
+  }
+
+  state falling_back
+  {
+    decision
+    {
+      if (executed_motion.type == save_fall_back)
+        goto falling_back_wait;
+      else 
+        stay;
+    }
+    action
+    {
+      body.ready_to_walk = false;
+      motion.execute_immediately = true;
+      motion.type = save_fall_back;
+      arm.react_to_collision = false;
+
+      // enable only for special occasions
+      //sound.request = (state_time < 100)?weeeee:off;
+    }
+  }
+
+  state falling_back_wait
+  {
+    decision
+    {
+      if (state_time > 2000 && executed_motion.type == falling)
+        goto stand_up;
+      else 
+        stay;
+    }
+    action
+    {
+      body.ready_to_walk = false;
+      //motion.execute_immediately = true;
+      motion.type = falling;
+      arm.react_to_collision = false;
+
+      // enable only for special occasions
+      //sound.request = (state_time < 100)?weeeee:off;
     }
   }
   

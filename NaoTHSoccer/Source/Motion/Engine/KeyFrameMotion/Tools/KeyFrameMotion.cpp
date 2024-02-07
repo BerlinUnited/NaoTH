@@ -54,7 +54,7 @@ KeyFrameMotion::~KeyFrameMotion(){}
 
 void KeyFrameMotion::init()
 {
-  // ensure the morion net is not empty
+  // ensure the motion net is not empty
   ASSERT(!currentMotionNet.isEmpty());
   currentKeyFrame = currentMotionNet.getKeyFrame(0);
 
@@ -68,22 +68,25 @@ void KeyFrameMotion::init()
     JointData::JointID id = currentMotionNet.getJointID(joint);
     lastMotorJointData.position[id] = getSensorJointData().position[id];
     lastMotorJointData.stiffness[id] = stiffness;
-    double joindDistance = fabs(Math::normalize(lastMotorJointData.position[id] - currentKeyFrame.jointData[joint]));
-    distance = max(joindDistance, distance);
+    double jointDistance = fabs(Math::normalize(lastMotorJointData.position[id] - currentKeyFrame.jointData[joint]));
+    distance = max(jointDistance, distance);
   }
 
-  // HACK
   double maxAngleSpeed = Math::pi_2; // radiant per second
   if(name == "fall_left" || name == "fall_right") {
     maxAngleSpeed = Math::pi2;
   }
 
-  // set the initial transotion
+  // set the initial transition
   currentTransition.condition = "*";
   // ms needed for the translation to the first key frame
   currentTransition.duration = distance/maxAngleSpeed*1000.0;
   currentTransition.toKeyFrame = 0;
   currentTransition.fromKeyFrame = 0;
+
+  if(name == "save_fall_front" || name == "save_fall_back") {
+      currentTransition.duration = 0;
+  }
 
   t = currentTransition.duration;
 }//end init
@@ -101,6 +104,10 @@ void KeyFrameMotion::execute()
   if(isStopped()) {
     init();
     setCurrentState(motion::running);
+  }
+
+  if(name == "save_fall_front" || name == "save_fall_back") {
+    stiffnessIsReady = true;
   }
 
   // make sure the stiffness is set before executing the motion
@@ -126,7 +133,19 @@ void KeyFrameMotion::execute()
     //DOUT("Keyframe: " << fromKeyFrame.id << " <--- " << toKeyFrame.id << " " << condition << "|" << currentMotionNetName << "|" << transition.toMotionNetName << "\n");
   }//end while
 
-  // here is allways timeStep < t
+  static std::map<int, std::vector<double>> fall_stiffness_front_map = {  // stiffness hack for specific keyframe
+          {0, {100,100,  100,100,100,100,  100,100,100,100, 20,20,20,20,20,20, 20,20,20,20,20,20,  30, 30, 30, 30}},
+          {1, { 30, 30,   15, 15, 15, 15,   15, 15, 15, 15, 20,20,20,20,20,20, 20,20,20,20,20,20,  30, 30, 30, 30}}, // todo: change line to be like line 1?
+          {2, { 30, 30,   15, 15, 15, 15,   15, 15, 15, 15, 20,20,20,20,20,20, 20,20,20,20,20,20,  30, 30, 30, 30}}
+  };
+
+    static std::map<int, std::vector<double>> fall_stiffness_back_map = {  // stiffness hack for specific keyframe
+            {0, {100,100,  100,100,100,100,  100,100,100,100, 20,20,20,20,20,20, 20,20,20,20,20,20,  30, 30, 30, 30}},
+            {1, {100,100,  100,100,100,100,  100,100,100,100, 20,20,20,20,20,20, 20,20,20,20,20,20,  30, 30, 30, 30}},
+            {2, { 30, 30,   15, 15, 15, 15,   15, 15, 15, 15, 20,20,20,20,20,20, 20,20,20,20,20,20,  30, 30, 30, 30}}
+    };
+
+  // here is always timeStep < t
   double dt = timeStep/t;
   for(int joint = 0; joint < currentMotionNet.getNumOfJoints(); joint++)
   {
@@ -134,7 +153,14 @@ void KeyFrameMotion::execute()
     lastMotorJointData.position[id] = (1.0-dt)*lastMotorJointData.position[id] + dt*currentKeyFrame.jointData[joint];
 
     // set the joint data (the only place where theMotorJointData is set)
-    getMotorJointData().stiffness[id] = stiffness;
+    if(name == "save_fall_front") {
+        getMotorJointData().stiffness[id] = fall_stiffness_front_map[currentKeyFrame.id][id] / 100.0;
+    } else if (name == "save_fall_back") {
+        getMotorJointData().stiffness[id] = fall_stiffness_back_map[currentKeyFrame.id][id] / 100.0;
+    } else {
+        getMotorJointData().stiffness[id] = stiffness;
+    }
+
     getMotorJointData().position[id] = lastMotorJointData.position[id];
   }
 
