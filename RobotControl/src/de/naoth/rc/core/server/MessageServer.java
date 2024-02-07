@@ -292,7 +292,7 @@ public class MessageServer extends AbstractMessageServer implements Manager<Comm
             disconnect(ex.getMessage());
         } catch (IOException ex) {
             Logger.getLogger(MessageServer.class.getName()).log(Level.SEVERE,
-                    "Unexpected exception...", ex);
+                    "Unexpected IOexception...", ex);
             disconnect(ex.getMessage());
         } catch (Exception ex) { // this is needed for possible null exception and such
             Logger.getLogger(MessageServer.class.getName()).log(Level.SEVERE,
