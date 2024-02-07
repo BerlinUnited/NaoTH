@@ -14,7 +14,7 @@ public:
         public:
             void set() { value = true; ++cnt; }
             void reset() { value = false; }
-            const bool operator()() const { return value; }
+            bool operator()() const { return value; }
             friend std::ostream& operator<<(std::ostream& stream, const BooleanValue& val) {
                 return stream << (val() ? "True" : "False") << " (" << val.cnt << ")";
             }
