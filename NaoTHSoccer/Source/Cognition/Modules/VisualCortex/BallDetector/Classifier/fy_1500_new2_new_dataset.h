@@ -1,7 +1,7 @@
 #ifndef FY_1500_NEW2_NEW_DATASET_H
 #define FY_1500_NEW2_NEW_DATASET_H
 
-#include <emmintrin.h>
+// #include <emmintrin.h>
 
 #include "AbstractCNNClassifier.h"
 

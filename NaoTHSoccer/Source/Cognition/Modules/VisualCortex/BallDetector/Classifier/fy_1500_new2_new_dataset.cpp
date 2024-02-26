@@ -4,7 +4,16 @@
 	#define alignas(x) __declspec(align(x))
 #endif
 
-#include <emmintrin.h>
+// #include <emmintrin.h>
+
+void fy_1500_new2_new_dataset::cnn(float x0[16][16][1]){}
+void fy_1500_new2_new_dataset::predict(const BallCandidates::PatchYUVClassified& p,double meanBrightness){}
+double fy_1500_new2_new_dataset::getRadius(){return 0.0;}
+Vector2d fy_1500_new2_new_dataset::getCenter(){return Vector2d(0.0,0.0);}
+double fy_1500_new2_new_dataset::getBallConfidence(){return 0.0;}
+
+#ifdef __WEIRD_STUFF
+
 void fy_1500_new2_new_dataset::cnn(float x0[16][16][1])
 {
 	__m128 w, x, y;
@@ -2555,3 +2564,5 @@ Vector2d fy_1500_new2_new_dataset::getCenter() {
 double fy_1500_new2_new_dataset::getBallConfidence() {
 	return scores[3];
 }
+
+# endif

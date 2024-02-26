@@ -190,6 +190,8 @@ workspace "NaoTHSoccer"
     -- NOTE: configuration doesn't affect these settings, they NEED to be in a if
     if (os.ishost("macosx") and _OPTIONS["platform"] ~= "Nao") then
       toolset ("clang")
+
+      buildoptions {"-fPIC"}
       --premake.gcc.cc = 'clang'
       --premake.gcc.cxx = 'clang++'
     end

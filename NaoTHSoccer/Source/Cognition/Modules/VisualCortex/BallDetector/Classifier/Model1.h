@@ -1,7 +1,7 @@
 #ifndef _Model1_H
 #define _Model1_H
 
-# include <emmintrin.h>
+// # include <emmintrin.h>
 
 #include "AbstractCNNClassifier.h"
 

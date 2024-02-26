@@ -1,10 +1,18 @@
 #include "fy_1500_old_tk03_combined_detection_nncg.h"
 
-#include <emmintrin.h>
-#include <immintrin.h>
-#include <pmmintrin.h>
-#include <tmmintrin.h>
-#include <xmmintrin.h>
+// #include <emmintrin.h>
+// #include <immintrin.h>
+// #include <pmmintrin.h>
+// #include <tmmintrin.h>
+// #include <xmmintrin.h>
+
+void fy_1500_old_tk03_combined_detection_nncg::cnn(float x0[16][16][1]){}
+void fy_1500_old_tk03_combined_detection_nncg::predict(const BallCandidates::PatchYUVClassified& p,double meanBrightness){}
+double fy_1500_old_tk03_combined_detection_nncg::getRadius(){return 0.0;}
+Vector2d fy_1500_old_tk03_combined_detection_nncg::getCenter(){return Vector2d(0.0,0.0);}
+double fy_1500_old_tk03_combined_detection_nncg::getBallConfidence(){return 0.0;}
+
+#ifdef __WEIRD_STUFF
 
 static float w_5[3][3][1][4] = {
     7.538115e-02f,   -2.885045e-02f,  -1.0316146e-01f, -8.894719e-02f,
@@ -710,3 +718,5 @@ Vector2d fy_1500_old_tk03_combined_detection_nncg::getCenter() {
 double fy_1500_old_tk03_combined_detection_nncg::getBallConfidence() {
     return scores[3];
 }
+
+# endif

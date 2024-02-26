@@ -1,7 +1,7 @@
 #ifndef FY_1500_OLD_TK03_COMBINED_DETECTION_NNCG_H
 #define FY_1500_OLD_TK03_COMBINED_DETECTION_NNCG_H
 
-#include <emmintrin.h>
+// #include <emmintrin.h>
 
 #include "AbstractCNNClassifier.h"
 

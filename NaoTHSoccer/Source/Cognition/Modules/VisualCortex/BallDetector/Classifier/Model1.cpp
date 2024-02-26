@@ -4,7 +4,17 @@
 #define alignas(x) __declspec(align(x))
 #endif
 
-#include <emmintrin.h>
+
+//#include <emmintrin.h>
+
+void Model1::cnn(float x0[16][16][1]){}
+void Model1::predict(const BallCandidates::PatchYUVClassified& p,double meanBrightness){}
+double Model1::getRadius(){return 0.0;}
+Vector2d Model1::getCenter(){return Vector2d(0.0,0.0);}
+double Model1::getBallConfidence(){return 0.0;}
+
+#ifdef __WEIRD_STUFF
+
 
 void Model1::cnn(float x0[16][16][1])
 {
@@ -2365,3 +2375,5 @@ void Model1::predict(const BallCandidates::PatchYUVClassified& patch, double mea
 double Model1::getRadius() {return scores[0];}
 Vector2d Model1::getCenter() {return Vector2d(scores[1], scores[2]);}
 double Model1::getBallConfidence() {return scores[3];}
+
+#endif

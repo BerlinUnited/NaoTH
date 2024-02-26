@@ -30,7 +30,7 @@ def parse_arguments(argv):
 
 def image_from_proto(message):
     # read each channel of yuv422 separately
-    yuv422 = numpy.fromstring(message.data, dtype=numpy.uint8)
+    yuv422 = numpy.frombuffer(message.data, dtype=numpy.uint8)
     y = yuv422[0::2]
     u = yuv422[1::4]
     v = yuv422[3::4]
@@ -46,7 +46,7 @@ def image_from_proto(message):
     yuv888 = yuv888.reshape(message.height, message.width, 3)
 
     # convert the image to rgb and save it
-    img = Image.fromstring('YCbCr', (message.width, message.height), yuv888.tostring())
+    img = Image.frombuffer('YCbCr', (message.width, message.height), yuv888.tobytes())
     return img
 
 

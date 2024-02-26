@@ -4,7 +4,15 @@
 #define alignas(x) __declspec(align(x))
 #endif
 
-#include <emmintrin.h>
+// #include <emmintrin.h>
+
+void Fy1500_Conf::cnn(float x0[16][16][1]){}
+void Fy1500_Conf::predict(const BallCandidates::PatchYUVClassified& p,double meanBrightness){}
+double Fy1500_Conf::getRadius(){return 0.0;}
+Vector2d Fy1500_Conf::getCenter(){return Vector2d(0.0,0.0);}
+double Fy1500_Conf::getBallConfidence(){return 0.0;}
+
+#ifdef __WEIRD_STUFF
 
 void Fy1500_Conf::cnn(float x0[16][16][1])
 {
@@ -2574,3 +2582,5 @@ void Fy1500_Conf::predict(const BallCandidates::PatchYUVClassified& patch, doubl
 double Fy1500_Conf::getRadius() {return scores[0];}
 Vector2d Fy1500_Conf::getCenter() {return Vector2d(scores[1], scores[2]);}
 double Fy1500_Conf::getBallConfidence() {return scores[3];}
+
+#endif
