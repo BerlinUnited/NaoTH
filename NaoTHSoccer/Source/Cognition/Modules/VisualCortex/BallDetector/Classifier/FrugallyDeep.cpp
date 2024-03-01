@@ -7,9 +7,6 @@ FrugallyDeep::FrugallyDeep(std::string file)
     model = std::make_shared<fdeep::model>(fdeep::load_model("Config/" + file));
 }
 
-FrugallyDeep::~FrugallyDeep()
-{
-}
 
 void FrugallyDeep::predict(const BallCandidates::PatchYUVClassified &patch, double meanBrightness)
 {

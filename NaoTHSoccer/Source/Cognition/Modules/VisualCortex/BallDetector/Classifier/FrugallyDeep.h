@@ -15,15 +15,17 @@ class FrugallyDeep : public AbstractCNNFinder {
 
 public:
     FrugallyDeep(std::string file);
-    virtual ~FrugallyDeep();
+    virtual ~FrugallyDeep() {}
 
-	void predict(const BallCandidates::PatchYUVClassified& p, double meanBrightness);
+    virtual void predict(const BallCandidates::PatchYUVClassified& p, double meanBrightness);
 
-    double getRadius();
-    Vector2d getCenter();
+    virtual double getRadius();
+    virtual Vector2d getCenter();
+
+    //virtual double getBallConfidence() { return getRadius(); }
 
 private:
-	std::shared_ptr<fdeep::model> model;
+    std::shared_ptr<fdeep::model> model;
  
     std::vector<fdeep::tensor> result;
 
