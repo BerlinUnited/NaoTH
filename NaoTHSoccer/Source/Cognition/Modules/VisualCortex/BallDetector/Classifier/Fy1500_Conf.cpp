@@ -2571,6 +2571,6 @@ void Fy1500_Conf::predict(const BallCandidates::PatchYUVClassified& patch, doubl
 	cnn(in_step);
 	//std::cout << "scores[0]=" << scores[0] << " scores[1]=" << scores[1] << " scores[2]=" << scores[2] << std::endl;
 }
-double Fy1500_Conf::getRadius() {return scores[0];}
-Vector2d Fy1500_Conf::getCenter() {return Vector2d(scores[1], scores[2]);}
-double Fy1500_Conf::getBallConfidence() {return scores[3];}
+double Fy1500_Conf::getRadius() const {return scores[0];}
+Vector2d Fy1500_Conf::getCenter() const {return Vector2d(scores[1], scores[2]);}
+double Fy1500_Conf::getBallConfidence() const {return scores[3];}

@@ -2546,12 +2546,12 @@ void fy_1500_new2_new_dataset::predict(const BallCandidates::PatchYUVClassified&
 	cnn(in_step);
 }
 
-double fy_1500_new2_new_dataset::getRadius() {
+double fy_1500_new2_new_dataset::getRadius() const {
 	return scores[0];
 }
-Vector2d fy_1500_new2_new_dataset::getCenter() {
+Vector2d fy_1500_new2_new_dataset::getCenter() const {
 	return Vector2d(scores[1], scores[2]);
 }
-double fy_1500_new2_new_dataset::getBallConfidence() {
+double fy_1500_new2_new_dataset::getBallConfidence() const {
 	return scores[3];
 }

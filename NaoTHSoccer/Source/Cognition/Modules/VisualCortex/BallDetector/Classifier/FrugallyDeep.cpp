@@ -28,7 +28,7 @@ void FrugallyDeep::predict(const BallCandidates::PatchYUVClassified &patch, doub
     result = model->predict({inputTensor});
 }
 
-Vector2d FrugallyDeep::getCenter()
+Vector2d FrugallyDeep::getCenter() const
 {
     if (result.size() == 1)
     {
@@ -42,7 +42,7 @@ Vector2d FrugallyDeep::getCenter()
     }
 }
 
-double FrugallyDeep::getRadius()
+double FrugallyDeep::getRadius() const
 {
     if (result.size() == 1)
     {

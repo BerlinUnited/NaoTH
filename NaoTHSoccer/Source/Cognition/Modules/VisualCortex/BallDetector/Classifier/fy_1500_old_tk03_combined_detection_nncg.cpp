@@ -699,14 +699,14 @@ void fy_1500_old_tk03_combined_detection_nncg::predict(
     cnn(in_step);
 }
 
-double fy_1500_old_tk03_combined_detection_nncg::getRadius() {
+double fy_1500_old_tk03_combined_detection_nncg::getRadius() const {
     return scores[0];
 }
 
-Vector2d fy_1500_old_tk03_combined_detection_nncg::getCenter() {
+Vector2d fy_1500_old_tk03_combined_detection_nncg::getCenter() const {
     return Vector2d(scores[1], scores[2]);
 }
 
-double fy_1500_old_tk03_combined_detection_nncg::getBallConfidence() {
+double fy_1500_old_tk03_combined_detection_nncg::getBallConfidence() const {
     return scores[3];
 }

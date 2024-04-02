@@ -11,24 +11,21 @@
 #include <fdeep/fdeep.hpp>
 
 
-class FrugallyDeep : public AbstractCNNFinder {
-
+class FrugallyDeep : public AbstractCNNFinder 
+{
 public:
     FrugallyDeep(std::string file);
     virtual ~FrugallyDeep() {}
 
     virtual void predict(const BallCandidates::PatchYUVClassified& p, double meanBrightness);
 
-    virtual double getRadius();
-    virtual Vector2d getCenter();
-
-    //virtual double getBallConfidence() { return getRadius(); }
+    virtual double getRadius() const;
+    virtual Vector2d getCenter() const;
+    virtual double getBallConfidence() const { return getRadius(); }
 
 private:
     std::shared_ptr<fdeep::model> model;
- 
     std::vector<fdeep::tensor> result;
-
 };
 
 #endif

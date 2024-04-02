@@ -2362,6 +2362,6 @@ void Model1::predict(const BallCandidates::PatchYUVClassified& patch, double mea
 	cnn(in_step);
 	//std::cout << "scores[0]=" << scores[0] << " scores[1]=" << scores[1] << " scores[2]=" << scores[2] << std::endl;
 }
-double Model1::getRadius() {return scores[0];}
-Vector2d Model1::getCenter() {return Vector2d(scores[1], scores[2]);}
-double Model1::getBallConfidence() {return scores[3];}
+double Model1::getRadius() const {return scores[0];}
+Vector2d Model1::getCenter() const {return Vector2d(scores[1], scores[2]);}
+double Model1::getBallConfidence() const {return scores[3];}

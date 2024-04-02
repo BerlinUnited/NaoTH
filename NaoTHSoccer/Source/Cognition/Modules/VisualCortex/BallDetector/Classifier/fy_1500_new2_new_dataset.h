@@ -10,9 +10,9 @@ class fy_1500_new2_new_dataset : public AbstractCNNFinder {
 public:
 	void cnn(float x0[16][16][1]);
 	void predict(const BallCandidates::PatchYUVClassified& p,double meanBrightness);
-	virtual double getRadius();
-	virtual Vector2d getCenter();
-	virtual double getBallConfidence();
+	virtual double getRadius() const;
+	virtual Vector2d getCenter() const;
+	virtual double getBallConfidence() const;
 
 private:
 	float in_step[16][16][1];
