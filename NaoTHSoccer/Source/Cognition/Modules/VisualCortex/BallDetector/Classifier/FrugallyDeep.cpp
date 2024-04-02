@@ -23,7 +23,8 @@ void FrugallyDeep::predict(const BallCandidates::PatchYUVClassified &patch, doub
 
 double FrugallyDeep::getBallConfidence() const 
 {
-  ASSERT(result.size() >= 1);
+  // make sure there is an output tensor
+  ASSERT(result.size() > 0);
 
   if(has_confidence) {
     return result[0].get(0, 0, 0, 0, 0);
@@ -32,7 +33,8 @@ double FrugallyDeep::getBallConfidence() const
 
 double FrugallyDeep::getRadius() const
 {
-  ASSERT(result.size() >= 1);
+  // make sure there is an output tensor
+  ASSERT(result.size() > 0);
 
   // NOTE: radius value is the same as confidence
   if(has_radius) {
@@ -44,7 +46,8 @@ double FrugallyDeep::getRadius() const
 
 Vector2d FrugallyDeep::getCenter() const
 {
-  ASSERT(result.size() >= 3);
+  // make sure there is an output tensor
+  ASSERT(result.size() > 0);
 
   if(has_center) {
     float x = result[0].get(0, 0, 0, 0, 1);

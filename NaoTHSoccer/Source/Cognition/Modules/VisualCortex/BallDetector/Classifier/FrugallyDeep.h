@@ -16,6 +16,7 @@ class FrugallyDeep : public AbstractCNNFinder
 {
 public:
     FrugallyDeep(std::string file, bool has_radius = false, bool has_center = false, bool has_confidence = true) :
+      name(file),
       has_radius(has_radius),
       has_center(has_center),
       has_confidence(has_confidence)
@@ -32,6 +33,7 @@ public:
     virtual double getBallConfidence() const;
 
 private:
+    const std::string name;
     bool has_radius;
     bool has_center;
     bool has_confidence;
