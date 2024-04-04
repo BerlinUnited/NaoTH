@@ -47,12 +47,12 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(stand.relax.jointOffsetTuning.currentThreshold) = 0.3;          // [A]
   PARAMETER_REGISTER(stand.relax.jointOffsetTuning.minimalJointStep) = 0.0013962634; // [rad]
 
-  PARAMETER_REGISTER(stand.relax.stiffnessControl.enable) = true;
+  PARAMETER_REGISTER(stand.relax.stiffnessControl.enable)         = true;
   //PARAMETER_REGISTER(stand.relax.stiffnessControl.deadTime)     = 100;  // [ms]
-  PARAMETER_REGISTER(stand.relax.stiffnessControl.minAngle)     = 0.08; // [degrees]
-  PARAMETER_REGISTER(stand.relax.stiffnessControl.maxAngle)     = 2;    // [degrees]
-  PARAMETER_REGISTER(stand.relax.stiffnessControl.minStiffness) = 0.3;
-  PARAMETER_REGISTER(stand.relax.stiffnessControl.maxStiffness) = 1.0;
+  PARAMETER_ANGLE_REGISTER(stand.relax.stiffnessControl.minAngle) = 0.08; // [degrees] (internal rad)
+  PARAMETER_ANGLE_REGISTER(stand.relax.stiffnessControl.maxAngle) = 2;    // [degrees] (internal rad)
+  PARAMETER_REGISTER(stand.relax.stiffnessControl.minStiffness)   = 0.3;  // [0,1]
+  PARAMETER_REGISTER(stand.relax.stiffnessControl.maxStiffness)   = 1.0;  // [0,1]
 
   // arm parameter
   PARAMETER_REGISTER(arm.inertialModelBasedMovement.shoulderPitchInterialSensorRate) = -10;
@@ -62,6 +62,7 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(arm.synchronisedWithWalk.elbowRollRate)     = 0.5;
   PARAMETER_REGISTER(arm.maxSpeed) = 60;
 
+  // an old controller
   PARAMETER_REGISTER(balanceCoM.kP) = 0;
   PARAMETER_REGISTER(balanceCoM.kI) = 0;
   PARAMETER_REGISTER(balanceCoM.kD) = 0;
