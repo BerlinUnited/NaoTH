@@ -24,7 +24,7 @@ public:
     }
 
 
-    double control(double error) 
+    double control(double error) const
     {
         double e = fabs(error);
 
