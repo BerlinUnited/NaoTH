@@ -19,7 +19,7 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(stand.stiffnessGotoPose) = 1.0;
   PARAMETER_REGISTER(stand.stiffnessRelax) = 0.7;
 
-  PARAMETER_ANGLE_REGISTER(stand.bodyPitchOffset) = 0.2;
+  PARAMETER_ANGLE_REGISTER(stand.bodyPitchOffset) = 0.0; // [deg] (internal rad)
   PARAMETER_REGISTER(stand.hipOffsetX) = 15;
 
   PARAMETER_REGISTER(stand.stabilization.rotation.P.x) = -0.03;
@@ -68,8 +68,4 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(balanceCoM.threshold) = 10;
 
   syncWithConfig();
-}
-
-IKParameters::~IKParameters()
-{
 }

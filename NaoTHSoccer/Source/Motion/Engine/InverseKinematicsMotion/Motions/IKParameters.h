@@ -6,8 +6,8 @@
 * Declaration of parameters for IK motion
 */
 
-#ifndef _IK_PARAMETERS_H_
-#define _IK_PARAMETERS_H_
+#ifndef IK_PARAMETERS_H
+#define IK_PARAMETERS_H
 
 #include <Tools/DataStructures/ParameterList.h>
 #include <Tools/Math/Vector2.h>
@@ -91,7 +91,7 @@ public:
 
   IKParameters();
 
-  virtual ~IKParameters();
+  virtual ~IKParameters(){}
 };
 
-#endif // __IK__PARAMETERS_H_
+#endif // IK_PARAMETERS_H
