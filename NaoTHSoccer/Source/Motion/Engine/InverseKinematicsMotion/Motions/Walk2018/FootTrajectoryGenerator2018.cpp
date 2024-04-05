@@ -310,7 +310,7 @@ Pose3D FootTrajectoryGenerator2018::stepControlNew(
         std::vector<double> f_Z = { 0.0, 0.275, 0.775, 1.0, 0.775, 0.275, 0.0 };
 
         tk::spline theCubicSplineZ;
-        theCubicSplineZ.set_boundary(tk::spline::first_deriv, 2.0, tk::spline::first_deriv, -8.0, false);
+        theCubicSplineZ.set_boundary(tk::spline::first_deriv, 0.0, tk::spline::first_deriv, 0.0, false);
         theCubicSplineZ.set_points(t_Z, f_Z);
 
         // time in the single support phase: [0,1]
