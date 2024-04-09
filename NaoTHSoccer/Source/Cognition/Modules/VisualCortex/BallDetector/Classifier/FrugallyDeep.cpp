@@ -1,15 +1,5 @@
 #include "FrugallyDeep.h"
 
-// NOTE: assumes frugally v0.15.20-p0 is used
-
-FrugallyDeep::FrugallyDeep(std::string file)
-{
-    model = std::make_shared<fdeep::model>(fdeep::load_model("Config/" + file));
-}
-
-FrugallyDeep::~FrugallyDeep()
-{
-}
 
 void FrugallyDeep::predict(const BallCandidates::PatchYUVClassified &patch, double meanBrightness)
 {
@@ -31,28 +21,40 @@ void FrugallyDeep::predict(const BallCandidates::PatchYUVClassified &patch, doub
     result = model->predict({inputTensor});
 }
 
-Vector2d FrugallyDeep::getCenter()
+double FrugallyDeep::getBallConfidence() const 
 {
-    if (result.size() == 1)
-    {
-        float x = result[0].get(0, 0, 0, 0, 1);
-        float y = result[0].get(0, 0, 0, 0, 2);
-        return Vector2d(x, y);
-    }
-    else
-    {
-        return Vector2d(0.5, 0.5);
-    }
+  // make sure there is an output tensor
+  ASSERT(result.size() > 0);
+
+  if(has_confidence) {
+    return result[0].get(0, 0, 0, 0, 0);
+  }
 }
 
-double FrugallyDeep::getRadius()
+double FrugallyDeep::getRadius() const
 {
-    if (result.size() == 1)
-    {
-        return result[0].get(0, 0, 0, 0, 0);
-    }
-    else
-    {
-        return 0.0;
-    }
+  // make sure there is an output tensor
+  ASSERT(result.size() > 0);
+
+  // NOTE: radius value is the same as confidence
+  if(has_radius) {
+    return result[0].get(0, 0, 0, 0, 0);
+  }
+
+  return 0.0;
 }
+
+Vector2d FrugallyDeep::getCenter() const
+{
+  // make sure there is an output tensor
+  ASSERT(result.size() > 0);
+
+  if(has_center) {
+    float x = result[0].get(0, 0, 0, 0, 1);
+    float y = result[0].get(0, 0, 0, 0, 2);
+    return Vector2d(x, y);
+  }
+
+  return Vector2d(0.5, 0.5);
+}
+
