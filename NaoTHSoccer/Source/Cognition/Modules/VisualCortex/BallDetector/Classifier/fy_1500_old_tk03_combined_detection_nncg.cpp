@@ -1,5 +1,9 @@
 #include "fy_1500_old_tk03_combined_detection_nncg.h"
 
+// disable on macos and aarch64, i.e apple silicon
+// where emmintrin.h is not available
+#if !defined(__APPLE__) && !defined(__aarch64__)
+
 #include <emmintrin.h>
 #include <immintrin.h>
 #include <pmmintrin.h>
@@ -710,3 +714,5 @@ Vector2d fy_1500_old_tk03_combined_detection_nncg::getCenter() const {
 double fy_1500_old_tk03_combined_detection_nncg::getBallConfidence() const {
     return scores[3];
 }
+
+#endif
