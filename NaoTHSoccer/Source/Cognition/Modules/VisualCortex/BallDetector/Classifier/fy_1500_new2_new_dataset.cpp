@@ -4,6 +4,10 @@
 	#define alignas(x) __declspec(align(x))
 #endif
 
+// disable on macos and aarch64, i.e apple silicon
+// where emmintrin.h is not available
+#if !defined(__APPLE__) && !defined(__aarch64__)
+
 #include <emmintrin.h>
 void fy_1500_new2_new_dataset::cnn(float x0[16][16][1])
 {
@@ -2555,3 +2559,5 @@ Vector2d fy_1500_new2_new_dataset::getCenter() const {
 double fy_1500_new2_new_dataset::getBallConfidence() const {
 	return scores[3];
 }
+
+#endif

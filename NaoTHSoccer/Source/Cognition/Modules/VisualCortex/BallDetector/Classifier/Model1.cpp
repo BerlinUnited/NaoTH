@@ -4,6 +4,10 @@
 #define alignas(x) __declspec(align(x))
 #endif
 
+// disable on macos and aarch64, i.e apple silicon
+// where emmintrin.h is not available
+#if !defined(__APPLE__) && !defined(__aarch64__)
+
 #include <emmintrin.h>
 
 void Model1::cnn(float x0[16][16][1])
@@ -2365,3 +2369,5 @@ void Model1::predict(const BallCandidates::PatchYUVClassified& patch, double mea
 double Model1::getRadius() const {return scores[0];}
 Vector2d Model1::getCenter() const {return Vector2d(scores[1], scores[2]);}
 double Model1::getBallConfidence() const {return scores[3];}
+
+#endif

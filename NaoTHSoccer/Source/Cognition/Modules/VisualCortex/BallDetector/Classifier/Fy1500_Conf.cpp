@@ -4,6 +4,10 @@
 #define alignas(x) __declspec(align(x))
 #endif
 
+// disable on macos and aarch64, i.e apple silicon
+// where emmintrin.h is not available
+#if !defined(__APPLE__) && !defined(__aarch64__)
+
 #include <emmintrin.h>
 
 void Fy1500_Conf::cnn(float x0[16][16][1])
@@ -2574,3 +2578,5 @@ void Fy1500_Conf::predict(const BallCandidates::PatchYUVClassified& patch, doubl
 double Fy1500_Conf::getRadius() const {return scores[0];}
 Vector2d Fy1500_Conf::getCenter() const {return Vector2d(scores[1], scores[2]);}
 double Fy1500_Conf::getBallConfidence() const {return scores[3];}
+
+#endif
