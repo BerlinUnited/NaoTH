@@ -88,6 +88,10 @@ class HipRotationOffsetModifier : private HipRotationOffsetModifierBase
     scaleOffset.set_points(xA,yA);
 
     double t = executingStep.executingCycle/executingStep.numberOfCycles;
+    // FIXME: 
+    //  Math::fromDegrees - doesn't make sence here.
+    //  The parameters hipOffsetBasedOnStepChange (x,y) was intendet to control the shift of the com in mm.
+    //  Here, the pitch rotation of the body is controlled. This should be a separate parameter.
     getTargetCoMFeetPose().pose.com.rotation = calculateBodyRotation(getTargetCoMFeetPose().pose.feet, scaleOffset(t)*Math::fromDegrees(hipRotationOffsetBasedOnStepChange.x) + parameters.bodyPitchOffset);
   }
 

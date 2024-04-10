@@ -6,8 +6,8 @@
 * 
 */
 
-#ifndef _StiffnessController_H
-#define _StiffnessController_H
+#ifndef STIFFNESS_CONTROLLER_H
+#define STIFFNESS_CONTROLLER_H
 
 #include <Tools/Math/Common.h>
 
@@ -19,34 +19,50 @@ public:
         maxAngle(2),
         minStiff(0.3),
         maxStiff(1.0)
-    {}
+    {
+      setMinMaxValues(minAngle, maxAngle, minStiff, maxStiff);
+    }
 
-    double control(double error) {
-        // linear function
-        double m = (maxStiff-minStiff)/(maxAngle-minAngle);
-        double n = maxStiff-m*maxAngle;
 
+    double control(double error) const
+    {
         double e = fabs(error);
 
-        if(e <= Math::fromDegrees(minAngle)){
+        if(e <= minAngle) {
             return minStiff;
-        } else if(e > Math::fromDegrees(maxAngle)) {
+        } else if(e > maxAngle) {
             return maxStiff;
         } else {
-            return m*Math::toDegrees(e) + n;
+            return m*e + n;
         }
     }
 
-    void setMinMaxValues(double minAngle, double maxAngle, double minStiff, double maxStiff){
+    /**
+    * maxStiff - [0,1] maximal stiffness to be applied
+    * minStiff - [0,1] minimal stiffness to be applied
+    * minAngle - [rad] angle below which minStiff is applied
+    * maxAngle - [rad] angle above which maxStiff is applied
+    */
+    void setMinMaxValues(double minAngle, double maxAngle, double minStiff, double maxStiff) {
         this->minAngle = minAngle;
         this->maxAngle = maxAngle;
         this->minStiff = minStiff;
         this->maxStiff = maxStiff;
+
+        // Compute parameters for a linear function f(x) = m*x + n, with
+        //   f(minAngle) == minStiff
+        //   f(maxAngle) == maxStiff
+        m = (maxStiff-minStiff) / (maxAngle-minAngle);
+        n = maxStiff-m*maxAngle;
     }
 
 private:
     double minAngle, maxAngle, minStiff, maxStiff;
+    
+    // parameter for the linear function
+    // f(x) = m*x + n
+    double m, n;
 };
 
-#endif  /* _StiffnessController_H */
+#endif  /* STIFFNESS_CONTROLLER_H */
 

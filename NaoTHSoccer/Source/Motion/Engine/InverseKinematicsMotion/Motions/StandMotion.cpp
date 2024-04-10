@@ -386,7 +386,12 @@ void StandMotion::tuneStiffness()
   double minStiff = getEngine().getParameters().stand.relax.stiffnessControl.minStiffness;
   double maxStiff = getEngine().getParameters().stand.relax.stiffnessControl.maxStiffness;
 
+  // FIXME: Clean the design.
+  //   At the moment the stifnesscontroller does not have internal state and uses the same parameters for all joints.
+  //   basically it is a function computing the controll value. 
+  //   Why do we need a separate instance of a controller for each joint?
   for( int i = naoth::JointData::RShoulderRoll; i <= naoth::JointData::LAnkleRoll; i++) {
+    // FIXME: no need to recompute parameters each time
     stiffnessController[i].setMinMaxValues(minAngle,maxAngle,minStiff,maxStiff);
     stiffness[i] = stiffnessController[i].control(jointMonitors[i].getError());
   }
