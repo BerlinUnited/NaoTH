@@ -11,8 +11,8 @@
 *
 */
 
-#ifndef _StandMotion_H_
-#define _StandMotion_H_
+#ifndef STAND_MOTION_H
+#define STAND_MOTION_H
 
 #include "IKMotion.h"
 #include "Tools/Debug/DebugPlot.h"
@@ -145,5 +145,5 @@ private:
 
 };
 
-#endif  /* _StandMotion_H_ */
+#endif  /* STAND_MOTION_H */
 
