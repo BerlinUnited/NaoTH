@@ -9,6 +9,7 @@
 
 using namespace std;
 
+
 void FootTrajectoryGenerator2018::execute()
 {
   const Step& executingStep = getStepBuffer().first();
@@ -289,12 +290,19 @@ Pose3D FootTrajectoryGenerator2018::stepControlNew(
         // limits.maxCtrlLength = 80
         // 
         // X trajectory
-        std::vector<double> t_X = { 0.0,  0.25, 1.0 };
-        std::vector<double> f_X = { 0.0, -0.3,  1.0 };
 
-        tk::spline theCubicSplineX;
-        theCubicSplineX.set_boundary(tk::spline::first_deriv, 0.0, tk::spline::first_deriv, 0.0, false);
-        theCubicSplineX.set_points(t_X, f_X);
+        static KickType shortStepKick(
+            std::vector<double>{0.0, 0.25, 1.0},
+            std::vector<double>{0.0, -0.3, 1.0},
+            std::vector<double>{0.0, 0.125, 0.25, 0.5, 0.65, 0.875, 1.0},
+            std::vector<double>{0.0, 0.146, 0.8, 1.0, 0.8, 0.146, 0.0});
+        
+        //std::vector<double> t_X = { 0.0,  0.25, 1.0 };
+        //std::vector<double> f_X = { 0.0, -0.3,  1.0 };
+
+        //tk::spline theCubicSplineX = shortStepKick.GetTrajectory(KickType::X);
+        //theCubicSplineX.set_boundary(tk::spline::first_deriv, 0.0, tk::spline::first_deriv, 0.0, false);
+        //theCubicSplineX.set_points(t_X, f_X);
 
         // NOTE: no sidekicks are supported for now
         // Y trajectory
@@ -306,12 +314,12 @@ Pose3D FootTrajectoryGenerator2018::stepControlNew(
         //theCubicSplineY.set_points(t_Y, f_Y);
 
         // Z trajectory
-        std::vector<double> t_Z = { 0.0, 0.125, 0.35,  0.5, 0.65,  0.875, 1.0 };
-        std::vector<double> f_Z = { 0.0, 0.275, 0.775, 1.0, 0.775, 0.275, 0.0 };
+        //std::vector<double> t_Z = { 0.0, 0.125, 0.25,  0.5, 0.65,  0.875, 1.0 };
+        //std::vector<double> f_Z = { 0.0, 0.146, 0.8, 1.0, 0.8, 0.146, 0.0 };
 
-        tk::spline theCubicSplineZ;
-        theCubicSplineZ.set_boundary(tk::spline::first_deriv, 0.0, tk::spline::first_deriv, 0.0, false);
-        theCubicSplineZ.set_points(t_Z, f_Z);
+        //tk::spline theCubicSplineZ = shortStepKick.GetTrajectory(KickType::Z);
+        //theCubicSplineZ.set_boundary(tk::spline::first_deriv, 0.0, tk::spline::first_deriv, 0.0, false);
+        //theCubicSplineZ.set_points(t_Z, f_Z);
 
         // time in the single support phase: [0,1]
         double t = 1.0 - (doubleSupportBegin - cycle) / samplesSingleSupport;
@@ -330,9 +338,9 @@ Pose3D FootTrajectoryGenerator2018::stepControlNew(
         // calculate the scaled time
         double t_xy_scaled = theCubicSplineT(t);
 
-        double s_Xt = theCubicSplineX(t_xy_scaled);
+        double s_Xt = shortStepKick.getX(t_xy_scaled);
         //double s_Yt = theCubicSplineY(t_xy_scaled);
-        double s_Zt = theCubicSplineZ(t);
+        double s_Zt = shortStepKick.getZ(t);
 
         // clculate the next position of the foot by interpolating between startFoot and targetFoot
         Pose3D foot;

@@ -22,6 +22,8 @@
 #include "Tools/Debug/DebugPlot.h"
 #include "Tools/Debug/DebugRequest.h"
 
+#include "KickType.h"
+
 // TODO: which one is better?
 #include "Tools/DataStructures/Spline.h"
 #include "Tools/Math/CubicSpline.h"
