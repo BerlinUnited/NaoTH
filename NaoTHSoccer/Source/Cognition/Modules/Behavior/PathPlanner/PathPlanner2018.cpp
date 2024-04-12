@@ -581,18 +581,20 @@ bool PathPlanner2018::nearApproach_forwardKick(const double offsetX, const doubl
     double translation_x = std::min(translation_xy, targetPos.x - std::abs(targetPos.y));
     double translation_y = std::min(translation_xy, std::abs(targetPos.y)) * (targetPos.y < 0 ? -1 : 1);
 
-    StepBufferElement near_approach_forward_step;
-    near_approach_forward_step.debug_name = "near_approach_forward_step";
-    near_approach_forward_step.setPose({ 0.0, translation_x, translation_y });
-    near_approach_forward_step.setStepType(StepType::WALKSTEP);
-    near_approach_forward_step.setCharacter(params.nearApproach_step_character);
-    near_approach_forward_step.setScale(1.0);
-    near_approach_forward_step.setCoordinate(coordinate);
-    near_approach_forward_step.setFoot(Foot::NONE);
-    near_approach_forward_step.setSpeedDirection(Math::fromDegrees(0.0));
-    near_approach_forward_step.setRestriction(RestrictionMode::HARD);
-    near_approach_forward_step.setProtected(false);
-    near_approach_forward_step.setTime(250);
+
+    StepBufferElement near_approach_forward_step("near_approach_forward_step");
+
+    near_approach_forward_step
+      .setPose({ 0.0, translation_x, translation_y })
+      .setStepType(StepType::WALKSTEP)
+      .setCharacter(params.nearApproach_step_character)
+      .setScale(1.0)
+      .setCoordinate(coordinate)
+      .setFoot(Foot::NONE)
+      .setSpeedDirection(Math::fromDegrees(0.0))
+      .setRestriction(RestrictionMode::HARD)
+      .setProtected(false)
+      .setTime(250);
 
     addStep(near_approach_forward_step);
   }
@@ -639,16 +641,17 @@ bool PathPlanner2018::nearApproach_sideKick(const Foot& foot, const double offse
       double translation_y = std::min(params.stepLength, std::abs(ballPos.y)) * (ballPos.y < 0 ? -1 : 1);
 
       StepBufferElement new_step;
-      new_step.setPose({ 0.0, translation_x, translation_y });
-      new_step.setStepType(StepType::WALKSTEP);
-      new_step.setCharacter(0.7);
-      new_step.setScale(1.0);
-      new_step.setCoordinate(coordinate);
-      new_step.setFoot(Foot::NONE);
-      new_step.setSpeedDirection(Math::fromDegrees(0.0));
-      new_step.setRestriction(RestrictionMode::HARD);
-      new_step.setProtected(false);
-      new_step.setTime(250);
+      new_step
+        .setPose({ 0.0, translation_x, translation_y })
+        .setStepType(StepType::WALKSTEP)
+        .setCharacter(0.7)
+        .setScale(1.0)
+        .setCoordinate(coordinate)
+        .setFoot(Foot::NONE)
+        .setSpeedDirection(Math::fromDegrees(0.0))
+        .setRestriction(RestrictionMode::HARD)
+        .setProtected(false)
+        .setTime(250);
 
       addStep(new_step);
     }
@@ -663,16 +666,17 @@ bool PathPlanner2018::nearApproach_sideKick(const Foot& foot, const double offse
         double translation_y = std::min(params.stepLength, std::abs(ballPos.y)) * (ballPos.y < 0 ? -1 : 1);
 
         StepBufferElement correction_step;
-        correction_step.setPose({ 0.0, translation_x, translation_y });
-        correction_step.setStepType(StepType::WALKSTEP);
-        correction_step.setCharacter(0.7);
-        correction_step.setScale(1.0);
-        correction_step.setCoordinate(coordinate);
-        correction_step.setFoot(Foot::NONE);
-        correction_step.setSpeedDirection(Math::fromDegrees(0.0));
-        correction_step.setRestriction(RestrictionMode::HARD);
-        correction_step.setProtected(false);
-        correction_step.setTime(250);
+        correction_step
+          .setPose({ 0.0, translation_x, translation_y })
+          .setStepType(StepType::WALKSTEP)
+          .setCharacter(0.7)
+          .setScale(1.0)
+          .setCoordinate(coordinate)
+          .setFoot(Foot::NONE)
+          .setSpeedDirection(Math::fromDegrees(0.0))
+          .setRestriction(RestrictionMode::HARD)
+          .setProtected(false)
+          .setTime(250);
 
         addStep(correction_step);
       }
@@ -686,16 +690,17 @@ bool PathPlanner2018::nearApproach_sideKick(const Foot& foot, const double offse
           && ballPosLeftFoot.abs() < ballPosRightFoot.abs())
         {
           StepBufferElement correction_step;
-          correction_step.setPose({ 0.0, 0.0, 0.0 });
-          correction_step.setStepType(StepType::WALKSTEP);
-          correction_step.setCharacter(0.7);
-          correction_step.setScale(1.0);
-          correction_step.setCoordinate(Coordinate::LFoot);
-          correction_step.setFoot(Foot::NONE);
-          correction_step.setSpeedDirection(Math::fromDegrees(0.0));
-          correction_step.setRestriction(RestrictionMode::HARD);
-          correction_step.setProtected(false);
-          correction_step.setTime(250);
+          correction_step
+            .setPose({ 0.0, 0.0, 0.0 })
+            .setStepType(StepType::WALKSTEP)
+            .setCharacter(0.7)
+            .setScale(1.0)
+            .setCoordinate(Coordinate::LFoot)
+            .setFoot(Foot::NONE)
+            .setSpeedDirection(Math::fromDegrees(0.0))
+            .setRestriction(RestrictionMode::HARD)
+            .setProtected(false)
+            .setTime(250);
 
           addStep(correction_step);
 
@@ -707,16 +712,17 @@ bool PathPlanner2018::nearApproach_sideKick(const Foot& foot, const double offse
           && ballPosRightFoot.abs() < ballPosLeftFoot.abs())
         {
           StepBufferElement correction_step;
-          correction_step.setPose({ 0.0, 0.0, 0.0 });
-          correction_step.setStepType(StepType::WALKSTEP);
-          correction_step.setCharacter(0.7);
-          correction_step.setScale(1.0);
-          correction_step.setCoordinate(Coordinate::RFoot);
-          correction_step.setFoot(Foot::NONE);
-          correction_step.setSpeedDirection(Math::fromDegrees(0.0));
-          correction_step.setRestriction(RestrictionMode::HARD);
-          correction_step.setProtected(false);
-          correction_step.setTime(250);
+          correction_step
+            .setPose({ 0.0, 0.0, 0.0 })
+            .setStepType(StepType::WALKSTEP)
+            .setCharacter(0.7)
+            .setScale(1.0)
+            .setCoordinate(Coordinate::RFoot)
+            .setFoot(Foot::NONE)
+            .setSpeedDirection(Math::fromDegrees(0.0))
+            .setRestriction(RestrictionMode::HARD)
+            .setProtected(false)
+            .setTime(250);
 
           addStep(correction_step);
 
@@ -872,16 +878,17 @@ void PathPlanner2018::sideKick(const Foot& foot) // Foot == RIGHT means that we 
 
     // The kick
     StepBufferElement new_step;
-    new_step.setPose({ 0.0, 500.0, stepY });
-    new_step.setStepType(StepType::KICKSTEP);
-    new_step.setCharacter(1.0);
-    new_step.setScale(1.0);
-    new_step.setCoordinate(coordinate);
-    new_step.setFoot(foot);
-    new_step.setSpeedDirection(speedDirection);
-    new_step.setRestriction(RestrictionMode::SOFT);
-    new_step.setProtected(true);
-    new_step.setTime(params.sideKickTime);
+    new_step
+      .setPose({ 0.0, 500.0, stepY })
+      .setStepType(StepType::KICKSTEP)
+      .setCharacter(1.0)
+      .setScale(1.0)
+      .setCoordinate(coordinate)
+      .setFoot(foot)
+      .setSpeedDirection(speedDirection)
+      .setRestriction(RestrictionMode::SOFT)
+      .setProtected(true)
+      .setTime(params.sideKickTime);
 
     addStep(new_step);
 
