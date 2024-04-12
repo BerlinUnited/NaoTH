@@ -65,8 +65,10 @@ public:
 
     enum StepType {
       WALKSTEP,
-      KICKSTEP,
-      ZEROSTEP
+      KICKSTEP, 
+      ZEROSTEP,
+      KICKSTEP_LONG,
+      KICKSTEP_SHORT
     };
     StepType type;
     unsigned int stepID; // it should match the current step id in walk, otherwise it will not be accepted

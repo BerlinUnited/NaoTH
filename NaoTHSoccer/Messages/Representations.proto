@@ -92,6 +92,8 @@ message StepControlRequest
 	WALKSTEP = 0;
 	KICKSTEP = 1;
 	ZEROSTEP = 2;
+    KICKSTEP_LONG = 3;
+    KICKSTEP_SHORT = 4;
   };
 
   required uint32 stepID = 1;
