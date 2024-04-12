@@ -31,7 +31,7 @@ class KickType
       x_trajectory.set_points(x_t, x_f);
       
       y_trajectory.set_boundary(tk::spline::first_deriv, 0.0, tk::spline::first_deriv, 0.0, false);
-      y_trajectory.set_points({0.0, 1.0}, {0.0, 1.0});
+      y_trajectory.set_points({0.0, 0.5, 1.0}, {0.0, 0.0, 0.0});
       
       z_trajectory.set_boundary(tk::spline::first_deriv, 0.0, tk::spline::first_deriv, 0.0, false);
       z_trajectory.set_points(z_t, z_f);
