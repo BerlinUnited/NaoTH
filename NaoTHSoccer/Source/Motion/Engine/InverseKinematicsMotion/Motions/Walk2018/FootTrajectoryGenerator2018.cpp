@@ -43,22 +43,32 @@ void FootTrajectoryGenerator2018::execute()
 
 Pose3D FootTrajectoryGenerator2018::calculateLiftingFootPos(const Step& step) const
 {
+  
+  if (step.type == Step::STEP_CONTROL &&
+        (step.walkRequest.stepControl.type == WalkRequest::StepControlRequest::KICKSTEP ||
+         step.walkRequest.stepControl.type == WalkRequest::StepControlRequest::KICKSTEP_SHORT ||
+         step.walkRequest.stepControl.type == WalkRequest::StepControlRequest::KICKSTEP_LONG)) 
+  {
+        return stepControlNew(
+            step.footStep, 
+            step.executingCycle, 
+            step.samplesDoubleSupport,
+            step.samplesSingleSupport, 
+            step.walkRequest.stepControl);
+  }
+  
+
   if ( step.type == Step::STEP_CONTROL && step.walkRequest.stepControl.type == WalkRequest::StepControlRequest::KICKSTEP)
   {
     if (parameters.useSplineFootTrajectoryForSideKicks) //  && step.walkRequest.stepControl.speedDirection != 0)
     {
       //std::cout << "Do the kick step - spline" << std::endl;
       return stepControlNew(
-        step.footStep,
-        step.executingCycle,
-        step.samplesDoubleSupport,
-        step.samplesSingleSupport,
-        parameters.kickHeight,
-        0, //footPitchOffset
-        0, //footRollOffset
-        step.walkRequest.stepControl.speedDirection,
-        step.walkRequest.stepControl.scale,
-        parameters.sideKickWidth
+            step.footStep,
+            step.executingCycle,
+            step.samplesDoubleSupport,
+            step.samplesSingleSupport, 
+            step.walkRequest.stepControl
         );
     }
     else // forward kick or useSplineFootTrajectoryForSideKicks == false
@@ -225,12 +235,7 @@ Pose3D FootTrajectoryGenerator2018::stepControlNew(
     double cycle,
     double samplesDoubleSupport,
     double samplesSingleSupport,
-    double stepHeight,
-    double footPitchOffset,
-    double footRollOffset,
-    double speedDirection,
-    double scale,
-    double sidekick_width
+    const WalkRequest::StepControlRequest& stepRequest
     ) const
 {
     double doubleSupportEnd = samplesDoubleSupport / 2;
@@ -291,12 +296,10 @@ Pose3D FootTrajectoryGenerator2018::stepControlNew(
         // 
         // X trajectory
 
-        static KickType shortStepKick(
-            std::vector<double>{0.0, 0.25, 1.0},
-            std::vector<double>{0.0, -0.3, 1.0},
-            std::vector<double>{0.0, 0.125, 0.25, 0.5, 0.65, 0.875, 1.0},
-            std::vector<double>{0.0, 0.146, 0.8, 1.0, 0.8, 0.146, 0.0});
         
+        const KickType& currentKick = getKickType(stepRequest.type);
+
+
         //std::vector<double> t_X = { 0.0,  0.25, 1.0 };
         //std::vector<double> f_X = { 0.0, -0.3,  1.0 };
 
@@ -338,9 +341,9 @@ Pose3D FootTrajectoryGenerator2018::stepControlNew(
         // calculate the scaled time
         double t_xy_scaled = theCubicSplineT(t);
 
-        double s_Xt = shortStepKick.getX(t_xy_scaled);
+        double s_Xt = currentKick.getX(t_xy_scaled);
         //double s_Yt = theCubicSplineY(t_xy_scaled);
-        double s_Zt = shortStepKick.getZ(t);
+        double s_Zt = currentKick.getZ(t);
 
         // clculate the next position of the foot by interpolating between startFoot and targetFoot
         Pose3D foot;
@@ -352,10 +355,15 @@ Pose3D FootTrajectoryGenerator2018::stepControlNew(
         // LEGACY: sidekicks
         //foot.translation.y = (1 - t_xy_scaled) * startFoot.translation.y + t_xy_scaled * targetFoot.translation.y + /*step.liftingFoot() **/ s_Y * sidekick_width * std::sin(-speedDirection);
         
+        // TODO: move to stepRequest
+        const double stepHeight = parameters.kickHeight;
         foot.translation.z = startFoot.translation.z + s_Zt * stepHeight;
 
         // LEGACY?
         // apply custom angles footRollOffset and footPitchOffset
+        // TODO: used to be parameters - what to do with them?
+        const double footRollOffset = 0;
+        const double footPitchOffset = 0;
         double t_z_scaled  = (1 - cos(t*Math::pi2))*0.5;
         foot.rotation = RotationMatrix::getRotationX(footRollOffset * t_z_scaled);
         foot.rotation.rotateY(Math::sgn(targetFoot.translation.x - startFoot.translation.x) * footPitchOffset * t_z_scaled);
