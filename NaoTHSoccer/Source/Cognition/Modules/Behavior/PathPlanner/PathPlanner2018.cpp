@@ -6,8 +6,9 @@
 */
 
 #include "PathPlanner2018.h"
-#include "Tools/Math/Polygon.h"
-#include "Tools/Math/Line.h"
+#include <Tools/Math/Polygon.h>
+#include <Tools/Math/Line.h>
+#include <Tools/NaoInfo.h>
 #include <forward_list>
 
 PathPlanner2018::PathPlanner2018()
@@ -533,20 +534,36 @@ bool PathPlanner2018::nearApproach_forwardKick(const double offsetX, const doubl
   if (stepBuffer.empty())
   {
     Vector2d ballPos;
-    Vector2d targetPos;
+    Foot kicking_foot;
+    Foot supporting_foot;
     Coordinate coordinate = Coordinate::Hip;
 
-    //if (foot == Foot::RIGHT)
+    // decide the foot to kick with
     if (getBallModel().positionPreview.y < 0)
     {
-      ballPos    = getBallModel().positionPreviewInRFoot;
-      coordinate = Coordinate::RFoot;
-    }
-    //else if (foot == Foot::LEFT)
-    else if (getBallModel().positionPreview.y >= 0)
-    {
+      kicking_foot    = Foot::RIGHT;
+      supporting_foot = Foot::LEFT;
+
+      // ball in supporting foot coordinates
       coordinate = Coordinate::LFoot;
       ballPos    = getBallModel().positionPreviewInLFoot;
+      
+      // ball in kicking foot coordinates
+      //ballPos    = getBallModel().positionPreviewInRFoot;
+      //coordinate = Coordinate::RFoot;
+    }
+    else if (getBallModel().positionPreview.y >= 0)
+    {
+      kicking_foot    = Foot::LEFT;
+      supporting_foot = Foot::RIGHT;
+
+      // ball in supporting foot coordinates
+      ballPos    = getBallModel().positionPreviewInRFoot;
+      coordinate = Coordinate::RFoot;
+      
+      // ball in kicking foot coordinates
+      //coordinate = Coordinate::LFoot;
+      //ballPos    = getBallModel().positionPreviewInLFoot;
     }
     else
     {
@@ -555,18 +572,33 @@ bool PathPlanner2018::nearApproach_forwardKick(const double offsetX, const doubl
 
     PLOT("PathPlanner:nearApproach_forwardKick:coordinate", coordinate);
 
+
+    Vector2d targetPos;
     // add the desired offset 165-50-120 = -5
     targetPos.x = ballPos.x - getFieldInfo().ballRadius - offsetX;
     targetPos.y = ballPos.y - offsetY;
 
-    // Am I ready for a kick or still walking to the ball?
-    // Approach further if we are too far away, or foot not aligned to ball or foot to close - We use different thresholds for too far and too close
+    // ACHTUNG: We are approaching with the supporting foot.
+    //          Calculate the position for the supporting foot 
+    //          so that the kicking foot would be directly in front of the ball.
+    // TODO: this can potentially depend on the walk parameters.
+    const double offsetBetweenFeetY = NaoInfo::HipOffsetY*2;
+    if(supporting_foot == Foot::RIGHT) {
+      targetPos.y -= offsetBetweenFeetY;
+    } else {
+      targetPos.y += offsetBetweenFeetY;
+    }
+
+    PLOT("PathPlanner:nearApproach_forwardKick:targetPos.y", targetPos.y);
+
+    // Check if the supporting foot has reached a position that is close enough.
+    // If the kicking foot is movable - then execute the kick.
     if (         targetPos.x  < params.forwardKickThreshold.x && 
         std::abs(targetPos.y) < params.forwardKickThreshold.y &&
-        getMotionStatus().stepControl.moveableFoot != (getBallModel().positionPreview.y < 0 ? MotionStatus::StepControlStatus::RIGHT : MotionStatus::StepControlStatus::LEFT)
-    )
-    {
-      target_reached = true;
+        isFootMovable(kicking_foot)
+    ) {
+      // we are done, kick now!
+      return true;
     }
 
     // generate a correction step
@@ -580,7 +612,6 @@ bool PathPlanner2018::nearApproach_forwardKick(const double offsetX, const doubl
     //       Die obige Erklärung(?) scheint nicht nachvollziehbar.
     double translation_x = std::min(translation_xy, targetPos.x - std::abs(targetPos.y));
     double translation_y = std::min(translation_xy, std::abs(targetPos.y)) * (targetPos.y < 0 ? -1 : 1);
-
 
     StepBufferElement near_approach_forward_step("near_approach_forward_step");
 
