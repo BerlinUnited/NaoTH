@@ -229,11 +229,13 @@ inline bool GoalPercept_GoalPost_PostType_Parse(
 enum StepControlRequest_StepType {
   StepControlRequest_StepType_WALKSTEP = 0,
   StepControlRequest_StepType_KICKSTEP = 1,
-  StepControlRequest_StepType_ZEROSTEP = 2
+  StepControlRequest_StepType_ZEROSTEP = 2,
+  StepControlRequest_StepType_KICKSTEP_LONG = 3,
+  StepControlRequest_StepType_KICKSTEP_SHORT = 4
 };
 bool StepControlRequest_StepType_IsValid(int value);
 const StepControlRequest_StepType StepControlRequest_StepType_StepType_MIN = StepControlRequest_StepType_WALKSTEP;
-const StepControlRequest_StepType StepControlRequest_StepType_StepType_MAX = StepControlRequest_StepType_ZEROSTEP;
+const StepControlRequest_StepType StepControlRequest_StepType_StepType_MAX = StepControlRequest_StepType_KICKSTEP_SHORT;
 const int StepControlRequest_StepType_StepType_ARRAYSIZE = StepControlRequest_StepType_StepType_MAX + 1;
 
 const ::google::protobuf::EnumDescriptor* StepControlRequest_StepType_descriptor();
@@ -1806,6 +1808,10 @@ class StepControlRequest : public ::google::protobuf::Message /* @@protoc_insert
     StepControlRequest_StepType_KICKSTEP;
   static const StepType ZEROSTEP =
     StepControlRequest_StepType_ZEROSTEP;
+  static const StepType KICKSTEP_LONG =
+    StepControlRequest_StepType_KICKSTEP_LONG;
+  static const StepType KICKSTEP_SHORT =
+    StepControlRequest_StepType_KICKSTEP_SHORT;
   static inline bool StepType_IsValid(int value) {
     return StepControlRequest_StepType_IsValid(value);
   }
