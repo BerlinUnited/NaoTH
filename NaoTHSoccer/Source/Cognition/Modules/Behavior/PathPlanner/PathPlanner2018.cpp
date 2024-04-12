@@ -746,19 +746,19 @@ void PathPlanner2018::forwardKick()
 
     // 2019 version - makes sure to kick with the foot that is behind the ball
     Vector2d ballPos;
-    Foot actual_foot;
+    Foot kicking_foot;
     Coordinate coordinate = Coordinate::Hip;
     if (getBallModel().positionPreview.y < 0)
     {
-      coordinate = Coordinate::LFoot;
-      actual_foot = Foot::RIGHT;
-      ballPos    = getBallModel().positionPreviewInRFoot;
+      coordinate   = Coordinate::LFoot;
+      kicking_foot = Foot::RIGHT;
+      ballPos      = getBallModel().positionPreviewInRFoot;
     }
     else
     {
-      coordinate = Coordinate::RFoot;
-      actual_foot = Foot::LEFT;
-      ballPos    = getBallModel().positionPreviewInLFoot;
+      coordinate   = Coordinate::RFoot;
+      kicking_foot = Foot::LEFT;
+      ballPos      = getBallModel().positionPreviewInLFoot;
     }
 
     /*
@@ -776,14 +776,16 @@ void PathPlanner2018::forwardKick()
       ASSERT(false);
     }
     */
-
+     
     // Correction step if the movable foot is different from the foot that is supposed to kick
+    // THIS should never happen
     /*
-    if (getMotionStatus().stepControl.moveableFoot != (getBallModel().positionPreview.y < 0 ? MotionStatus::StepControlStatus::RIGHT : MotionStatus::StepControlStatus::LEFT))
+    if (!isFootMovable(kicking_foot))
     {
-      StepBufferElement forward_correction_step("forward_correction_step");
+      ASSERT(false);
+      StepBufferElement forward_correction_step("forward_kick_correction_step");
       forward_correction_step
-        .setPose({ 0.0, 100.0, 0.0 })
+        .setPose({ 0.0, 100.0, 0.0 }) // fast forward step
         .setStepType(StepType::WALKSTEP)
         .setCharacter(1.0)
         .setScale(1.0)
@@ -799,14 +801,14 @@ void PathPlanner2018::forwardKick()
     */
 
     // The kick
-    StepBufferElement forward_kick_step;
+    StepBufferElement forward_kick_step("forward_kick");
     forward_kick_step
       .setPose({ 0.0, 500.0, 0.0 }) // kick straight forward
       .setStepType(StepType::KICKSTEP)
       .setCharacter(1.0)
       .setScale(0.7)
       .setCoordinate(coordinate)
-      .setFoot(actual_foot)
+      .setFoot(kicking_foot)
       .setSpeedDirection(Math::fromDegrees(0.0))
       .setRestriction(RestrictionMode::SOFT)
       .setProtected(true)
@@ -832,7 +834,7 @@ void PathPlanner2018::forwardKick()
     //forward_kick_step.setStepType(StepType::WALKSTEP);
     //addStep(forward_kick_step);
 
-    StepBufferElement forward_correction_step("forward_correction_step");
+    StepBufferElement forward_correction_step("forward_kick_stabilize_step");
     forward_correction_step
       .setPose({ 0.0, 0.0, 0.0 })
       .setStepType(StepType::WALKSTEP)
