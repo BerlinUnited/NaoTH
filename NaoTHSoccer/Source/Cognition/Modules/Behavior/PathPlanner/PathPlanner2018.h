@@ -148,6 +148,29 @@ private:
     NONE
   };
 
+  // helper method: calculates if a foot is movable based on the MotionStatus
+  bool isFootMovable(Foot foot) 
+  {
+    const MotionStatus::StepControlStatus::MoveableFoot movableFoot = getMotionStatus().stepControl.moveableFoot;
+    
+    // only for those values this function is meaningfuly defined
+    ASSERT(foot == RIGHT || foot == LEFT);
+    
+    // both feet are movable
+    if(movableFoot == MotionStatus::StepControlStatus::BOTH) {
+      return true;
+    }
+    
+    // check the individual feet
+    if(foot == RIGHT && movableFoot == MotionStatus::StepControlStatus::RIGHT) {
+      return true;
+    } else if(foot == LEFT && movableFoot == MotionStatus::StepControlStatus::LEFT) {
+      return true;
+    }
+
+    return false;
+  }
+
   typedef WalkRequest::StepControlRequest::StepType StepType;
   typedef WalkRequest::StepControlRequest::RestrictionMode RestrictionMode;
   typedef WalkRequest::Coordinate Coordinate;
