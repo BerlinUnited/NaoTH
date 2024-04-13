@@ -61,14 +61,12 @@ void PathPlanner2018::execute()
   switch (getPathModel().path2018_routine)
   {
   case PathModel::PathPlanner2018Routine::NONE:
-    if (kickPlanned)
-    {
+    if (kickPlanned) {
       kickPlanned = false;
     }
 
     // TODO: should the stepBuffer just be cleared here no matter what?
-    if (stepBuffer.empty())
-    {
+    if (stepBuffer.empty()) {
       return;
     }
     break;
@@ -461,18 +459,18 @@ bool PathPlanner2018::farApproach()
     {
       double translation_xy = params.stepLength;
 
-      StepBufferElement far_approach_step;
-      far_approach_step.debug_name = "far_approach_step";
-      far_approach_step.setPose({ ballPos.angle(), translation_xy, std::min(translation_xy, std::abs(ballPos.y)) * (ballPos.y < 0 ? -1 : 1) });
-      far_approach_step.setStepType(StepType::WALKSTEP);
-      far_approach_step.setCharacter(0.7);
-      far_approach_step.setScale(1.0);
-      far_approach_step.setCoordinate(Coordinate::Hip);
-      far_approach_step.setFoot(Foot::NONE);
-      far_approach_step.setSpeedDirection(Math::fromDegrees(0.0));
-      far_approach_step.setRestriction(RestrictionMode::HARD);
-      far_approach_step.setProtected(false);
-      far_approach_step.setTime(250);
+      StepBufferElement far_approach_step("far_approach_step");
+      far_approach_step
+        .setPose({ ballPos.angle(), translation_xy, std::min(translation_xy, std::abs(ballPos.y)) * (ballPos.y < 0 ? -1 : 1) })
+        .setStepType(StepType::WALKSTEP)
+        .setCharacter(0.7)
+        .setScale(1.0)
+        .setCoordinate(Coordinate::Hip)
+        .setFoot(Foot::NONE)
+        .setSpeedDirection(Math::fromDegrees(0.0))
+        .setRestriction(RestrictionMode::HARD)
+        .setProtected(false)
+        .setTime(250);
 
       addStep(far_approach_step);
     }
@@ -506,16 +504,17 @@ bool PathPlanner2018::sidesteps(const Foot& foot, const double direction)
     }
 
     StepBufferElement side_step;
-    side_step.setPose({ 0.0, 0.0, direction > 0.0 ? 100.0 : -100.0});
-    side_step.setStepType(StepType::WALKSTEP);
-    side_step.setCharacter(0.3);
-    side_step.setScale(1.0);
-    side_step.setCoordinate(coordinate);
-    side_step.setFoot(Foot::NONE);
-    side_step.setSpeedDirection(Math::fromDegrees(0.0));
-    side_step.setRestriction(RestrictionMode::SOFT);
-    side_step.setProtected(false);
-    side_step.setTime(400);
+    side_step
+      .setPose({ 0.0, 0.0, direction > 0.0 ? 100.0 : -100.0})
+      .setStepType(StepType::WALKSTEP)
+      .setCharacter(0.3)
+      .setScale(1.0)
+      .setCoordinate(coordinate)
+      .setFoot(Foot::NONE)
+      .setSpeedDirection(Math::fromDegrees(0.0))
+      .setRestriction(RestrictionMode::SOFT)
+      .setProtected(false)
+      .setTime(400);
 
     addStep(side_step);
     return true;
