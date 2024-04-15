@@ -129,8 +129,10 @@ void StandMotion::execute()
     {
       lastState = state;
 
-      // set target stiffness from parameters
-      setStiffnessBuffer(getEngine().getParameters().stand.stiffnessRelax);
+      // set target stiffness from parameters (only if requested)
+      if(getMotionRequest().standRelaxStiffness) {
+        setStiffnessBuffer(getEngine().getParameters().stand.stiffnessRelax);
+      }
 
       // move to the pose that is measured by our sensors = relax :)
       startPose = targetPose;
@@ -152,7 +154,8 @@ void StandMotion::execute()
         tuneJointOffsets();
       }
 
-      if(getEngine().getParameters().stand.relax.stiffnessControl.enable){
+      // only relax stiffness if it's requested
+      if(getEngine().getParameters().stand.relax.stiffnessControl.enable && getMotionRequest().standRelaxStiffness) {
         tuneStiffness();
       }
 
