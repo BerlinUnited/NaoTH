@@ -107,7 +107,7 @@ void StandMotion::execute()
       getMotionStatus().target_reached = true;
       if(getMotionRequest().id != getId())
       {
-        // NOTE: this is the opnly place where the stand motion can exit
+        // NOTE: this is the only place where the stand motion can exit
         setCurrentState(motion::stopped);
         getMotionStatus().target_reached = false;
       }
@@ -120,11 +120,10 @@ void StandMotion::execute()
         state = Relax;
       }
     }
-  }
-  break;
+  } break; // END STATE GotoStandPose
 
   case Relax:
-
+  {
     // initialize relax on fist execution
     if(lastState != state) 
     {
@@ -141,7 +140,7 @@ void StandMotion::execute()
 
       // reset stuff for StandMotion:online_tuning
       jointOffsets.resetOffsets();
-      for(int i = 0; i < naoth::JointData::numOfJoint; i++){
+      for(int i = 0; i < naoth::JointData::numOfJoint; i++) {
         jointMonitors[i].resetAll();
       }
     }
@@ -149,7 +148,7 @@ void StandMotion::execute()
     // run adjustments after the relaxed pose had been reached
     if(interpolateToPose()) 
     {
-      if(getEngine().getParameters().stand.relax.jointOffsetTuning.enable){
+      if(getEngine().getParameters().stand.relax.jointOffsetTuning.enable) {
         tuneJointOffsets();
       }
 
@@ -194,7 +193,7 @@ void StandMotion::execute()
 
 void StandMotion::setStiffnessBuffer(double s)
 {
-  for( int i = naoth::JointData::RShoulderRoll; i<naoth::JointData::numOfJoint; i++) {
+  for( int i = naoth::JointData::RShoulderRoll; i < naoth::JointData::numOfJoint; i++) {
     stiffness[i] = s;
   }
   // HACK: turn off the hands
@@ -259,7 +258,7 @@ void StandMotion::calcStandPose(bool fullCorrection)
     (targetPose.feet.right.translation - startPose.feet.right.translation).abs()
   );
   
-  double distMax = std::max(std::max(distLeft,distRight),distCom);
+  const double distMax = std::max(std::max(distLeft,distRight),distCom);
 
   // initialize the time
   double speed = getEngine().getParameters().stand.speed;
@@ -273,6 +272,7 @@ bool StandMotion::interpolateToPose()
 {
   PLOT("StandMotion:totalTime", totalTime);
   PLOT("StandMotion:time", time);
+
   // execute the stand motion
   if(totalTime >= 0 && time <= totalTime)
   {
