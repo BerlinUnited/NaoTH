@@ -29,7 +29,8 @@
 #include "Representations/Modeling/BallModel.h"
 #include "Representations/Modeling/ObstacleModel.h"
 
-#include "Representations/Modeling/PathModel.h"
+#include "Representations/Modeling/PathRequest.h"
+#include "Representations/Modeling/PathStatus.h"
 
 BEGIN_DECLARE_MODULE(PathPlanner2018)
   PROVIDE(DebugPlot)
@@ -44,8 +45,9 @@ BEGIN_DECLARE_MODULE(PathPlanner2018)
   REQUIRE(MotionStatus)
   REQUIRE(BallModel)
   REQUIRE(ObstacleModel)
+  REQUIRE(PathRequest)
 
-  PROVIDE(PathModel)
+  PROVIDE(PathStatus)
   PROVIDE(MotionRequest)
   //PROVIDE(HeadMotionRequest)
 END_DECLARE_MODULE(PathPlanner2018)

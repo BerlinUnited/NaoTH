@@ -4,19 +4,21 @@
  * @author <a href="mailto:akcayyig@hu-berlin.de">Yigit Can Akcay</a>
  */
 
-#ifndef _PathPlannerSymbols_H_
-#define _PathPlannerSymbols_H_
+#ifndef PATH_PLANNER_SYMBOLS_H
+#define PATH_PLANNER_SYMBOLS_H
 
 #include <ModuleFramework/Module.h>
 #include <XabslEngine/XabslEngine.h>
 
 // representations
-#include "Representations/Modeling/PathModel.h"
+#include "Representations/Modeling/PathRequest.h"
+#include "Representations/Modeling/PathStatus.h"
 
 #include "Tools/Math/Common.h"
 
 BEGIN_DECLARE_MODULE(PathSymbols)
-  PROVIDE(PathModel)
+  REQUIRE(PathStatus)
+  PROVIDE(PathRequest)
 END_DECLARE_MODULE(PathSymbols)
 
 class PathSymbols: public PathSymbolsBase
@@ -45,4 +47,4 @@ private:
   static double getDirection();
 };
 
-#endif /* _PathSymbols_H_ */
+#endif /* PATH_PLANNER_SYMBOLS_H */

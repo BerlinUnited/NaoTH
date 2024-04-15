@@ -40,7 +40,7 @@ bool on_left_hand_side(Vector2d p, Vector2d s_begin, Vector2d s_end){
 
 void PathPlanner2018::execute()
 {
-  getPathModel().kick_executed = false;
+  getPathStatus().kick_executed = false;
 
   // Always executed first
   manageStepBuffer();
@@ -48,18 +48,20 @@ void PathPlanner2018::execute()
   // The kick has been executed
   // Tells XABSL to jump into next state
   if (kickPlanned && stepBuffer.empty()) {
-    getPathModel().kick_executed = true;
+    getPathStatus().kick_executed = true;
   }
 
+  //getPathStatus().target_reached = target_reached;
+
   // HACK: xabsl set a forced motion request => clear everything
-  if (getPathModel().path2018_routine == PathModel::PathPlanner2018Routine::NONE && getMotionRequest().forced) {
+  if (getPathRequest().path2018_routine == PathRequest::PathID::NONE && getMotionRequest().forced) {
     stepBuffer.clear();
     return;
   }
 
-  switch (getPathModel().path2018_routine)
+  switch (getPathRequest().path2018_routine)
   {
-  case PathModel::PathPlanner2018Routine::NONE:
+  case PathRequest::PathID::NONE:
     if (kickPlanned) {
       kickPlanned = false;
     }
@@ -69,23 +71,23 @@ void PathPlanner2018::execute()
       return;
     }
     break;
-  case PathModel::PathPlanner2018Routine::AVOID:
-    avoid_obstacle(getPathModel().target_point);
+  case PathRequest::PathID::AVOID:
+    avoid_obstacle(getPathRequest().target_point);
     break;
-  case PathModel::PathPlanner2018Routine::MOVE_AROUND_BALL_OLD:
-    moveAroundBall(getPathModel().direction, getPathModel().radius, getPathModel().stable);
+  case PathRequest::PathID::MOVE_AROUND_BALL_OLD:
+    moveAroundBall(getPathRequest().direction, getPathRequest().radius, getPathRequest().stable);
     break;
-  case PathModel::PathPlanner2018Routine::MOVE_AROUND_BALL2:
+  case PathRequest::PathID::MOVE_AROUND_BALL2:
     //TODO maybe use a parameter to select the actual routine that is executed when move around is set from the behavior???
-    moveAroundBall2(getPathModel().direction, getPathModel().radius, getPathModel().stable);
+    moveAroundBall2(getPathRequest().direction, getPathRequest().radius, getPathRequest().stable);
     break;
-  case PathModel::PathPlanner2018Routine::FORWARDKICK:
+  case PathRequest::PathID::FORWARDKICK:
     if (nearApproach_forwardKick(params.forwardKickOffset.x, params.forwardKickOffset.y))
     {
       forwardKick();
     }
     break;
-  case PathModel::PathPlanner2018Routine::SIDEKICK_LEFT:
+  case PathRequest::PathID::SIDEKICK_LEFT:
     if (farApproach())
     {
       if (nearApproach_sideKick(Foot::LEFT, 0.0, params.sidekickOffsetY))
@@ -94,7 +96,7 @@ void PathPlanner2018::execute()
       }
     }
     break;
-  case PathModel::PathPlanner2018Routine::SIDEKICK_RIGHT:
+  case PathRequest::PathID::SIDEKICK_RIGHT:
     if (farApproach())
     {
       if (nearApproach_sideKick(Foot::RIGHT, 0.0, -1 * params.sidekickOffsetY))
@@ -103,8 +105,8 @@ void PathPlanner2018::execute()
       }
     }
     break;
-  case PathModel::PathPlanner2018Routine::SIDESTEP:
-    sidesteps(Foot::RIGHT, getPathModel().direction);
+  case PathRequest::PathID::SIDESTEP:
+    sidesteps(Foot::RIGHT, getPathRequest().direction);
   }//end switch
 
   // Always executed last
@@ -175,8 +177,8 @@ void PathPlanner2018::moveAroundBall(const double direction, const double radius
 
 void PathPlanner2018::moveAroundBall2(const double direction, const double radius, const bool stable) 
 {
- if (stepBuffer.empty())
- {
+  if (stepBuffer.empty())
+  {
     double step_radius = 100;
     double ball_distance = getBallModel().positionPreview.abs();
     Pose2D target_pose;
@@ -515,8 +517,6 @@ bool PathPlanner2018::sidesteps(const Foot& foot, const double direction)
 
 bool PathPlanner2018::nearApproach_forwardKick(const double offsetX, const double offsetY)
 {
-  bool target_reached = false;
-
   // Always execute the steps that were planned before planning new steps
   if (stepBuffer.empty())
   {
@@ -617,7 +617,7 @@ bool PathPlanner2018::nearApproach_forwardKick(const double offsetX, const doubl
     addStep(near_approach_forward_step);
   }
 
-  return target_reached;
+  return false;
 }
 
 bool PathPlanner2018::nearApproach_sideKick(const Foot& foot, const double offsetX, const double offsetY)
