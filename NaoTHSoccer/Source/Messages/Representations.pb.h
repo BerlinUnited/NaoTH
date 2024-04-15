@@ -2797,6 +2797,13 @@ class MotionRequest : public ::google::protobuf::Message /* @@protoc_insertion_p
   ::google::protobuf::uint32 cognitionframenumber() const;
   void set_cognitionframenumber(::google::protobuf::uint32 value);
 
+  // optional bool standRelaxStiffness = 13;
+  bool has_standrelaxstiffness() const;
+  void clear_standrelaxstiffness();
+  static const int kStandRelaxStiffnessFieldNumber = 13;
+  bool standrelaxstiffness() const;
+  void set_standrelaxstiffness(bool value);
+
   // @@protoc_insertion_point(class_scope:naothmessages.MotionRequest)
  private:
   void set_has_id();
@@ -2823,6 +2830,8 @@ class MotionRequest : public ::google::protobuf::Message /* @@protoc_insertion_p
   void clear_has_armmotionrequest();
   void set_has_disable_relaxed_stand();
   void clear_has_disable_relaxed_stand();
+  void set_has_standrelaxstiffness();
+  void clear_has_standrelaxstiffness();
 
   // helper for ByteSizeLong()
   size_t RequiredFieldsByteSizeFallback() const;
@@ -2842,6 +2851,7 @@ class MotionRequest : public ::google::protobuf::Message /* @@protoc_insertion_p
   bool calibratefoottouchdetector_;
   bool disable_relaxed_stand_;
   ::google::protobuf::uint32 cognitionframenumber_;
+  bool standrelaxstiffness_;
   friend struct protobuf_Representations_2eproto::TableStruct;
 };
 // -------------------------------------------------------------------
@@ -11278,6 +11288,30 @@ inline void MotionRequest::set_disable_relaxed_stand(bool value) {
   set_has_disable_relaxed_stand();
   disable_relaxed_stand_ = value;
   // @@protoc_insertion_point(field_set:naothmessages.MotionRequest.disable_relaxed_stand)
+}
+
+// optional bool standRelaxStiffness = 13;
+inline bool MotionRequest::has_standrelaxstiffness() const {
+  return (_has_bits_[0] & 0x00001000u) != 0;
+}
+inline void MotionRequest::set_has_standrelaxstiffness() {
+  _has_bits_[0] |= 0x00001000u;
+}
+inline void MotionRequest::clear_has_standrelaxstiffness() {
+  _has_bits_[0] &= ~0x00001000u;
+}
+inline void MotionRequest::clear_standrelaxstiffness() {
+  standrelaxstiffness_ = false;
+  clear_has_standrelaxstiffness();
+}
+inline bool MotionRequest::standrelaxstiffness() const {
+  // @@protoc_insertion_point(field_get:naothmessages.MotionRequest.standRelaxStiffness)
+  return standrelaxstiffness_;
+}
+inline void MotionRequest::set_standrelaxstiffness(bool value) {
+  set_has_standrelaxstiffness();
+  standrelaxstiffness_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.MotionRequest.standRelaxStiffness)
 }
 
 // -------------------------------------------------------------------
