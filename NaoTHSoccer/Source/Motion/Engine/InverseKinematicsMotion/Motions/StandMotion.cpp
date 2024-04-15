@@ -91,11 +91,21 @@ void StandMotion::execute()
       lastState = state;
 
       // set target stiffness from parameters
-      setStiffnessBuffer(getEngine().getParameters().stand.stiffnessGotoPose);
+      if(getMotionStatus().lastMotion == motion::walk) {
+        // use the same stiffness as walk if the stop happens within the walk cycle to minimize transition times
+        setStiffnessBuffer(getWalk2018Parameters().generalParams.stiffness);
+      } else {
+        // use dedicated stand stiffness, e.g., if stand is executed after standing up or initial motion
+        setStiffnessBuffer(getEngine().getParameters().stand.stiffnessGotoPose);
+      }
 
+      // Apply the stiffness immediately
+      stiffnessIsReady = setStiffness(
+        getMotorJointData(), getSensorJointData(), stiffness, -1, 
+        naoth::JointData::RHipYawPitch, naoth::JointData::LWristYaw);
+
+      // compute the target stand pose
       calcStandPose(fullCorrection);
-
-      stiffnessIsReady = false;
     }
 
     // only move to the pose when the stiffness is ready,
@@ -175,8 +185,14 @@ void StandMotion::execute()
         state = GotoStandPose;
       } 
     }
-    
-    break;
+
+    // gradually apply stiffness from buffer
+    stiffnessIsReady = setStiffness(
+      getMotorJointData(), getSensorJointData(), stiffness, stiffDelta, 
+      naoth::JointData::RHipYawPitch, naoth::JointData::LWristYaw);
+  
+  } break; // END STATE Relax
+  
 
   default:
     THROW("[StandMotion] unexpected (state, lastState) = (" << state << ", " << lastState);
@@ -194,7 +210,7 @@ void StandMotion::execute()
   for( int i = naoth::JointData::RShoulderRoll; i < naoth::JointData::numOfJoint; i++) {
     getMotorJointData().stiffness[i] = stiffness[i];
   }*/
-  stiffnessIsReady = setStiffness(getMotorJointData(), getSensorJointData(), stiffness, stiffDelta, naoth::JointData::RHipYawPitch, naoth::JointData::LWristYaw);
+  //stiffnessIsReady = setStiffness(getMotorJointData(), getSensorJointData(), stiffness, stiffDelta, naoth::JointData::RHipYawPitch, naoth::JointData::LWristYaw);
 
   //turnOffStiffnessWhenJointIsOutOfRange();
 
