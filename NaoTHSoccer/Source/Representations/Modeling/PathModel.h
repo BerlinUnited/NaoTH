@@ -14,15 +14,15 @@ class PathModel : public naoth::Printable
 {
 public:
    PathModel() :
-     path2018_routine(PathPlanner2018Routine::NONE),
+     path2018_routine(NONE),
      direction(0.0),
      radius(0.0),
      stable(false),
      kick_executed(false)
-   {}
+  {}
   ~PathModel() {}
 
-  enum class PathPlanner2018Routine
+  enum PathPlanner2018Routine
   {
     NONE,
     AVOID,
@@ -33,6 +33,23 @@ public:
     SIDEKICK_RIGHT,
     SIDESTEP
   };
+
+  inline static std::string getName(PathPlanner2018Routine id)
+  {
+    switch(id)
+    {
+      case NONE:                  return "none";
+      case AVOID:                 return "avoid";
+      case MOVE_AROUND_BALL_OLD:  return "move_around_ball_old";
+      case MOVE_AROUND_BALL2:     return "move_around_ball";
+      case FORWARDKICK:           return "forwardkick";
+      case SIDEKICK_LEFT:         return "sidekick_left";
+      case SIDEKICK_RIGHT:        return "sidekick_right";
+      case SIDESTEP:              return "sidestep";
+      default: ASSERT(false);
+    }
+  }
+
   PathPlanner2018Routine path2018_routine;
 
   // move around ball
@@ -45,36 +62,7 @@ public:
 
   virtual void print(std::ostream& stream) const
   {  
-    std::string path_type2018;
-    switch (path2018_routine)
-    {
-    case PathPlanner2018Routine::NONE:
-        path_type2018 = "none";
-        break;
-    case PathPlanner2018Routine::AVOID:
-      path_type2018 = "avoid";
-      break;
-    case PathPlanner2018Routine::MOVE_AROUND_BALL_OLD:
-      path_type2018 = "move_around_ball_old";
-      break;
-    case PathPlanner2018Routine::MOVE_AROUND_BALL2:
-      path_type2018 = "move_around_ball";
-      break;
-    case PathPlanner2018Routine::SIDEKICK_LEFT:
-      path_type2018 = "sidekick_left";
-      break;
-    case PathPlanner2018Routine::SIDEKICK_RIGHT:
-      path_type2018 = "sidekick_right";
-      break;
-    case PathPlanner2018Routine::FORWARDKICK:
-      path_type2018 = "forwardkick";
-      break;
-    case PathPlanner2018Routine::SIDESTEP:
-      path_type2018 = "sidestep";
-      break;
-    }
-
-    stream << "path_type2018 = " << path_type2018 << std::endl;
+    stream << "path_type2018 = " << getName(path2018_routine) << std::endl;
     stream << "direction = " << direction << std::endl;
     stream << "radius = " << radius << std::endl;
   }
