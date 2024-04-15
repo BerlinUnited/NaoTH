@@ -14,7 +14,7 @@ void GameSymbols::registerSymbols(xabsl::Engine& engine)
 {
   // enum for the competition type
   engine.registerEnumElement("game.type", "game.type.normal" , GameData::competition_normal);
-  engine.registerEnumElement("game.type", "game.type.dynamic_ball_handling" , GameData::competition_dynamic_ball_handling);
+  engine.registerEnumElement("game.type", "game.type.shared_autonomy" , GameData::competition_type_shared_autonomy);
 
   engine.registerEnumeratedInputSymbol("game.type", "game.type", &getCompetitionType);
 

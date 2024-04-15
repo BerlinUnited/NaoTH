@@ -73,7 +73,8 @@ std::string GameData::toString(CompetitionType value)
     RETURN_VALUE_TO_STR(competition_normal);
     //RETURN_VALUE_TO_STR(COMPETITION_TYPE_CHALLENGE_SHIELD); // deprecated since 2023
     //RETURN_VALUE_TO_STR(COMPETITION_TYPE_7V7); // deprecated since 2023
-    RETURN_VALUE_TO_STR(COMPETITION_TYPE_DYNAMIC_BALL_HANDLING);
+    //RETURN_VALUE_TO_STR(COMPETITION_TYPE_DYNAMIC_BALL_HANDLING); // deprecated since 2024
+    RETURN_VALUE_TO_STR(competition_type_shared_autonomy);
     //RETURN_VALUE_TO_STR(competition_1v1); // deprecated since 2022
     //RETURN_VALUE_TO_STR(competition_passing); // deprecated since 2022
     //RETURN_VALUE_TO_STR(competition_mixed); // deprecated since 2021
@@ -147,6 +148,7 @@ std::string GameData::toString(Penalty value)
     RETURN_VALUE_TO_STR(illegal_position);
     RETURN_VALUE_TO_STR(illegal_position_in_set);
     RETURN_VALUE_TO_STR(player_stance);
+    RETURN_VALUE_TO_STR(illegal_motion_in_initial);
     RETURN_VALUE_TO_STR(substitute);
     RETURN_VALUE_TO_STR(manual);
   }

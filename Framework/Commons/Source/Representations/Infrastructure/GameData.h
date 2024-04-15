@@ -67,7 +67,10 @@ public:
     //competition_7v7                     = COMPETITION_TYPE_7V7,
 
     // RC 2023
-    competition_dynamic_ball_handling   = COMPETITION_TYPE_DYNAMIC_BALL_HANDLING
+    //competition_dynamic_ball_handling   = COMPETITION_TYPE_DYNAMIC_BALL_HANDLING
+
+    // RC 2024
+    competition_type_shared_autonomy = COMPETITION_TYPE_SHARED_AUTONOMY
   };
 
   enum GamePhase
@@ -100,6 +103,7 @@ public:
   enum Penalty
   {
     penalty_none            = PENALTY_NONE,
+
     illegal_ball_contact    = PENALTY_SPL_ILLEGAL_BALL_CONTACT,
     player_pushing          = PENALTY_SPL_PLAYER_PUSHING,
     illegal_motion_in_set   = PENALTY_SPL_ILLEGAL_MOTION_IN_SET,
@@ -113,8 +117,9 @@ public:
     illegal_position        = PENALTY_SPL_ILLEGAL_POSITION,
     illegal_position_in_set = PENALTY_SPL_ILLEGAL_POSITION_IN_SET,
     player_stance           = PENALTY_SPL_PLAYER_STANCE,
+    illegal_motion_in_initial =  PENALTY_SPL_ILLEGAL_MOTION_IN_INITIAL,
     substitute              = PENALTY_SUBSTITUTE,
-    manual                  = PENALTY_MANUAL
+    manual                  = PENALTY_MANUAL,
   };
 
 

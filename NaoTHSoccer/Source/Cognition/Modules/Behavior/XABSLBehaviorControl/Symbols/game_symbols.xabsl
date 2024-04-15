@@ -5,7 +5,7 @@ namespace game_symbols("Game Control Symbols")
   enum game.type
   {
     normal,
-    dynamic_ball_handling
+    shared_autonomy
   };
 
   enum game.type input game.type;
