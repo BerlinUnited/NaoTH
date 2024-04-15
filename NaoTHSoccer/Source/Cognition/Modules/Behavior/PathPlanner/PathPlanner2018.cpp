@@ -27,7 +27,7 @@ PathPlanner2018::~PathPlanner2018()
   getDebugParameterList().remove(&params);
 }
 
-double comp(Vector2d b, Vector2d a){
+double comp(Vector2d b, Vector2d a) {
   return a * b / a.abs();
 }
 // determines if a point p is on the left hand side of the line segment defined by s_begin, s_end
@@ -47,8 +47,7 @@ void PathPlanner2018::execute()
 
   // The kick has been executed
   // Tells XABSL to jump into next state
-  if (kickPlanned && stepBuffer.empty())
-  {
+  if (kickPlanned && stepBuffer.empty()) {
     getPathModel().kick_executed = true;
   }
 
@@ -155,27 +154,20 @@ void PathPlanner2018::moveAroundBall(const double direction, const double radius
     // outer clamp geht von -radius zu 0
     double stepY = Math::clamp(radius * std::tan(Math::fromDegrees(Math::clamp(-direction_deg, min1, max1))), min2, max2) * std::cos(ballRotation);
 
-    Pose2D pose = { ballRotation, stepX, stepY };
+    // choose the parametr for the character based on the flag
+    const double character = stable ? params.moveAroundBallCharacterStable : params.moveAroundBallCharacter;
 
-    StepBufferElement move_around_step;
-    move_around_step.debug_name = "move_around_step";
-    move_around_step.setPose(pose);
-    move_around_step.setStepType(StepType::WALKSTEP);
-
-    if (stable){
-      move_around_step.setCharacter(params.moveAroundBallCharacterStable);
-    }
-    else{
-      move_around_step.setCharacter(params.moveAroundBallCharacter);
-    }
-
-    move_around_step.setScale(1.0);
-    move_around_step.setCoordinate(Coordinate::Hip);
-    move_around_step.setFoot(Foot::NONE);
-    move_around_step.setSpeedDirection(Math::fromDegrees(0.0));
-    move_around_step.setRestriction(RestrictionMode::SOFT);
-    move_around_step.setProtected(false);
-    move_around_step.setTime(250);
+    StepBufferElement move_around_step("move_around_step");
+    move_around_step.setPose({ ballRotation, stepX, stepY })
+      .setStepType(StepType::WALKSTEP)
+      .setCharacter(character)
+      .setScale(1.0)
+      .setCoordinate(Coordinate::Hip)
+      .setFoot(Foot::NONE)
+      .setSpeedDirection(Math::fromDegrees(0.0))
+      .setRestriction(RestrictionMode::SOFT)
+      .setProtected(false)
+      .setTime(250);
 
     addStep(move_around_step);
   }
@@ -276,24 +268,20 @@ void PathPlanner2018::moveAroundBall2(const double direction, const double radiu
         }
     }
 
-    StepBufferElement move_around_step;
-    move_around_step.debug_name = "move_around_step2";
-    move_around_step.setPose(target_pose);
-    move_around_step.setStepType(StepType::WALKSTEP);
+    // choose the parametr for the character based on the flag
+    const double character = stable ? params.moveAroundBallCharacterStable : params.moveAroundBallCharacter;
 
-    if (stable) {
-      move_around_step.setCharacter(params.moveAroundBallCharacterStable);
-    } else{
-      move_around_step.setCharacter(params.moveAroundBallCharacter);
-    }
-
-    move_around_step.setScale(1.0);
-    move_around_step.setCoordinate(Coordinate::Hip);
-    move_around_step.setFoot(Foot::NONE);
-    move_around_step.setSpeedDirection(Math::fromDegrees(0.0));
-    move_around_step.setRestriction(RestrictionMode::HARD);
-    move_around_step.setProtected(false);
-    move_around_step.setTime(250);
+    StepBufferElement move_around_step("move_around_step2");
+    move_around_step.setPose(target_pose)
+      .setStepType(StepType::WALKSTEP)
+      .setCharacter(character)
+      .setScale(1.0)
+      .setCoordinate(Coordinate::Hip)
+      .setFoot(Foot::NONE)
+      .setSpeedDirection(Math::fromDegrees(0.0))
+      .setRestriction(RestrictionMode::HARD)
+      .setProtected(false)
+      .setTime(250);
 
     addStep(move_around_step);
 
@@ -938,10 +926,6 @@ void PathPlanner2018::sideKick(const Foot& foot) // Foot == RIGHT means that we 
 }
 
 
-void PathPlanner2018::addStep(const StepBufferElement& new_step) {
-  stepBuffer.push_back(new_step);
-}
-
 void PathPlanner2018::updateSpecificStep(const unsigned int index, StepBufferElement& step)
 {
   ASSERT(stepBuffer.size() > 0);
@@ -952,31 +936,12 @@ void PathPlanner2018::updateSpecificStep(const unsigned int index, StepBufferEle
 
 void PathPlanner2018::manageStepBuffer()
 {
-  if (stepBuffer.empty())
-  {
+  if (stepBuffer.empty()) {
     return;
   }
 
   // requested step has been accepted
-  if (lastStepRequestID == getMotionStatus().stepControl.stepRequestID)
-  {
-    /*std::string lastStepType = "";
-    if (stepBuffer[0].type == StepType::KICKSTEP)
-    {
-      lastStepType = "KICKSTEP";
-    }
-    else if (stepBuffer[0].type == StepType::WALKSTEP)
-    {
-      lastStepType = "WALKSTEP";
-    }
-    else if (stepBuffer[0].type == StepType::ZEROSTEP)
-    {
-      lastStepType = "ZEROSTEP";
-    }
-
-    std::cout << "Last executed step: " << lastStepType << " -- " << numPossibleSteps << " > " << params.readyForKickThreshold << " or " << numRotationStepsNecessary << " > " << numPossibleSteps << std::endl;
-    */
-
+  if (lastStepRequestID == getMotionStatus().stepControl.stepRequestID) {
     stepBuffer.erase(stepBuffer.begin());
     lastStepRequestID = getMotionStatus().stepControl.stepRequestID + 1;
   }
