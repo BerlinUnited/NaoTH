@@ -98,11 +98,18 @@ void StandMotion::execute()
       stiffnessIsReady = false;
     }
 
-    bool d = interpolateToPose();
+    // only move to the pose when the stiffness is ready,
+    // otherwise the joints might be to weak to execute the motion 
+    // and the robot might become unstable
+    bool poseReached = false;
+    if (stiffnessIsReady) {
+      poseReached = interpolateToPose();
+    }
+    
     PLOT("StandMotion:stiffnessIsReady",stiffnessIsReady);
-    PLOT("StandMotion:interpolateToPose",d);
+    PLOT("StandMotion:interpolateToPose",poseReached);
 
-    if(stiffnessIsReady && d) 
+    if(stiffnessIsReady && poseReached) 
     {
       getMotionStatus().target_reached = true;
       if(getMotionRequest().id != getId())
