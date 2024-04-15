@@ -150,6 +150,7 @@ message MotionRequest {
   required uint32 id = 1;
   required uint32 time = 2;
   required bool forced = 3;
+  
   optional WalkRequest walkRequest = 4;
   optional bool starndardStand = 5;
   optional KickRequest kickRequest = 6;
@@ -159,6 +160,7 @@ message MotionRequest {
   optional GraspRequest graspRequest = 10;
   optional ArmMotionRequest armMotionRequest = 11;
   optional bool disable_relaxed_stand = 12;
+  optional bool standRelaxStiffness = 13;
 }
 
 
