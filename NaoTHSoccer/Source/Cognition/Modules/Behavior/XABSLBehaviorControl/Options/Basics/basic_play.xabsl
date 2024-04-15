@@ -38,6 +38,9 @@ option basic_play
 
       // relax while standing by default
       motion.stand.disable_relax = false;
+
+      // relax stiffness while standing by default
+      motion.stand.relax_stiffness = true;
       
       // react to the game controller and observe fall down
       decide_game_state();
