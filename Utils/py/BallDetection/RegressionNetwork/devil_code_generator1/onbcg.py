@@ -115,10 +115,16 @@ class NaoTHCompiler:
 
         self.write_header(self.arch, class_name)
 
+        self.model.summary()
+        number_of_layers = len(self.model.layers)
+
         # handle model layers
         _x = self.test_image
-        for layer in self.model.layers:
+        for idx, layer in enumerate(self.model.layers):
+            output_layer = (idx+1 == number_of_layers)
+            print("output layer: {}".format(output_layer))
             print("layer is: ", layer, self.c_inf['layer'])
+            
             if type(layer) == Convolution2D:
                 self.write_cpp('\n \t// Convolution Layer\n')
                 w = K.eval(layer.weights[0])
@@ -158,9 +164,9 @@ class NaoTHCompiler:
 
                 if layer.activation.__name__ == 'relu':
                     print("use dense layer argument for activation")
-                    _x, self.c_inf = self.dense(_x, w, b, relu=True)
+                    _x, self.c_inf = self.dense(_x, w, b, relu=True, is_output_layer=output_layer)
                 else:
-                    _x, self.c_inf = self.dense(_x, w, b, relu=False)
+                    _x, self.c_inf = self.dense(_x, w, b, relu=False, is_output_layer=output_layer)
 
             else:
                 print("ERROR: Unknown layer: {}".format(type(layer)))
@@ -212,9 +218,9 @@ class NaoTHCompiler:
                                                                    self.c_inf["z_dim"]),
                   file=fp)
             print("\tvoid predict(const BallCandidates::PatchYUVClassified& p,double meanBrightness);", file=fp)
-            print("\tvirtual double getRadius();", file=fp)
-            print("\tvirtual Vector2d getCenter();", file=fp)
-            print("\tvirtual double getBallConfidence();", file=fp)
+            print("\tvirtual double getRadius() const;", file=fp)
+            print("\tvirtual Vector2d getCenter() const;", file=fp)
+            print("\tvirtual double getBallConfidence() const;", file=fp)
             print("", file=fp)
             print("private:", file=fp)
             print("\tfloat in_step[{:d}][{:d}][{:d}];".format(self.c_inf["x_dim"], self.c_inf["y_dim"],
@@ -319,6 +325,7 @@ void {}::predict(const BallCandidates::PatchYUVClassified& patch, double meanBri
             self.c_inf["f"].close()
             self.c_inf["f"] = None
 
+            '''
             # replace the name of the output layer
             with open(self.c_inf["path"], 'r') as file:
                 data = file.read()
@@ -328,10 +335,10 @@ void {}::predict(const BallCandidates::PatchYUVClassified& patch, double meanBri
                 get_size(_x, 2),
                 get_size(_x, 3)))
             data = data.replace('x{:d}['.format(self.c_inf["layer"] - 1), 'output_tensor[')
-
+            
             with open(self.c_inf["path"], 'w') as file:
                 file.write(data)
-
+            '''
         return self.c_inf
 
     def write_footer_test(self, _x, class_name):
@@ -373,17 +380,17 @@ void {}::predict(float in_step[16][16][1], double meanBrightnessOffset)
                 file.write(data)
 
     def write_get_radius_function(self, class_name):
-        self.write_cpp('double {}::getRadius() {{\n'
+        self.write_cpp('double {}::getRadius() const {{\n'
                        '\treturn scores[0];\n'
                        '}}\n'.format(class_name))
 
     def write_get_center_function(self, class_name):
-        self.c_inf["f"].write('Vector2d {}::getCenter() {{\n'
+        self.c_inf["f"].write('Vector2d {}::getCenter() const {{\n'
                               '\treturn Vector2d(scores[1], scores[2]);\n'
                               '}}\n'.format(class_name))
 
     def write_get_confidence_function(self, class_name):
-        self.c_inf["f"].write('double {}::getBallConfidence() {{\n'
+        self.c_inf["f"].write('double {}::getBallConfidence() const {{\n'
                               '\treturn scores[3];\n'
                               '}}\n'.format(class_name))
 
@@ -1124,16 +1131,33 @@ void {}::predict(float in_step[16][16][1], double meanBrightnessOffset)
             self.write_cpp('\t}\n')
         return x_out, self.c_inf
 
-    def dense(self, _x, weights, b, relu):
+    def dense(self, _x, weights, b, relu, is_output_layer = False):
         x_dim = _x.shape[0]
         y_dim = _x.shape[1]
         channels = _x.shape[2]
-
+        
         output_dim = weights.shape[1]
+        
+        str_data = {
+            'prev_layer': self.c_inf["layer"] - 1,
+            'layer': self.c_inf["layer"],
+            'dim': output_dim,
+            'idx': 0,
+            'bias': 0,
+        }
+        
+        if not is_output_layer:
+            self.write_cpp('\tstatic float x{layer}[{dim}] = {{}};\n'.format(**str_data))
 
-        i = 0
         for output in range(output_dim):
-            self.c_inf["f"].write("\tscores[{:d}] = {:f}f".format(output, b[output]))
+            if is_output_layer:
+                self.c_inf["f"].write("\tscores[{:d}] = {:f}f".format(output, b[output]))
+            else:
+                str_data['idx'] = output
+                str_data['bias'] = b[output]
+                self.write_cpp('\tx{layer}[{idx}] = {bias}f'.format(**str_data))
+            
+            i = 0
             for x in range(x_dim):
                 for y in range(y_dim):
                     for c in range(channels):
@@ -1147,10 +1171,17 @@ void {}::predict(float in_step[16][16][1], double meanBrightnessOffset)
                         else:
                             self.c_inf["f"].write(' - ')
 
-                        self.c_inf["f"].write('{:f}f * x{:d}[{:d}][{:d}][{:d}]'.format(
-                            abs(weights[idx, output]),
-                            self.c_inf["layer"] - 1, x, y, c
-                        ))
+                        # check if last layer is a dense layer
+                        if y_dim == 1 and channels == 1:
+                            self.c_inf["f"].write('{:f}f * x{:d}[{:d}]'.format(
+                                abs(weights[idx, output]),
+                                self.c_inf["layer"] - 1, x
+                            ))
+                        else:
+                            self.c_inf["f"].write('{:f}f * x{:d}[{:d}][{:d}][{:d}]'.format(
+                                abs(weights[idx, output]),
+                                self.c_inf["layer"] - 1, x, y, c
+                            ))
 
                         i += 1
             self.c_inf["f"].write(';\n')
@@ -1159,8 +1190,13 @@ void {}::predict(float in_step[16][16][1], double meanBrightnessOffset)
             if relu:
                 self.c_inf["f"].write(';\n\n')
                 self.c_inf["f"].write("\t// Apply ReLU\n")
-                self.c_inf["f"].write(
-                    "\tscores[{:d}] = scores[{:d}] > 0.0f ? scores[{:d}] : 0.0f;\n".format(output, output, output))
+                if is_output_layer:
+                    self.c_inf["f"].write("\tscores[{:d}] = scores[{:d}] > 0.0f ? scores[{:d}] : 0.0f;\n".format(output, output, output))
+                else:
+                    str_data['idx'] = output
+                    str_data['bias'] = b[output]
+                    self.write_cpp('\tx{layer}[{idx}] = x{layer}[{idx}] > 0.0f ? x{layer}[{idx}] : 0.0f;\n'.format(**str_data))
+                    
 
             self.c_inf["f"].write('\n')
 
