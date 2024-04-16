@@ -7,8 +7,8 @@ option fall_down_and_stand_up
       // HACK: no standup in init
       if(executed_motion.type == init)
         stay;
-      else if(abs(value=sensor.inertial.y)>30
-          || abs(value=sensor.inertial.x)>30)
+      else if(abs(value=sensor.inertial.y)>25
+          || abs(value=sensor.inertial.x)>20) // EVILHACK: Values are just an educated guess, they could potentially kill a stable position
         goto falling;
       else
         stay;
