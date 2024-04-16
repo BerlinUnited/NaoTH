@@ -51,7 +51,11 @@ void PathPlanner2018::execute()
     getPathStatus().kick_executed = true;
   }
 
-  //getPathStatus().target_reached = target_reached;
+  // reset target_reached
+  // NOTE: target_reached is only used by MOVE_AROUND_BALL2 for now
+  if(getPathRequest().path2018_routine != PathRequest::PathID::MOVE_AROUND_BALL2) {
+    target_reached = false;
+  }
 
   // HACK: xabsl set a forced motion request => clear everything
   if (getPathRequest().path2018_routine == PathRequest::PathID::NONE && getMotionRequest().forced) {
@@ -80,6 +84,7 @@ void PathPlanner2018::execute()
   case PathRequest::PathID::MOVE_AROUND_BALL2:
     //TODO maybe use a parameter to select the actual routine that is executed when move around is set from the behavior???
     moveAroundBall2(getPathRequest().direction, getPathRequest().radius, getPathRequest().stable);
+    getPathStatus().turn_around_ball_2_target_reached = target_reached;
     break;
   case PathRequest::PathID::FORWARDKICK:
     if (nearApproach_forwardKick(params.forwardKickOffset.x, params.forwardKickOffset.y))
@@ -184,7 +189,7 @@ void PathPlanner2018::moveAroundBall2(const double direction, const double radiu
     Pose2D target_pose;
 
     // the point just behind the ball in the direction of the attack
-    // //todo: check
+    // todo: check
     //Vector2d target_point = getBallModel().positionPreview - Vector2d(radius, 0.0).rotate(direction);
     Vector2d target_point = getBallModel().positionPreview - Vector2d(cos(direction), sin(direction)) * radius;
 

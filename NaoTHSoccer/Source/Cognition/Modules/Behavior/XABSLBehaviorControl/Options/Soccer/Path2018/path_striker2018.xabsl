@@ -100,6 +100,10 @@ option path_striker2018
   {
     decision
     {
+      // TODO: Sometimes the turn around ball is finished but there is no best action.
+      //       when and why can this hapen?! Why is there no best action?
+      else if(path.turn_around_ball_2_target_reached)
+        goto forwardkick;
       // long kick is ignored/not included in action selection
       //else if(attack.best_action == kick_long)
       //    goto long_kick;

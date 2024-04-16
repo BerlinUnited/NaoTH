@@ -28,6 +28,8 @@ void PathSymbols::registerSymbols(xabsl::Engine& engine)
 
   // input
   engine.registerBooleanInputSymbol("path.kick_executed", &getPathStatus().kick_executed);
+  engine.registerBooleanInputSymbol("path.turn_around_ball_2_target_reached", &getPathStatus().turn_around_ball_2_target_reached);
+  
 }
 
 PathSymbols* PathSymbols::theInstance = NULL;
