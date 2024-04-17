@@ -35,4 +35,4 @@ trainings_data = "tk03_natural_detection.pkl"
 # Switch between debug and production build. The debug build creates code for running the network multiple times and provides timing measurements in the end.
 compile_debug = false
 # TODO this can be dynamically calculated by the compiler
-model_path = "naoth_classifier_max_01.h5"
+model_path = "mbc_gopen_wed.h5"
