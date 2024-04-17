@@ -2,7 +2,7 @@
 * @author <a href="mailto:schlottb@informatik.hu-berlin.de">Schlotter, Stella Alice</a>
 */
 #include "FallMotion.h"
-//#include <vector>
+#include "Representations/Infrastructure/InertialSensorData.h"
 
 using namespace naoth;
 
@@ -13,92 +13,124 @@ FallMotion::FallMotion()
   stiffness_increase = getRobotInfo().getBasicTimeStepInSecond() * 5;
   t_since_fall_start = -1;
 
-  fall_front_map = {std::vector<int> { 40, 60, 90 }, { // the first keyframe is trying to be reached until the robot is at 40 degrees
-  {0, {0.0,-38.0,90.0,10.0,100.0,0.0,-90.0,0.0,90.0,-10.0,-100.0,0.0,90.0,0.0,0.0,0.0,-24.0,105.0,-75.0,0.0,0.0,0.0,-24.0,105.0,-75.0,0.0}},
-  {1, {0.0,-38.0,5.0,10.0,100.0,-60.0,-90.0,0.0,5.0,-10.0,-100.0,60.0,90.0,0.0,0.0,0.0,-24.0,105.0,-75.0,0.0,0.0,0.0,-24.0,105.0,-75.0,0.0}}, // todo: change line to be like line 1?
-  {2, {0.0,-38.0,5.0,10.0,100.0,-60.0,-90.0,0.0,5.0,-10.0,-100.0,60.0,90.0,0.0,0.0,0.0,-24.0,105.0,-75.0,0.0,0.0,0.0,-24.0,105.0,-75.0,0.0}}}};
+/*      HeadPitch,
+      HeadYaw,
 
-  fall_back_map = {std::vector<int> { 40, 60, 90 }, {
-  {0, {0.0,29.0,123.0,12.0,17.0,  0.0,-50.0,0.0,123.0,-12.0,-17.0, 0.0,50.0,0.0,0.0,0.0,-90.0,105.0,-45.0,0.0,0.0,0.0,-90.0,105.0,-45.0,0.0}},
-  {1, {0.0,29.0,123.0,12.0,17.0,-78.0,-50.0,0.0,123.0,-12.0,-17.0,78.0,50.0,0.0,0.0,0.0,-90.0,105.0,-45.0,0.0,0.0,0.0,-90.0,105.0,-45.0,0.0}},
-  {2, {0.0,29.0,123.0,12.0,17.0,-78.0,-50.0,0.0,123.0,-12.0,-17.0,78.0,50.0,0.0,0.0,0.0,-90.0,105.0,-45.0,0.0,0.0,0.0,-90.0,105.0,-45.0,0.0}}}};
+      RShoulderRoll,
+      LShoulderRoll,
+      RShoulderPitch,
+      LShoulderPitch,
 
-  fall_stiffness_front_map = {std::vector<int> { 40, 60, 90 }, { // the first keyframe is trying to be reached until the robot is at 40 degrees
-  {0, {100,100,  100,100,100,100,  100,100,100,100, 20,20,20,20,20,20, 20,20,20,20,20,20,  30, 30, 30, 30}},
-  {1, { 30, 30,   15, 15, 15, 15,   15, 15, 15, 15, 20,20,20,20,20,20, 20,20,20,20,20,20,  30, 30, 30, 30}}, // todo: change line to be like line 1?
-  {2, { 30, 30,   15, 15, 15, 15,   15, 15, 15, 15, 20,20,20,20,20,20, 20,20,20,20,20,20,  30, 30, 30, 30}}}};
+      RElbowRoll,
+      LElbowRoll,
+      RElbowYaw,
+      LElbowYaw,
 
-  fall_stiffness_back_map = {std::vector<int> { 40, 60, 90 }, {
-  {0, {100,100,  100,100,100,100,  100,100,100,100, 20,20,20,20,20,20, 20,20,20,20,20,20,  30, 30, 30, 30}},
-  {1, {100,100,  100,100,100,100,  100,100,100,100, 20,20,20,20,20,20, 20,20,20,20,20,20,  30, 30, 30, 30}},
-  {2, { 30, 30,   15, 15, 15, 15,   15, 15, 15, 15, 20,20,20,20,20,20, 20,20,20,20,20,20,  30, 30, 30, 30}}}};
+      RHipYawPitch, // doesn't exist on Nao
+      LHipYawPitch,
+      RHipPitch,
+      LHipPitch,
+      RHipRoll,
+      LHipRoll,
+      RKneePitch,
+      LKneePitch,
+      RAnklePitch,
+      LAnklePitch,
+      RAnkleRoll,
+      LAnkleRoll,
 
-  assert(size(std::get<0>(fall_front_map)) == size(std::get<1>(fall_front_map)));
-  assert(size(std::get<0>(fall_back_map)) == size(std::get<1>(fall_back_map)));
-  assert(size(std::get<0>(fall_stiffness_front_map)) == size(std::get<1>(fall_stiffness_front_map)));
-  assert(size(std::get<0>(fall_stiffness_back_map)) == size(std::get<1>(fall_stiffness_back_map)));
+      LWristYaw,
+      RWristYaw,
+      LHand,
+      RHand*/
+
+  fall_front_map = {
+  {-38,0,-10,10,90,90,0,0,-100,100,0,0,-24,-24,0,0,105,105,-75,-75,0,0},
+  {-38,0,-10,10,5,5,60,-60,-100,100,0,0,-24,-24,0,0,105,105,-75,-75,0,0}};
+  fall_times_front = {40, 255}; // in degrees
+
+  fall_stiffness_front_map = {
+  {100,100,  100,100,100,100,  100,100,100,100, 20,20,20,20,20,20, 20,20,20,20,20,20, 30, 30, 30, 30},
+  { 30, 30,   15, 15, 15, 15,   15, 15, 15, 15, 20,20,20,20,20,20, 20,20,20,20,20,20, 30, 30, 30, 30},
+  {  0,  0,    0,  0,  0,  0,    0,  0,  0,  0,  0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0,  0,  0,  0,  0}};
+  fall_t_stiffness_front = {40, 70, 255};
+
+  fall_back_map = {
+  {29,0,-12,12,123,123,0,0,-17,17,0,0,-90,-90,0,0,105,105,-45,-45,0,0},
+  {29,0,-12,12,123,123,78,-78,-17,17,0,0,-90,-90,0,0,105,105,-45,-45,0,0}};
+  fall_times_back = {40, 255};
+
+  fall_stiffness_back_map = {
+  {100,100,  100,100,100,100,  100,100,100,100, 20,20,20,20,20,20, 20,20,20,20,20,20, 30, 30, 30, 30},
+  { 30, 30,   15, 15, 15, 15,   15, 15, 15, 15, 20,20,20,20,20,20, 20,20,20,20,20,20, 30, 30, 30, 30},
+  {  0,  0,    0,  0,  0,  0,    0,  0,  0,  0,  0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0,  0,  0,  0,  0}};
+  fall_t_stiffness_back = {40, 90, 255};
 }
+
 
 void FallMotion::execute() {
     t_since_fall_start += 1; // it is 0 in the first run because it is initialized with -1
-
     if(getMotionRequest().id != getId()) { // if requested id is not our id, then be done
-        // gradually restore hardness when done
-        if ( setStiffness(getMotorJointData(), getSensorJointData(), oldStiffness, stiffness_increase) ) {
-            // after code in if() stops/ is done/ reports true:
-            setCurrentState(motion::stopped);
+        if ( setStiffness(getMotorJointData(), getSensorJointData(), oldStiffness, stiffness_increase) ) { // gradually restore hardness when done
+            setCurrentState(motion::stopped); // runs after code in if() stops/ is done/ reports true
         }
-
         for (size_t i = 0; i < JointData::numOfJoint; i++) { // copy sensor positions
             getMotorJointData().position[i] = getSensorJointData().position[i];
         }
         return;
     }
-
-    else if( isStopped() ) { // executed (only?) the first time
+    else if( isStopped() ) {
       for (size_t i = 0; i < JointData::numOfJoint; i++) { // store hardness
           oldStiffness[i] = getSensorJointData().stiffness[i];
       }
     }
 
-    // todo: adjust fall down values in XABSL
-    //  else if(abs(value=sensor.inertial.y)>25 || abs(value=sensor.inertial.x)>20)
 
-    // todo: stiffness ready hack?
-
-    std::tuple<std::vector<int>, std::map<int, std::vector<double>>> map;
-    std::tuple<std::vector<int>, std::map<int, std::vector<double>>> stiffness_map;
-    if (getIMUData().rotation.y > Math::fromDegrees(10)){ // backwards
-      map = fall_back_map;
-      stiffness_map = fall_stiffness_back_map;
-    }
-    else if (getIMUData().rotation.y < Math::fromDegrees(-10)){ // forwards
-      map = fall_front_map;
-      stiffness_map = fall_stiffness_front_map;
-    }
-
-
-    if (abs(getIMUData().rotation.y) > 10) {
-      // to set joint data:
-      for (int i = 0; i < size(std::get<0>(map)); i++) { // runs once for every degree in the array of the tuple
-          if (abs(getIMUData().rotation.y) <= abs(std::get<0>(map)[i])) {
-              for (double j : std::get<1>(map)[i]) {
-                  getMotorJointData().position[JointData::getJointID(i)] = Math::fromDegrees(j);
-              }
-              break;
-          }
-      }
-      // to set stiffness data:
-      for (int i = 0; i < size(std::get<0>(stiffness_map)); i++) { // runs once for every degree in the array of the tuple
-          if (abs(getIMUData().rotation.y) <= abs(std::get<0>(stiffness_map)[i])) {
-              for (double j : std::get<1>(stiffness_map)[i]) {
-                  freeStiffness[JointData::getJointID(i)] = j;
-              }
-              break;
-          }
-      }
+    std::vector<std::vector<int>> map;
+    std::vector<std::vector<int>> stiffness_map;
+    std::vector<int> fall_times;
+    std::vector<int> fall_t_stiffness;
+    if (Math::toDegrees(InertialSensorData().data.y) > 0) { // check at each execution
+        map = fall_front_map;
+        stiffness_map = fall_stiffness_front_map;
+        fall_times = fall_times_front;
+        fall_t_stiffness = fall_t_stiffness_front;
+    } else { // backwards
+        map = fall_back_map;
+        stiffness_map = fall_stiffness_back_map;
+        fall_times = fall_times_back;
+        fall_t_stiffness = fall_t_stiffness_back;
     }
 
-//    setStiffness(getMotorJointData(), getSensorJointData(), freeStiffness, 10); // set joint free todo: what is this? was commented in
+
+    // to set joint data
+    for (int i = 0; i < size(fall_times); i++) {
+        if (abs(Math::toDegrees(InertialSensorData().data.y)) < fall_times[i]) {
+
+
+            for (int x : map[i]){
+                std::cerr << x << " ";
+            } std::cerr << "y-axis degree: " << Math::toDegrees(InertialSensorData().data.y) << "\n";
+
+
+            for (int j = 0; j < map[i].size(); j++) {
+                getMotorJointData().position[JointData::getJointID(j)] = Math::fromDegrees(map[i][j]);
+            }
+            break;
+        }
+    }
+
+
+    // to set stiffness data todo: DRY this?
+    for (int i = 0; i < size(fall_t_stiffness); i++) {
+        if ( abs(Math::toDegrees(InertialSensorData().data.y)) < fall_times[i]) {
+            for (int j = 0; j < stiffness_map[i].size(); j++) {
+                getMotorJointData().stiffness[JointData::getJointID(j)] = stiffness_map[i][j]/100.0;
+            }
+            break;
+        }
+    }
+
     setCurrentState(motion::running);
-} //end execute
+    // todo: stiffness ready hack?
+}

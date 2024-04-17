@@ -40,20 +40,21 @@ public:
 
 private:
   int t_since_fall_start;
-  std::tuple<std::vector<int>, std::map<int, std::vector<double>>>
-      fall_front_map;
-  std::tuple<std::vector<int>, std::map<int, std::vector<double>>>
-      fall_back_map;
-  std::tuple<std::vector<int>, std::map<int, std::vector<double>>>
-      fall_stiffness_front_map;
-  std::tuple<std::vector<int>, std::map<int, std::vector<double>>>
-      fall_stiffness_back_map;
-//  std::map<int, std::vector<double>> fall_front_map;
-//  std::map<int, std::vector<double>> fall_back_map;
+
+  std::vector<std::vector<int>> fall_front_map;
+  std::vector<std::vector<int>> fall_stiffness_front_map;
+  std::vector<int> fall_times_front;
+  std::vector<int> fall_t_stiffness_front;
+
+
+  std::vector<std::vector<int>> fall_back_map;
+  std::vector<std::vector<int>> fall_stiffness_back_map;
+  std::vector<int> fall_times_back;
+  std::vector<int> fall_t_stiffness_back;
+
   double stiffness_increase;
   double oldStiffness[naoth::JointData::numOfJoint]{};
   double freeStiffness[naoth::JointData::numOfJoint]{};
 };
 
 #endif  /* _DEADMOTION_H */
-
