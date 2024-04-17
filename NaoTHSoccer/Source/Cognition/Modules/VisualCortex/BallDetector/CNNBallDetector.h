@@ -102,6 +102,7 @@ public:
     // update selected classifier from parameters
     if(params.check_changed()) {
       setClassifier(params.classifier, params.classifierClose);
+      setDetector(params.detector, params.detectorClose);
     }
 
     getMultiBallPercept().reset();
@@ -158,11 +159,15 @@ private:
       PARAMETER_REGISTER(classifier) = "fy1500_conf";
       PARAMETER_REGISTER(classifierClose) = "fy1500_conf";
 
+      PARAMETER_REGISTER(detector) = "fy1500_conf";
+      PARAMETER_REGISTER(detectorClose) = "fy1500_conf";
+
       PARAMETER_REGISTER(brightnessMultiplierBottom) = 1.0;
       PARAMETER_REGISTER(brightnessMultiplierTop) = 1.0;
       PARAMETER_REGISTER(brightnessMultiplierTopDark) = 1.0;
       
       
+      syncWithConfig();
       syncWithConfig();
     }
 
@@ -190,6 +195,9 @@ private:
     std::string classifier;
     std::string classifierClose;
 
+    std::string detector;
+    std::string detectorClose;
+
     double brightnessMultiplierBottom;
     double brightnessMultiplierTop;
     double brightnessMultiplierTopDark;
@@ -199,9 +207,11 @@ private:
 private:
 
   std::shared_ptr<AbstractCNNFinder> currentCNN;
+  std::shared_ptr<AbstractCNNFinder> currentCNN_detector;
   std::string currentCNNName;
 
   std::shared_ptr<AbstractCNNFinder> currentCNNClose;
+  std::shared_ptr<AbstractCNNFinder> currentCNNClose_detector;
   std::string currentCNNCloseName;
 
   std::map<std::string, std::shared_ptr<AbstractCNNFinder> > cnnMap;
@@ -217,6 +227,7 @@ private:
   void addPatchByLastBall();
 
   void setClassifier(const std::string& name, const std::string& nameClose);
+  void setDetector(const std::string& name, const std::string& nameClose);
   std::map<std::string, std::shared_ptr<AbstractCNNFinder> > createCNNMap();
 
 

@@ -35,6 +35,7 @@ CNNBallDetector::CNNBallDetector()
 
   // initialize classifier selection
   setClassifier(params.classifier, params.classifierClose);
+  setDetector(params.detector, params.detectorClose);
 }
 
 CNNBallDetector::~CNNBallDetector()
@@ -118,6 +119,9 @@ std::map<string, std::shared_ptr<AbstractCNNFinder> > CNNBallDetector::createCNN
   result.insert({ "fdeep_fy1300", std::make_shared<FrugallyDeep>("fy1300.json", true, true, true)});
   result.insert({ "fdeep_fy1500", std::make_shared<FrugallyDeep>("fy1500.json", true, true, true)});
 
+  result.insert({ "naoth_classifier", std::make_shared<FrugallyDeep>("naoth_classifier.json", true, true, true)});
+  result.insert({ "naoth_detector", std::make_shared<FrugallyDeep>("naoth_detector.json", true, true, true)});
+  
   return result;
 }
 
@@ -135,6 +139,18 @@ std::map<string, std::shared_ptr<AbstractCNNFinder> > CNNBallDetector::createCNN
    }
  }
 
+ void CNNBallDetector::setDetector(const std::string& name, const std::string& nameClose) 
+ {
+   auto location = cnnMap.find(name);
+   if(location != cnnMap.end()) {
+     currentCNN_detector = location->second;
+   }
+
+   location = cnnMap.find(nameClose);
+   if(location != cnnMap.end()) {
+     currentCNNClose_detector = location->second;
+   }
+ }
 
 void CNNBallDetector::calculateCandidates()
 {
@@ -248,17 +264,20 @@ void CNNBallDetector::calculateCandidates()
       stopwatch.start();
 
       std::shared_ptr<AbstractCNNFinder> cnn = currentCNN;
+      std::shared_ptr<AbstractCNNFinder> cnn_detector = currentCNN_detector;
       if(patch.width() >= params.postMaxCloseSize) {
         cnn = currentCNNClose;
+        cnn_detector = currentCNNClose_detector;
       }
 
       STOPWATCH_START("CNNBallDetector:predict");
       cnn->predict(patch, params.cnn.meanBrightnessOffset);
+      cnn_detector->predict(patch, params.cnn.meanBrightnessOffset);
       STOPWATCH_STOP("CNNBallDetector:predict");
 
       bool found = false;
-      double radius = cnn->getRadius();
-      Vector2d pos = cnn->getCenter();
+      double radius = cnn_detector->getRadius();
+      Vector2d pos = cnn_detector->getCenter();
       if(cnn->getBallConfidence() >= selectedCNNThreshold && pos.x >= 0.0 && pos.y >= 0.0) {
         found = true;
       }
