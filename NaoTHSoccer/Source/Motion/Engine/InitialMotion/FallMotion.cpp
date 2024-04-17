@@ -108,9 +108,9 @@ void FallMotion::execute() {
         if (abs(Math::toDegrees(InertialSensorData().data.y)) < fall_times[i]) {
 
 
-            for (int x : map[i]){
-                std::cerr << x << " ";
-            } std::cerr << "y-axis degree: " << Math::toDegrees(InertialSensorData().data.y) << "\n";
+//            for (int x : map[i]){
+//                std::cerr << x << " ";
+//            } std::cerr << "y-axis degree: " << Math::toDegrees(InertialSensorData().data.y) << "\n";
 
 
             for (int j = 0; j < map[i].size(); j++) {
