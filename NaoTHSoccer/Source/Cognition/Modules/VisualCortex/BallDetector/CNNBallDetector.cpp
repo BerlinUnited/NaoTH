@@ -9,6 +9,7 @@
 #include "Classifier/FrugallyDeep.h"
 #include "Classifier/fy_1500_new2_new_dataset.h"
 #include "Classifier/mbc_gopen_56k.h"
+#include "Classifier/mbc_gopen_56k_ft.h"
 #include "Classifier/mbd_gopen_56k.h"
 
 using namespace std;
@@ -116,6 +117,7 @@ std::map<string, std::shared_ptr<AbstractCNNFinder> > CNNBallDetector::createCNN
   result.insert({ "model1", std::make_shared<Model1>() });
   result.insert({ "rc23v1", std::make_shared<fy_1500_new2_new_dataset>() });
   result.insert({ "mbc_gopen_56k", std::make_shared<mbc_gopen_56k>() });
+  result.insert({ "mbc_gopen_56k_ft", std::make_shared<mbc_gopen_56k_ft>() });
   result.insert({ "mbd_gopen_56k", std::make_shared<mbd_gopen_56k>() });
 
   result.insert({ "fdeep_fy1300", std::make_shared<FrugallyDeep>("fy1300.json", true, true, true)});
