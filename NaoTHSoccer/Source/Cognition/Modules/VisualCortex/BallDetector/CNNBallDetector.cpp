@@ -8,7 +8,8 @@
 #include "Classifier/Fy1500_Conf.h"
 #include "Classifier/FrugallyDeep.h"
 #include "Classifier/fy_1500_new2_new_dataset.h"
-#include "Classifier/mbc_gopen_wed.h"
+#include "Classifier/mbc_gopen_56k.h"
+#include "Classifier/mbd_gopen_56k.h"
 
 using namespace std;
 
@@ -114,13 +115,11 @@ std::map<string, std::shared_ptr<AbstractCNNFinder> > CNNBallDetector::createCNN
   result.insert({ "fy1500_conf", std::make_shared<Fy1500_Conf>() });
   result.insert({ "model1", std::make_shared<Model1>() });
   result.insert({ "rc23v1", std::make_shared<fy_1500_new2_new_dataset>() });
-  result.insert({ "mbc_gopen_wed", std::make_shared<mbc_gopen_wed>() });
+  result.insert({ "mbc_gopen_56k", std::make_shared<mbc_gopen_56k>() });
+  result.insert({ "mbd_gopen_56k", std::make_shared<mbd_gopen_56k>() });
 
   result.insert({ "fdeep_fy1300", std::make_shared<FrugallyDeep>("fy1300.json", true, true, true)});
   result.insert({ "fdeep_fy1500", std::make_shared<FrugallyDeep>("fy1500.json", true, true, true)});
-
-  result.insert({ "naoth_classifier", std::make_shared<FrugallyDeep>("naoth_classifier.json", true, true, true)});
-  result.insert({ "naoth_detector", std::make_shared<FrugallyDeep>("naoth_detector.json", true, true, true)});
   
   return result;
 }
