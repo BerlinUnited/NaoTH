@@ -14,16 +14,21 @@
 
 // representations
 #include <Representations/Infrastructure/RobotInfo.h>
+#include <Representations/Infrastructure/FrameInfo.h>
 #include "Representations/Motion/Request/MotionRequest.h"
 #include <Representations/Infrastructure/JointData.h>
+#include <Representations/Infrastructure/InertialSensorData.h>
 #include <Representations/Modeling/IMUData.h>
 
 
 BEGIN_DECLARE_MODULE(FallMotion)
+  REQUIRE(FrameInfo)
   REQUIRE(RobotInfo)
   REQUIRE(SensorJointData)
   REQUIRE(MotionRequest)
   REQUIRE(IMUData)
+  REQUIRE(InertialSensorData)
+
 
   PROVIDE(MotionLock)
   PROVIDE(MotorJointData)
@@ -39,18 +44,27 @@ public:
   void execute();
 
 private:
+  FrameInfo startTime;
   int t_since_fall_start;
 
-  std::vector<std::vector<int>> fall_front_map;
-  std::vector<std::vector<int>> fall_stiffness_front_map;
-  std::vector<int> fall_times_front;
-  std::vector<int> fall_t_stiffness_front;
+  // example
+  struct KeyFrame {
+    // can je angles or stiffness
+    std::vector<double> jointValues;
 
+    // until which 
+    double angleLimit;
+  };
 
-  std::vector<std::vector<int>> fall_back_map;
-  std::vector<std::vector<int>> fall_stiffness_back_map;
-  std::vector<int> fall_times_back;
-  std::vector<int> fall_t_stiffness_back;
+  std::vector<std::vector<double>> fall_front_map;
+  std::vector<std::vector<double>> fall_stiffness_front_map;
+  std::vector<double> fall_times_front;
+  std::vector<double> fall_t_stiffness_front;
+
+  std::vector<std::vector<double>> fall_back_map;
+  std::vector<std::vector<double>> fall_stiffness_back_map;
+  std::vector<double> fall_times_back;
+  std::vector<double> fall_t_stiffness_back;
 
   double stiffness_increase;
   double oldStiffness[naoth::JointData::numOfJoint]{};
