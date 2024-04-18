@@ -9,7 +9,6 @@
 #define _FALLMOTION_H
 
 #include "Motion/Engine/AbstractMotion.h"
-
 #include <ModuleFramework/Module.h>
 
 // representations
@@ -29,7 +28,6 @@ BEGIN_DECLARE_MODULE(FallMotion)
   REQUIRE(IMUData)
   REQUIRE(InertialSensorData)
 
-
   PROVIDE(MotionLock)
   PROVIDE(MotorJointData)
 END_DECLARE_MODULE(FallMotion)
@@ -45,30 +43,28 @@ public:
 
 private:
   FrameInfo startTime;
-  int t_since_fall_start;
 
-  // example
-  struct KeyFrame {
-    // can je angles or stiffness
-    std::vector<double> jointValues;
-
-    // until which 
-    double angleLimit;
+  struct keyFrame {
+      std::array<double, 22> jointValues;
+      std::array<double, 22> stiffnessValues;
+      double triggerMs;
+      double altTriggerGrad;
   };
 
-  std::vector<std::vector<double>> fall_front_map;
+/*  std::vector<std::vector<double>> fall_front_map;
   std::vector<std::vector<double>> fall_stiffness_front_map;
-  std::vector<double> fall_times_front;
+  std::array<double, 3> fall_times_front;
   std::vector<double> fall_t_stiffness_front;
 
   std::vector<std::vector<double>> fall_back_map;
   std::vector<std::vector<double>> fall_stiffness_back_map;
-  std::vector<double> fall_times_back;
-  std::vector<double> fall_t_stiffness_back;
+  std::array<double, 3> fall_times_back;
+  std::vector<double> fall_t_stiffness_back;*/
 
   double stiffness_increase;
   double oldStiffness[naoth::JointData::numOfJoint]{};
-  double freeStiffness[naoth::JointData::numOfJoint]{};
+  double oldJoints[naoth::JointData::numOfJoint]{};
+//  double freeStiffness[naoth::JointData::numOfJoint]{};
 };
 
-#endif  /* _DEADMOTION_H */
+#endif  /* _FALLMOTION_H */
