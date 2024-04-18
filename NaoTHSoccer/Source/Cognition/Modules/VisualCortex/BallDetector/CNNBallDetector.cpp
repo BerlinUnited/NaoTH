@@ -8,6 +8,9 @@
 #include "Classifier/Fy1500_Conf.h"
 #include "Classifier/FrugallyDeep.h"
 #include "Classifier/fy_1500_new2_new_dataset.h"
+#include "Classifier/mbc_gopen_56k.h"
+#include "Classifier/mbc_gopen_56k_ft.h"
+#include "Classifier/mbd_gopen_56k.h"
 
 using namespace std;
 
@@ -34,6 +37,7 @@ CNNBallDetector::CNNBallDetector()
 
   // initialize classifier selection
   setClassifier(params.classifier, params.classifierClose);
+  setDetector(params.detector, params.detectorClose);
 }
 
 CNNBallDetector::~CNNBallDetector()
@@ -112,10 +116,13 @@ std::map<string, std::shared_ptr<AbstractCNNFinder> > CNNBallDetector::createCNN
   result.insert({ "fy1500_conf", std::make_shared<Fy1500_Conf>() });
   result.insert({ "model1", std::make_shared<Model1>() });
   result.insert({ "rc23v1", std::make_shared<fy_1500_new2_new_dataset>() });
+  result.insert({ "mbc_gopen_56k", std::make_shared<mbc_gopen_56k>() });
+  result.insert({ "mbc_gopen_56k_ft", std::make_shared<mbc_gopen_56k_ft>() });
+  result.insert({ "mbd_gopen_56k", std::make_shared<mbd_gopen_56k>() });
 
   result.insert({ "fdeep_fy1300", std::make_shared<FrugallyDeep>("fy1300.json", true, true, true)});
   result.insert({ "fdeep_fy1500", std::make_shared<FrugallyDeep>("fy1500.json", true, true, true)});
-
+  
   return result;
 }
 
@@ -133,6 +140,18 @@ std::map<string, std::shared_ptr<AbstractCNNFinder> > CNNBallDetector::createCNN
    }
  }
 
+ void CNNBallDetector::setDetector(const std::string& name, const std::string& nameClose) 
+ {
+   auto location = cnnMap.find(name);
+   if(location != cnnMap.end()) {
+     currentCNN_detector = location->second;
+   }
+
+   location = cnnMap.find(nameClose);
+   if(location != cnnMap.end()) {
+     currentCNNClose_detector = location->second;
+   }
+ }
 
 void CNNBallDetector::calculateCandidates()
 {
@@ -246,17 +265,20 @@ void CNNBallDetector::calculateCandidates()
       stopwatch.start();
 
       std::shared_ptr<AbstractCNNFinder> cnn = currentCNN;
+      std::shared_ptr<AbstractCNNFinder> cnn_detector = currentCNN_detector;
       if(patch.width() >= params.postMaxCloseSize) {
         cnn = currentCNNClose;
+        cnn_detector = currentCNNClose_detector;
       }
 
       STOPWATCH_START("CNNBallDetector:predict");
       cnn->predict(patch, params.cnn.meanBrightnessOffset);
+      cnn_detector->predict(patch, params.cnn.meanBrightnessOffset);
       STOPWATCH_STOP("CNNBallDetector:predict");
 
       bool found = false;
-      double radius = cnn->getRadius();
-      Vector2d pos = cnn->getCenter();
+      double radius = cnn_detector->getRadius();
+      Vector2d pos = cnn_detector->getCenter();
       if(cnn->getBallConfidence() >= selectedCNNThreshold && pos.x >= 0.0 && pos.y >= 0.0) {
         found = true;
       }
