@@ -91,23 +91,40 @@ void StandMotion::execute()
       lastState = state;
 
       // set target stiffness from parameters
-      setStiffnessBuffer(getEngine().getParameters().stand.stiffnessGotoPose);
+      if(getMotionStatus().lastMotion == motion::walk) {
+        // use the same stiffness as walk if the stop happens within the walk cycle to minimize transition times
+        setStiffnessBuffer(getWalk2018Parameters().generalParams.stiffness);
+      } else {
+        // use dedicated stand stiffness, e.g., if stand is executed after standing up or initial motion
+        setStiffnessBuffer(getEngine().getParameters().stand.stiffnessGotoPose);
+      }
 
+      // Apply the stiffness immediately
+      stiffnessIsReady = setStiffness(
+        getMotorJointData(), getSensorJointData(), stiffness, -1, 
+        naoth::JointData::RHipYawPitch, naoth::JointData::LWristYaw);
+
+      // compute the target stand pose
       calcStandPose(fullCorrection);
-
-      stiffnessIsReady = false;
     }
 
-    bool d = interpolateToPose();
+    // only move to the pose when the stiffness is ready,
+    // otherwise the joints might be to weak to execute the motion 
+    // and the robot might become unstable
+    bool poseReached = false;
+    if (stiffnessIsReady) {
+      poseReached = interpolateToPose();
+    }
+    
     PLOT("StandMotion:stiffnessIsReady",stiffnessIsReady);
-    PLOT("StandMotion:interpolateToPose",d);
+    PLOT("StandMotion:interpolateToPose",poseReached);
 
-    if(stiffnessIsReady && d) 
+    if(stiffnessIsReady && poseReached) 
     {
       getMotionStatus().target_reached = true;
       if(getMotionRequest().id != getId())
       {
-        // NOTE: this is the opnly place where the stand motion can exit
+        // NOTE: this is the only place where the stand motion can exit
         setCurrentState(motion::stopped);
         getMotionStatus().target_reached = false;
       }
@@ -120,18 +137,19 @@ void StandMotion::execute()
         state = Relax;
       }
     }
-  }
-  break;
+  } break; // END STATE GotoStandPose
 
   case Relax:
-
+  {
     // initialize relax on fist execution
     if(lastState != state) 
     {
       lastState = state;
 
-      // set target stiffness from parameters
-      setStiffnessBuffer(getEngine().getParameters().stand.stiffnessRelax);
+      // set target stiffness from parameters (only if requested)
+      if(getMotionRequest().standRelaxStiffness) {
+        setStiffnessBuffer(getEngine().getParameters().stand.stiffnessRelax);
+      }
 
       // move to the pose that is measured by our sensors = relax :)
       startPose = targetPose;
@@ -141,7 +159,7 @@ void StandMotion::execute()
 
       // reset stuff for StandMotion:online_tuning
       jointOffsets.resetOffsets();
-      for(int i = 0; i < naoth::JointData::numOfJoint; i++){
+      for(int i = 0; i < naoth::JointData::numOfJoint; i++) {
         jointMonitors[i].resetAll();
       }
     }
@@ -149,11 +167,12 @@ void StandMotion::execute()
     // run adjustments after the relaxed pose had been reached
     if(interpolateToPose()) 
     {
-      if(getEngine().getParameters().stand.relax.jointOffsetTuning.enable){
+      if(getEngine().getParameters().stand.relax.jointOffsetTuning.enable) {
         tuneJointOffsets();
       }
 
-      if(getEngine().getParameters().stand.relax.stiffnessControl.enable){
+      // only relax stiffness if it's requested
+      if(getEngine().getParameters().stand.relax.stiffnessControl.enable && getMotionRequest().standRelaxStiffness) {
         tuneStiffness();
       }
 
@@ -166,8 +185,14 @@ void StandMotion::execute()
         state = GotoStandPose;
       } 
     }
-    
-    break;
+
+    // gradually apply stiffness from buffer
+    stiffnessIsReady = setStiffness(
+      getMotorJointData(), getSensorJointData(), stiffness, stiffDelta, 
+      naoth::JointData::RHipYawPitch, naoth::JointData::LWristYaw);
+  
+  } break; // END STATE Relax
+  
 
   default:
     THROW("[StandMotion] unexpected (state, lastState) = (" << state << ", " << lastState);
@@ -185,7 +210,7 @@ void StandMotion::execute()
   for( int i = naoth::JointData::RShoulderRoll; i < naoth::JointData::numOfJoint; i++) {
     getMotorJointData().stiffness[i] = stiffness[i];
   }*/
-  stiffnessIsReady = setStiffness(getMotorJointData(), getSensorJointData(), stiffness, stiffDelta, naoth::JointData::RHipYawPitch, naoth::JointData::LWristYaw);
+  //stiffnessIsReady = setStiffness(getMotorJointData(), getSensorJointData(), stiffness, stiffDelta, naoth::JointData::RHipYawPitch, naoth::JointData::LWristYaw);
 
   //turnOffStiffnessWhenJointIsOutOfRange();
 
@@ -194,7 +219,7 @@ void StandMotion::execute()
 
 void StandMotion::setStiffnessBuffer(double s)
 {
-  for( int i = naoth::JointData::RShoulderRoll; i<naoth::JointData::numOfJoint; i++) {
+  for( int i = naoth::JointData::RShoulderRoll; i < naoth::JointData::numOfJoint; i++) {
     stiffness[i] = s;
   }
   // HACK: turn off the hands
@@ -259,7 +284,7 @@ void StandMotion::calcStandPose(bool fullCorrection)
     (targetPose.feet.right.translation - startPose.feet.right.translation).abs()
   );
   
-  double distMax = std::max(std::max(distLeft,distRight),distCom);
+  const double distMax = std::max(std::max(distLeft,distRight),distCom);
 
   // initialize the time
   double speed = getEngine().getParameters().stand.speed;
@@ -273,6 +298,7 @@ bool StandMotion::interpolateToPose()
 {
   PLOT("StandMotion:totalTime", totalTime);
   PLOT("StandMotion:time", time);
+
   // execute the stand motion
   if(totalTime >= 0 && time <= totalTime)
   {

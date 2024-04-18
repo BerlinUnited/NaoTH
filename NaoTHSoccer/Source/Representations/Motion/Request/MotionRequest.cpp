@@ -18,6 +18,7 @@ void Serializer<MotionRequest>::serialize(const MotionRequest& representation, s
   message.set_cognitionframenumber(representation.cognitionFrameNumber);
   message.set_starndardstand(representation.standardStand);
   message.set_disable_relaxed_stand(representation.disable_relaxed_stand);
+  message.set_standrelaxstiffness(representation.standRelaxStiffness);
   message.set_calibratefoottouchdetector(representation.calibrateFootTouchDetector);
   switch (representation.id)
   {
@@ -50,36 +51,39 @@ void Serializer<MotionRequest>::deserialize(std::istream& stream, MotionRequest&
   message.ParseFromZeroCopyStream(&buf);
 
   representation.id = static_cast<motion::MotionID>(message.id());
-  representation.forced = message.forced();
   representation.time = message.time();
-  representation.standardStand = message.starndardstand();
-  representation.disable_relaxed_stand = message.disable_relaxed_stand();
-  if(message.has_calibratefoottouchdetector())
-  {
+  representation.forced = message.forced();
+  
+  // optional parameters
+  if(message.has_starndardstand()) {
+    representation.standardStand = message.starndardstand();
+  }
+  if(message.has_calibratefoottouchdetector()) {
     representation.calibrateFootTouchDetector = message.calibratefoottouchdetector();
   }
-  if ( message.has_walkrequest() )
-  {
+  if ( message.has_walkrequest() ) {
     Serializer<WalkRequest>::deserialize(&(message.walkrequest()), representation.walkRequest);
   }
-  if ( message.has_kickrequest() )
-  {
+  if ( message.has_kickrequest() ) {
     Serializer<KickRequest>::deserialize(&(message.kickrequest()), representation.kickRequest);
   }
-  if ( message.has_standheight() )
-  {
+  if ( message.has_standheight() ) {
     representation.standHeight = message.standheight();
   }
-  if(message.has_cognitionframenumber())
-  {
+  if(message.has_cognitionframenumber()) {
     representation.cognitionFrameNumber = message.cognitionframenumber();
   }
-  if(message.has_grasprequest())
-  {
+  if(message.has_grasprequest()) {
     Serializer<GraspRequest>::deserialize(&(message.grasprequest()), representation.graspRequest);
   }
-  if(message.has_armmotionrequest())
-  {
+  if(message.has_armmotionrequest()) {
     Serializer<ArmMotionRequest>::deserialize(&(message.armmotionrequest()), representation.armMotionRequest);
   }
+  if(message.has_disable_relaxed_stand()) {
+    representation.disable_relaxed_stand = message.disable_relaxed_stand();
+  }
+  if(message.has_standrelaxstiffness()) {
+    representation.standRelaxStiffness = message.standrelaxstiffness();
+  }
+
 }

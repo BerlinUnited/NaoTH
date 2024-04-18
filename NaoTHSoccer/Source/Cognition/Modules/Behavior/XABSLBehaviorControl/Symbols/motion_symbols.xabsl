@@ -151,10 +151,17 @@ namespace motion_symbols("Motion Symbols") {
   /** Should the robot keep the standard stand pose or not after walking. */
   bool output motion.walk.stop_with_stand;
 
-  /* the height of stand motion, -1 means the same height as walk */
+  /** the height of stand motion, -1 means the same height as walk */
   float output motion.standHeight;
 
+  /** disable all relax algorithms */
   bool output motion.stand.disable_relax;
+
+  /** 
+  * Enable stiffness relaxation. 
+  * ACHTUNG: Might introduce a delay when switching from stand to walk. 
+  */
+  bool output motion.stand.relax_stiffness;
 
   /** The walk coordinate */
   enum motion.walk.coordinate output motion.walk.coordinate;

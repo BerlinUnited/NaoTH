@@ -35,7 +35,8 @@ public:
     standHeight(-1),
     calibrateFootTouchDetector(false),
     standardStand(true),
-    disable_relaxed_stand(false)
+    disable_relaxed_stand(false),
+    standRelaxStiffness(true)
   {
   }
 
@@ -62,8 +63,14 @@ public:
   // perform calibration of the parameters for the foot touch detection
   bool calibrateFootTouchDetector;
 
+  // TODO: maybe we need a StandRequest class for stand parameters
   // go to stand after the end of the motion (is it correct?)
   bool standardStand;
+  // Relaxing stiffness might result to a delay when leaving stand motion (e.g. to walk) 
+  // because the stifness is increased gradually.
+  bool standRelaxStiffness;
+  // TODO: rename it
+  // this disables all relaxing mechanisms
   bool disable_relaxed_stand;
 
   /** special parameters if kick is requested */
@@ -89,6 +96,7 @@ public:
     calibrateFootTouchDetector = false;
     standardStand = true;
     disable_relaxed_stand = false;
+    standRelaxStiffness = true;
 
     // reset by creating new once
     kickRequest = KickRequest();

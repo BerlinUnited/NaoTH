@@ -68,11 +68,17 @@ option decide_game_state
     {
       game.current_mode = playing;
       motion.type = stand;
+      // disable stiffness relaxation while playing 
+      // for faster switching between stand and walk 
+      motion.stand.relax_stiffness = false;
+      
       //arm.control_mode = back;
       arm.react_to_collision = true;
       arm.control_mode = synchronised_with_walk;
+      
       head.control_mode = stay_as_forced;
       audio.capture = false;  //whistledetector off
+      
       treat_lifted();
       fall_down_and_stand_up();
       //achtung: don't set false

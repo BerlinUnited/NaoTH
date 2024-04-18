@@ -113,6 +113,7 @@ void MotionSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalOutputSymbol("motion.standHeight",&getMotionRequest().standHeight);
 
   engine.registerBooleanOutputSymbol("motion.stand.disable_relax", &getMotionRequest().disable_relaxed_stand);
+  engine.registerBooleanOutputSymbol("motion.stand.relax_stiffness", &getMotionRequest().standRelaxStiffness);
 
   // step control
   for(int i = 0; i <= none; i++)

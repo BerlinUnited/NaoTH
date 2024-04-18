@@ -17640,6 +17640,15 @@ public final class Representations {
      * <code>optional bool disable_relaxed_stand = 12;</code>
      */
     boolean getDisableRelaxedStand();
+
+    /**
+     * <code>optional bool standRelaxStiffness = 13;</code>
+     */
+    boolean hasStandRelaxStiffness();
+    /**
+     * <code>optional bool standRelaxStiffness = 13;</code>
+     */
+    boolean getStandRelaxStiffness();
   }
   /**
    * Protobuf type {@code naothmessages.MotionRequest}
@@ -17662,6 +17671,7 @@ public final class Representations {
       calibrateFootTouchDetector_ = false;
       cognitionFrameNumber_ = 0;
       disableRelaxedStand_ = false;
+      standRelaxStiffness_ = false;
     }
 
     @java.lang.Override
@@ -17782,6 +17792,11 @@ public final class Representations {
             case 96: {
               bitField0_ |= 0x00000800;
               disableRelaxedStand_ = input.readBool();
+              break;
+            }
+            case 104: {
+              bitField0_ |= 0x00001000;
+              standRelaxStiffness_ = input.readBool();
               break;
             }
           }
@@ -18013,6 +18028,21 @@ public final class Representations {
       return disableRelaxedStand_;
     }
 
+    public static final int STANDRELAXSTIFFNESS_FIELD_NUMBER = 13;
+    private boolean standRelaxStiffness_;
+    /**
+     * <code>optional bool standRelaxStiffness = 13;</code>
+     */
+    public boolean hasStandRelaxStiffness() {
+      return ((bitField0_ & 0x00001000) == 0x00001000);
+    }
+    /**
+     * <code>optional bool standRelaxStiffness = 13;</code>
+     */
+    public boolean getStandRelaxStiffness() {
+      return standRelaxStiffness_;
+    }
+
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
@@ -18097,6 +18127,9 @@ public final class Representations {
       if (((bitField0_ & 0x00000800) == 0x00000800)) {
         output.writeBool(12, disableRelaxedStand_);
       }
+      if (((bitField0_ & 0x00001000) == 0x00001000)) {
+        output.writeBool(13, standRelaxStiffness_);
+      }
       unknownFields.writeTo(output);
     }
 
@@ -18152,6 +18185,10 @@ public final class Representations {
       if (((bitField0_ & 0x00000800) == 0x00000800)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBoolSize(12, disableRelaxedStand_);
+      }
+      if (((bitField0_ & 0x00001000) == 0x00001000)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(13, standRelaxStiffness_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -18231,6 +18268,11 @@ public final class Representations {
         result = result && (getDisableRelaxedStand()
             == other.getDisableRelaxedStand());
       }
+      result = result && (hasStandRelaxStiffness() == other.hasStandRelaxStiffness());
+      if (hasStandRelaxStiffness()) {
+        result = result && (getStandRelaxStiffness()
+            == other.getStandRelaxStiffness());
+      }
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -18294,6 +18336,11 @@ public final class Representations {
         hash = (37 * hash) + DISABLE_RELAXED_STAND_FIELD_NUMBER;
         hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
             getDisableRelaxedStand());
+      }
+      if (hasStandRelaxStiffness()) {
+        hash = (37 * hash) + STANDRELAXSTIFFNESS_FIELD_NUMBER;
+        hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+            getStandRelaxStiffness());
       }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
@@ -18468,6 +18515,8 @@ public final class Representations {
         bitField0_ = (bitField0_ & ~0x00000400);
         disableRelaxedStand_ = false;
         bitField0_ = (bitField0_ & ~0x00000800);
+        standRelaxStiffness_ = false;
+        bitField0_ = (bitField0_ & ~0x00001000);
         return this;
       }
 
@@ -18556,6 +18605,10 @@ public final class Representations {
           to_bitField0_ |= 0x00000800;
         }
         result.disableRelaxedStand_ = disableRelaxedStand_;
+        if (((from_bitField0_ & 0x00001000) == 0x00001000)) {
+          to_bitField0_ |= 0x00001000;
+        }
+        result.standRelaxStiffness_ = standRelaxStiffness_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -18633,6 +18686,9 @@ public final class Representations {
         }
         if (other.hasDisableRelaxedStand()) {
           setDisableRelaxedStand(other.getDisableRelaxedStand());
+        }
+        if (other.hasStandRelaxStiffness()) {
+          setStandRelaxStiffness(other.getStandRelaxStiffness());
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -19415,6 +19471,38 @@ public final class Representations {
       public Builder clearDisableRelaxedStand() {
         bitField0_ = (bitField0_ & ~0x00000800);
         disableRelaxedStand_ = false;
+        onChanged();
+        return this;
+      }
+
+      private boolean standRelaxStiffness_ ;
+      /**
+       * <code>optional bool standRelaxStiffness = 13;</code>
+       */
+      public boolean hasStandRelaxStiffness() {
+        return ((bitField0_ & 0x00001000) == 0x00001000);
+      }
+      /**
+       * <code>optional bool standRelaxStiffness = 13;</code>
+       */
+      public boolean getStandRelaxStiffness() {
+        return standRelaxStiffness_;
+      }
+      /**
+       * <code>optional bool standRelaxStiffness = 13;</code>
+       */
+      public Builder setStandRelaxStiffness(boolean value) {
+        bitField0_ |= 0x00001000;
+        standRelaxStiffness_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional bool standRelaxStiffness = 13;</code>
+       */
+      public Builder clearStandRelaxStiffness() {
+        bitField0_ = (bitField0_ & ~0x00001000);
+        standRelaxStiffness_ = false;
         onChanged();
         return this;
       }
@@ -58163,7 +58251,7 @@ public final class Representations {
       "tiffness\030\007 \001(\0132\034.naothmessages.DoubleVec" +
       "tor2\0224\n\016rElbowPosition\030\010 \001(\0132\034.naothmess" +
       "ages.DoubleVector2\0225\n\017rElbowStiffness\030\t " +
-      "\001(\0132\034.naothmessages.DoubleVector2\"\227\003\n\rMo" +
+      "\001(\0132\034.naothmessages.DoubleVector2\"\264\003\n\rMo" +
       "tionRequest\022\n\n\002id\030\001 \002(\r\022\014\n\004time\030\002 \002(\r\022\016\n" +
       "\006forced\030\003 \002(\010\022/\n\013walkRequest\030\004 \001(\0132\032.nao",
       "thmessages.WalkRequest\022\026\n\016starndardStand" +
@@ -58174,165 +58262,166 @@ public final class Representations {
       " \001(\0132\033.naothmessages.GraspRequest\0229\n\020arm" +
       "MotionRequest\030\013 \001(\0132\037.naothmessages.ArmM" +
       "otionRequest\022\035\n\025disable_relaxed_stand\030\014 " +
-      "\001(\010\"\232\006\n\013LinePercept\022:\n\005lines\030\001 \003(\0132+.nao" +
-      "thmessages.LinePercept.FieldLineSegment\022",
-      ">\n\rintersections\030\002 \003(\0132\'.naothmessages.L" +
-      "inePercept.Intersection\0228\n\022middleCircleC" +
-      "enter\030\003 \001(\0132\034.naothmessages.DoubleVector" +
-      "2\032\353\002\n\014Intersection\0220\n\nposInImage\030\001 \001(\0132\034" +
-      ".naothmessages.DoubleVector2\0220\n\nposOnFie" +
-      "ld\030\002 \001(\0132\034.naothmessages.DoubleVector2\022F" +
-      "\n\004type\030\003 \001(\01628.naothmessages.LinePercept" +
-      ".Intersection.IntersectionType\022\027\n\017segmen" +
-      "tOneIndex\030\006 \001(\r\022\027\n\017segmentTwoIndex\030\007 \001(\r" +
-      "\022\032\n\022segmentOneDistance\030\010 \001(\001\022\032\n\022segmentT",
-      "woDistance\030\t \001(\001\"E\n\020IntersectionType\022\013\n\007" +
-      "unknown\020\000\022\005\n\001T\020\001\022\005\n\001L\020\002\022\005\n\001C\020\003\022\010\n\004none\020\004" +
-      "\022\005\n\001X\020\005\032\346\001\n\020FieldLineSegment\022/\n\013lineInIm" +
-      "age\030\001 \001(\0132\032.naothmessages.LineSegment\022/\n" +
-      "\013lineOnField\030\002 \001(\0132\032.naothmessages.LineS" +
-      "egment\022\030\n\020beginExtendCount\030\003 \001(\005\022\026\n\016endE" +
-      "xtendCount\030\004 \001(\005\022\021\n\tthickness\030\005 \001(\001\022\r\n\005s" +
-      "lope\030\006 \001(\001\022\r\n\005angle\030\007 \001(\001\022\r\n\005valid\030\010 \001(\010" +
-      "\"I\n\020ShortLinePercept\0225\n\021fieldLineSegment" +
-      "s\030\001 \003(\0132\032.naothmessages.LineSegment\"4\n\007P",
-      "olygon\022)\n\006points\030\001 \003(\0132\031.naothmessages.I" +
-      "ntVector2\"9\n\014FieldPercept\022)\n\tfieldPoly\030\001" +
-      " \002(\0132\026.naothmessages.Polygon\"J\n\021RansacLi" +
-      "nePercept\0225\n\021fieldLineSegments\030\001 \003(\0132\032.n" +
-      "aothmessages.LineSegment\"d\n\027RansacCircle" +
-      "Percept2018\022\017\n\007wasSeen\030\001 \001(\010\0228\n\022middleCi" +
-      "rcleCenter\030\002 \001(\0132\034.naothmessages.DoubleV" +
-      "ector2\"\254\001\n\020ScanLineEndPoint\022-\n\nposInImag" +
-      "e\030\001 \002(\0132\031.naothmessages.IntVector2\0220\n\npo" +
-      "sOnField\030\002 \002(\0132\034.naothmessages.DoubleVec",
-      "tor2\022#\n\005color\030\003 \002(\0162\024.naothmessages.Colo" +
-      "r\022\022\n\nScanLineID\030\004 \002(\r\"k\n\013DoubleEdgel\022+\n\005" +
-      "point\030\001 \002(\0132\034.naothmessages.DoubleVector" +
-      "2\022/\n\tdirection\030\002 \002(\0132\034.naothmessages.Dou" +
-      "bleVector2\"b\n\005Edgel\022(\n\005point\030\001 \002(\0132\031.nao" +
-      "thmessages.IntVector2\022/\n\tdirection\030\002 \002(\013" +
-      "2\034.naothmessages.DoubleVector2\"E\n\tEdgelP" +
-      "air\022\r\n\005begin\030\001 \002(\005\022\013\n\003end\030\002 \002(\005\022\n\n\002id\030\003 " +
-      "\002(\005\022\020\n\010adaptive\030\004 \001(\010\"\231\001\n\024ScanLineEdgelP" +
-      "ercept\022$\n\006edgels\030\001 \003(\0132\024.naothmessages.E",
-      "dgel\022\'\n\005pairs\030\003 \003(\0132\030.naothmessages.Edge" +
-      "lPair\0222\n\tendPoints\030\002 \003(\0132\037.naothmessages" +
-      ".ScanLineEndPoint\"\250\001\n\020LineGraphPercept\022+" +
-      "\n\redgelsOnField\030\001 \003(\0132\024.naothmessages.Ed" +
-      "gel\0224\n\020edgelsInImageTop\030\002 \003(\0132\032.naothmes" +
-      "sages.DoubleEdgel\0221\n\redgelsInImage\030\003 \003(\013" +
-      "2\032.naothmessages.DoubleEdgel\"P\n\021StepCont" +
-      "rolStatus\022\016\n\006stepID\030\001 \002(\r\022\024\n\014moveableFoo" +
-      "t\030\002 \002(\r\022\025\n\rstepRequestID\030\003 \002(\r\"\322\003\n\014Motio" +
-      "nStatus\022\014\n\004time\030\001 \002(\r\022\022\n\nlastMotion\030\002 \002(",
-      "\r\022\025\n\rcurrentMotion\030\003 \002(\r\022\022\n\nheadMotion\030\004" +
-      " \002(\r\022\032\n\022currentMotionState\030\005 \002(\r\0224\n\025plan" +
-      "nedMotionLeftFoot\030\006 \002(\0132\025.naothmessages." +
-      "Pose2D\0225\n\026plannedMotionRightFoot\030\007 \002(\0132\025" +
-      ".naothmessages.Pose2D\022/\n\020plannedMotionHi" +
-      "p\030\010 \002(\0132\025.naothmessages.Pose2D\022;\n\021stepCo" +
-      "ntrolStatus\030\t \001(\0132 .naothmessages.StepCo" +
-      "ntrolStatus\022\026\n\016target_reached\030\n \001(\010\022\033\n\023h" +
-      "ead_target_reached\030\013 \001(\010\022\026\n\016head_got_stu" +
-      "ck\030\014 \001(\010\022\033\n\023walk_emergency_stop\030\r \001(\010\022\024\n",
-      "\014head_at_rest\030\016 \001(\010\"3\n\014OdometryData\022#\n\004p" +
-      "ose\030\001 \002(\0132\025.naothmessages.Pose2D\"\037\n\tBody" +
-      "State\022\022\n\nisLiftedUp\030\001 \001(\010\"3\n\nBodyStatus\022" +
-      "\022\n\ncurrentSum\030\001 \003(\001\022\021\n\ttimestamp\030\003 \002(\r\"\320" +
-      "\001\n\017CalibrationData\022:\n\024inertialSensorOffs" +
-      "et\030\001 \001(\0132\034.naothmessages.DoubleVector2\0226" +
-      "\n\020gyroSensorOffset\030\005 \001(\0132\034.naothmessages" +
-      ".DoubleVector3\0225\n\017accSensorOffset\030\003 \001(\0132" +
-      "\034.naothmessages.DoubleVector3\022\022\n\ncalibra" +
-      "ted\030\004 \002(\010\"B\n\rInertialModel\0221\n\013orientatio",
-      "n\030\001 \001(\0132\034.naothmessages.DoubleVector2\"\210\002" +
-      "\n\027CameraMatrixCalibration\022:\n\020correctionO" +
-      "ffset\030\001 \003(\0132\034.naothmessages.DoubleVector" +
-      "2B\002\030\001\022:\n\024correctionOffsetBody\030\002 \001(\0132\034.na" +
-      "othmessages.DoubleVector2\022:\n\024correctionO" +
-      "ffsetHead\030\003 \001(\0132\034.naothmessages.DoubleVe" +
-      "ctor3\0229\n\023correctionOffsetCam\030\004 \003(\0132\034.nao" +
-      "thmessages.DoubleVector3\"\213\002\n\016BallCandida" +
-      "tes\0224\n\007patches\030\001 \003(\0132#.naothmessages.Bal" +
-      "lCandidates.Patch\032\302\001\n\005Patch\022&\n\003min\030\001 \002(\013",
-      "2\031.naothmessages.IntVector2\022&\n\003max\030\002 \002(\013" +
-      "2\031.naothmessages.IntVector2\0229\n\004type\030\003 \001(" +
-      "\0162(.naothmessages.BallCandidates.Patch.T" +
-      "ype:\001Y\022\014\n\004data\030\005 \002(\014\" \n\004Type\022\005\n\001Y\020\000\022\007\n\003Y" +
-      "UV\020\001\022\010\n\004YUVC\020\002\"\371\003\n\024RemoteControlCommand\022" +
-      "D\n\013controlMode\030\001 \001(\0162/.naothmessages.Rem" +
-      "oteControlCommand.ControlMode\022>\n\006action\030" +
-      "\002 \001(\0162..naothmessages.RemoteControlComma" +
-      "nd.ActionType\022K\n\rsecond_action\030\003 \001(\01624.n" +
-      "aothmessages.RemoteControlCommand.Second",
-      "ActionType\022%\n\006target\030\004 \001(\0132\025.naothmessag" +
-      "es.Pose2D\"3\n\013ControlMode\022\022\n\016DIRECT_CONTR" +
-      "OL\020\000\022\020\n\014LOCK_CONTROL\020\001\"y\n\nActionType\022\010\n\004" +
-      "NONE\020\000\022\t\n\005STAND\020\001\022\010\n\004WALK\020\002\022\016\n\nKICK_RIGH" +
-      "T\020\003\022\r\n\tKICK_LEFT\020\004\022\025\n\021KICK_FORWARD_LEFT\020" +
-      "\005\022\026\n\022KICK_FORWARD_RIGHT\020\006\"7\n\020SecondActio" +
-      "nType\022\017\n\013SECOND_NONE\020\000\022\t\n\005BLINK\020\001\022\007\n\003SAY" +
-      "\020\002\"\257\001\n\022GroundContactModel\022\031\n\021leftGroundC" +
-      "ontact\030\001 \002(\010\022\032\n\022rightGroundContact\030\002 \002(\010" +
-      "\022;\n\013supportFoot\030\003 \002(\0162&.naothmessages.Gr",
-      "oundContactModel.Foot\"%\n\004Foot\022\010\n\004LEFT\020\000\022" +
-      "\t\n\005RIGHT\020\001\022\010\n\004NONE\020\002\"\325\001\n\020CollisionPercep" +
-      "t\022\034\n\024timeCollisionArmLeft\030\001 \002(\r\022\035\n\025timeC" +
-      "ollisionArmRight\030\002 \002(\r\022\035\n\025isCollisionLef" +
-      "tBumper\030\003 \002(\010\022\036\n\026isCollisionRightBumper\030" +
-      "\004 \002(\010\022!\n\031lastComputedCollisionLeft\030\005 \002(\001" +
-      "\022\"\n\032lastComputedCollisionRight\030\006 \002(\001\"\212\004\n" +
-      "\007IMUData\022.\n\010location\030\001 \002(\0132\034.naothmessag" +
-      "es.DoubleVector3\022.\n\010velocity\030\002 \002(\0132\034.nao" +
-      "thmessages.DoubleVector3\0222\n\014acceleration",
-      "\030\003 \002(\0132\034.naothmessages.DoubleVector3\0229\n\023" +
-      "acceleration_sensor\030\004 \001(\0132\034.naothmessage" +
-      "s.DoubleVector3\022.\n\010rotation\030\005 \002(\0132\034.naot" +
-      "hmessages.DoubleVector3\0229\n\023rotational_ve" +
-      "locity\030\006 \002(\0132\034.naothmessages.DoubleVecto" +
-      "r3\022@\n\032rotational_velocity_sensor\030\007 \001(\0132\034" +
-      ".naothmessages.DoubleVector3\0221\n\013orientat" +
-      "ion\030\010 \002(\0132\034.naothmessages.DoubleVector2\022" +
-      "8\n\022orientation_rotvec\030\t \002(\0132\034.naothmessa" +
-      "ges.DoubleVector3\022\026\n\016has_been_reset\030\n \001(",
-      "\010\"\316\003\n\020CentreOfPressure\022?\n\031in_and_only_le" +
-      "ft_foot_cop\030\001 \002(\0132\034.naothmessages.Double" +
-      "Vector3\022\'\n\037in_and_only_left_foot_magnitu" +
-      "de\030\002 \002(\001\022#\n\033in_and_only_left_foot_valid\030" +
-      "\003 \002(\010\022@\n\032in_and_only_right_foot_cop\030\004 \002(" +
-      "\0132\034.naothmessages.DoubleVector3\022(\n in_an" +
-      "d_only_right_foot_magnitude\030\005 \002(\001\022$\n\034in_" +
-      "and_only_right_foot_valid\030\006 \002(\010\022C\n\035in_ki" +
-      "nematic_chain_origin_cop\030\007 \002(\0132\034.naothme" +
-      "ssages.DoubleVector3\022+\n#in_kinematic_cha",
-      "in_origin_magnitude\030\010 \002(\001\022\'\n\037in_kinemati" +
-      "c_chain_origin_valid\030\t \002(\010\"\215\003\n\022Calibrati" +
-      "onDataCMC\022R\n\017calibrationData\030\001 \003(\01329.nao" +
-      "thmessages.CalibrationDataCMC.Calibratio" +
-      "nDataSampleV3\022\031\n\021numberOfResudials\030\002 \001(\r" +
-      "\032\207\002\n\027CalibrationDataSampleV3\022(\n\tchestPos" +
-      "e\030\001 \001(\0132\025.naothmessages.Pose3D\0223\n\redgels" +
-      "InImage\030\002 \003(\0132\034.naothmessages.DoubleVect" +
-      "or2\0226\n\020edgelsInImageTop\030\003 \003(\0132\034.naothmes" +
-      "sages.DoubleVector2\0221\n\013orientation\030\004 \001(\013",
-      "2\034.naothmessages.DoubleVector2\022\017\n\007headYa" +
-      "w\030\005 \001(\001\022\021\n\theadPitch\030\006 \001(\001\"\356\001\n\016WhistlePe" +
-      "rcept\022 \n\030frameWhenWhistleDetected\030\001 \001(\r\022" +
-      "\023\n\013captureFile\030\002 \001(\t\022A\n\022recognizedWhistl" +
-      "es\030\003 \003(\0132%.naothmessages.WhistlePercept." +
-      "Whistle\022\027\n\017whistleDetected\030\004 \001(\010\032I\n\007Whis" +
-      "tle\022\014\n\004name\030\001 \002(\t\022\031\n\021positionInCapture\030\002" +
-      " \002(\003\022\025\n\rresponseValue\030\003 \002(\001\"\203\001\n\013DebugMod" +
-      "ify\0228\n\010valueMap\030\001 \003(\0132&.naothmessages.De" +
-      "bugModify.ModifyValue\032:\n\013ModifyValue\022\014\n\004",
-      "name\030\001 \002(\t\022\016\n\006modify\030\002 \001(\010\022\r\n\005value\030\003 \001(" +
-      "\001\"9\n\nStepBuffer\022+\n\014support_foot\030\001 \001(\0132\025." +
-      "naothmessages.Pose3D\"\215\001\n\rbodyAwareness\022\020" +
-      "\n\010isLifted\030\001 \001(\010\0223\n\rcalculatedCoM\030\002 \001(\0132" +
-      "\034.naothmessages.DoubleVector3\0225\n\017current" +
-      "CoMError\030\003 \001(\0132\034.naothmessages.DoubleVec" +
-      "tor3B\033\n\031de.naoth.rc.core.messages"
+      "\001(\010\022\033\n\023standRelaxStiffness\030\r \001(\010\"\232\006\n\013Lin" +
+      "ePercept\022:\n\005lines\030\001 \003(\0132+.naothmessages.",
+      "LinePercept.FieldLineSegment\022>\n\rintersec" +
+      "tions\030\002 \003(\0132\'.naothmessages.LinePercept." +
+      "Intersection\0228\n\022middleCircleCenter\030\003 \001(\013" +
+      "2\034.naothmessages.DoubleVector2\032\353\002\n\014Inter" +
+      "section\0220\n\nposInImage\030\001 \001(\0132\034.naothmessa" +
+      "ges.DoubleVector2\0220\n\nposOnField\030\002 \001(\0132\034." +
+      "naothmessages.DoubleVector2\022F\n\004type\030\003 \001(" +
+      "\01628.naothmessages.LinePercept.Intersecti" +
+      "on.IntersectionType\022\027\n\017segmentOneIndex\030\006" +
+      " \001(\r\022\027\n\017segmentTwoIndex\030\007 \001(\r\022\032\n\022segment",
+      "OneDistance\030\010 \001(\001\022\032\n\022segmentTwoDistance\030" +
+      "\t \001(\001\"E\n\020IntersectionType\022\013\n\007unknown\020\000\022\005" +
+      "\n\001T\020\001\022\005\n\001L\020\002\022\005\n\001C\020\003\022\010\n\004none\020\004\022\005\n\001X\020\005\032\346\001\n" +
+      "\020FieldLineSegment\022/\n\013lineInImage\030\001 \001(\0132\032" +
+      ".naothmessages.LineSegment\022/\n\013lineOnFiel" +
+      "d\030\002 \001(\0132\032.naothmessages.LineSegment\022\030\n\020b" +
+      "eginExtendCount\030\003 \001(\005\022\026\n\016endExtendCount\030" +
+      "\004 \001(\005\022\021\n\tthickness\030\005 \001(\001\022\r\n\005slope\030\006 \001(\001\022" +
+      "\r\n\005angle\030\007 \001(\001\022\r\n\005valid\030\010 \001(\010\"I\n\020ShortLi" +
+      "nePercept\0225\n\021fieldLineSegments\030\001 \003(\0132\032.n",
+      "aothmessages.LineSegment\"4\n\007Polygon\022)\n\006p" +
+      "oints\030\001 \003(\0132\031.naothmessages.IntVector2\"9" +
+      "\n\014FieldPercept\022)\n\tfieldPoly\030\001 \002(\0132\026.naot" +
+      "hmessages.Polygon\"J\n\021RansacLinePercept\0225" +
+      "\n\021fieldLineSegments\030\001 \003(\0132\032.naothmessage" +
+      "s.LineSegment\"d\n\027RansacCirclePercept2018" +
+      "\022\017\n\007wasSeen\030\001 \001(\010\0228\n\022middleCircleCenter\030" +
+      "\002 \001(\0132\034.naothmessages.DoubleVector2\"\254\001\n\020" +
+      "ScanLineEndPoint\022-\n\nposInImage\030\001 \002(\0132\031.n" +
+      "aothmessages.IntVector2\0220\n\nposOnField\030\002 ",
+      "\002(\0132\034.naothmessages.DoubleVector2\022#\n\005col" +
+      "or\030\003 \002(\0162\024.naothmessages.Color\022\022\n\nScanLi" +
+      "neID\030\004 \002(\r\"k\n\013DoubleEdgel\022+\n\005point\030\001 \002(\013" +
+      "2\034.naothmessages.DoubleVector2\022/\n\tdirect" +
+      "ion\030\002 \002(\0132\034.naothmessages.DoubleVector2\"" +
+      "b\n\005Edgel\022(\n\005point\030\001 \002(\0132\031.naothmessages." +
+      "IntVector2\022/\n\tdirection\030\002 \002(\0132\034.naothmes" +
+      "sages.DoubleVector2\"E\n\tEdgelPair\022\r\n\005begi" +
+      "n\030\001 \002(\005\022\013\n\003end\030\002 \002(\005\022\n\n\002id\030\003 \002(\005\022\020\n\010adap" +
+      "tive\030\004 \001(\010\"\231\001\n\024ScanLineEdgelPercept\022$\n\006e",
+      "dgels\030\001 \003(\0132\024.naothmessages.Edgel\022\'\n\005pai" +
+      "rs\030\003 \003(\0132\030.naothmessages.EdgelPair\0222\n\ten" +
+      "dPoints\030\002 \003(\0132\037.naothmessages.ScanLineEn" +
+      "dPoint\"\250\001\n\020LineGraphPercept\022+\n\redgelsOnF" +
+      "ield\030\001 \003(\0132\024.naothmessages.Edgel\0224\n\020edge" +
+      "lsInImageTop\030\002 \003(\0132\032.naothmessages.Doubl" +
+      "eEdgel\0221\n\redgelsInImage\030\003 \003(\0132\032.naothmes" +
+      "sages.DoubleEdgel\"P\n\021StepControlStatus\022\016" +
+      "\n\006stepID\030\001 \002(\r\022\024\n\014moveableFoot\030\002 \002(\r\022\025\n\r" +
+      "stepRequestID\030\003 \002(\r\"\322\003\n\014MotionStatus\022\014\n\004",
+      "time\030\001 \002(\r\022\022\n\nlastMotion\030\002 \002(\r\022\025\n\rcurren" +
+      "tMotion\030\003 \002(\r\022\022\n\nheadMotion\030\004 \002(\r\022\032\n\022cur" +
+      "rentMotionState\030\005 \002(\r\0224\n\025plannedMotionLe" +
+      "ftFoot\030\006 \002(\0132\025.naothmessages.Pose2D\0225\n\026p" +
+      "lannedMotionRightFoot\030\007 \002(\0132\025.naothmessa" +
+      "ges.Pose2D\022/\n\020plannedMotionHip\030\010 \002(\0132\025.n" +
+      "aothmessages.Pose2D\022;\n\021stepControlStatus" +
+      "\030\t \001(\0132 .naothmessages.StepControlStatus" +
+      "\022\026\n\016target_reached\030\n \001(\010\022\033\n\023head_target_" +
+      "reached\030\013 \001(\010\022\026\n\016head_got_stuck\030\014 \001(\010\022\033\n",
+      "\023walk_emergency_stop\030\r \001(\010\022\024\n\014head_at_re" +
+      "st\030\016 \001(\010\"3\n\014OdometryData\022#\n\004pose\030\001 \002(\0132\025" +
+      ".naothmessages.Pose2D\"\037\n\tBodyState\022\022\n\nis" +
+      "LiftedUp\030\001 \001(\010\"3\n\nBodyStatus\022\022\n\ncurrentS" +
+      "um\030\001 \003(\001\022\021\n\ttimestamp\030\003 \002(\r\"\320\001\n\017Calibrat" +
+      "ionData\022:\n\024inertialSensorOffset\030\001 \001(\0132\034." +
+      "naothmessages.DoubleVector2\0226\n\020gyroSenso" +
+      "rOffset\030\005 \001(\0132\034.naothmessages.DoubleVect" +
+      "or3\0225\n\017accSensorOffset\030\003 \001(\0132\034.naothmess" +
+      "ages.DoubleVector3\022\022\n\ncalibrated\030\004 \002(\010\"B",
+      "\n\rInertialModel\0221\n\013orientation\030\001 \001(\0132\034.n" +
+      "aothmessages.DoubleVector2\"\210\002\n\027CameraMat" +
+      "rixCalibration\022:\n\020correctionOffset\030\001 \003(\013" +
+      "2\034.naothmessages.DoubleVector2B\002\030\001\022:\n\024co" +
+      "rrectionOffsetBody\030\002 \001(\0132\034.naothmessages" +
+      ".DoubleVector2\022:\n\024correctionOffsetHead\030\003" +
+      " \001(\0132\034.naothmessages.DoubleVector3\0229\n\023co" +
+      "rrectionOffsetCam\030\004 \003(\0132\034.naothmessages." +
+      "DoubleVector3\"\213\002\n\016BallCandidates\0224\n\007patc" +
+      "hes\030\001 \003(\0132#.naothmessages.BallCandidates",
+      ".Patch\032\302\001\n\005Patch\022&\n\003min\030\001 \002(\0132\031.naothmes" +
+      "sages.IntVector2\022&\n\003max\030\002 \002(\0132\031.naothmes" +
+      "sages.IntVector2\0229\n\004type\030\003 \001(\0162(.naothme" +
+      "ssages.BallCandidates.Patch.Type:\001Y\022\014\n\004d" +
+      "ata\030\005 \002(\014\" \n\004Type\022\005\n\001Y\020\000\022\007\n\003YUV\020\001\022\010\n\004YUV" +
+      "C\020\002\"\371\003\n\024RemoteControlCommand\022D\n\013controlM" +
+      "ode\030\001 \001(\0162/.naothmessages.RemoteControlC" +
+      "ommand.ControlMode\022>\n\006action\030\002 \001(\0162..nao" +
+      "thmessages.RemoteControlCommand.ActionTy" +
+      "pe\022K\n\rsecond_action\030\003 \001(\01624.naothmessage",
+      "s.RemoteControlCommand.SecondActionType\022" +
+      "%\n\006target\030\004 \001(\0132\025.naothmessages.Pose2D\"3" +
+      "\n\013ControlMode\022\022\n\016DIRECT_CONTROL\020\000\022\020\n\014LOC" +
+      "K_CONTROL\020\001\"y\n\nActionType\022\010\n\004NONE\020\000\022\t\n\005S" +
+      "TAND\020\001\022\010\n\004WALK\020\002\022\016\n\nKICK_RIGHT\020\003\022\r\n\tKICK" +
+      "_LEFT\020\004\022\025\n\021KICK_FORWARD_LEFT\020\005\022\026\n\022KICK_F" +
+      "ORWARD_RIGHT\020\006\"7\n\020SecondActionType\022\017\n\013SE" +
+      "COND_NONE\020\000\022\t\n\005BLINK\020\001\022\007\n\003SAY\020\002\"\257\001\n\022Grou" +
+      "ndContactModel\022\031\n\021leftGroundContact\030\001 \002(" +
+      "\010\022\032\n\022rightGroundContact\030\002 \002(\010\022;\n\013support",
+      "Foot\030\003 \002(\0162&.naothmessages.GroundContact" +
+      "Model.Foot\"%\n\004Foot\022\010\n\004LEFT\020\000\022\t\n\005RIGHT\020\001\022" +
+      "\010\n\004NONE\020\002\"\325\001\n\020CollisionPercept\022\034\n\024timeCo" +
+      "llisionArmLeft\030\001 \002(\r\022\035\n\025timeCollisionArm" +
+      "Right\030\002 \002(\r\022\035\n\025isCollisionLeftBumper\030\003 \002" +
+      "(\010\022\036\n\026isCollisionRightBumper\030\004 \002(\010\022!\n\031la" +
+      "stComputedCollisionLeft\030\005 \002(\001\022\"\n\032lastCom" +
+      "putedCollisionRight\030\006 \002(\001\"\212\004\n\007IMUData\022.\n" +
+      "\010location\030\001 \002(\0132\034.naothmessages.DoubleVe" +
+      "ctor3\022.\n\010velocity\030\002 \002(\0132\034.naothmessages.",
+      "DoubleVector3\0222\n\014acceleration\030\003 \002(\0132\034.na" +
+      "othmessages.DoubleVector3\0229\n\023acceleratio" +
+      "n_sensor\030\004 \001(\0132\034.naothmessages.DoubleVec" +
+      "tor3\022.\n\010rotation\030\005 \002(\0132\034.naothmessages.D" +
+      "oubleVector3\0229\n\023rotational_velocity\030\006 \002(" +
+      "\0132\034.naothmessages.DoubleVector3\022@\n\032rotat" +
+      "ional_velocity_sensor\030\007 \001(\0132\034.naothmessa" +
+      "ges.DoubleVector3\0221\n\013orientation\030\010 \002(\0132\034" +
+      ".naothmessages.DoubleVector2\0228\n\022orientat" +
+      "ion_rotvec\030\t \002(\0132\034.naothmessages.DoubleV",
+      "ector3\022\026\n\016has_been_reset\030\n \001(\010\"\316\003\n\020Centr" +
+      "eOfPressure\022?\n\031in_and_only_left_foot_cop" +
+      "\030\001 \002(\0132\034.naothmessages.DoubleVector3\022\'\n\037" +
+      "in_and_only_left_foot_magnitude\030\002 \002(\001\022#\n" +
+      "\033in_and_only_left_foot_valid\030\003 \002(\010\022@\n\032in" +
+      "_and_only_right_foot_cop\030\004 \002(\0132\034.naothme" +
+      "ssages.DoubleVector3\022(\n in_and_only_righ" +
+      "t_foot_magnitude\030\005 \002(\001\022$\n\034in_and_only_ri" +
+      "ght_foot_valid\030\006 \002(\010\022C\n\035in_kinematic_cha" +
+      "in_origin_cop\030\007 \002(\0132\034.naothmessages.Doub",
+      "leVector3\022+\n#in_kinematic_chain_origin_m" +
+      "agnitude\030\010 \002(\001\022\'\n\037in_kinematic_chain_ori" +
+      "gin_valid\030\t \002(\010\"\215\003\n\022CalibrationDataCMC\022R" +
+      "\n\017calibrationData\030\001 \003(\01329.naothmessages." +
+      "CalibrationDataCMC.CalibrationDataSample" +
+      "V3\022\031\n\021numberOfResudials\030\002 \001(\r\032\207\002\n\027Calibr" +
+      "ationDataSampleV3\022(\n\tchestPose\030\001 \001(\0132\025.n" +
+      "aothmessages.Pose3D\0223\n\redgelsInImage\030\002 \003" +
+      "(\0132\034.naothmessages.DoubleVector2\0226\n\020edge" +
+      "lsInImageTop\030\003 \003(\0132\034.naothmessages.Doubl",
+      "eVector2\0221\n\013orientation\030\004 \001(\0132\034.naothmes" +
+      "sages.DoubleVector2\022\017\n\007headYaw\030\005 \001(\001\022\021\n\t" +
+      "headPitch\030\006 \001(\001\"\356\001\n\016WhistlePercept\022 \n\030fr" +
+      "ameWhenWhistleDetected\030\001 \001(\r\022\023\n\013captureF" +
+      "ile\030\002 \001(\t\022A\n\022recognizedWhistles\030\003 \003(\0132%." +
+      "naothmessages.WhistlePercept.Whistle\022\027\n\017" +
+      "whistleDetected\030\004 \001(\010\032I\n\007Whistle\022\014\n\004name" +
+      "\030\001 \002(\t\022\031\n\021positionInCapture\030\002 \002(\003\022\025\n\rres" +
+      "ponseValue\030\003 \002(\001\"\203\001\n\013DebugModify\0228\n\010valu" +
+      "eMap\030\001 \003(\0132&.naothmessages.DebugModify.M",
+      "odifyValue\032:\n\013ModifyValue\022\014\n\004name\030\001 \002(\t\022" +
+      "\016\n\006modify\030\002 \001(\010\022\r\n\005value\030\003 \001(\001\"9\n\nStepBu" +
+      "ffer\022+\n\014support_foot\030\001 \001(\0132\025.naothmessag" +
+      "es.Pose3D\"\215\001\n\rbodyAwareness\022\020\n\010isLifted\030" +
+      "\001 \001(\010\0223\n\rcalculatedCoM\030\002 \001(\0132\034.naothmess" +
+      "ages.DoubleVector3\0225\n\017currentCoMError\030\003 " +
+      "\001(\0132\034.naothmessages.DoubleVector3B\033\n\031de." +
+      "naoth.rc.core.messages"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -58431,7 +58520,7 @@ public final class Representations {
     internal_static_naothmessages_MotionRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_naothmessages_MotionRequest_descriptor,
-        new java.lang.String[] { "Id", "Time", "Forced", "WalkRequest", "StarndardStand", "KickRequest", "StandHeight", "CalibrateFootTouchDetector", "CognitionFrameNumber", "GraspRequest", "ArmMotionRequest", "DisableRelaxedStand", });
+        new java.lang.String[] { "Id", "Time", "Forced", "WalkRequest", "StarndardStand", "KickRequest", "StandHeight", "CalibrateFootTouchDetector", "CognitionFrameNumber", "GraspRequest", "ArmMotionRequest", "DisableRelaxedStand", "StandRelaxStiffness", });
     internal_static_naothmessages_LinePercept_descriptor =
       getDescriptor().getMessageTypes().get(12);
     internal_static_naothmessages_LinePercept_fieldAccessorTable = new
