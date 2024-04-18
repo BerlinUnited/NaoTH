@@ -89,11 +89,9 @@ message HeadMotionRequest {
 message StepControlRequest
 {
   enum StepType {
-	WALKSTEP = 0;
-	KICKSTEP = 1;
-	ZEROSTEP = 2;
-    KICKSTEP_LONG = 3;
-    KICKSTEP_SHORT = 4;
+    WALKSTEP = 0;
+    KICKSTEP = 1;
+    ZEROSTEP = 2;
   };
 
   required uint32 stepID = 1;
@@ -105,13 +103,22 @@ message StepControlRequest
   required StepType steptype = 7;
   
   enum RestrictionMode {
-	HARD = 0;
-	SOFT = 1;
+    HARD = 0;
+    SOFT = 1;
   };
   
   required RestrictionMode restriction = 8;
   required bool isProtected = 9;
   required uint32 stepRequestID = 10;
+
+  enum KickStepType {
+    NORMAL = 0;
+    SHORT = 1;
+    LONG = 2;
+  };
+
+  optional Pose2D kickTarget = 11;
+  optional KickStepType kickStepType = 12; 
 }
 
 message WalkRequest {
