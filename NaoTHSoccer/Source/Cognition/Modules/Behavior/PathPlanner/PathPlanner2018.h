@@ -102,6 +102,8 @@ private:
       PARAMETER_REGISTER(forwardKickAdaptive) = true; // mm
       PARAMETER_REGISTER(forwardKickTime) = 300;
 
+      PARAMETER_REGISTER(forwardKickStepType) = 0;
+
       // farApproach()
       PARAMETER_REGISTER(farToNearApproachThreshold)            = 10.0;
 
@@ -138,6 +140,7 @@ private:
     Vector2d forwardKickOffset;
     bool forwardKickAdaptive;
     int forwardKickTime;
+    int forwardKickStepType;
   } params;
 
   // NONE means hip
@@ -149,6 +152,7 @@ private:
   };
 
   typedef WalkRequest::StepControlRequest::StepType StepType;
+  typedef WalkRequest::StepControlRequest::KickStepType KickStepType;
   typedef WalkRequest::StepControlRequest::RestrictionMode RestrictionMode;
   typedef WalkRequest::Coordinate Coordinate;
 
@@ -181,6 +185,8 @@ private:
     SET(Pose2D,Pose, pose);
     SET(double,SpeedDirection, speedDirection);
     SET(StepType,StepType,type);
+    SET(KickStepType, KickStepType, kickStepType) = KickStepType::NORMAL;
+    SET(Pose2D, KickTarget, kickTarget);
     SET(int,Time,time);
     SET(double,Character,character);
     SET(double,Scale,scale);

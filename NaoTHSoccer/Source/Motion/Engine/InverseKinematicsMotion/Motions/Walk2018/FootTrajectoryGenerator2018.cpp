@@ -1,4 +1,4 @@
-/**
+ /**
  * @File:   FootTrajectoryGenerator.cpp
  *
  * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
@@ -43,22 +43,7 @@ void FootTrajectoryGenerator2018::execute()
 
 Pose3D FootTrajectoryGenerator2018::calculateLiftingFootPos(const Step& step) const
 {
-  
-  if (step.type == Step::STEP_CONTROL &&
-        (step.walkRequest.stepControl.type == WalkRequest::StepControlRequest::KICKSTEP ||
-         step.walkRequest.stepControl.type == WalkRequest::StepControlRequest::KICKSTEP_SHORT ||
-         step.walkRequest.stepControl.type == WalkRequest::StepControlRequest::KICKSTEP_LONG)) 
-  {
-        return stepControlNew(
-            step.footStep, 
-            step.executingCycle, 
-            step.samplesDoubleSupport,
-            step.samplesSingleSupport, 
-            step.walkRequest.stepControl);
-  }
-  
-
-  if ( step.type == Step::STEP_CONTROL && step.walkRequest.stepControl.type == WalkRequest::StepControlRequest::KICKSTEP)
+  if (step.type == Step::STEP_CONTROL && step.walkRequest.stepControl.type == WalkRequest::StepControlRequest::KICKSTEP)
   {
     if (parameters.useSplineFootTrajectoryForSideKicks) //  && step.walkRequest.stepControl.speedDirection != 0)
     {
@@ -297,7 +282,7 @@ Pose3D FootTrajectoryGenerator2018::stepControlNew(
         // X trajectory
 
         
-        const KickType& currentKick = getKickType(stepRequest.type);
+        const KickType& currentKick = getKickType(stepRequest.kickStepType);
 
 
         //std::vector<double> t_X = { 0.0,  0.25, 1.0 };
@@ -349,8 +334,9 @@ Pose3D FootTrajectoryGenerator2018::stepControlNew(
         Pose3D foot;
         // Experimental: preparation for the Gewaltkick
         //foot.translation.x = (1 - s_Xt) * startFoot.translation.x + s_Xt * (targetFoot.translation.x + parameters.gewaltKickLength);
-        foot.translation.x = (1 - s_Xt) * startFoot.translation.x + s_Xt * targetFoot.translation.x;
-        foot.translation.y = (1 - s_Xt) * startFoot.translation.y + s_Xt * targetFoot.translation.y;
+        foot.translation.x = (1 - s_Xt) * startFoot.translation.x + s_Xt * stepRequest.kickTarget.translation.x; /*targetFoot.translation.x*/
+        foot.translation.y = (1 - s_Xt) * startFoot.translation.y + s_Xt * stepRequest.kickTarget.translation.y; /*targetFoot.translation.y*/
+
 
         // LEGACY: sidekicks
         //foot.translation.y = (1 - t_xy_scaled) * startFoot.translation.y + t_xy_scaled * targetFoot.translation.y + /*step.liftingFoot() **/ s_Y * sidekick_width * std::sin(-speedDirection);

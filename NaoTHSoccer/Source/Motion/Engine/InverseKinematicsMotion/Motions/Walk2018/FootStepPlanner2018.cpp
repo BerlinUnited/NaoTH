@@ -139,11 +139,35 @@ void FootStepPlanner2018::calculateNewStep(const Step& lastStep, Step& newStep, 
       newStep.numberOfCycles = walkRequest.stepControl.time / getRobotInfo().basicTimeStep;
       newStep.type = Step::STEP_CONTROL;
       break;
-    case WalkRequest::StepControlRequest::KICKSTEP:
-      newStep.footStep = controlStep(lastStep.footStep, walkRequest);
-      newStep.numberOfCycles = walkRequest.stepControl.time / getRobotInfo().basicTimeStep;
-      newStep.type = Step::STEP_CONTROL;
-      break;
+    case WalkRequest::StepControlRequest::KICKSTEP: {
+        newStep.footStep = controlStep(lastStep.footStep, walkRequest);
+        newStep.numberOfCycles = walkRequest.stepControl.time / getRobotInfo().basicTimeStep;
+        newStep.type = Step::STEP_CONTROL;
+
+        // HACK: filter the kicktarget as a steptarget.
+        //       pretend that kickTarget is step target
+        WalkRequest myReq = walkRequest;
+        myReq.stepControl.target  = walkRequest.stepControl.kickTarget;
+        FootStep kickFootStep = controlStep(lastStep.footStep, myReq);
+        
+        // reset the original step target
+        myReq.stepControl.target = walkRequest.stepControl.target;
+
+        InverseKinematic::FeetPose end = kickFootStep.end();
+        // poses in support foot coordinates
+        if (kickFootStep.liftingFoot() == FootStep::LEFT) {
+            end.localInRightFoot();
+            // use the new resticted kickTarget
+            myReq.stepControl.kickTarget = end.left.projectXY();
+        } else {
+            end.localInLeftFoot();
+            // use the new resticted kickTarget
+            myReq.stepControl.kickTarget = end.right.projectXY();
+        }
+         
+        newStep.walkRequest = myReq;
+
+    } break;
     case WalkRequest::StepControlRequest::WALKSTEP:
     {
       newStep.footStep = controlStep(lastStep.footStep, walkRequest);

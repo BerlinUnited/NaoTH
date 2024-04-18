@@ -125,30 +125,30 @@ class FootTrajectoryGenerator2018 : private FootTrajectoryGenerator2018Base
     tk::spline theCubicSplineZ;
 
     // kicks
-    KickType defaultKick = {{0.0, 0.25, 1.0},
-                              {0.0, -0.3, 1.0},
-                              {0.0, 0.125, 0.25, 0.5, 0.65, 0.875, 1.0},
-                              {0.0, 0.146, 0.8, 1.0, 0.8, 0.146, 0.0}};
+    const KickType defaultKick = {{0.0, 0.25, 1.0},
+                                  {0.0, -0.3, 1.0},
+                                  {0.0, 0.125, 0.25, 0.5, 0.65, 0.875, 1.0},
+                                  {0.0, 0.146, 0.8, 1.0, 0.8, 0.146, 0.0}};
 
-    KickType gewaltKick = {{0.0, 0.125, 0.35, 0.5, 1.0},
-                           {0.0, 0.0, -0.4, 1.1, 0.0},
-                           {0.0, 0.125, 0.25, 0.5, 0.65, 0.875, 1.0},
-                           {0.0, 0.146, 0.8, 1.0, 0.8, 0.146, 0.0}};
+    const KickType gewaltKick = {{0.0, 0.125, 0.35, 0.5, 1.0},
+                                 {0.0, 0.0, -0.4, 1.1, 0.0},
+                                 {0.0, 0.125, 0.25, 0.5, 0.65, 0.875, 1.0},
+                                 {0.0, 0.146, 0.8, 1.0, 0.8, 0.146, 0.0}};
 
-    KickType shortKick = {{0.0, 0.2, 0.5, 0.8, 1.0},
-                          {0.0, 0.0, 1.0, 0.2, 0.0},
-                          {0.0, 0.125, 0.25, 0.5, 0.65, 0.875, 1.0},
-                          {0.0, 0.146, 0.8, 1.0, 0.8, 0.146, 0.0}};
+    const KickType shortKick = {{0.0, 0.2, 0.5, 0.8, 1.0},
+                                {0.0, 0.0, 1.0, 0.2, 0.0},
+                                {0.0, 0.125, 0.25, 0.5, 0.65, 0.875, 1.0},
+                                {0.0, 0.146, 0.8, 1.0, 0.8, 0.146, 0.0}};
 
 
-    inline const KickType& getKickType(WalkRequest::StepControlRequest::StepType typeID) const {
+    inline const KickType& getKickType(WalkRequest::StepControlRequest::KickStepType typeID) const {
         switch (typeID) 
         {
-            case WalkRequest::StepControlRequest::KICKSTEP:
+            case WalkRequest::StepControlRequest::NORMAL:
                 return defaultKick;
-            case WalkRequest::StepControlRequest::KICKSTEP_SHORT:
+            case WalkRequest::StepControlRequest::SHORT:
                 return shortKick;
-            case WalkRequest::StepControlRequest::KICKSTEP_LONG:
+            case WalkRequest::StepControlRequest::LONG:
                 return gewaltKick;
             default:
                 ASSERT(false);
