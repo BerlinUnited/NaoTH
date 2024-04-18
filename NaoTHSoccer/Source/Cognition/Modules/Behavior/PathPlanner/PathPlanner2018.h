@@ -5,8 +5,8 @@
 * Definition of class PathPlanner2018
 */
 
-#ifndef _PathPlanner2018_H_
-#define _PathPlanner2018_H_
+#ifndef PATH_PLANNER_2018_H
+#define PATH_PLANNER_2018_H
 
 #include <ModuleFramework/Module.h>
 
@@ -18,38 +18,38 @@
 #include "Tools/Debug/DebugModify.h"
 #include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/DebugParameterList.h"
+#include "Representations/Debug/Stopwatch.h"
 
 // representations
 #include "Representations/Infrastructure/FieldInfo.h"
 #include "Representations/Infrastructure/FrameInfo.h"
-#include "Representations/Motion/Request/HeadMotionRequest.h"
 #include "Representations/Motion/Request/MotionRequest.h"
+//#include "Representations/Motion/Request/HeadMotionRequest.h"
 #include "Representations/Motion/MotionStatus.h"
-#include "Representations/Perception/MultiBallPercept.h"
 #include "Representations/Modeling/BallModel.h"
-#include "Representations/Modeling/PathModel.h"
-#include "Representations/Debug/Stopwatch.h"
 #include "Representations/Modeling/ObstacleModel.h"
 
+#include "Representations/Modeling/PathRequest.h"
+#include "Representations/Modeling/PathStatus.h"
 
 BEGIN_DECLARE_MODULE(PathPlanner2018)
-PROVIDE(DebugPlot)
-PROVIDE(DebugRequest)
-PROVIDE(DebugModify)
-PROVIDE(DebugDrawings)
-PROVIDE(DebugParameterList)
+  PROVIDE(DebugPlot)
+  PROVIDE(DebugRequest)
+  PROVIDE(DebugModify)
+  PROVIDE(DebugDrawings)
+  PROVIDE(DebugParameterList)
+  PROVIDE(StopwatchManager)
 
-REQUIRE(FieldInfo)
-REQUIRE(MultiBallPercept)
-REQUIRE(MotionStatus)
-REQUIRE(BallModel)
-REQUIRE(FrameInfo)
-REQUIRE(ObstacleModel)
+  REQUIRE(FrameInfo)
+  REQUIRE(FieldInfo)
+  REQUIRE(MotionStatus)
+  REQUIRE(BallModel)
+  REQUIRE(ObstacleModel)
+  REQUIRE(PathRequest)
 
-PROVIDE(PathModel)
-PROVIDE(MotionRequest)
-PROVIDE(HeadMotionRequest)
-PROVIDE(StopwatchManager)
+  PROVIDE(PathStatus)
+  PROVIDE(MotionRequest)
+  //PROVIDE(HeadMotionRequest)
 END_DECLARE_MODULE(PathPlanner2018)
 
 
@@ -148,6 +148,30 @@ private:
     NONE
   };
 
+  // helper method: calculates if a foot is movable based on the MotionStatus
+  bool isFootMovable(Foot foot) const
+  {
+    const MotionStatus::StepControlStatus::MoveableFoot movableFoot = getMotionStatus().stepControl.moveableFoot;
+    
+    // only for those values this function is meaningfuly defined
+    ASSERT(foot == RIGHT || foot == LEFT);
+    
+    // both feet are movable
+    if(movableFoot == MotionStatus::StepControlStatus::BOTH) {
+      return true;
+    }
+    
+    // check the individual feet
+    if(foot == RIGHT && movableFoot == MotionStatus::StepControlStatus::RIGHT) {
+      return true;
+    } else if(foot == LEFT && movableFoot == MotionStatus::StepControlStatus::LEFT) {
+      return true;
+    }
+
+    return false;
+  }
+
+  // define short type names for more readability
   typedef WalkRequest::StepControlRequest::StepType StepType;
   typedef WalkRequest::StepControlRequest::RestrictionMode RestrictionMode;
   typedef WalkRequest::Coordinate Coordinate;
@@ -202,7 +226,10 @@ private:
   // Used to synchronize stepIDs of WalkEngine to take control
   unsigned int lastStepRequestID;
 
-  void addStep(const StepBufferElement& new_step);
+  inline void addStep(const StepBufferElement& new_step) {
+    stepBuffer.push_back(new_step);
+  }
+
   void updateSpecificStep(const unsigned int index, StepBufferElement& step);
   void manageStepBuffer();
   void executeStepBuffer();
@@ -213,4 +240,4 @@ private:
 
 };
 
-#endif // _PathPlanner2018_H_
+#endif // PATH_PLANNER_2018_H

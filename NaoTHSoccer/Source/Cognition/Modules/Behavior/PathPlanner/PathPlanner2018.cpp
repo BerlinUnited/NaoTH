@@ -6,8 +6,9 @@
 */
 
 #include "PathPlanner2018.h"
-#include "Tools/Math/Polygon.h"
-#include "Tools/Math/Line.h"
+#include <Tools/Math/Polygon.h>
+#include <Tools/Math/Line.h>
+#include <Tools/NaoInfo.h>
 #include <forward_list>
 
 PathPlanner2018::PathPlanner2018()
@@ -26,7 +27,7 @@ PathPlanner2018::~PathPlanner2018()
   getDebugParameterList().remove(&params);
 }
 
-double comp(Vector2d b, Vector2d a){
+double comp(Vector2d b, Vector2d a) {
   return a * b / a.abs();
 }
 // determines if a point p is on the left hand side of the line segment defined by s_begin, s_end
@@ -39,55 +40,59 @@ bool on_left_hand_side(Vector2d p, Vector2d s_begin, Vector2d s_end){
 
 void PathPlanner2018::execute()
 {
-  getPathModel().kick_executed = false;
+  getPathStatus().kick_executed = false;
 
   // Always executed first
   manageStepBuffer();
 
   // The kick has been executed
   // Tells XABSL to jump into next state
-  if (kickPlanned && stepBuffer.empty())
-  {
-    getPathModel().kick_executed = true;
+  if (kickPlanned && stepBuffer.empty()) {
+    getPathStatus().kick_executed = true;
+  }
+
+  // reset target_reached
+  // NOTE: target_reached is only used by MOVE_AROUND_BALL2 for now
+  if(getPathRequest().path2018_routine != PathRequest::PathID::MOVE_AROUND_BALL2) {
+    target_reached = false;
   }
 
   // HACK: xabsl set a forced motion request => clear everything
-  if (getPathModel().path2018_routine == PathModel::PathPlanner2018Routine::NONE && getMotionRequest().forced) {
+  if (getPathRequest().path2018_routine == PathRequest::PathID::NONE && getMotionRequest().forced) {
     stepBuffer.clear();
     return;
   }
 
-  switch (getPathModel().path2018_routine)
+  switch (getPathRequest().path2018_routine)
   {
-  case PathModel::PathPlanner2018Routine::NONE:
-    if (kickPlanned)
-    {
+  case PathRequest::PathID::NONE:
+    if (kickPlanned) {
       kickPlanned = false;
     }
 
     // TODO: should the stepBuffer just be cleared here no matter what?
-    if (stepBuffer.empty())
-    {
+    if (stepBuffer.empty()) {
       return;
     }
     break;
-  case PathModel::PathPlanner2018Routine::AVOID:
-    avoid_obstacle(getPathModel().target_point);
+  case PathRequest::PathID::AVOID:
+    avoid_obstacle(getPathRequest().target_point);
     break;
-  case PathModel::PathPlanner2018Routine::MOVE_AROUND_BALL_OLD:
-    moveAroundBall(getPathModel().direction, getPathModel().radius, getPathModel().stable);
+  case PathRequest::PathID::MOVE_AROUND_BALL_OLD:
+    moveAroundBall(getPathRequest().direction, getPathRequest().radius, getPathRequest().stable);
     break;
-  case PathModel::PathPlanner2018Routine::MOVE_AROUND_BALL2:
+  case PathRequest::PathID::MOVE_AROUND_BALL2:
     //TODO maybe use a parameter to select the actual routine that is executed when move around is set from the behavior???
-    moveAroundBall2(getPathModel().direction, getPathModel().radius, getPathModel().stable);
+    moveAroundBall2(getPathRequest().direction, getPathRequest().radius, getPathRequest().stable);
+    getPathStatus().turn_around_ball_2_target_reached = target_reached;
     break;
-  case PathModel::PathPlanner2018Routine::FORWARDKICK:
+  case PathRequest::PathID::FORWARDKICK:
     if (nearApproach_forwardKick(params.forwardKickOffset.x, params.forwardKickOffset.y))
     {
       forwardKick();
     }
     break;
-  case PathModel::PathPlanner2018Routine::SIDEKICK_LEFT:
+  case PathRequest::PathID::SIDEKICK_LEFT:
     if (farApproach())
     {
       if (nearApproach_sideKick(Foot::LEFT, 0.0, params.sidekickOffsetY))
@@ -96,7 +101,7 @@ void PathPlanner2018::execute()
       }
     }
     break;
-  case PathModel::PathPlanner2018Routine::SIDEKICK_RIGHT:
+  case PathRequest::PathID::SIDEKICK_RIGHT:
     if (farApproach())
     {
       if (nearApproach_sideKick(Foot::RIGHT, 0.0, -1 * params.sidekickOffsetY))
@@ -105,8 +110,8 @@ void PathPlanner2018::execute()
       }
     }
     break;
-  case PathModel::PathPlanner2018Routine::SIDESTEP:
-    sidesteps(Foot::RIGHT, getPathModel().direction);
+  case PathRequest::PathID::SIDESTEP:
+    sidesteps(Foot::RIGHT, getPathRequest().direction);
   }//end switch
 
   // Always executed last
@@ -156,27 +161,20 @@ void PathPlanner2018::moveAroundBall(const double direction, const double radius
     // outer clamp geht von -radius zu 0
     double stepY = Math::clamp(radius * std::tan(Math::fromDegrees(Math::clamp(-direction_deg, min1, max1))), min2, max2) * std::cos(ballRotation);
 
-    Pose2D pose = { ballRotation, stepX, stepY };
+    // choose the parametr for the character based on the flag
+    const double character = stable ? params.moveAroundBallCharacterStable : params.moveAroundBallCharacter;
 
-    StepBufferElement move_around_step;
-    move_around_step.debug_name = "move_around_step";
-    move_around_step.setPose(pose);
-    move_around_step.setStepType(StepType::WALKSTEP);
-
-    if (stable){
-      move_around_step.setCharacter(params.moveAroundBallCharacterStable);
-    }
-    else{
-      move_around_step.setCharacter(params.moveAroundBallCharacter);
-    }
-
-    move_around_step.setScale(1.0);
-    move_around_step.setCoordinate(Coordinate::Hip);
-    move_around_step.setFoot(Foot::NONE);
-    move_around_step.setSpeedDirection(Math::fromDegrees(0.0));
-    move_around_step.setRestriction(RestrictionMode::SOFT);
-    move_around_step.setProtected(false);
-    move_around_step.setTime(250);
+    StepBufferElement move_around_step("move_around_step");
+    move_around_step.setPose({ ballRotation, stepX, stepY })
+      .setStepType(StepType::WALKSTEP)
+      .setCharacter(character)
+      .setScale(1.0)
+      .setCoordinate(Coordinate::Hip)
+      .setFoot(Foot::NONE)
+      .setSpeedDirection(Math::fromDegrees(0.0))
+      .setRestriction(RestrictionMode::SOFT)
+      .setProtected(false)
+      .setTime(250);
 
     addStep(move_around_step);
   }
@@ -184,14 +182,14 @@ void PathPlanner2018::moveAroundBall(const double direction, const double radius
 
 void PathPlanner2018::moveAroundBall2(const double direction, const double radius, const bool stable) 
 {
- if (stepBuffer.empty())
- {
+  if (stepBuffer.empty())
+  {
     double step_radius = 100;
     double ball_distance = getBallModel().positionPreview.abs();
     Pose2D target_pose;
 
     // the point just behind the ball in the direction of the attack
-    // //todo: check
+    // todo: check
     //Vector2d target_point = getBallModel().positionPreview - Vector2d(radius, 0.0).rotate(direction);
     Vector2d target_point = getBallModel().positionPreview - Vector2d(cos(direction), sin(direction)) * radius;
 
@@ -277,24 +275,20 @@ void PathPlanner2018::moveAroundBall2(const double direction, const double radiu
         }
     }
 
-    StepBufferElement move_around_step;
-    move_around_step.debug_name = "move_around_step2";
-    move_around_step.setPose(target_pose);
-    move_around_step.setStepType(StepType::WALKSTEP);
+    // choose the parametr for the character based on the flag
+    const double character = stable ? params.moveAroundBallCharacterStable : params.moveAroundBallCharacter;
 
-    if (stable) {
-      move_around_step.setCharacter(params.moveAroundBallCharacterStable);
-    } else{
-      move_around_step.setCharacter(params.moveAroundBallCharacter);
-    }
-
-    move_around_step.setScale(1.0);
-    move_around_step.setCoordinate(Coordinate::Hip);
-    move_around_step.setFoot(Foot::NONE);
-    move_around_step.setSpeedDirection(Math::fromDegrees(0.0));
-    move_around_step.setRestriction(RestrictionMode::HARD);
-    move_around_step.setProtected(false);
-    move_around_step.setTime(250);
+    StepBufferElement move_around_step("move_around_step2");
+    move_around_step.setPose(target_pose)
+      .setStepType(StepType::WALKSTEP)
+      .setCharacter(character)
+      .setScale(1.0)
+      .setCoordinate(Coordinate::Hip)
+      .setFoot(Foot::NONE)
+      .setSpeedDirection(Math::fromDegrees(0.0))
+      .setRestriction(RestrictionMode::HARD)
+      .setProtected(false)
+      .setTime(250);
 
     addStep(move_around_step);
 
@@ -460,18 +454,18 @@ bool PathPlanner2018::farApproach()
     {
       double translation_xy = params.stepLength;
 
-      StepBufferElement far_approach_step;
-      far_approach_step.debug_name = "far_approach_step";
-      far_approach_step.setPose({ ballPos.angle(), translation_xy, std::min(translation_xy, std::abs(ballPos.y)) * (ballPos.y < 0 ? -1 : 1) });
-      far_approach_step.setStepType(StepType::WALKSTEP);
-      far_approach_step.setCharacter(0.7);
-      far_approach_step.setScale(1.0);
-      far_approach_step.setCoordinate(Coordinate::Hip);
-      far_approach_step.setFoot(Foot::NONE);
-      far_approach_step.setSpeedDirection(Math::fromDegrees(0.0));
-      far_approach_step.setRestriction(RestrictionMode::HARD);
-      far_approach_step.setProtected(false);
-      far_approach_step.setTime(250);
+      StepBufferElement far_approach_step("far_approach_step");
+      far_approach_step
+        .setPose({ ballPos.angle(), translation_xy, std::min(translation_xy, std::abs(ballPos.y)) * (ballPos.y < 0 ? -1 : 1) })
+        .setStepType(StepType::WALKSTEP)
+        .setCharacter(0.7)
+        .setScale(1.0)
+        .setCoordinate(Coordinate::Hip)
+        .setFoot(Foot::NONE)
+        .setSpeedDirection(Math::fromDegrees(0.0))
+        .setRestriction(RestrictionMode::HARD)
+        .setProtected(false)
+        .setTime(250);
 
       addStep(far_approach_step);
     }
@@ -505,16 +499,17 @@ bool PathPlanner2018::sidesteps(const Foot& foot, const double direction)
     }
 
     StepBufferElement side_step;
-    side_step.setPose({ 0.0, 0.0, direction > 0.0 ? 100.0 : -100.0});
-    side_step.setStepType(StepType::WALKSTEP);
-    side_step.setCharacter(0.3);
-    side_step.setScale(1.0);
-    side_step.setCoordinate(coordinate);
-    side_step.setFoot(Foot::NONE);
-    side_step.setSpeedDirection(Math::fromDegrees(0.0));
-    side_step.setRestriction(RestrictionMode::SOFT);
-    side_step.setProtected(false);
-    side_step.setTime(400);
+    side_step
+      .setPose({ 0.0, 0.0, direction > 0.0 ? 100.0 : -100.0})
+      .setStepType(StepType::WALKSTEP)
+      .setCharacter(0.3)
+      .setScale(1.0)
+      .setCoordinate(coordinate)
+      .setFoot(Foot::NONE)
+      .setSpeedDirection(Math::fromDegrees(0.0))
+      .setRestriction(RestrictionMode::SOFT)
+      .setProtected(false)
+      .setTime(400);
 
     addStep(side_step);
     return true;
@@ -527,26 +522,40 @@ bool PathPlanner2018::sidesteps(const Foot& foot, const double direction)
 
 bool PathPlanner2018::nearApproach_forwardKick(const double offsetX, const double offsetY)
 {
-  bool target_reached = false;
-
   // Always execute the steps that were planned before planning new steps
   if (stepBuffer.empty())
   {
     Vector2d ballPos;
-    Vector2d targetPos;
+    Foot kicking_foot;
+    Foot supporting_foot;
     Coordinate coordinate = Coordinate::Hip;
 
-    //if (foot == Foot::RIGHT)
+    // decide the foot to kick with
     if (getBallModel().positionPreview.y < 0)
     {
-      ballPos    = getBallModel().positionPreviewInRFoot;
-      coordinate = Coordinate::RFoot;
-    }
-    //else if (foot == Foot::LEFT)
-    else if (getBallModel().positionPreview.y >= 0)
-    {
+      kicking_foot    = Foot::RIGHT;
+      supporting_foot = Foot::LEFT;
+
+      // ball in supporting foot coordinates
       coordinate = Coordinate::LFoot;
       ballPos    = getBallModel().positionPreviewInLFoot;
+      
+      // ball in kicking foot coordinates
+      //ballPos    = getBallModel().positionPreviewInRFoot;
+      //coordinate = Coordinate::RFoot;
+    }
+    else if (getBallModel().positionPreview.y >= 0)
+    {
+      kicking_foot    = Foot::LEFT;
+      supporting_foot = Foot::RIGHT;
+
+      // ball in supporting foot coordinates
+      ballPos    = getBallModel().positionPreviewInRFoot;
+      coordinate = Coordinate::RFoot;
+      
+      // ball in kicking foot coordinates
+      //coordinate = Coordinate::LFoot;
+      //ballPos    = getBallModel().positionPreviewInLFoot;
     }
     else
     {
@@ -555,18 +564,33 @@ bool PathPlanner2018::nearApproach_forwardKick(const double offsetX, const doubl
 
     PLOT("PathPlanner:nearApproach_forwardKick:coordinate", coordinate);
 
+
+    Vector2d targetPos;
     // add the desired offset 165-50-120 = -5
     targetPos.x = ballPos.x - getFieldInfo().ballRadius - offsetX;
     targetPos.y = ballPos.y - offsetY;
 
-    // Am I ready for a kick or still walking to the ball?
-    // Approach further if we are too far away, or foot not aligned to ball or foot to close - We use different thresholds for too far and too close
+    // ACHTUNG: We are approaching with the supporting foot.
+    //          Calculate the position for the supporting foot 
+    //          so that the kicking foot would be directly in front of the ball.
+    // TODO: this can potentially depend on the walk parameters.
+    const double offsetBetweenFeetY = NaoInfo::HipOffsetY*2;
+    if(supporting_foot == Foot::RIGHT) {
+      targetPos.y -= offsetBetweenFeetY;
+    } else {
+      targetPos.y += offsetBetweenFeetY;
+    }
+
+    PLOT("PathPlanner:nearApproach_forwardKick:targetPos.y", targetPos.y);
+
+    // Check if the supporting foot has reached a position that is close enough.
+    // If the kicking foot is movable - then execute the kick.
     if (         targetPos.x  < params.forwardKickThreshold.x && 
         std::abs(targetPos.y) < params.forwardKickThreshold.y &&
-        getMotionStatus().stepControl.moveableFoot != (getBallModel().positionPreview.y < 0 ? MotionStatus::StepControlStatus::RIGHT : MotionStatus::StepControlStatus::LEFT)
-    )
-    {
-      target_reached = true;
+        isFootMovable(kicking_foot)
+    ) {
+      // we are done, kick now!
+      return true;
     }
 
     // generate a correction step
@@ -581,23 +605,24 @@ bool PathPlanner2018::nearApproach_forwardKick(const double offsetX, const doubl
     double translation_x = std::min(translation_xy, targetPos.x - std::abs(targetPos.y));
     double translation_y = std::min(translation_xy, std::abs(targetPos.y)) * (targetPos.y < 0 ? -1 : 1);
 
-    StepBufferElement near_approach_forward_step;
-    near_approach_forward_step.debug_name = "near_approach_forward_step";
-    near_approach_forward_step.setPose({ 0.0, translation_x, translation_y });
-    near_approach_forward_step.setStepType(StepType::WALKSTEP);
-    near_approach_forward_step.setCharacter(params.nearApproach_step_character);
-    near_approach_forward_step.setScale(1.0);
-    near_approach_forward_step.setCoordinate(coordinate);
-    near_approach_forward_step.setFoot(Foot::NONE);
-    near_approach_forward_step.setSpeedDirection(Math::fromDegrees(0.0));
-    near_approach_forward_step.setRestriction(RestrictionMode::HARD);
-    near_approach_forward_step.setProtected(false);
-    near_approach_forward_step.setTime(250);
+    StepBufferElement near_approach_forward_step("near_approach_forward_step");
+
+    near_approach_forward_step
+      .setPose({ 0.0, translation_x, translation_y })
+      .setStepType(StepType::WALKSTEP)
+      .setCharacter(params.nearApproach_step_character)
+      .setScale(1.0)
+      .setCoordinate(coordinate)
+      .setFoot(Foot::NONE)
+      .setSpeedDirection(Math::fromDegrees(0.0))
+      .setRestriction(RestrictionMode::HARD)
+      .setProtected(false)
+      .setTime(250);
 
     addStep(near_approach_forward_step);
   }
 
-  return target_reached;
+  return false;
 }
 
 bool PathPlanner2018::nearApproach_sideKick(const Foot& foot, const double offsetX, const double offsetY)
@@ -639,16 +664,17 @@ bool PathPlanner2018::nearApproach_sideKick(const Foot& foot, const double offse
       double translation_y = std::min(params.stepLength, std::abs(ballPos.y)) * (ballPos.y < 0 ? -1 : 1);
 
       StepBufferElement new_step;
-      new_step.setPose({ 0.0, translation_x, translation_y });
-      new_step.setStepType(StepType::WALKSTEP);
-      new_step.setCharacter(0.7);
-      new_step.setScale(1.0);
-      new_step.setCoordinate(coordinate);
-      new_step.setFoot(Foot::NONE);
-      new_step.setSpeedDirection(Math::fromDegrees(0.0));
-      new_step.setRestriction(RestrictionMode::HARD);
-      new_step.setProtected(false);
-      new_step.setTime(250);
+      new_step
+        .setPose({ 0.0, translation_x, translation_y })
+        .setStepType(StepType::WALKSTEP)
+        .setCharacter(0.7)
+        .setScale(1.0)
+        .setCoordinate(coordinate)
+        .setFoot(Foot::NONE)
+        .setSpeedDirection(Math::fromDegrees(0.0))
+        .setRestriction(RestrictionMode::HARD)
+        .setProtected(false)
+        .setTime(250);
 
       addStep(new_step);
     }
@@ -663,16 +689,17 @@ bool PathPlanner2018::nearApproach_sideKick(const Foot& foot, const double offse
         double translation_y = std::min(params.stepLength, std::abs(ballPos.y)) * (ballPos.y < 0 ? -1 : 1);
 
         StepBufferElement correction_step;
-        correction_step.setPose({ 0.0, translation_x, translation_y });
-        correction_step.setStepType(StepType::WALKSTEP);
-        correction_step.setCharacter(0.7);
-        correction_step.setScale(1.0);
-        correction_step.setCoordinate(coordinate);
-        correction_step.setFoot(Foot::NONE);
-        correction_step.setSpeedDirection(Math::fromDegrees(0.0));
-        correction_step.setRestriction(RestrictionMode::HARD);
-        correction_step.setProtected(false);
-        correction_step.setTime(250);
+        correction_step
+          .setPose({ 0.0, translation_x, translation_y })
+          .setStepType(StepType::WALKSTEP)
+          .setCharacter(0.7)
+          .setScale(1.0)
+          .setCoordinate(coordinate)
+          .setFoot(Foot::NONE)
+          .setSpeedDirection(Math::fromDegrees(0.0))
+          .setRestriction(RestrictionMode::HARD)
+          .setProtected(false)
+          .setTime(250);
 
         addStep(correction_step);
       }
@@ -686,16 +713,17 @@ bool PathPlanner2018::nearApproach_sideKick(const Foot& foot, const double offse
           && ballPosLeftFoot.abs() < ballPosRightFoot.abs())
         {
           StepBufferElement correction_step;
-          correction_step.setPose({ 0.0, 0.0, 0.0 });
-          correction_step.setStepType(StepType::WALKSTEP);
-          correction_step.setCharacter(0.7);
-          correction_step.setScale(1.0);
-          correction_step.setCoordinate(Coordinate::LFoot);
-          correction_step.setFoot(Foot::NONE);
-          correction_step.setSpeedDirection(Math::fromDegrees(0.0));
-          correction_step.setRestriction(RestrictionMode::HARD);
-          correction_step.setProtected(false);
-          correction_step.setTime(250);
+          correction_step
+            .setPose({ 0.0, 0.0, 0.0 })
+            .setStepType(StepType::WALKSTEP)
+            .setCharacter(0.7)
+            .setScale(1.0)
+            .setCoordinate(Coordinate::LFoot)
+            .setFoot(Foot::NONE)
+            .setSpeedDirection(Math::fromDegrees(0.0))
+            .setRestriction(RestrictionMode::HARD)
+            .setProtected(false)
+            .setTime(250);
 
           addStep(correction_step);
 
@@ -707,16 +735,17 @@ bool PathPlanner2018::nearApproach_sideKick(const Foot& foot, const double offse
           && ballPosRightFoot.abs() < ballPosLeftFoot.abs())
         {
           StepBufferElement correction_step;
-          correction_step.setPose({ 0.0, 0.0, 0.0 });
-          correction_step.setStepType(StepType::WALKSTEP);
-          correction_step.setCharacter(0.7);
-          correction_step.setScale(1.0);
-          correction_step.setCoordinate(Coordinate::RFoot);
-          correction_step.setFoot(Foot::NONE);
-          correction_step.setSpeedDirection(Math::fromDegrees(0.0));
-          correction_step.setRestriction(RestrictionMode::HARD);
-          correction_step.setProtected(false);
-          correction_step.setTime(250);
+          correction_step
+            .setPose({ 0.0, 0.0, 0.0 })
+            .setStepType(StepType::WALKSTEP)
+            .setCharacter(0.7)
+            .setScale(1.0)
+            .setCoordinate(Coordinate::RFoot)
+            .setFoot(Foot::NONE)
+            .setSpeedDirection(Math::fromDegrees(0.0))
+            .setRestriction(RestrictionMode::HARD)
+            .setProtected(false)
+            .setTime(250);
 
           addStep(correction_step);
 
@@ -740,19 +769,19 @@ void PathPlanner2018::forwardKick()
 
     // 2019 version - makes sure to kick with the foot that is behind the ball
     Vector2d ballPos;
-    Foot actual_foot;
+    Foot kicking_foot;
     Coordinate coordinate = Coordinate::Hip;
     if (getBallModel().positionPreview.y < 0)
     {
-      coordinate = Coordinate::LFoot;
-      actual_foot = Foot::RIGHT;
-      ballPos    = getBallModel().positionPreviewInRFoot;
+      coordinate   = Coordinate::LFoot;
+      kicking_foot = Foot::RIGHT;
+      ballPos      = getBallModel().positionPreviewInRFoot;
     }
     else
     {
-      coordinate = Coordinate::RFoot;
-      actual_foot = Foot::LEFT;
-      ballPos    = getBallModel().positionPreviewInLFoot;
+      coordinate   = Coordinate::RFoot;
+      kicking_foot = Foot::LEFT;
+      ballPos      = getBallModel().positionPreviewInLFoot;
     }
 
     /*
@@ -770,14 +799,16 @@ void PathPlanner2018::forwardKick()
       ASSERT(false);
     }
     */
-
+     
     // Correction step if the movable foot is different from the foot that is supposed to kick
+    // THIS should never happen
     /*
-    if (getMotionStatus().stepControl.moveableFoot != (getBallModel().positionPreview.y < 0 ? MotionStatus::StepControlStatus::RIGHT : MotionStatus::StepControlStatus::LEFT))
+    if (!isFootMovable(kicking_foot))
     {
-      StepBufferElement forward_correction_step("forward_correction_step");
+      ASSERT(false);
+      StepBufferElement forward_correction_step("forward_kick_correction_step");
       forward_correction_step
-        .setPose({ 0.0, 100.0, 0.0 })
+        .setPose({ 0.0, 100.0, 0.0 }) // fast forward step
         .setStepType(StepType::WALKSTEP)
         .setCharacter(1.0)
         .setScale(1.0)
@@ -793,14 +824,14 @@ void PathPlanner2018::forwardKick()
     */
 
     // The kick
-    StepBufferElement forward_kick_step;
+    StepBufferElement forward_kick_step("forward_kick");
     forward_kick_step
       .setPose({ 0.0, 500.0, 0.0 }) // kick straight forward
       .setStepType(StepType::KICKSTEP)
       .setCharacter(1.0)
       .setScale(0.7)
       .setCoordinate(coordinate)
-      .setFoot(actual_foot)
+      .setFoot(kicking_foot)
       .setSpeedDirection(Math::fromDegrees(0.0))
       .setRestriction(RestrictionMode::SOFT)
       .setProtected(true)
@@ -826,7 +857,7 @@ void PathPlanner2018::forwardKick()
     //forward_kick_step.setStepType(StepType::WALKSTEP);
     //addStep(forward_kick_step);
 
-    StepBufferElement forward_correction_step("forward_correction_step");
+    StepBufferElement forward_correction_step("forward_kick_stabilize_step");
     forward_correction_step
       .setPose({ 0.0, 0.0, 0.0 })
       .setStepType(StepType::WALKSTEP)
@@ -872,16 +903,17 @@ void PathPlanner2018::sideKick(const Foot& foot) // Foot == RIGHT means that we 
 
     // The kick
     StepBufferElement new_step;
-    new_step.setPose({ 0.0, 500.0, stepY });
-    new_step.setStepType(StepType::KICKSTEP);
-    new_step.setCharacter(1.0);
-    new_step.setScale(1.0);
-    new_step.setCoordinate(coordinate);
-    new_step.setFoot(foot);
-    new_step.setSpeedDirection(speedDirection);
-    new_step.setRestriction(RestrictionMode::SOFT);
-    new_step.setProtected(true);
-    new_step.setTime(params.sideKickTime);
+    new_step
+      .setPose({ 0.0, 500.0, stepY })
+      .setStepType(StepType::KICKSTEP)
+      .setCharacter(1.0)
+      .setScale(1.0)
+      .setCoordinate(coordinate)
+      .setFoot(foot)
+      .setSpeedDirection(speedDirection)
+      .setRestriction(RestrictionMode::SOFT)
+      .setProtected(true)
+      .setTime(params.sideKickTime);
 
     addStep(new_step);
 
@@ -899,10 +931,6 @@ void PathPlanner2018::sideKick(const Foot& foot) // Foot == RIGHT means that we 
 }
 
 
-void PathPlanner2018::addStep(const StepBufferElement& new_step) {
-  stepBuffer.push_back(new_step);
-}
-
 void PathPlanner2018::updateSpecificStep(const unsigned int index, StepBufferElement& step)
 {
   ASSERT(stepBuffer.size() > 0);
@@ -913,31 +941,12 @@ void PathPlanner2018::updateSpecificStep(const unsigned int index, StepBufferEle
 
 void PathPlanner2018::manageStepBuffer()
 {
-  if (stepBuffer.empty())
-  {
+  if (stepBuffer.empty()) {
     return;
   }
 
   // requested step has been accepted
-  if (lastStepRequestID == getMotionStatus().stepControl.stepRequestID)
-  {
-    /*std::string lastStepType = "";
-    if (stepBuffer[0].type == StepType::KICKSTEP)
-    {
-      lastStepType = "KICKSTEP";
-    }
-    else if (stepBuffer[0].type == StepType::WALKSTEP)
-    {
-      lastStepType = "WALKSTEP";
-    }
-    else if (stepBuffer[0].type == StepType::ZEROSTEP)
-    {
-      lastStepType = "ZEROSTEP";
-    }
-
-    std::cout << "Last executed step: " << lastStepType << " -- " << numPossibleSteps << " > " << params.readyForKickThreshold << " or " << numRotationStepsNecessary << " > " << numPossibleSteps << std::endl;
-    */
-
+  if (lastStepRequestID == getMotionStatus().stepControl.stepRequestID) {
     stepBuffer.erase(stepBuffer.begin());
     lastStepRequestID = getMotionStatus().stepControl.stepRequestID + 1;
   }

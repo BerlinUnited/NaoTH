@@ -20,4 +20,5 @@ namespace path_symbols("PathPlanner Symbols") {
   bool output path.stable;
 
   bool input path.kick_executed;
+  bool input path.turn_around_ball_2_target_reached;
 }
