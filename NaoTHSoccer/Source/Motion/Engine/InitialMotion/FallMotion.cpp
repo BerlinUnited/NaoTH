@@ -10,7 +10,7 @@ FallMotion::FallMotion()
   :
   AbstractMotion(motion::falling, getMotionLock())
 {
-/*    HeadPitch,
+  /*    HeadPitch,
       HeadYaw,
 
       RShoulderRoll,
@@ -40,7 +40,7 @@ FallMotion::FallMotion()
       RWristYaw,
       LHand,
       RHand*/
-/*  fall_front_map = {
+  /*  fall_front_map = {
   {-38,0,-10,10,90,90, 0,  0,-100,100,0,0,-24,-24,0,0,105,105,-75,-75,0,0},
   {-38,0,-10,10, 5, 5,60,-60,-100,100,0,0,-24,-24,0,0,105,105,-75,-75,0,0},
   {-38,0,-10,10, 5, 5,60,-60,-100,100,0,0,-24,-24,0,0,105,105,-75,-75,0,0}};
@@ -90,7 +90,7 @@ void FallMotion::execute() {
 
 
     int t = getFrameInfo().getTimeSince(startTime); // in ms
-    if(abs(getInertialSensorData().data.y) > 20 || t < 2000) { // assure motion lasts 2s max
+    if(abs(getInertialSensorData().data.y) > 20 || t < 1500) { // assure motion lasts 2s max
 
         bool fallingForward = (Math::toDegrees(getInertialSensorData().data.y) > 0);
 
@@ -98,12 +98,12 @@ void FallMotion::execute() {
             {
                 {-38,0,-10,10,90,90, 0,  0,-100,100,0,0,-24,-24,0,0,105,105,-75,-75,0,0},
                 {100,100,  100,100,100,100,  100,100,100,100, 20,20,20,20,20,20, 20,20,20,20},
-                300,
-                40
+                100,
+                30
             },{
                 {-38,0,-10,10, 5, 5,60,-60,-100,100,0,0,-24,-24,0,0,105,105,-75,-75,0,0},
                 {100,100,  100,100,100,100,  100,100,100,100, 20,20,20,20,20,20, 20,20,20,20},
-                700,
+                600,
                 70
             },{
                 {-38,0,-10,10, 5, 5,60,-60,-100,100,0,0,-24,-24,0,0,105,105,-75,-75,0,0},
@@ -122,8 +122,8 @@ void FallMotion::execute() {
             },{
                 {29,0,-12,12,123,123,78,-78,-17,17,0,0,-90,-90,0,0,105,105,-45,-45,0,0},
                 {100,100,  100,100,100,100,  100,100,100,100, 20,20,20,20,20,20, 20,20,20,20},
-                500,
-                65
+                600,
+                70
             },{
                 {29,0,-12,12,123,123,78,-78,-17,17,0,0,-90,-90,0,0,105,105,-45,-45,0,0},
                 {5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5},
@@ -142,10 +142,13 @@ void FallMotion::execute() {
             {
                 getMotorJointData().position[i] = Math::fromDegrees(kf.jointValues[i]);
                 getMotorJointData().stiffness[i] = kf.stiffnessValues[i] / 100.0;
-//                std::cerr << kf.jointValues[i] << " ";
+                std::cerr << kf.jointValues[i] << " ";
             }
 
-//            std::cerr << "yAxis: " << Math::toDegrees(getInertialSensorData().data.y) << " t: " << t << "\n";
+            /*for (int i = 0; i < 22; ++i) {
+                std::cerr << kf.stiffnessValues[i] << " ";
+            }
+            std::cerr << "y: " << Math::toDegrees(getInertialSensorData().data.y) << " t: " << t << "\n";*/
             break;
         }
 /*        for (int i = 0; i < size(fall_times); i++) { // todo: only for debug
