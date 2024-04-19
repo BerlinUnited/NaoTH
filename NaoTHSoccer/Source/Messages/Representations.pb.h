@@ -265,6 +265,26 @@ inline bool StepControlRequest_RestrictionMode_Parse(
   return ::google::protobuf::internal::ParseNamedEnum<StepControlRequest_RestrictionMode>(
     StepControlRequest_RestrictionMode_descriptor(), name, value);
 }
+enum StepControlRequest_KickStepType {
+  StepControlRequest_KickStepType_NORMAL = 0,
+  StepControlRequest_KickStepType_SHORT = 1,
+  StepControlRequest_KickStepType_LONG = 2
+};
+bool StepControlRequest_KickStepType_IsValid(int value);
+const StepControlRequest_KickStepType StepControlRequest_KickStepType_KickStepType_MIN = StepControlRequest_KickStepType_NORMAL;
+const StepControlRequest_KickStepType StepControlRequest_KickStepType_KickStepType_MAX = StepControlRequest_KickStepType_LONG;
+const int StepControlRequest_KickStepType_KickStepType_ARRAYSIZE = StepControlRequest_KickStepType_KickStepType_MAX + 1;
+
+const ::google::protobuf::EnumDescriptor* StepControlRequest_KickStepType_descriptor();
+inline const ::std::string& StepControlRequest_KickStepType_Name(StepControlRequest_KickStepType value) {
+  return ::google::protobuf::internal::NameOfEnum(
+    StepControlRequest_KickStepType_descriptor(), value);
+}
+inline bool StepControlRequest_KickStepType_Parse(
+    const ::std::string& name, StepControlRequest_KickStepType* value) {
+  return ::google::protobuf::internal::ParseNamedEnum<StepControlRequest_KickStepType>(
+    StepControlRequest_KickStepType_descriptor(), name, value);
+}
 enum LinePercept_Intersection_IntersectionType {
   LinePercept_Intersection_IntersectionType_unknown = 0,
   LinePercept_Intersection_IntersectionType_T = 1,
@@ -1853,6 +1873,34 @@ class StepControlRequest : public ::google::protobuf::Message /* @@protoc_insert
     return StepControlRequest_RestrictionMode_Parse(name, value);
   }
 
+  typedef StepControlRequest_KickStepType KickStepType;
+  static const KickStepType NORMAL =
+    StepControlRequest_KickStepType_NORMAL;
+  static const KickStepType SHORT =
+    StepControlRequest_KickStepType_SHORT;
+  static const KickStepType LONG =
+    StepControlRequest_KickStepType_LONG;
+  static inline bool KickStepType_IsValid(int value) {
+    return StepControlRequest_KickStepType_IsValid(value);
+  }
+  static const KickStepType KickStepType_MIN =
+    StepControlRequest_KickStepType_KickStepType_MIN;
+  static const KickStepType KickStepType_MAX =
+    StepControlRequest_KickStepType_KickStepType_MAX;
+  static const int KickStepType_ARRAYSIZE =
+    StepControlRequest_KickStepType_KickStepType_ARRAYSIZE;
+  static inline const ::google::protobuf::EnumDescriptor*
+  KickStepType_descriptor() {
+    return StepControlRequest_KickStepType_descriptor();
+  }
+  static inline const ::std::string& KickStepType_Name(KickStepType value) {
+    return StepControlRequest_KickStepType_Name(value);
+  }
+  static inline bool KickStepType_Parse(const ::std::string& name,
+      KickStepType* value) {
+    return StepControlRequest_KickStepType_Parse(name, value);
+  }
+
   // accessors -------------------------------------------------------
 
   // required .naothmessages.Pose2D target = 3;
@@ -1863,6 +1911,15 @@ class StepControlRequest : public ::google::protobuf::Message /* @@protoc_insert
   ::naothmessages::Pose2D* mutable_target();
   ::naothmessages::Pose2D* release_target();
   void set_allocated_target(::naothmessages::Pose2D* target);
+
+  // optional .naothmessages.Pose2D kickTarget = 11;
+  bool has_kicktarget() const;
+  void clear_kicktarget();
+  static const int kKickTargetFieldNumber = 11;
+  const ::naothmessages::Pose2D& kicktarget() const;
+  ::naothmessages::Pose2D* mutable_kicktarget();
+  ::naothmessages::Pose2D* release_kicktarget();
+  void set_allocated_kicktarget(::naothmessages::Pose2D* kicktarget);
 
   // required uint32 stepID = 1;
   bool has_stepid() const;
@@ -1927,6 +1984,13 @@ class StepControlRequest : public ::google::protobuf::Message /* @@protoc_insert
   ::google::protobuf::uint32 steprequestid() const;
   void set_steprequestid(::google::protobuf::uint32 value);
 
+  // optional .naothmessages.StepControlRequest.KickStepType kickStepType = 12;
+  bool has_kicksteptype() const;
+  void clear_kicksteptype();
+  static const int kKickStepTypeFieldNumber = 12;
+  ::naothmessages::StepControlRequest_KickStepType kicksteptype() const;
+  void set_kicksteptype(::naothmessages::StepControlRequest_KickStepType value);
+
   // @@protoc_insertion_point(class_scope:naothmessages.StepControlRequest)
  private:
   void set_has_stepid();
@@ -1949,6 +2013,10 @@ class StepControlRequest : public ::google::protobuf::Message /* @@protoc_insert
   void clear_has_isprotected();
   void set_has_steprequestid();
   void clear_has_steprequestid();
+  void set_has_kicktarget();
+  void clear_has_kicktarget();
+  void set_has_kicksteptype();
+  void clear_has_kicksteptype();
 
   // helper for ByteSizeLong()
   size_t RequiredFieldsByteSizeFallback() const;
@@ -1957,6 +2025,7 @@ class StepControlRequest : public ::google::protobuf::Message /* @@protoc_insert
   ::google::protobuf::internal::HasBits<1> _has_bits_;
   mutable int _cached_size_;
   ::naothmessages::Pose2D* target_;
+  ::naothmessages::Pose2D* kicktarget_;
   ::google::protobuf::uint32 stepid_;
   ::google::protobuf::uint32 time_;
   double speeddirection_;
@@ -1966,6 +2035,7 @@ class StepControlRequest : public ::google::protobuf::Message /* @@protoc_insert
   int steptype_;
   int restriction_;
   ::google::protobuf::uint32 steprequestid_;
+  int kicksteptype_;
   friend struct protobuf_Representations_2eproto::TableStruct;
 };
 // -------------------------------------------------------------------
@@ -9818,13 +9888,13 @@ inline void HeadMotionRequest::set_velocity(double value) {
 
 // required uint32 stepID = 1;
 inline bool StepControlRequest::has_stepid() const {
-  return (_has_bits_[0] & 0x00000002u) != 0;
+  return (_has_bits_[0] & 0x00000004u) != 0;
 }
 inline void StepControlRequest::set_has_stepid() {
-  _has_bits_[0] |= 0x00000002u;
+  _has_bits_[0] |= 0x00000004u;
 }
 inline void StepControlRequest::clear_has_stepid() {
-  _has_bits_[0] &= ~0x00000002u;
+  _has_bits_[0] &= ~0x00000004u;
 }
 inline void StepControlRequest::clear_stepid() {
   stepid_ = 0u;
@@ -9842,13 +9912,13 @@ inline void StepControlRequest::set_stepid(::google::protobuf::uint32 value) {
 
 // required bool moveLeftFoot = 2;
 inline bool StepControlRequest::has_moveleftfoot() const {
-  return (_has_bits_[0] & 0x00000020u) != 0;
+  return (_has_bits_[0] & 0x00000040u) != 0;
 }
 inline void StepControlRequest::set_has_moveleftfoot() {
-  _has_bits_[0] |= 0x00000020u;
+  _has_bits_[0] |= 0x00000040u;
 }
 inline void StepControlRequest::clear_has_moveleftfoot() {
-  _has_bits_[0] &= ~0x00000020u;
+  _has_bits_[0] &= ~0x00000040u;
 }
 inline void StepControlRequest::clear_moveleftfoot() {
   moveleftfoot_ = false;
@@ -9912,13 +9982,13 @@ inline void StepControlRequest::set_allocated_target(::naothmessages::Pose2D* ta
 
 // required uint32 time = 4;
 inline bool StepControlRequest::has_time() const {
-  return (_has_bits_[0] & 0x00000004u) != 0;
+  return (_has_bits_[0] & 0x00000008u) != 0;
 }
 inline void StepControlRequest::set_has_time() {
-  _has_bits_[0] |= 0x00000004u;
+  _has_bits_[0] |= 0x00000008u;
 }
 inline void StepControlRequest::clear_has_time() {
-  _has_bits_[0] &= ~0x00000004u;
+  _has_bits_[0] &= ~0x00000008u;
 }
 inline void StepControlRequest::clear_time() {
   time_ = 0u;
@@ -9936,13 +10006,13 @@ inline void StepControlRequest::set_time(::google::protobuf::uint32 value) {
 
 // required double speedDirection = 5;
 inline bool StepControlRequest::has_speeddirection() const {
-  return (_has_bits_[0] & 0x00000008u) != 0;
+  return (_has_bits_[0] & 0x00000010u) != 0;
 }
 inline void StepControlRequest::set_has_speeddirection() {
-  _has_bits_[0] |= 0x00000008u;
+  _has_bits_[0] |= 0x00000010u;
 }
 inline void StepControlRequest::clear_has_speeddirection() {
-  _has_bits_[0] &= ~0x00000008u;
+  _has_bits_[0] &= ~0x00000010u;
 }
 inline void StepControlRequest::clear_speeddirection() {
   speeddirection_ = 0;
@@ -9960,13 +10030,13 @@ inline void StepControlRequest::set_speeddirection(double value) {
 
 // required double scale = 6;
 inline bool StepControlRequest::has_scale() const {
-  return (_has_bits_[0] & 0x00000010u) != 0;
+  return (_has_bits_[0] & 0x00000020u) != 0;
 }
 inline void StepControlRequest::set_has_scale() {
-  _has_bits_[0] |= 0x00000010u;
+  _has_bits_[0] |= 0x00000020u;
 }
 inline void StepControlRequest::clear_has_scale() {
-  _has_bits_[0] &= ~0x00000010u;
+  _has_bits_[0] &= ~0x00000020u;
 }
 inline void StepControlRequest::clear_scale() {
   scale_ = 0;
@@ -9984,13 +10054,13 @@ inline void StepControlRequest::set_scale(double value) {
 
 // required .naothmessages.StepControlRequest.StepType steptype = 7;
 inline bool StepControlRequest::has_steptype() const {
-  return (_has_bits_[0] & 0x00000080u) != 0;
+  return (_has_bits_[0] & 0x00000100u) != 0;
 }
 inline void StepControlRequest::set_has_steptype() {
-  _has_bits_[0] |= 0x00000080u;
+  _has_bits_[0] |= 0x00000100u;
 }
 inline void StepControlRequest::clear_has_steptype() {
-  _has_bits_[0] &= ~0x00000080u;
+  _has_bits_[0] &= ~0x00000100u;
 }
 inline void StepControlRequest::clear_steptype() {
   steptype_ = 0;
@@ -10009,13 +10079,13 @@ inline void StepControlRequest::set_steptype(::naothmessages::StepControlRequest
 
 // required .naothmessages.StepControlRequest.RestrictionMode restriction = 8;
 inline bool StepControlRequest::has_restriction() const {
-  return (_has_bits_[0] & 0x00000100u) != 0;
+  return (_has_bits_[0] & 0x00000200u) != 0;
 }
 inline void StepControlRequest::set_has_restriction() {
-  _has_bits_[0] |= 0x00000100u;
+  _has_bits_[0] |= 0x00000200u;
 }
 inline void StepControlRequest::clear_has_restriction() {
-  _has_bits_[0] &= ~0x00000100u;
+  _has_bits_[0] &= ~0x00000200u;
 }
 inline void StepControlRequest::clear_restriction() {
   restriction_ = 0;
@@ -10034,13 +10104,13 @@ inline void StepControlRequest::set_restriction(::naothmessages::StepControlRequ
 
 // required bool isProtected = 9;
 inline bool StepControlRequest::has_isprotected() const {
-  return (_has_bits_[0] & 0x00000040u) != 0;
+  return (_has_bits_[0] & 0x00000080u) != 0;
 }
 inline void StepControlRequest::set_has_isprotected() {
-  _has_bits_[0] |= 0x00000040u;
+  _has_bits_[0] |= 0x00000080u;
 }
 inline void StepControlRequest::clear_has_isprotected() {
-  _has_bits_[0] &= ~0x00000040u;
+  _has_bits_[0] &= ~0x00000080u;
 }
 inline void StepControlRequest::clear_isprotected() {
   isprotected_ = false;
@@ -10058,13 +10128,13 @@ inline void StepControlRequest::set_isprotected(bool value) {
 
 // required uint32 stepRequestID = 10;
 inline bool StepControlRequest::has_steprequestid() const {
-  return (_has_bits_[0] & 0x00000200u) != 0;
+  return (_has_bits_[0] & 0x00000400u) != 0;
 }
 inline void StepControlRequest::set_has_steprequestid() {
-  _has_bits_[0] |= 0x00000200u;
+  _has_bits_[0] |= 0x00000400u;
 }
 inline void StepControlRequest::clear_has_steprequestid() {
-  _has_bits_[0] &= ~0x00000200u;
+  _has_bits_[0] &= ~0x00000400u;
 }
 inline void StepControlRequest::clear_steprequestid() {
   steprequestid_ = 0u;
@@ -10078,6 +10148,77 @@ inline void StepControlRequest::set_steprequestid(::google::protobuf::uint32 val
   set_has_steprequestid();
   steprequestid_ = value;
   // @@protoc_insertion_point(field_set:naothmessages.StepControlRequest.stepRequestID)
+}
+
+// optional .naothmessages.Pose2D kickTarget = 11;
+inline bool StepControlRequest::has_kicktarget() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void StepControlRequest::set_has_kicktarget() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void StepControlRequest::clear_has_kicktarget() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void StepControlRequest::clear_kicktarget() {
+  if (kicktarget_ != NULL) kicktarget_->::naothmessages::Pose2D::Clear();
+  clear_has_kicktarget();
+}
+inline const ::naothmessages::Pose2D& StepControlRequest::kicktarget() const {
+  const ::naothmessages::Pose2D* p = kicktarget_;
+  // @@protoc_insertion_point(field_get:naothmessages.StepControlRequest.kickTarget)
+  return p != NULL ? *p : *reinterpret_cast<const ::naothmessages::Pose2D*>(
+      &::naothmessages::_Pose2D_default_instance_);
+}
+inline ::naothmessages::Pose2D* StepControlRequest::mutable_kicktarget() {
+  set_has_kicktarget();
+  if (kicktarget_ == NULL) {
+    kicktarget_ = new ::naothmessages::Pose2D;
+  }
+  // @@protoc_insertion_point(field_mutable:naothmessages.StepControlRequest.kickTarget)
+  return kicktarget_;
+}
+inline ::naothmessages::Pose2D* StepControlRequest::release_kicktarget() {
+  // @@protoc_insertion_point(field_release:naothmessages.StepControlRequest.kickTarget)
+  clear_has_kicktarget();
+  ::naothmessages::Pose2D* temp = kicktarget_;
+  kicktarget_ = NULL;
+  return temp;
+}
+inline void StepControlRequest::set_allocated_kicktarget(::naothmessages::Pose2D* kicktarget) {
+  delete kicktarget_;
+  kicktarget_ = kicktarget;
+  if (kicktarget) {
+    set_has_kicktarget();
+  } else {
+    clear_has_kicktarget();
+  }
+  // @@protoc_insertion_point(field_set_allocated:naothmessages.StepControlRequest.kickTarget)
+}
+
+// optional .naothmessages.StepControlRequest.KickStepType kickStepType = 12;
+inline bool StepControlRequest::has_kicksteptype() const {
+  return (_has_bits_[0] & 0x00000800u) != 0;
+}
+inline void StepControlRequest::set_has_kicksteptype() {
+  _has_bits_[0] |= 0x00000800u;
+}
+inline void StepControlRequest::clear_has_kicksteptype() {
+  _has_bits_[0] &= ~0x00000800u;
+}
+inline void StepControlRequest::clear_kicksteptype() {
+  kicksteptype_ = 0;
+  clear_has_kicksteptype();
+}
+inline ::naothmessages::StepControlRequest_KickStepType StepControlRequest::kicksteptype() const {
+  // @@protoc_insertion_point(field_get:naothmessages.StepControlRequest.kickStepType)
+  return static_cast< ::naothmessages::StepControlRequest_KickStepType >(kicksteptype_);
+}
+inline void StepControlRequest::set_kicksteptype(::naothmessages::StepControlRequest_KickStepType value) {
+  assert(::naothmessages::StepControlRequest_KickStepType_IsValid(value));
+  set_has_kicksteptype();
+  kicksteptype_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.StepControlRequest.kickStepType)
 }
 
 // -------------------------------------------------------------------
@@ -16008,6 +16149,11 @@ template <> struct is_proto_enum< ::naothmessages::StepControlRequest_Restrictio
 template <>
 inline const EnumDescriptor* GetEnumDescriptor< ::naothmessages::StepControlRequest_RestrictionMode>() {
   return ::naothmessages::StepControlRequest_RestrictionMode_descriptor();
+}
+template <> struct is_proto_enum< ::naothmessages::StepControlRequest_KickStepType> : ::google::protobuf::internal::true_type {};
+template <>
+inline const EnumDescriptor* GetEnumDescriptor< ::naothmessages::StepControlRequest_KickStepType>() {
+  return ::naothmessages::StepControlRequest_KickStepType_descriptor();
 }
 template <> struct is_proto_enum< ::naothmessages::LinePercept_Intersection_IntersectionType> : ::google::protobuf::internal::true_type {};
 template <>

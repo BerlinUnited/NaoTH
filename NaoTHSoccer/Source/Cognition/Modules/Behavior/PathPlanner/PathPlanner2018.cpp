@@ -823,11 +823,27 @@ void PathPlanner2018::forwardKick()
     }
     */
 
+
+    Pose2D kickTarget = {0.0, 500.0, 0.0};
+    // NOTE: change the kick pose if the parameter is set
+    if (params.forwardKickAdaptive) {
+        kickTarget = {0.0, ballPos.x, ballPos.y};  // kick towards the ball
+    } 
+
+
+    KickStepType kickStepType = (KickStepType)params.forwardKickStepType;
+    Pose2D stepTarget = kickTarget;
+    if(kickStepType != KickStepType::NORMAL) {
+        stepTarget = {0, 0, 0};
+    }
+
     // The kick
     StepBufferElement forward_kick_step("forward_kick");
     forward_kick_step
-      .setPose({ 0.0, 500.0, 0.0 }) // kick straight forward
+      .setPose(stepTarget)  // kick straight forward
       .setStepType(StepType::KICKSTEP)
+      .setKickStepType(kickStepType)
+      .setKickTarget(kickTarget)
       .setCharacter(1.0)
       .setScale(0.7)
       .setCoordinate(coordinate)
@@ -837,10 +853,7 @@ void PathPlanner2018::forwardKick()
       .setProtected(true)
       .setTime(params.forwardKickTime);
 
-    // NOTE: change the kick pose if the parameter is set
-    if(params.forwardKickAdaptive) {
-      forward_kick_step.setPose({ 0.0, ballPos.x, ballPos.y }); // kick towards the ball
-    }
+    
 
     // Experimental: for Gewaltkick
     //               additional steps need to be be commented out
@@ -1004,6 +1017,10 @@ void PathPlanner2018::executeStepBuffer()
   getMotionRequest().walkRequest.stepControl.isProtected    = stepBuffer.front().isProtected;
   getMotionRequest().walkRequest.stepControl.stepRequestID  = lastStepRequestID;
   getMotionRequest().walkRequest.stepControl.moveLeftFoot   = (footToUse != Foot::RIGHT); // false means right foot
+
+  // only for kicks
+  getMotionRequest().walkRequest.stepControl.kickStepType   = stepBuffer.front().kickStepType;
+  getMotionRequest().walkRequest.stepControl.kickTarget     = stepBuffer.front().kickTarget;
 
   //std::cout << stepBuffer.front().debug_name << " - " << getMotionRequest().walkRequest.stepControl.moveLeftFoot  << std::endl;
   STOPWATCH_STOP("PathPlanner2018:execute_steplist");
