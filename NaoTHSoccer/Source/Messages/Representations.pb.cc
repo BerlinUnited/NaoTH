@@ -280,7 +280,7 @@ namespace protobuf_Representations_2eproto {
 namespace {
 
 ::google::protobuf::Metadata file_level_metadata[51];
-const ::google::protobuf::EnumDescriptor* file_level_enum_descriptors[9];
+const ::google::protobuf::EnumDescriptor* file_level_enum_descriptors[10];
 
 }  // namespace
 
@@ -494,16 +494,20 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_ATTRIBUTE_SECTION
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(StepControlRequest, restriction_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(StepControlRequest, isprotected_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(StepControlRequest, steprequestid_),
-  1,
-  5,
-  0,
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(StepControlRequest, kicktarget_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(StepControlRequest, kicksteptype_),
   2,
+  6,
+  0,
   3,
   4,
-  7,
+  5,
   8,
-  6,
   9,
+  7,
+  10,
+  1,
+  11,
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(WalkRequest, _has_bits_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(WalkRequest, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -1058,49 +1062,49 @@ static const ::google::protobuf::internal::MigrationSchema schemas[] GOOGLE_ATTR
   { 73, 84, sizeof(GoalPercept_GoalPost)},
   { 90, 99, sizeof(GoalPercept)},
   { 103, 119, sizeof(HeadMotionRequest)},
-  { 130, 145, sizeof(StepControlRequest)},
-  { 155, 165, sizeof(WalkRequest)},
-  { 170, 179, sizeof(KickRequest)},
-  { 183, 192, sizeof(GraspRequest)},
-  { 196, 210, sizeof(ArmMotionRequest)},
-  { 219, 237, sizeof(MotionRequest)},
-  { 250, 262, sizeof(LinePercept_Intersection)},
-  { 269, 282, sizeof(LinePercept_FieldLineSegment)},
-  { 290, 298, sizeof(LinePercept)},
-  { 301, 307, sizeof(ShortLinePercept)},
-  { 308, 314, sizeof(Polygon)},
-  { 315, 321, sizeof(FieldPercept)},
-  { 322, 328, sizeof(RansacLinePercept)},
-  { 329, 336, sizeof(RansacCirclePercept2018)},
-  { 338, 347, sizeof(ScanLineEndPoint)},
-  { 351, 358, sizeof(DoubleEdgel)},
-  { 360, 367, sizeof(Edgel)},
-  { 369, 378, sizeof(EdgelPair)},
-  { 382, 390, sizeof(ScanLineEdgelPercept)},
-  { 393, 401, sizeof(LineGraphPercept)},
-  { 404, 412, sizeof(StepControlStatus)},
-  { 415, 434, sizeof(MotionStatus)},
-  { 448, 454, sizeof(OdometryData)},
-  { 455, 461, sizeof(BodyState)},
-  { 462, 469, sizeof(BodyStatus)},
-  { 471, 480, sizeof(CalibrationData)},
-  { 484, 490, sizeof(InertialModel)},
-  { 491, 500, sizeof(CameraMatrixCalibration)},
-  { 504, 513, sizeof(BallCandidates_Patch)},
-  { 517, 523, sizeof(BallCandidates)},
-  { 524, 533, sizeof(RemoteControlCommand)},
-  { 537, 545, sizeof(GroundContactModel)},
-  { 548, 559, sizeof(CollisionPercept)},
-  { 565, 580, sizeof(IMUData)},
-  { 590, 604, sizeof(CentreOfPressure)},
-  { 613, 624, sizeof(CalibrationDataCMC_CalibrationDataSampleV3)},
-  { 630, 637, sizeof(CalibrationDataCMC)},
-  { 639, 647, sizeof(WhistlePercept_Whistle)},
-  { 650, 659, sizeof(WhistlePercept)},
-  { 663, 671, sizeof(DebugModify_ModifyValue)},
-  { 674, 680, sizeof(DebugModify)},
-  { 681, 687, sizeof(StepBuffer)},
-  { 688, 696, sizeof(bodyAwareness)},
+  { 130, 147, sizeof(StepControlRequest)},
+  { 159, 169, sizeof(WalkRequest)},
+  { 174, 183, sizeof(KickRequest)},
+  { 187, 196, sizeof(GraspRequest)},
+  { 200, 214, sizeof(ArmMotionRequest)},
+  { 223, 241, sizeof(MotionRequest)},
+  { 254, 266, sizeof(LinePercept_Intersection)},
+  { 273, 286, sizeof(LinePercept_FieldLineSegment)},
+  { 294, 302, sizeof(LinePercept)},
+  { 305, 311, sizeof(ShortLinePercept)},
+  { 312, 318, sizeof(Polygon)},
+  { 319, 325, sizeof(FieldPercept)},
+  { 326, 332, sizeof(RansacLinePercept)},
+  { 333, 340, sizeof(RansacCirclePercept2018)},
+  { 342, 351, sizeof(ScanLineEndPoint)},
+  { 355, 362, sizeof(DoubleEdgel)},
+  { 364, 371, sizeof(Edgel)},
+  { 373, 382, sizeof(EdgelPair)},
+  { 386, 394, sizeof(ScanLineEdgelPercept)},
+  { 397, 405, sizeof(LineGraphPercept)},
+  { 408, 416, sizeof(StepControlStatus)},
+  { 419, 438, sizeof(MotionStatus)},
+  { 452, 458, sizeof(OdometryData)},
+  { 459, 465, sizeof(BodyState)},
+  { 466, 473, sizeof(BodyStatus)},
+  { 475, 484, sizeof(CalibrationData)},
+  { 488, 494, sizeof(InertialModel)},
+  { 495, 504, sizeof(CameraMatrixCalibration)},
+  { 508, 517, sizeof(BallCandidates_Patch)},
+  { 521, 527, sizeof(BallCandidates)},
+  { 528, 537, sizeof(RemoteControlCommand)},
+  { 541, 549, sizeof(GroundContactModel)},
+  { 552, 563, sizeof(CollisionPercept)},
+  { 569, 584, sizeof(IMUData)},
+  { 594, 608, sizeof(CentreOfPressure)},
+  { 617, 628, sizeof(CalibrationDataCMC_CalibrationDataSampleV3)},
+  { 634, 641, sizeof(CalibrationDataCMC)},
+  { 643, 651, sizeof(WhistlePercept_Whistle)},
+  { 654, 663, sizeof(WhistlePercept)},
+  { 667, 675, sizeof(DebugModify_ModifyValue)},
+  { 678, 684, sizeof(DebugModify)},
+  { 685, 691, sizeof(StepBuffer)},
+  { 692, 700, sizeof(bodyAwareness)},
 };
 
 static ::google::protobuf::Message const * const file_default_instances[] = {
@@ -1331,6 +1335,8 @@ void TableStruct::InitDefaultsImpl() {
       ::naothmessages::DoubleVector2::internal_default_instance());
   _StepControlRequest_default_instance_._instance.get_mutable()->target_ = const_cast< ::naothmessages::Pose2D*>(
       ::naothmessages::Pose2D::internal_default_instance());
+  _StepControlRequest_default_instance_._instance.get_mutable()->kicktarget_ = const_cast< ::naothmessages::Pose2D*>(
+      ::naothmessages::Pose2D::internal_default_instance());
   _WalkRequest_default_instance_._instance.get_mutable()->target_ = const_cast< ::naothmessages::Pose2D*>(
       ::naothmessages::Pose2D::internal_default_instance());
   _WalkRequest_default_instance_._instance.get_mutable()->stepcontrol_ = const_cast< ::naothmessages::StepControlRequest*>(
@@ -1516,7 +1522,7 @@ void AddDescriptorsImpl() {
       "naothmessages.DoubleVector3\022\027\n\017searchDir"
       "ection\030\010 \001(\010\022<\n\026targetPointOnTheGround\030\t"
       " \001(\0132\034.naothmessages.DoubleVector2\022\022\n\nco"
-      "ordinate\030\n \001(\r\022\020\n\010velocity\030\013 \001(\001\"\245\003\n\022Ste"
+      "ordinate\030\n \001(\r\022\020\n\010velocity\030\013 \001(\001\"\307\004\n\022Ste"
       "pControlRequest\022\016\n\006stepID\030\001 \002(\r\022\024\n\014moveL"
       "eftFoot\030\002 \002(\010\022%\n\006target\030\003 \002(\0132\025.naothmes"
       "sages.Pose2D\022\014\n\004time\030\004 \002(\r\022\026\n\016speedDirec"
@@ -1525,205 +1531,209 @@ void AddDescriptorsImpl() {
       "tepType\022F\n\013restriction\030\010 \002(\01621.naothmess"
       "ages.StepControlRequest.RestrictionMode\022"
       "\023\n\013isProtected\030\t \002(\010\022\025\n\rstepRequestID\030\n "
-      "\002(\r\"4\n\010StepType\022\014\n\010WALKSTEP\020\000\022\014\n\010KICKSTE"
-      "P\020\001\022\014\n\010ZEROSTEP\020\002\"%\n\017RestrictionMode\022\010\n\004"
-      "HARD\020\000\022\010\n\004SOFT\020\001\"\272\001\n\013WalkRequest\022\022\n\ncoor"
-      "dinate\030\001 \002(\r\022\021\n\tcharacter\030\002 \002(\001\022%\n\006targe"
-      "t\030\003 \002(\0132\025.naothmessages.Pose2D\0226\n\013stepCo"
-      "ntrol\030\004 \001(\0132!.naothmessages.StepControlR"
-      "equest\022%\n\006offset\030\005 \002(\0132\025.naothmessages.P"
-      "ose2D\"{\n\013KickRequest\022/\n\tkickPoint\030\001 \002(\0132"
-      "\034.naothmessages.DoubleVector3\022\025\n\rkickDir"
-      "ection\030\002 \002(\001\022\020\n\010kickFoot\030\003 \002(\005\022\022\n\nfinish"
-      "Kick\030\004 \002(\010\"\213\001\n\014GraspRequest\0223\n\rgraspingP"
-      "oint\030\001 \002(\0132\034.naothmessages.DoubleVector3"
-      "\022\025\n\rgraspingState\030\002 \002(\r\022\026\n\016graspDistStat"
-      "e\030\003 \002(\r\022\027\n\017graspStiffState\030\004 \002(\r\"\336\003\n\020Arm"
-      "MotionRequest\022\n\n\002id\030\001 \002(\r\0227\n\021lShoulderPo"
-      "sition\030\002 \001(\0132\034.naothmessages.DoubleVecto"
-      "r2\0228\n\022lShoulderStiffness\030\003 \001(\0132\034.naothme"
-      "ssages.DoubleVector2\0224\n\016lElbowPosition\030\004"
-      " \001(\0132\034.naothmessages.DoubleVector2\0225\n\017lE"
-      "lbowStiffness\030\005 \001(\0132\034.naothmessages.Doub"
-      "leVector2\0227\n\021rShoulderPosition\030\006 \001(\0132\034.n"
-      "aothmessages.DoubleVector2\0228\n\022rShoulderS"
-      "tiffness\030\007 \001(\0132\034.naothmessages.DoubleVec"
-      "tor2\0224\n\016rElbowPosition\030\010 \001(\0132\034.naothmess"
-      "ages.DoubleVector2\0225\n\017rElbowStiffness\030\t "
-      "\001(\0132\034.naothmessages.DoubleVector2\"\264\003\n\rMo"
-      "tionRequest\022\n\n\002id\030\001 \002(\r\022\014\n\004time\030\002 \002(\r\022\016\n"
-      "\006forced\030\003 \002(\010\022/\n\013walkRequest\030\004 \001(\0132\032.nao"
-      "thmessages.WalkRequest\022\026\n\016starndardStand"
-      "\030\005 \001(\010\022/\n\013kickRequest\030\006 \001(\0132\032.naothmessa"
-      "ges.KickRequest\022\023\n\013standHeight\030\007 \001(\001\022\"\n\032"
-      "calibrateFootTouchDetector\030\010 \001(\010\022\034\n\024cogn"
-      "itionFrameNumber\030\t \001(\r\0221\n\014graspRequest\030\n"
-      " \001(\0132\033.naothmessages.GraspRequest\0229\n\020arm"
-      "MotionRequest\030\013 \001(\0132\037.naothmessages.ArmM"
-      "otionRequest\022\035\n\025disable_relaxed_stand\030\014 "
-      "\001(\010\022\033\n\023standRelaxStiffness\030\r \001(\010\"\232\006\n\013Lin"
-      "ePercept\022:\n\005lines\030\001 \003(\0132+.naothmessages."
-      "LinePercept.FieldLineSegment\022>\n\rintersec"
-      "tions\030\002 \003(\0132\'.naothmessages.LinePercept."
-      "Intersection\0228\n\022middleCircleCenter\030\003 \001(\013"
-      "2\034.naothmessages.DoubleVector2\032\353\002\n\014Inter"
-      "section\0220\n\nposInImage\030\001 \001(\0132\034.naothmessa"
-      "ges.DoubleVector2\0220\n\nposOnField\030\002 \001(\0132\034."
-      "naothmessages.DoubleVector2\022F\n\004type\030\003 \001("
-      "\01628.naothmessages.LinePercept.Intersecti"
-      "on.IntersectionType\022\027\n\017segmentOneIndex\030\006"
-      " \001(\r\022\027\n\017segmentTwoIndex\030\007 \001(\r\022\032\n\022segment"
-      "OneDistance\030\010 \001(\001\022\032\n\022segmentTwoDistance\030"
-      "\t \001(\001\"E\n\020IntersectionType\022\013\n\007unknown\020\000\022\005"
-      "\n\001T\020\001\022\005\n\001L\020\002\022\005\n\001C\020\003\022\010\n\004none\020\004\022\005\n\001X\020\005\032\346\001\n"
-      "\020FieldLineSegment\022/\n\013lineInImage\030\001 \001(\0132\032"
-      ".naothmessages.LineSegment\022/\n\013lineOnFiel"
-      "d\030\002 \001(\0132\032.naothmessages.LineSegment\022\030\n\020b"
-      "eginExtendCount\030\003 \001(\005\022\026\n\016endExtendCount\030"
-      "\004 \001(\005\022\021\n\tthickness\030\005 \001(\001\022\r\n\005slope\030\006 \001(\001\022"
-      "\r\n\005angle\030\007 \001(\001\022\r\n\005valid\030\010 \001(\010\"I\n\020ShortLi"
-      "nePercept\0225\n\021fieldLineSegments\030\001 \003(\0132\032.n"
-      "aothmessages.LineSegment\"4\n\007Polygon\022)\n\006p"
-      "oints\030\001 \003(\0132\031.naothmessages.IntVector2\"9"
-      "\n\014FieldPercept\022)\n\tfieldPoly\030\001 \002(\0132\026.naot"
-      "hmessages.Polygon\"J\n\021RansacLinePercept\0225"
-      "\n\021fieldLineSegments\030\001 \003(\0132\032.naothmessage"
-      "s.LineSegment\"d\n\027RansacCirclePercept2018"
-      "\022\017\n\007wasSeen\030\001 \001(\010\0228\n\022middleCircleCenter\030"
-      "\002 \001(\0132\034.naothmessages.DoubleVector2\"\254\001\n\020"
-      "ScanLineEndPoint\022-\n\nposInImage\030\001 \002(\0132\031.n"
-      "aothmessages.IntVector2\0220\n\nposOnField\030\002 "
-      "\002(\0132\034.naothmessages.DoubleVector2\022#\n\005col"
-      "or\030\003 \002(\0162\024.naothmessages.Color\022\022\n\nScanLi"
-      "neID\030\004 \002(\r\"k\n\013DoubleEdgel\022+\n\005point\030\001 \002(\013"
-      "2\034.naothmessages.DoubleVector2\022/\n\tdirect"
-      "ion\030\002 \002(\0132\034.naothmessages.DoubleVector2\""
-      "b\n\005Edgel\022(\n\005point\030\001 \002(\0132\031.naothmessages."
-      "IntVector2\022/\n\tdirection\030\002 \002(\0132\034.naothmes"
-      "sages.DoubleVector2\"E\n\tEdgelPair\022\r\n\005begi"
-      "n\030\001 \002(\005\022\013\n\003end\030\002 \002(\005\022\n\n\002id\030\003 \002(\005\022\020\n\010adap"
-      "tive\030\004 \001(\010\"\231\001\n\024ScanLineEdgelPercept\022$\n\006e"
-      "dgels\030\001 \003(\0132\024.naothmessages.Edgel\022\'\n\005pai"
-      "rs\030\003 \003(\0132\030.naothmessages.EdgelPair\0222\n\ten"
-      "dPoints\030\002 \003(\0132\037.naothmessages.ScanLineEn"
-      "dPoint\"\250\001\n\020LineGraphPercept\022+\n\redgelsOnF"
-      "ield\030\001 \003(\0132\024.naothmessages.Edgel\0224\n\020edge"
-      "lsInImageTop\030\002 \003(\0132\032.naothmessages.Doubl"
-      "eEdgel\0221\n\redgelsInImage\030\003 \003(\0132\032.naothmes"
-      "sages.DoubleEdgel\"P\n\021StepControlStatus\022\016"
-      "\n\006stepID\030\001 \002(\r\022\024\n\014moveableFoot\030\002 \002(\r\022\025\n\r"
-      "stepRequestID\030\003 \002(\r\"\322\003\n\014MotionStatus\022\014\n\004"
-      "time\030\001 \002(\r\022\022\n\nlastMotion\030\002 \002(\r\022\025\n\rcurren"
-      "tMotion\030\003 \002(\r\022\022\n\nheadMotion\030\004 \002(\r\022\032\n\022cur"
-      "rentMotionState\030\005 \002(\r\0224\n\025plannedMotionLe"
-      "ftFoot\030\006 \002(\0132\025.naothmessages.Pose2D\0225\n\026p"
-      "lannedMotionRightFoot\030\007 \002(\0132\025.naothmessa"
-      "ges.Pose2D\022/\n\020plannedMotionHip\030\010 \002(\0132\025.n"
-      "aothmessages.Pose2D\022;\n\021stepControlStatus"
-      "\030\t \001(\0132 .naothmessages.StepControlStatus"
-      "\022\026\n\016target_reached\030\n \001(\010\022\033\n\023head_target_"
-      "reached\030\013 \001(\010\022\026\n\016head_got_stuck\030\014 \001(\010\022\033\n"
-      "\023walk_emergency_stop\030\r \001(\010\022\024\n\014head_at_re"
-      "st\030\016 \001(\010\"3\n\014OdometryData\022#\n\004pose\030\001 \002(\0132\025"
-      ".naothmessages.Pose2D\"\037\n\tBodyState\022\022\n\nis"
-      "LiftedUp\030\001 \001(\010\"3\n\nBodyStatus\022\022\n\ncurrentS"
-      "um\030\001 \003(\001\022\021\n\ttimestamp\030\003 \002(\r\"\320\001\n\017Calibrat"
-      "ionData\022:\n\024inertialSensorOffset\030\001 \001(\0132\034."
-      "naothmessages.DoubleVector2\0226\n\020gyroSenso"
-      "rOffset\030\005 \001(\0132\034.naothmessages.DoubleVect"
-      "or3\0225\n\017accSensorOffset\030\003 \001(\0132\034.naothmess"
-      "ages.DoubleVector3\022\022\n\ncalibrated\030\004 \002(\010\"B"
-      "\n\rInertialModel\0221\n\013orientation\030\001 \001(\0132\034.n"
-      "aothmessages.DoubleVector2\"\210\002\n\027CameraMat"
-      "rixCalibration\022:\n\020correctionOffset\030\001 \003(\013"
-      "2\034.naothmessages.DoubleVector2B\002\030\001\022:\n\024co"
-      "rrectionOffsetBody\030\002 \001(\0132\034.naothmessages"
-      ".DoubleVector2\022:\n\024correctionOffsetHead\030\003"
-      " \001(\0132\034.naothmessages.DoubleVector3\0229\n\023co"
-      "rrectionOffsetCam\030\004 \003(\0132\034.naothmessages."
-      "DoubleVector3\"\213\002\n\016BallCandidates\0224\n\007patc"
-      "hes\030\001 \003(\0132#.naothmessages.BallCandidates"
-      ".Patch\032\302\001\n\005Patch\022&\n\003min\030\001 \002(\0132\031.naothmes"
-      "sages.IntVector2\022&\n\003max\030\002 \002(\0132\031.naothmes"
-      "sages.IntVector2\0229\n\004type\030\003 \001(\0162(.naothme"
-      "ssages.BallCandidates.Patch.Type:\001Y\022\014\n\004d"
-      "ata\030\005 \002(\014\" \n\004Type\022\005\n\001Y\020\000\022\007\n\003YUV\020\001\022\010\n\004YUV"
-      "C\020\002\"\371\003\n\024RemoteControlCommand\022D\n\013controlM"
-      "ode\030\001 \001(\0162/.naothmessages.RemoteControlC"
-      "ommand.ControlMode\022>\n\006action\030\002 \001(\0162..nao"
-      "thmessages.RemoteControlCommand.ActionTy"
-      "pe\022K\n\rsecond_action\030\003 \001(\01624.naothmessage"
-      "s.RemoteControlCommand.SecondActionType\022"
-      "%\n\006target\030\004 \001(\0132\025.naothmessages.Pose2D\"3"
-      "\n\013ControlMode\022\022\n\016DIRECT_CONTROL\020\000\022\020\n\014LOC"
-      "K_CONTROL\020\001\"y\n\nActionType\022\010\n\004NONE\020\000\022\t\n\005S"
-      "TAND\020\001\022\010\n\004WALK\020\002\022\016\n\nKICK_RIGHT\020\003\022\r\n\tKICK"
-      "_LEFT\020\004\022\025\n\021KICK_FORWARD_LEFT\020\005\022\026\n\022KICK_F"
-      "ORWARD_RIGHT\020\006\"7\n\020SecondActionType\022\017\n\013SE"
-      "COND_NONE\020\000\022\t\n\005BLINK\020\001\022\007\n\003SAY\020\002\"\257\001\n\022Grou"
-      "ndContactModel\022\031\n\021leftGroundContact\030\001 \002("
-      "\010\022\032\n\022rightGroundContact\030\002 \002(\010\022;\n\013support"
-      "Foot\030\003 \002(\0162&.naothmessages.GroundContact"
-      "Model.Foot\"%\n\004Foot\022\010\n\004LEFT\020\000\022\t\n\005RIGHT\020\001\022"
-      "\010\n\004NONE\020\002\"\325\001\n\020CollisionPercept\022\034\n\024timeCo"
-      "llisionArmLeft\030\001 \002(\r\022\035\n\025timeCollisionArm"
-      "Right\030\002 \002(\r\022\035\n\025isCollisionLeftBumper\030\003 \002"
-      "(\010\022\036\n\026isCollisionRightBumper\030\004 \002(\010\022!\n\031la"
-      "stComputedCollisionLeft\030\005 \002(\001\022\"\n\032lastCom"
-      "putedCollisionRight\030\006 \002(\001\"\212\004\n\007IMUData\022.\n"
-      "\010location\030\001 \002(\0132\034.naothmessages.DoubleVe"
-      "ctor3\022.\n\010velocity\030\002 \002(\0132\034.naothmessages."
-      "DoubleVector3\0222\n\014acceleration\030\003 \002(\0132\034.na"
-      "othmessages.DoubleVector3\0229\n\023acceleratio"
-      "n_sensor\030\004 \001(\0132\034.naothmessages.DoubleVec"
-      "tor3\022.\n\010rotation\030\005 \002(\0132\034.naothmessages.D"
-      "oubleVector3\0229\n\023rotational_velocity\030\006 \002("
-      "\0132\034.naothmessages.DoubleVector3\022@\n\032rotat"
-      "ional_velocity_sensor\030\007 \001(\0132\034.naothmessa"
-      "ges.DoubleVector3\0221\n\013orientation\030\010 \002(\0132\034"
-      ".naothmessages.DoubleVector2\0228\n\022orientat"
-      "ion_rotvec\030\t \002(\0132\034.naothmessages.DoubleV"
-      "ector3\022\026\n\016has_been_reset\030\n \001(\010\"\316\003\n\020Centr"
-      "eOfPressure\022\?\n\031in_and_only_left_foot_cop"
-      "\030\001 \002(\0132\034.naothmessages.DoubleVector3\022\'\n\037"
-      "in_and_only_left_foot_magnitude\030\002 \002(\001\022#\n"
-      "\033in_and_only_left_foot_valid\030\003 \002(\010\022@\n\032in"
-      "_and_only_right_foot_cop\030\004 \002(\0132\034.naothme"
-      "ssages.DoubleVector3\022(\n in_and_only_righ"
-      "t_foot_magnitude\030\005 \002(\001\022$\n\034in_and_only_ri"
-      "ght_foot_valid\030\006 \002(\010\022C\n\035in_kinematic_cha"
-      "in_origin_cop\030\007 \002(\0132\034.naothmessages.Doub"
-      "leVector3\022+\n#in_kinematic_chain_origin_m"
-      "agnitude\030\010 \002(\001\022\'\n\037in_kinematic_chain_ori"
-      "gin_valid\030\t \002(\010\"\215\003\n\022CalibrationDataCMC\022R"
-      "\n\017calibrationData\030\001 \003(\01329.naothmessages."
-      "CalibrationDataCMC.CalibrationDataSample"
-      "V3\022\031\n\021numberOfResudials\030\002 \001(\r\032\207\002\n\027Calibr"
-      "ationDataSampleV3\022(\n\tchestPose\030\001 \001(\0132\025.n"
-      "aothmessages.Pose3D\0223\n\redgelsInImage\030\002 \003"
-      "(\0132\034.naothmessages.DoubleVector2\0226\n\020edge"
-      "lsInImageTop\030\003 \003(\0132\034.naothmessages.Doubl"
-      "eVector2\0221\n\013orientation\030\004 \001(\0132\034.naothmes"
-      "sages.DoubleVector2\022\017\n\007headYaw\030\005 \001(\001\022\021\n\t"
-      "headPitch\030\006 \001(\001\"\356\001\n\016WhistlePercept\022 \n\030fr"
-      "ameWhenWhistleDetected\030\001 \001(\r\022\023\n\013captureF"
-      "ile\030\002 \001(\t\022A\n\022recognizedWhistles\030\003 \003(\0132%."
-      "naothmessages.WhistlePercept.Whistle\022\027\n\017"
-      "whistleDetected\030\004 \001(\010\032I\n\007Whistle\022\014\n\004name"
-      "\030\001 \002(\t\022\031\n\021positionInCapture\030\002 \002(\003\022\025\n\rres"
-      "ponseValue\030\003 \002(\001\"\203\001\n\013DebugModify\0228\n\010valu"
-      "eMap\030\001 \003(\0132&.naothmessages.DebugModify.M"
-      "odifyValue\032:\n\013ModifyValue\022\014\n\004name\030\001 \002(\t\022"
-      "\016\n\006modify\030\002 \001(\010\022\r\n\005value\030\003 \001(\001\"9\n\nStepBu"
-      "ffer\022+\n\014support_foot\030\001 \001(\0132\025.naothmessag"
-      "es.Pose3D\"\215\001\n\rbodyAwareness\022\020\n\010isLifted\030"
-      "\001 \001(\010\0223\n\rcalculatedCoM\030\002 \001(\0132\034.naothmess"
-      "ages.DoubleVector3\0225\n\017currentCoMError\030\003 "
-      "\001(\0132\034.naothmessages.DoubleVector3B\033\n\031de."
-      "naoth.rc.core.messages"
+      "\002(\r\022)\n\nkickTarget\030\013 \001(\0132\025.naothmessages."
+      "Pose2D\022D\n\014kickStepType\030\014 \001(\0162..naothmess"
+      "ages.StepControlRequest.KickStepType\"4\n\010"
+      "StepType\022\014\n\010WALKSTEP\020\000\022\014\n\010KICKSTEP\020\001\022\014\n\010"
+      "ZEROSTEP\020\002\"%\n\017RestrictionMode\022\010\n\004HARD\020\000\022"
+      "\010\n\004SOFT\020\001\"/\n\014KickStepType\022\n\n\006NORMAL\020\000\022\t\n"
+      "\005SHORT\020\001\022\010\n\004LONG\020\002\"\272\001\n\013WalkRequest\022\022\n\nco"
+      "ordinate\030\001 \002(\r\022\021\n\tcharacter\030\002 \002(\001\022%\n\006tar"
+      "get\030\003 \002(\0132\025.naothmessages.Pose2D\0226\n\013step"
+      "Control\030\004 \001(\0132!.naothmessages.StepContro"
+      "lRequest\022%\n\006offset\030\005 \002(\0132\025.naothmessages"
+      ".Pose2D\"{\n\013KickRequest\022/\n\tkickPoint\030\001 \002("
+      "\0132\034.naothmessages.DoubleVector3\022\025\n\rkickD"
+      "irection\030\002 \002(\001\022\020\n\010kickFoot\030\003 \002(\005\022\022\n\nfini"
+      "shKick\030\004 \002(\010\"\213\001\n\014GraspRequest\0223\n\rgraspin"
+      "gPoint\030\001 \002(\0132\034.naothmessages.DoubleVecto"
+      "r3\022\025\n\rgraspingState\030\002 \002(\r\022\026\n\016graspDistSt"
+      "ate\030\003 \002(\r\022\027\n\017graspStiffState\030\004 \002(\r\"\336\003\n\020A"
+      "rmMotionRequest\022\n\n\002id\030\001 \002(\r\0227\n\021lShoulder"
+      "Position\030\002 \001(\0132\034.naothmessages.DoubleVec"
+      "tor2\0228\n\022lShoulderStiffness\030\003 \001(\0132\034.naoth"
+      "messages.DoubleVector2\0224\n\016lElbowPosition"
+      "\030\004 \001(\0132\034.naothmessages.DoubleVector2\0225\n\017"
+      "lElbowStiffness\030\005 \001(\0132\034.naothmessages.Do"
+      "ubleVector2\0227\n\021rShoulderPosition\030\006 \001(\0132\034"
+      ".naothmessages.DoubleVector2\0228\n\022rShoulde"
+      "rStiffness\030\007 \001(\0132\034.naothmessages.DoubleV"
+      "ector2\0224\n\016rElbowPosition\030\010 \001(\0132\034.naothme"
+      "ssages.DoubleVector2\0225\n\017rElbowStiffness\030"
+      "\t \001(\0132\034.naothmessages.DoubleVector2\"\264\003\n\r"
+      "MotionRequest\022\n\n\002id\030\001 \002(\r\022\014\n\004time\030\002 \002(\r\022"
+      "\016\n\006forced\030\003 \002(\010\022/\n\013walkRequest\030\004 \001(\0132\032.n"
+      "aothmessages.WalkRequest\022\026\n\016starndardSta"
+      "nd\030\005 \001(\010\022/\n\013kickRequest\030\006 \001(\0132\032.naothmes"
+      "sages.KickRequest\022\023\n\013standHeight\030\007 \001(\001\022\""
+      "\n\032calibrateFootTouchDetector\030\010 \001(\010\022\034\n\024co"
+      "gnitionFrameNumber\030\t \001(\r\0221\n\014graspRequest"
+      "\030\n \001(\0132\033.naothmessages.GraspRequest\0229\n\020a"
+      "rmMotionRequest\030\013 \001(\0132\037.naothmessages.Ar"
+      "mMotionRequest\022\035\n\025disable_relaxed_stand\030"
+      "\014 \001(\010\022\033\n\023standRelaxStiffness\030\r \001(\010\"\232\006\n\013L"
+      "inePercept\022:\n\005lines\030\001 \003(\0132+.naothmessage"
+      "s.LinePercept.FieldLineSegment\022>\n\rinters"
+      "ections\030\002 \003(\0132\'.naothmessages.LinePercep"
+      "t.Intersection\0228\n\022middleCircleCenter\030\003 \001"
+      "(\0132\034.naothmessages.DoubleVector2\032\353\002\n\014Int"
+      "ersection\0220\n\nposInImage\030\001 \001(\0132\034.naothmes"
+      "sages.DoubleVector2\0220\n\nposOnField\030\002 \001(\0132"
+      "\034.naothmessages.DoubleVector2\022F\n\004type\030\003 "
+      "\001(\01628.naothmessages.LinePercept.Intersec"
+      "tion.IntersectionType\022\027\n\017segmentOneIndex"
+      "\030\006 \001(\r\022\027\n\017segmentTwoIndex\030\007 \001(\r\022\032\n\022segme"
+      "ntOneDistance\030\010 \001(\001\022\032\n\022segmentTwoDistanc"
+      "e\030\t \001(\001\"E\n\020IntersectionType\022\013\n\007unknown\020\000"
+      "\022\005\n\001T\020\001\022\005\n\001L\020\002\022\005\n\001C\020\003\022\010\n\004none\020\004\022\005\n\001X\020\005\032\346"
+      "\001\n\020FieldLineSegment\022/\n\013lineInImage\030\001 \001(\013"
+      "2\032.naothmessages.LineSegment\022/\n\013lineOnFi"
+      "eld\030\002 \001(\0132\032.naothmessages.LineSegment\022\030\n"
+      "\020beginExtendCount\030\003 \001(\005\022\026\n\016endExtendCoun"
+      "t\030\004 \001(\005\022\021\n\tthickness\030\005 \001(\001\022\r\n\005slope\030\006 \001("
+      "\001\022\r\n\005angle\030\007 \001(\001\022\r\n\005valid\030\010 \001(\010\"I\n\020Short"
+      "LinePercept\0225\n\021fieldLineSegments\030\001 \003(\0132\032"
+      ".naothmessages.LineSegment\"4\n\007Polygon\022)\n"
+      "\006points\030\001 \003(\0132\031.naothmessages.IntVector2"
+      "\"9\n\014FieldPercept\022)\n\tfieldPoly\030\001 \002(\0132\026.na"
+      "othmessages.Polygon\"J\n\021RansacLinePercept"
+      "\0225\n\021fieldLineSegments\030\001 \003(\0132\032.naothmessa"
+      "ges.LineSegment\"d\n\027RansacCirclePercept20"
+      "18\022\017\n\007wasSeen\030\001 \001(\010\0228\n\022middleCircleCente"
+      "r\030\002 \001(\0132\034.naothmessages.DoubleVector2\"\254\001"
+      "\n\020ScanLineEndPoint\022-\n\nposInImage\030\001 \002(\0132\031"
+      ".naothmessages.IntVector2\0220\n\nposOnField\030"
+      "\002 \002(\0132\034.naothmessages.DoubleVector2\022#\n\005c"
+      "olor\030\003 \002(\0162\024.naothmessages.Color\022\022\n\nScan"
+      "LineID\030\004 \002(\r\"k\n\013DoubleEdgel\022+\n\005point\030\001 \002"
+      "(\0132\034.naothmessages.DoubleVector2\022/\n\tdire"
+      "ction\030\002 \002(\0132\034.naothmessages.DoubleVector"
+      "2\"b\n\005Edgel\022(\n\005point\030\001 \002(\0132\031.naothmessage"
+      "s.IntVector2\022/\n\tdirection\030\002 \002(\0132\034.naothm"
+      "essages.DoubleVector2\"E\n\tEdgelPair\022\r\n\005be"
+      "gin\030\001 \002(\005\022\013\n\003end\030\002 \002(\005\022\n\n\002id\030\003 \002(\005\022\020\n\010ad"
+      "aptive\030\004 \001(\010\"\231\001\n\024ScanLineEdgelPercept\022$\n"
+      "\006edgels\030\001 \003(\0132\024.naothmessages.Edgel\022\'\n\005p"
+      "airs\030\003 \003(\0132\030.naothmessages.EdgelPair\0222\n\t"
+      "endPoints\030\002 \003(\0132\037.naothmessages.ScanLine"
+      "EndPoint\"\250\001\n\020LineGraphPercept\022+\n\redgelsO"
+      "nField\030\001 \003(\0132\024.naothmessages.Edgel\0224\n\020ed"
+      "gelsInImageTop\030\002 \003(\0132\032.naothmessages.Dou"
+      "bleEdgel\0221\n\redgelsInImage\030\003 \003(\0132\032.naothm"
+      "essages.DoubleEdgel\"P\n\021StepControlStatus"
+      "\022\016\n\006stepID\030\001 \002(\r\022\024\n\014moveableFoot\030\002 \002(\r\022\025"
+      "\n\rstepRequestID\030\003 \002(\r\"\322\003\n\014MotionStatus\022\014"
+      "\n\004time\030\001 \002(\r\022\022\n\nlastMotion\030\002 \002(\r\022\025\n\rcurr"
+      "entMotion\030\003 \002(\r\022\022\n\nheadMotion\030\004 \002(\r\022\032\n\022c"
+      "urrentMotionState\030\005 \002(\r\0224\n\025plannedMotion"
+      "LeftFoot\030\006 \002(\0132\025.naothmessages.Pose2D\0225\n"
+      "\026plannedMotionRightFoot\030\007 \002(\0132\025.naothmes"
+      "sages.Pose2D\022/\n\020plannedMotionHip\030\010 \002(\0132\025"
+      ".naothmessages.Pose2D\022;\n\021stepControlStat"
+      "us\030\t \001(\0132 .naothmessages.StepControlStat"
+      "us\022\026\n\016target_reached\030\n \001(\010\022\033\n\023head_targe"
+      "t_reached\030\013 \001(\010\022\026\n\016head_got_stuck\030\014 \001(\010\022"
+      "\033\n\023walk_emergency_stop\030\r \001(\010\022\024\n\014head_at_"
+      "rest\030\016 \001(\010\"3\n\014OdometryData\022#\n\004pose\030\001 \002(\013"
+      "2\025.naothmessages.Pose2D\"\037\n\tBodyState\022\022\n\n"
+      "isLiftedUp\030\001 \001(\010\"3\n\nBodyStatus\022\022\n\ncurren"
+      "tSum\030\001 \003(\001\022\021\n\ttimestamp\030\003 \002(\r\"\320\001\n\017Calibr"
+      "ationData\022:\n\024inertialSensorOffset\030\001 \001(\0132"
+      "\034.naothmessages.DoubleVector2\0226\n\020gyroSen"
+      "sorOffset\030\005 \001(\0132\034.naothmessages.DoubleVe"
+      "ctor3\0225\n\017accSensorOffset\030\003 \001(\0132\034.naothme"
+      "ssages.DoubleVector3\022\022\n\ncalibrated\030\004 \002(\010"
+      "\"B\n\rInertialModel\0221\n\013orientation\030\001 \001(\0132\034"
+      ".naothmessages.DoubleVector2\"\210\002\n\027CameraM"
+      "atrixCalibration\022:\n\020correctionOffset\030\001 \003"
+      "(\0132\034.naothmessages.DoubleVector2B\002\030\001\022:\n\024"
+      "correctionOffsetBody\030\002 \001(\0132\034.naothmessag"
+      "es.DoubleVector2\022:\n\024correctionOffsetHead"
+      "\030\003 \001(\0132\034.naothmessages.DoubleVector3\0229\n\023"
+      "correctionOffsetCam\030\004 \003(\0132\034.naothmessage"
+      "s.DoubleVector3\"\213\002\n\016BallCandidates\0224\n\007pa"
+      "tches\030\001 \003(\0132#.naothmessages.BallCandidat"
+      "es.Patch\032\302\001\n\005Patch\022&\n\003min\030\001 \002(\0132\031.naothm"
+      "essages.IntVector2\022&\n\003max\030\002 \002(\0132\031.naothm"
+      "essages.IntVector2\0229\n\004type\030\003 \001(\0162(.naoth"
+      "messages.BallCandidates.Patch.Type:\001Y\022\014\n"
+      "\004data\030\005 \002(\014\" \n\004Type\022\005\n\001Y\020\000\022\007\n\003YUV\020\001\022\010\n\004Y"
+      "UVC\020\002\"\371\003\n\024RemoteControlCommand\022D\n\013contro"
+      "lMode\030\001 \001(\0162/.naothmessages.RemoteContro"
+      "lCommand.ControlMode\022>\n\006action\030\002 \001(\0162..n"
+      "aothmessages.RemoteControlCommand.Action"
+      "Type\022K\n\rsecond_action\030\003 \001(\01624.naothmessa"
+      "ges.RemoteControlCommand.SecondActionTyp"
+      "e\022%\n\006target\030\004 \001(\0132\025.naothmessages.Pose2D"
+      "\"3\n\013ControlMode\022\022\n\016DIRECT_CONTROL\020\000\022\020\n\014L"
+      "OCK_CONTROL\020\001\"y\n\nActionType\022\010\n\004NONE\020\000\022\t\n"
+      "\005STAND\020\001\022\010\n\004WALK\020\002\022\016\n\nKICK_RIGHT\020\003\022\r\n\tKI"
+      "CK_LEFT\020\004\022\025\n\021KICK_FORWARD_LEFT\020\005\022\026\n\022KICK"
+      "_FORWARD_RIGHT\020\006\"7\n\020SecondActionType\022\017\n\013"
+      "SECOND_NONE\020\000\022\t\n\005BLINK\020\001\022\007\n\003SAY\020\002\"\257\001\n\022Gr"
+      "oundContactModel\022\031\n\021leftGroundContact\030\001 "
+      "\002(\010\022\032\n\022rightGroundContact\030\002 \002(\010\022;\n\013suppo"
+      "rtFoot\030\003 \002(\0162&.naothmessages.GroundConta"
+      "ctModel.Foot\"%\n\004Foot\022\010\n\004LEFT\020\000\022\t\n\005RIGHT\020"
+      "\001\022\010\n\004NONE\020\002\"\325\001\n\020CollisionPercept\022\034\n\024time"
+      "CollisionArmLeft\030\001 \002(\r\022\035\n\025timeCollisionA"
+      "rmRight\030\002 \002(\r\022\035\n\025isCollisionLeftBumper\030\003"
+      " \002(\010\022\036\n\026isCollisionRightBumper\030\004 \002(\010\022!\n\031"
+      "lastComputedCollisionLeft\030\005 \002(\001\022\"\n\032lastC"
+      "omputedCollisionRight\030\006 \002(\001\"\212\004\n\007IMUData\022"
+      ".\n\010location\030\001 \002(\0132\034.naothmessages.Double"
+      "Vector3\022.\n\010velocity\030\002 \002(\0132\034.naothmessage"
+      "s.DoubleVector3\0222\n\014acceleration\030\003 \002(\0132\034."
+      "naothmessages.DoubleVector3\0229\n\023accelerat"
+      "ion_sensor\030\004 \001(\0132\034.naothmessages.DoubleV"
+      "ector3\022.\n\010rotation\030\005 \002(\0132\034.naothmessages"
+      ".DoubleVector3\0229\n\023rotational_velocity\030\006 "
+      "\002(\0132\034.naothmessages.DoubleVector3\022@\n\032rot"
+      "ational_velocity_sensor\030\007 \001(\0132\034.naothmes"
+      "sages.DoubleVector3\0221\n\013orientation\030\010 \002(\013"
+      "2\034.naothmessages.DoubleVector2\0228\n\022orient"
+      "ation_rotvec\030\t \002(\0132\034.naothmessages.Doubl"
+      "eVector3\022\026\n\016has_been_reset\030\n \001(\010\"\316\003\n\020Cen"
+      "treOfPressure\022\?\n\031in_and_only_left_foot_c"
+      "op\030\001 \002(\0132\034.naothmessages.DoubleVector3\022\'"
+      "\n\037in_and_only_left_foot_magnitude\030\002 \002(\001\022"
+      "#\n\033in_and_only_left_foot_valid\030\003 \002(\010\022@\n\032"
+      "in_and_only_right_foot_cop\030\004 \002(\0132\034.naoth"
+      "messages.DoubleVector3\022(\n in_and_only_ri"
+      "ght_foot_magnitude\030\005 \002(\001\022$\n\034in_and_only_"
+      "right_foot_valid\030\006 \002(\010\022C\n\035in_kinematic_c"
+      "hain_origin_cop\030\007 \002(\0132\034.naothmessages.Do"
+      "ubleVector3\022+\n#in_kinematic_chain_origin"
+      "_magnitude\030\010 \002(\001\022\'\n\037in_kinematic_chain_o"
+      "rigin_valid\030\t \002(\010\"\215\003\n\022CalibrationDataCMC"
+      "\022R\n\017calibrationData\030\001 \003(\01329.naothmessage"
+      "s.CalibrationDataCMC.CalibrationDataSamp"
+      "leV3\022\031\n\021numberOfResudials\030\002 \001(\r\032\207\002\n\027Cali"
+      "brationDataSampleV3\022(\n\tchestPose\030\001 \001(\0132\025"
+      ".naothmessages.Pose3D\0223\n\redgelsInImage\030\002"
+      " \003(\0132\034.naothmessages.DoubleVector2\0226\n\020ed"
+      "gelsInImageTop\030\003 \003(\0132\034.naothmessages.Dou"
+      "bleVector2\0221\n\013orientation\030\004 \001(\0132\034.naothm"
+      "essages.DoubleVector2\022\017\n\007headYaw\030\005 \001(\001\022\021"
+      "\n\theadPitch\030\006 \001(\001\"\356\001\n\016WhistlePercept\022 \n\030"
+      "frameWhenWhistleDetected\030\001 \001(\r\022\023\n\013captur"
+      "eFile\030\002 \001(\t\022A\n\022recognizedWhistles\030\003 \003(\0132"
+      "%.naothmessages.WhistlePercept.Whistle\022\027"
+      "\n\017whistleDetected\030\004 \001(\010\032I\n\007Whistle\022\014\n\004na"
+      "me\030\001 \002(\t\022\031\n\021positionInCapture\030\002 \002(\003\022\025\n\rr"
+      "esponseValue\030\003 \002(\001\"\203\001\n\013DebugModify\0228\n\010va"
+      "lueMap\030\001 \003(\0132&.naothmessages.DebugModify"
+      ".ModifyValue\032:\n\013ModifyValue\022\014\n\004name\030\001 \002("
+      "\t\022\016\n\006modify\030\002 \001(\010\022\r\n\005value\030\003 \001(\001\"9\n\nStep"
+      "Buffer\022+\n\014support_foot\030\001 \001(\0132\025.naothmess"
+      "ages.Pose3D\"\215\001\n\rbodyAwareness\022\020\n\010isLifte"
+      "d\030\001 \001(\010\0223\n\rcalculatedCoM\030\002 \001(\0132\034.naothme"
+      "ssages.DoubleVector3\0225\n\017currentCoMError\030"
+      "\003 \001(\0132\034.naothmessages.DoubleVector3B\033\n\031d"
+      "e.naoth.rc.core.messages"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 10302);
+      descriptor, 10464);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Representations.proto", &protobuf_RegisterTypes);
   ::naothmessages::protobuf_CommonTypes_2eproto::AddDescriptors();
@@ -1811,9 +1821,32 @@ const StepControlRequest_RestrictionMode StepControlRequest::RestrictionMode_MIN
 const StepControlRequest_RestrictionMode StepControlRequest::RestrictionMode_MAX;
 const int StepControlRequest::RestrictionMode_ARRAYSIZE;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
-const ::google::protobuf::EnumDescriptor* LinePercept_Intersection_IntersectionType_descriptor() {
+const ::google::protobuf::EnumDescriptor* StepControlRequest_KickStepType_descriptor() {
   protobuf_Representations_2eproto::protobuf_AssignDescriptorsOnce();
   return protobuf_Representations_2eproto::file_level_enum_descriptors[3];
+}
+bool StepControlRequest_KickStepType_IsValid(int value) {
+  switch (value) {
+    case 0:
+    case 1:
+    case 2:
+      return true;
+    default:
+      return false;
+  }
+}
+
+#if !defined(_MSC_VER) || _MSC_VER >= 1900
+const StepControlRequest_KickStepType StepControlRequest::NORMAL;
+const StepControlRequest_KickStepType StepControlRequest::SHORT;
+const StepControlRequest_KickStepType StepControlRequest::LONG;
+const StepControlRequest_KickStepType StepControlRequest::KickStepType_MIN;
+const StepControlRequest_KickStepType StepControlRequest::KickStepType_MAX;
+const int StepControlRequest::KickStepType_ARRAYSIZE;
+#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+const ::google::protobuf::EnumDescriptor* LinePercept_Intersection_IntersectionType_descriptor() {
+  protobuf_Representations_2eproto::protobuf_AssignDescriptorsOnce();
+  return protobuf_Representations_2eproto::file_level_enum_descriptors[4];
 }
 bool LinePercept_Intersection_IntersectionType_IsValid(int value) {
   switch (value) {
@@ -1842,7 +1875,7 @@ const int LinePercept_Intersection::IntersectionType_ARRAYSIZE;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 const ::google::protobuf::EnumDescriptor* BallCandidates_Patch_Type_descriptor() {
   protobuf_Representations_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_Representations_2eproto::file_level_enum_descriptors[4];
+  return protobuf_Representations_2eproto::file_level_enum_descriptors[5];
 }
 bool BallCandidates_Patch_Type_IsValid(int value) {
   switch (value) {
@@ -1865,7 +1898,7 @@ const int BallCandidates_Patch::Type_ARRAYSIZE;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 const ::google::protobuf::EnumDescriptor* RemoteControlCommand_ControlMode_descriptor() {
   protobuf_Representations_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_Representations_2eproto::file_level_enum_descriptors[5];
+  return protobuf_Representations_2eproto::file_level_enum_descriptors[6];
 }
 bool RemoteControlCommand_ControlMode_IsValid(int value) {
   switch (value) {
@@ -1886,7 +1919,7 @@ const int RemoteControlCommand::ControlMode_ARRAYSIZE;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 const ::google::protobuf::EnumDescriptor* RemoteControlCommand_ActionType_descriptor() {
   protobuf_Representations_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_Representations_2eproto::file_level_enum_descriptors[6];
+  return protobuf_Representations_2eproto::file_level_enum_descriptors[7];
 }
 bool RemoteControlCommand_ActionType_IsValid(int value) {
   switch (value) {
@@ -1917,7 +1950,7 @@ const int RemoteControlCommand::ActionType_ARRAYSIZE;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 const ::google::protobuf::EnumDescriptor* RemoteControlCommand_SecondActionType_descriptor() {
   protobuf_Representations_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_Representations_2eproto::file_level_enum_descriptors[7];
+  return protobuf_Representations_2eproto::file_level_enum_descriptors[8];
 }
 bool RemoteControlCommand_SecondActionType_IsValid(int value) {
   switch (value) {
@@ -1940,7 +1973,7 @@ const int RemoteControlCommand::SecondActionType_ARRAYSIZE;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 const ::google::protobuf::EnumDescriptor* GroundContactModel_Foot_descriptor() {
   protobuf_Representations_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_Representations_2eproto::file_level_enum_descriptors[8];
+  return protobuf_Representations_2eproto::file_level_enum_descriptors[9];
 }
 bool GroundContactModel_Foot_IsValid(int value) {
   switch (value) {
@@ -7309,6 +7342,8 @@ const int StepControlRequest::kSteptypeFieldNumber;
 const int StepControlRequest::kRestrictionFieldNumber;
 const int StepControlRequest::kIsProtectedFieldNumber;
 const int StepControlRequest::kStepRequestIDFieldNumber;
+const int StepControlRequest::kKickTargetFieldNumber;
+const int StepControlRequest::kKickStepTypeFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 StepControlRequest::StepControlRequest()
@@ -7330,17 +7365,22 @@ StepControlRequest::StepControlRequest(const StepControlRequest& from)
   } else {
     target_ = NULL;
   }
+  if (from.has_kicktarget()) {
+    kicktarget_ = new ::naothmessages::Pose2D(*from.kicktarget_);
+  } else {
+    kicktarget_ = NULL;
+  }
   ::memcpy(&stepid_, &from.stepid_,
-    static_cast<size_t>(reinterpret_cast<char*>(&steprequestid_) -
-    reinterpret_cast<char*>(&stepid_)) + sizeof(steprequestid_));
+    static_cast<size_t>(reinterpret_cast<char*>(&kicksteptype_) -
+    reinterpret_cast<char*>(&stepid_)) + sizeof(kicksteptype_));
   // @@protoc_insertion_point(copy_constructor:naothmessages.StepControlRequest)
 }
 
 void StepControlRequest::SharedCtor() {
   _cached_size_ = 0;
   ::memset(&target_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&steprequestid_) -
-      reinterpret_cast<char*>(&target_)) + sizeof(steprequestid_));
+      reinterpret_cast<char*>(&kicksteptype_) -
+      reinterpret_cast<char*>(&target_)) + sizeof(kicksteptype_));
 }
 
 StepControlRequest::~StepControlRequest() {
@@ -7350,6 +7390,7 @@ StepControlRequest::~StepControlRequest() {
 
 void StepControlRequest::SharedDtor() {
   if (this != internal_default_instance()) delete target_;
+  if (this != internal_default_instance()) delete kicktarget_;
 }
 
 void StepControlRequest::SetCachedSize(int size) const {
@@ -7381,20 +7422,26 @@ void StepControlRequest::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  if (has_target()) {
-    GOOGLE_DCHECK(target_ != NULL);
-    target_->::naothmessages::Pose2D::Clear();
-  }
   cached_has_bits = _has_bits_[0];
-  if (cached_has_bits & 254u) {
-    ::memset(&stepid_, 0, static_cast<size_t>(
-        reinterpret_cast<char*>(&steptype_) -
-        reinterpret_cast<char*>(&stepid_)) + sizeof(steptype_));
+  if (cached_has_bits & 3u) {
+    if (cached_has_bits & 0x00000001u) {
+      GOOGLE_DCHECK(target_ != NULL);
+      target_->::naothmessages::Pose2D::Clear();
+    }
+    if (cached_has_bits & 0x00000002u) {
+      GOOGLE_DCHECK(kicktarget_ != NULL);
+      kicktarget_->::naothmessages::Pose2D::Clear();
+    }
   }
-  if (cached_has_bits & 768u) {
-    ::memset(&restriction_, 0, static_cast<size_t>(
-        reinterpret_cast<char*>(&steprequestid_) -
-        reinterpret_cast<char*>(&restriction_)) + sizeof(steprequestid_));
+  if (cached_has_bits & 252u) {
+    ::memset(&stepid_, 0, static_cast<size_t>(
+        reinterpret_cast<char*>(&isprotected_) -
+        reinterpret_cast<char*>(&stepid_)) + sizeof(isprotected_));
+  }
+  if (cached_has_bits & 3840u) {
+    ::memset(&steptype_, 0, static_cast<size_t>(
+        reinterpret_cast<char*>(&kicksteptype_) -
+        reinterpret_cast<char*>(&steptype_)) + sizeof(kicksteptype_));
   }
   _has_bits_.Clear();
   _internal_metadata_.Clear();
@@ -7560,6 +7607,38 @@ bool StepControlRequest::MergePartialFromCodedStream(
         break;
       }
 
+      // optional .naothmessages.Pose2D kickTarget = 11;
+      case 11: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(90u /* 90 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_kicktarget()));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // optional .naothmessages.StepControlRequest.KickStepType kickStepType = 12;
+      case 12: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(96u /* 96 & 0xFF */)) {
+          int value;
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   int, ::google::protobuf::internal::WireFormatLite::TYPE_ENUM>(
+                 input, &value)));
+          if (::naothmessages::StepControlRequest_KickStepType_IsValid(value)) {
+            set_kicksteptype(static_cast< ::naothmessages::StepControlRequest_KickStepType >(value));
+          } else {
+            mutable_unknown_fields()->AddVarint(
+                12, static_cast< ::google::protobuf::uint64>(value));
+          }
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
       default: {
       handle_unusual:
         if (tag == 0) {
@@ -7588,12 +7667,12 @@ void StepControlRequest::SerializeWithCachedSizes(
 
   cached_has_bits = _has_bits_[0];
   // required uint32 stepID = 1;
-  if (cached_has_bits & 0x00000002u) {
+  if (cached_has_bits & 0x00000004u) {
     ::google::protobuf::internal::WireFormatLite::WriteUInt32(1, this->stepid(), output);
   }
 
   // required bool moveLeftFoot = 2;
-  if (cached_has_bits & 0x00000020u) {
+  if (cached_has_bits & 0x00000040u) {
     ::google::protobuf::internal::WireFormatLite::WriteBool(2, this->moveleftfoot(), output);
   }
 
@@ -7604,40 +7683,52 @@ void StepControlRequest::SerializeWithCachedSizes(
   }
 
   // required uint32 time = 4;
-  if (cached_has_bits & 0x00000004u) {
+  if (cached_has_bits & 0x00000008u) {
     ::google::protobuf::internal::WireFormatLite::WriteUInt32(4, this->time(), output);
   }
 
   // required double speedDirection = 5;
-  if (cached_has_bits & 0x00000008u) {
+  if (cached_has_bits & 0x00000010u) {
     ::google::protobuf::internal::WireFormatLite::WriteDouble(5, this->speeddirection(), output);
   }
 
   // required double scale = 6;
-  if (cached_has_bits & 0x00000010u) {
+  if (cached_has_bits & 0x00000020u) {
     ::google::protobuf::internal::WireFormatLite::WriteDouble(6, this->scale(), output);
   }
 
   // required .naothmessages.StepControlRequest.StepType steptype = 7;
-  if (cached_has_bits & 0x00000080u) {
+  if (cached_has_bits & 0x00000100u) {
     ::google::protobuf::internal::WireFormatLite::WriteEnum(
       7, this->steptype(), output);
   }
 
   // required .naothmessages.StepControlRequest.RestrictionMode restriction = 8;
-  if (cached_has_bits & 0x00000100u) {
+  if (cached_has_bits & 0x00000200u) {
     ::google::protobuf::internal::WireFormatLite::WriteEnum(
       8, this->restriction(), output);
   }
 
   // required bool isProtected = 9;
-  if (cached_has_bits & 0x00000040u) {
+  if (cached_has_bits & 0x00000080u) {
     ::google::protobuf::internal::WireFormatLite::WriteBool(9, this->isprotected(), output);
   }
 
   // required uint32 stepRequestID = 10;
-  if (cached_has_bits & 0x00000200u) {
+  if (cached_has_bits & 0x00000400u) {
     ::google::protobuf::internal::WireFormatLite::WriteUInt32(10, this->steprequestid(), output);
+  }
+
+  // optional .naothmessages.Pose2D kickTarget = 11;
+  if (cached_has_bits & 0x00000002u) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      11, *this->kicktarget_, output);
+  }
+
+  // optional .naothmessages.StepControlRequest.KickStepType kickStepType = 12;
+  if (cached_has_bits & 0x00000800u) {
+    ::google::protobuf::internal::WireFormatLite::WriteEnum(
+      12, this->kicksteptype(), output);
   }
 
   if (_internal_metadata_.have_unknown_fields()) {
@@ -7656,12 +7747,12 @@ void StepControlRequest::SerializeWithCachedSizes(
 
   cached_has_bits = _has_bits_[0];
   // required uint32 stepID = 1;
-  if (cached_has_bits & 0x00000002u) {
+  if (cached_has_bits & 0x00000004u) {
     target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(1, this->stepid(), target);
   }
 
   // required bool moveLeftFoot = 2;
-  if (cached_has_bits & 0x00000020u) {
+  if (cached_has_bits & 0x00000040u) {
     target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(2, this->moveleftfoot(), target);
   }
 
@@ -7673,40 +7764,53 @@ void StepControlRequest::SerializeWithCachedSizes(
   }
 
   // required uint32 time = 4;
-  if (cached_has_bits & 0x00000004u) {
+  if (cached_has_bits & 0x00000008u) {
     target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(4, this->time(), target);
   }
 
   // required double speedDirection = 5;
-  if (cached_has_bits & 0x00000008u) {
+  if (cached_has_bits & 0x00000010u) {
     target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(5, this->speeddirection(), target);
   }
 
   // required double scale = 6;
-  if (cached_has_bits & 0x00000010u) {
+  if (cached_has_bits & 0x00000020u) {
     target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(6, this->scale(), target);
   }
 
   // required .naothmessages.StepControlRequest.StepType steptype = 7;
-  if (cached_has_bits & 0x00000080u) {
+  if (cached_has_bits & 0x00000100u) {
     target = ::google::protobuf::internal::WireFormatLite::WriteEnumToArray(
       7, this->steptype(), target);
   }
 
   // required .naothmessages.StepControlRequest.RestrictionMode restriction = 8;
-  if (cached_has_bits & 0x00000100u) {
+  if (cached_has_bits & 0x00000200u) {
     target = ::google::protobuf::internal::WireFormatLite::WriteEnumToArray(
       8, this->restriction(), target);
   }
 
   // required bool isProtected = 9;
-  if (cached_has_bits & 0x00000040u) {
+  if (cached_has_bits & 0x00000080u) {
     target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(9, this->isprotected(), target);
   }
 
   // required uint32 stepRequestID = 10;
-  if (cached_has_bits & 0x00000200u) {
+  if (cached_has_bits & 0x00000400u) {
     target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(10, this->steprequestid(), target);
+  }
+
+  // optional .naothmessages.Pose2D kickTarget = 11;
+  if (cached_has_bits & 0x00000002u) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageNoVirtualToArray(
+        11, *this->kicktarget_, deterministic, target);
+  }
+
+  // optional .naothmessages.StepControlRequest.KickStepType kickStepType = 12;
+  if (cached_has_bits & 0x00000800u) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteEnumToArray(
+      12, this->kicksteptype(), target);
   }
 
   if (_internal_metadata_.have_unknown_fields()) {
@@ -7792,7 +7896,7 @@ size_t StepControlRequest::ByteSizeLong() const {
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
         _internal_metadata_.unknown_fields());
   }
-  if (((_has_bits_[0] & 0x000003ff) ^ 0x000003ff) == 0) {  // All required fields are present.
+  if (((_has_bits_[0] & 0x000007fd) ^ 0x000007fd) == 0) {  // All required fields are present.
     // required .naothmessages.Pose2D target = 3;
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
@@ -7836,6 +7940,19 @@ size_t StepControlRequest::ByteSizeLong() const {
   } else {
     total_size += RequiredFieldsByteSizeFallback();
   }
+  // optional .naothmessages.Pose2D kickTarget = 11;
+  if (has_kicktarget()) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+        *this->kicktarget_);
+  }
+
+  // optional .naothmessages.StepControlRequest.KickStepType kickStepType = 12;
+  if (has_kicksteptype()) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::EnumSize(this->kicksteptype());
+  }
+
   int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
   GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
   _cached_size_ = cached_size;
@@ -7871,34 +7988,40 @@ void StepControlRequest::MergeFrom(const StepControlRequest& from) {
       mutable_target()->::naothmessages::Pose2D::MergeFrom(from.target());
     }
     if (cached_has_bits & 0x00000002u) {
-      stepid_ = from.stepid_;
+      mutable_kicktarget()->::naothmessages::Pose2D::MergeFrom(from.kicktarget());
     }
     if (cached_has_bits & 0x00000004u) {
-      time_ = from.time_;
+      stepid_ = from.stepid_;
     }
     if (cached_has_bits & 0x00000008u) {
-      speeddirection_ = from.speeddirection_;
+      time_ = from.time_;
     }
     if (cached_has_bits & 0x00000010u) {
-      scale_ = from.scale_;
+      speeddirection_ = from.speeddirection_;
     }
     if (cached_has_bits & 0x00000020u) {
-      moveleftfoot_ = from.moveleftfoot_;
+      scale_ = from.scale_;
     }
     if (cached_has_bits & 0x00000040u) {
-      isprotected_ = from.isprotected_;
+      moveleftfoot_ = from.moveleftfoot_;
     }
     if (cached_has_bits & 0x00000080u) {
-      steptype_ = from.steptype_;
+      isprotected_ = from.isprotected_;
     }
     _has_bits_[0] |= cached_has_bits;
   }
-  if (cached_has_bits & 768u) {
+  if (cached_has_bits & 3840u) {
     if (cached_has_bits & 0x00000100u) {
-      restriction_ = from.restriction_;
+      steptype_ = from.steptype_;
     }
     if (cached_has_bits & 0x00000200u) {
+      restriction_ = from.restriction_;
+    }
+    if (cached_has_bits & 0x00000400u) {
       steprequestid_ = from.steprequestid_;
+    }
+    if (cached_has_bits & 0x00000800u) {
+      kicksteptype_ = from.kicksteptype_;
     }
     _has_bits_[0] |= cached_has_bits;
   }
@@ -7919,9 +8042,12 @@ void StepControlRequest::CopyFrom(const StepControlRequest& from) {
 }
 
 bool StepControlRequest::IsInitialized() const {
-  if ((_has_bits_[0] & 0x000003ff) != 0x000003ff) return false;
+  if ((_has_bits_[0] & 0x000007fd) != 0x000007fd) return false;
   if (has_target()) {
     if (!this->target_->IsInitialized()) return false;
+  }
+  if (has_kicktarget()) {
+    if (!this->kicktarget_->IsInitialized()) return false;
   }
   return true;
 }
@@ -7933,6 +8059,7 @@ void StepControlRequest::Swap(StepControlRequest* other) {
 void StepControlRequest::InternalSwap(StepControlRequest* other) {
   using std::swap;
   swap(target_, other->target_);
+  swap(kicktarget_, other->kicktarget_);
   swap(stepid_, other->stepid_);
   swap(time_, other->time_);
   swap(speeddirection_, other->speeddirection_);
@@ -7942,6 +8069,7 @@ void StepControlRequest::InternalSwap(StepControlRequest* other) {
   swap(steptype_, other->steptype_);
   swap(restriction_, other->restriction_);
   swap(steprequestid_, other->steprequestid_);
+  swap(kicksteptype_, other->kicksteptype_);
   swap(_has_bits_[0], other->_has_bits_[0]);
   _internal_metadata_.Swap(&other->_internal_metadata_);
   swap(_cached_size_, other->_cached_size_);
@@ -7957,13 +8085,13 @@ void StepControlRequest::InternalSwap(StepControlRequest* other) {
 
 // required uint32 stepID = 1;
 bool StepControlRequest::has_stepid() const {
-  return (_has_bits_[0] & 0x00000002u) != 0;
+  return (_has_bits_[0] & 0x00000004u) != 0;
 }
 void StepControlRequest::set_has_stepid() {
-  _has_bits_[0] |= 0x00000002u;
+  _has_bits_[0] |= 0x00000004u;
 }
 void StepControlRequest::clear_has_stepid() {
-  _has_bits_[0] &= ~0x00000002u;
+  _has_bits_[0] &= ~0x00000004u;
 }
 void StepControlRequest::clear_stepid() {
   stepid_ = 0u;
@@ -7981,13 +8109,13 @@ void StepControlRequest::set_stepid(::google::protobuf::uint32 value) {
 
 // required bool moveLeftFoot = 2;
 bool StepControlRequest::has_moveleftfoot() const {
-  return (_has_bits_[0] & 0x00000020u) != 0;
+  return (_has_bits_[0] & 0x00000040u) != 0;
 }
 void StepControlRequest::set_has_moveleftfoot() {
-  _has_bits_[0] |= 0x00000020u;
+  _has_bits_[0] |= 0x00000040u;
 }
 void StepControlRequest::clear_has_moveleftfoot() {
-  _has_bits_[0] &= ~0x00000020u;
+  _has_bits_[0] &= ~0x00000040u;
 }
 void StepControlRequest::clear_moveleftfoot() {
   moveleftfoot_ = false;
@@ -8051,13 +8179,13 @@ void StepControlRequest::set_allocated_target(::naothmessages::Pose2D* target) {
 
 // required uint32 time = 4;
 bool StepControlRequest::has_time() const {
-  return (_has_bits_[0] & 0x00000004u) != 0;
+  return (_has_bits_[0] & 0x00000008u) != 0;
 }
 void StepControlRequest::set_has_time() {
-  _has_bits_[0] |= 0x00000004u;
+  _has_bits_[0] |= 0x00000008u;
 }
 void StepControlRequest::clear_has_time() {
-  _has_bits_[0] &= ~0x00000004u;
+  _has_bits_[0] &= ~0x00000008u;
 }
 void StepControlRequest::clear_time() {
   time_ = 0u;
@@ -8075,13 +8203,13 @@ void StepControlRequest::set_time(::google::protobuf::uint32 value) {
 
 // required double speedDirection = 5;
 bool StepControlRequest::has_speeddirection() const {
-  return (_has_bits_[0] & 0x00000008u) != 0;
+  return (_has_bits_[0] & 0x00000010u) != 0;
 }
 void StepControlRequest::set_has_speeddirection() {
-  _has_bits_[0] |= 0x00000008u;
+  _has_bits_[0] |= 0x00000010u;
 }
 void StepControlRequest::clear_has_speeddirection() {
-  _has_bits_[0] &= ~0x00000008u;
+  _has_bits_[0] &= ~0x00000010u;
 }
 void StepControlRequest::clear_speeddirection() {
   speeddirection_ = 0;
@@ -8099,13 +8227,13 @@ void StepControlRequest::set_speeddirection(double value) {
 
 // required double scale = 6;
 bool StepControlRequest::has_scale() const {
-  return (_has_bits_[0] & 0x00000010u) != 0;
+  return (_has_bits_[0] & 0x00000020u) != 0;
 }
 void StepControlRequest::set_has_scale() {
-  _has_bits_[0] |= 0x00000010u;
+  _has_bits_[0] |= 0x00000020u;
 }
 void StepControlRequest::clear_has_scale() {
-  _has_bits_[0] &= ~0x00000010u;
+  _has_bits_[0] &= ~0x00000020u;
 }
 void StepControlRequest::clear_scale() {
   scale_ = 0;
@@ -8123,13 +8251,13 @@ void StepControlRequest::set_scale(double value) {
 
 // required .naothmessages.StepControlRequest.StepType steptype = 7;
 bool StepControlRequest::has_steptype() const {
-  return (_has_bits_[0] & 0x00000080u) != 0;
+  return (_has_bits_[0] & 0x00000100u) != 0;
 }
 void StepControlRequest::set_has_steptype() {
-  _has_bits_[0] |= 0x00000080u;
+  _has_bits_[0] |= 0x00000100u;
 }
 void StepControlRequest::clear_has_steptype() {
-  _has_bits_[0] &= ~0x00000080u;
+  _has_bits_[0] &= ~0x00000100u;
 }
 void StepControlRequest::clear_steptype() {
   steptype_ = 0;
@@ -8148,13 +8276,13 @@ void StepControlRequest::set_steptype(::naothmessages::StepControlRequest_StepTy
 
 // required .naothmessages.StepControlRequest.RestrictionMode restriction = 8;
 bool StepControlRequest::has_restriction() const {
-  return (_has_bits_[0] & 0x00000100u) != 0;
+  return (_has_bits_[0] & 0x00000200u) != 0;
 }
 void StepControlRequest::set_has_restriction() {
-  _has_bits_[0] |= 0x00000100u;
+  _has_bits_[0] |= 0x00000200u;
 }
 void StepControlRequest::clear_has_restriction() {
-  _has_bits_[0] &= ~0x00000100u;
+  _has_bits_[0] &= ~0x00000200u;
 }
 void StepControlRequest::clear_restriction() {
   restriction_ = 0;
@@ -8173,13 +8301,13 @@ void StepControlRequest::set_restriction(::naothmessages::StepControlRequest_Res
 
 // required bool isProtected = 9;
 bool StepControlRequest::has_isprotected() const {
-  return (_has_bits_[0] & 0x00000040u) != 0;
+  return (_has_bits_[0] & 0x00000080u) != 0;
 }
 void StepControlRequest::set_has_isprotected() {
-  _has_bits_[0] |= 0x00000040u;
+  _has_bits_[0] |= 0x00000080u;
 }
 void StepControlRequest::clear_has_isprotected() {
-  _has_bits_[0] &= ~0x00000040u;
+  _has_bits_[0] &= ~0x00000080u;
 }
 void StepControlRequest::clear_isprotected() {
   isprotected_ = false;
@@ -8197,13 +8325,13 @@ void StepControlRequest::set_isprotected(bool value) {
 
 // required uint32 stepRequestID = 10;
 bool StepControlRequest::has_steprequestid() const {
-  return (_has_bits_[0] & 0x00000200u) != 0;
+  return (_has_bits_[0] & 0x00000400u) != 0;
 }
 void StepControlRequest::set_has_steprequestid() {
-  _has_bits_[0] |= 0x00000200u;
+  _has_bits_[0] |= 0x00000400u;
 }
 void StepControlRequest::clear_has_steprequestid() {
-  _has_bits_[0] &= ~0x00000200u;
+  _has_bits_[0] &= ~0x00000400u;
 }
 void StepControlRequest::clear_steprequestid() {
   steprequestid_ = 0u;
@@ -8217,6 +8345,77 @@ void StepControlRequest::set_steprequestid(::google::protobuf::uint32 value) {
   set_has_steprequestid();
   steprequestid_ = value;
   // @@protoc_insertion_point(field_set:naothmessages.StepControlRequest.stepRequestID)
+}
+
+// optional .naothmessages.Pose2D kickTarget = 11;
+bool StepControlRequest::has_kicktarget() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+void StepControlRequest::set_has_kicktarget() {
+  _has_bits_[0] |= 0x00000002u;
+}
+void StepControlRequest::clear_has_kicktarget() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+void StepControlRequest::clear_kicktarget() {
+  if (kicktarget_ != NULL) kicktarget_->::naothmessages::Pose2D::Clear();
+  clear_has_kicktarget();
+}
+const ::naothmessages::Pose2D& StepControlRequest::kicktarget() const {
+  const ::naothmessages::Pose2D* p = kicktarget_;
+  // @@protoc_insertion_point(field_get:naothmessages.StepControlRequest.kickTarget)
+  return p != NULL ? *p : *reinterpret_cast<const ::naothmessages::Pose2D*>(
+      &::naothmessages::_Pose2D_default_instance_);
+}
+::naothmessages::Pose2D* StepControlRequest::mutable_kicktarget() {
+  set_has_kicktarget();
+  if (kicktarget_ == NULL) {
+    kicktarget_ = new ::naothmessages::Pose2D;
+  }
+  // @@protoc_insertion_point(field_mutable:naothmessages.StepControlRequest.kickTarget)
+  return kicktarget_;
+}
+::naothmessages::Pose2D* StepControlRequest::release_kicktarget() {
+  // @@protoc_insertion_point(field_release:naothmessages.StepControlRequest.kickTarget)
+  clear_has_kicktarget();
+  ::naothmessages::Pose2D* temp = kicktarget_;
+  kicktarget_ = NULL;
+  return temp;
+}
+void StepControlRequest::set_allocated_kicktarget(::naothmessages::Pose2D* kicktarget) {
+  delete kicktarget_;
+  kicktarget_ = kicktarget;
+  if (kicktarget) {
+    set_has_kicktarget();
+  } else {
+    clear_has_kicktarget();
+  }
+  // @@protoc_insertion_point(field_set_allocated:naothmessages.StepControlRequest.kickTarget)
+}
+
+// optional .naothmessages.StepControlRequest.KickStepType kickStepType = 12;
+bool StepControlRequest::has_kicksteptype() const {
+  return (_has_bits_[0] & 0x00000800u) != 0;
+}
+void StepControlRequest::set_has_kicksteptype() {
+  _has_bits_[0] |= 0x00000800u;
+}
+void StepControlRequest::clear_has_kicksteptype() {
+  _has_bits_[0] &= ~0x00000800u;
+}
+void StepControlRequest::clear_kicksteptype() {
+  kicksteptype_ = 0;
+  clear_has_kicksteptype();
+}
+::naothmessages::StepControlRequest_KickStepType StepControlRequest::kicksteptype() const {
+  // @@protoc_insertion_point(field_get:naothmessages.StepControlRequest.kickStepType)
+  return static_cast< ::naothmessages::StepControlRequest_KickStepType >(kicksteptype_);
+}
+void StepControlRequest::set_kicksteptype(::naothmessages::StepControlRequest_KickStepType value) {
+  assert(::naothmessages::StepControlRequest_KickStepType_IsValid(value));
+  set_has_kicksteptype();
+  kicksteptype_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.StepControlRequest.kickStepType)
 }
 
 #endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
