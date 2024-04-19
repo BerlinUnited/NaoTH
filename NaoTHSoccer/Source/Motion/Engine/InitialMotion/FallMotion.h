@@ -51,20 +51,9 @@ private:
       double altTriggerGrad;
   };
 
-/*  std::vector<std::vector<double>> fall_front_map;
-  std::vector<std::vector<double>> fall_stiffness_front_map;
-  std::array<double, 3> fall_times_front;
-  std::vector<double> fall_t_stiffness_front;
-
-  std::vector<std::vector<double>> fall_back_map;
-  std::vector<std::vector<double>> fall_stiffness_back_map;
-  std::array<double, 3> fall_times_back;
-  std::vector<double> fall_t_stiffness_back;*/
-
   double stiffness_increase;
   double oldStiffness[naoth::JointData::numOfJoint]{};
-  double oldJoints[naoth::JointData::numOfJoint]{};
-//  double freeStiffness[naoth::JointData::numOfJoint]{};
+//  double oldJoints[naoth::JointData::numOfJoint]{};
 };
 
 #endif  /* _FALLMOTION_H */
