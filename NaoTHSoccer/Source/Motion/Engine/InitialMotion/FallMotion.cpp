@@ -64,7 +64,7 @@ FallMotion::FallMotion()
   { 30, 30,   15, 15, 15, 15,   15, 15, 15, 15, 20,20,20,20,20,20, 20,20,20,20,20,20, 30, 30, 30, 30},
   {  0,  0,    0,  0,  0,  0,    0,  0,  0,  0,  0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0,  0,  0,  0,  0}};
   fall_t_stiffness_back = {400, 600, 2000};*/
-stiffness_increase = 0; // todo: this right?
+  stiffness_increase = getRobotInfo().getBasicTimeStepInSecond() * 5;
 }
 
 
@@ -90,7 +90,7 @@ void FallMotion::execute() {
 
 
     int t = getFrameInfo().getTimeSince(startTime); // in ms
-    if(abs(getInertialSensorData().data.y) > 20 || t < 2000) { // assure motion lasts 2s max todo: && or || or what
+    if(abs(getInertialSensorData().data.y) > 20 || t < 2000) { // assure motion lasts 2s max
 
         bool fallingForward = (Math::toDegrees(getInertialSensorData().data.y) > 0);
 
@@ -142,10 +142,10 @@ void FallMotion::execute() {
             {
                 getMotorJointData().position[i] = Math::fromDegrees(kf.jointValues[i]);
                 getMotorJointData().stiffness[i] = kf.stiffnessValues[i] / 100.0;
-                std::cerr << kf.jointValues[i] << " ";
+//                std::cerr << kf.jointValues[i] << " ";
             }
 
-            std::cerr << "yAxis: " << Math::toDegrees(getInertialSensorData().data.y) << " t: " << t << "\n";
+//            std::cerr << "yAxis: " << Math::toDegrees(getInertialSensorData().data.y) << " t: " << t << "\n";
             break;
         }
 /*        for (int i = 0; i < size(fall_times); i++) { // todo: only for debug
@@ -185,14 +185,17 @@ void FallMotion::execute() {
                 break;
             }
         }*/
-    } else {
-        int x[] = {0,0,90,90,90,90,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}; // todo: set arms correctly
+    }
+    else { // will be triggered if we are still standing or if we fall sideways
+        int x[] = {0,0,0,0,90,90,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}; // todo: bend knees just a touch
         for (int i = 0; i < 22; ++i) {
-            getMotorJointData().position[i]  = x[i];
+            getMotorJointData().position[i]  = Math::fromDegrees(x[i]);
             getMotorJointData().stiffness[i] = 0.15;
         }
     }
 
+
     setCurrentState(motion::running);
     // todo: stiffness ready hack?
+    // todo: end own motion?
 }
