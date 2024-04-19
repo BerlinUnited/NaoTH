@@ -311,6 +311,21 @@ void Motion::modifyJointOffsets()
 
 void Motion::debugPlots()
 {
+
+  double avg_stiff = 0;
+  if(getMotionStatus().currentMotion == motion::falling) {
+      t_run += 1;
+
+      for (int i = 0; i < 6; ++i) {
+          avg_stiff += getSensorJointData().stiffness[i]; // todo: Can't use getMotorJointData data, here, isn't getSensorJointData one exec delayed?
+      }
+      avg_stiff = (avg_stiff * 100) / 6;
+      PLOT_GENERIC("Motion:Betterfalling-Develop:Stiffness", t_run, avg_stiff);
+  } else {
+      t_run = 0;
+  }
+//  PLOT("Motion:A_StiffnessWritten:s", avg_stiff);
+
   // some basic plots
   // plotting sensor data
   PLOT("Motion:GyrometerData:data:x", getGyrometerData().data.x);

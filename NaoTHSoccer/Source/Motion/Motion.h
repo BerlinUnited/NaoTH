@@ -171,6 +171,7 @@ private:
 
 private:
   void debugPlots();
+  int t_run; // todo: delete this
   void updateCameraMatrix();
   void drawRobot3D(const KinematicChain& kinematicChain);
 
