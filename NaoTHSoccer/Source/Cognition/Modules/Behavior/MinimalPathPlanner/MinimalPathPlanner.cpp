@@ -28,7 +28,7 @@ MinimalPathPlanner::~MinimalPathPlanner() {
 
 
 void MinimalPathPlanner::execute() {
-    getPathModel().kick_executed = false;
+    getPathStatus().kick_executed = false;
 
     // Always executed first
     manageStepBuffer();
@@ -36,12 +36,12 @@ void MinimalPathPlanner::execute() {
     // The kick has been executed
     // Tells XABSL to jump into next state
     if (kickPlanned && stepBuffer.empty()) {
-        getPathModel().kick_executed = true;
+      getPathStatus().kick_executed = true;
     }
 
     // HACK: xabsl set a forced motion request => clear everything
-    if (getPathModel().path2018_routine ==
-            PathModel::PathPlanner2018Routine::NONE &&
+    if (getPathRequest().path2018_routine ==
+      PathRequest::PathID::NONE &&
         getMotionRequest().forced) {
         stepBuffer.clear();
         return;
@@ -50,16 +50,15 @@ void MinimalPathPlanner::execute() {
     // hack
     DEBUG_REQUEST(
         "MinimalPathPlanner:kick",
-        if (getPathModel().path2018_routine ==
-            PathModel::PathPlanner2018Routine::NONE) {
+        if (getPathRequest().path2018_routine == PathRequest::PathID::NONE) {
             if (stepBuffer.empty()) {
                 forwardKick();
             }
             executeStepBuffer();
         });
 
-    switch (getPathModel().path2018_routine) {
-        case PathModel::PathPlanner2018Routine::NONE:
+    switch (getPathRequest().path2018_routine) {
+        case PathRequest::PathID::NONE:
             if (kickPlanned) {
                 kickPlanned = false;
             }
@@ -69,7 +68,7 @@ void MinimalPathPlanner::execute() {
                 return;
             }
             break;
-        case PathModel::PathPlanner2018Routine::FORWARDKICK:
+        case PathRequest::PathID::FORWARDKICK:
             if (nearApproach_forwardKick(params.forwardKickOffset.x,
                                          params.forwardKickOffset.y)) {
                 forwardKick();

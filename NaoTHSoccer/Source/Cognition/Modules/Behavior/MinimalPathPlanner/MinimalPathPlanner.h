@@ -27,9 +27,11 @@
 #include "Representations/Motion/MotionStatus.h"
 #include "Representations/Perception/MultiBallPercept.h"
 #include "Representations/Modeling/BallModel.h"
-#include "Representations/Modeling/PathModel.h"
 #include "Representations/Debug/Stopwatch.h"
 #include "Representations/Modeling/ObstacleModel.h"
+
+#include "Representations/Modeling/PathRequest.h"
+#include "Representations/Modeling/PathStatus.h"
 
 BEGIN_DECLARE_MODULE(MinimalPathPlanner)
 PROVIDE(DebugPlot)
@@ -45,7 +47,9 @@ REQUIRE(BallModel)
 REQUIRE(FrameInfo)
 REQUIRE(ObstacleModel)
 
-PROVIDE(PathModel)
+REQUIRE(PathRequest)
+
+PROVIDE(PathStatus)
 PROVIDE(MotionRequest)
 PROVIDE(HeadMotionRequest)
 PROVIDE(StopwatchManager)
