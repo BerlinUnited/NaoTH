@@ -773,13 +773,13 @@ void PathPlanner2018::forwardKick()
     Coordinate coordinate = Coordinate::Hip;
     if (getBallModel().positionPreview.y < 0)
     {
-      coordinate   = Coordinate::LFoot;
+      coordinate   = Coordinate::RFoot; //Coordinate::LFoot;
       kicking_foot = Foot::RIGHT;
       ballPos      = getBallModel().positionPreviewInRFoot;
     }
     else
     {
-      coordinate   = Coordinate::RFoot;
+      coordinate   = Coordinate::LFoot; //Coordinate::RFoot;
       kicking_foot = Foot::LEFT;
       ballPos      = getBallModel().positionPreviewInLFoot;
     }
