@@ -39,3 +39,6 @@ behavior-ic.dat
 
 # macOS
 .DS_Store
+
+# Clion
+/.project
