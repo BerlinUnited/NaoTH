@@ -92,7 +92,7 @@ void MonteCarloSelfLocator::execute()
 
   DEBUG_REQUEST("MCSLS:user_defined_pose",
 
-	// TODO: better Pose2D?
+    // TODO: better Pose2D?
     Vector2d pos;
     double rot(0);
     MODIFY("MCSLS:posX", pos.x);
@@ -104,7 +104,7 @@ void MonteCarloSelfLocator::execute()
 
     islocalized = true;
     //TODO: should the state not rather be TRACKING?
-	state = LOCALIZE;
+    state = LOCALIZE;
 
     DEBUG_REQUEST("MCSLS:draw_Samples",
       FIELD_DRAWING_CONTEXT;
@@ -130,6 +130,11 @@ void MonteCarloSelfLocator::execute()
     state = KIDNAPPED;
   }
 
+  // TODO: in the future we might want to localize in initial, then we will need a more detailed approach here
+  if(getPlayerInfo().robotState == PlayerInfo::initial) {
+    state = KIDNAPPED;
+  }
+
   // Neded to decide for BLIND
   // HACK: TODO: comment - what is it here for?
   bool last_motion_ok = getMotionStatus().lastMotion == motion::stand ||
@@ -148,17 +153,17 @@ void MonteCarloSelfLocator::execute()
   if(state != KIDNAPPED) 
   {
     // TODO: does 'treatInitState' make sense? BLIND can also occur after, e.g., fall 
-	// TODO: add comment, why is PlayerInfo::penalized a criterium?
+    // TODO: add comment, why is PlayerInfo::penalized a criterium?
     if(parameters.treatInitState && (!motion_ok || !body_upright || getPlayerInfo().robotState == PlayerInfo::penalized))
     {
       state = BLIND;
     }
   }
 
-  DEBUG_REQUEST("MCSLS:state:KIDNAPPED", state = KIDNAPPED; );
-  DEBUG_REQUEST("MCSLS:state:BLIND", state = BLIND; );
-  DEBUG_REQUEST("MCSLS:state:LOCALIZE", state = LOCALIZE; );
-  DEBUG_REQUEST("MCSLS:state:TRACKING", state = TRACKING; );
+  DEBUG_REQUEST("MCSLS:state:KIDNAPPED",  state = KIDNAPPED; );
+  DEBUG_REQUEST("MCSLS:state:BLIND",      state = BLIND; );
+  DEBUG_REQUEST("MCSLS:state:LOCALIZE",   state = LOCALIZE; );
+  DEBUG_REQUEST("MCSLS:state:TRACKING",   state = TRACKING; );
 
 
   DEBUG_REQUEST("MCSLS:draw_state",

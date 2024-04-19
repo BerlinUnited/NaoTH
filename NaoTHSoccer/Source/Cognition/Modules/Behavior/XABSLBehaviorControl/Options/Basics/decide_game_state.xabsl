@@ -10,7 +10,7 @@ option decide_game_state
     else if (game.state == penalized)
       goto penalized;
     else if (game.state == finished)
-      goto _initial;
+      goto finished;
     else if(game.state == playing)
       goto playing;
     else if(game.state == unstiff)
@@ -21,7 +21,8 @@ option decide_game_state
     action
     {
       game.current_mode = init;
-      motion.type = init;
+      //motion.type = init;
+      motion.type = stand;
       arm.control_mode = normal;
       head.control_mode = stay_as_forced;
       audio.capture = false;  //whistledetector off
@@ -61,7 +62,7 @@ option decide_game_state
       last_state_was_penalized = false;
     }
   }
-  
+
   
   state playing {
     action 
@@ -115,7 +116,7 @@ option decide_game_state
     action
     {
       game.current_mode = finished;
-      motion.type = stand;
+      motion.type = init;
       arm.control_mode = normal;
       head.control_mode = stay_as_forced;
       audio.capture = false;  //whistledetector off
