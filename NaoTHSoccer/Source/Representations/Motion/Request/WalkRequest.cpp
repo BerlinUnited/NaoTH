@@ -40,6 +40,8 @@ void Serializer<WalkRequest>::serialize(const WalkRequest& representation, naoth
     stepControl->set_restriction((naothmessages::StepControlRequest::RestrictionMode)representation.stepControl.restriction);
     stepControl->set_isprotected(representation.stepControl.isProtected);
     stepControl->set_steprequestid(representation.stepControl.stepRequestID);
+    stepControl->set_kicksteptype((naothmessages::StepControlRequest::KickStepType) representation.stepControl.kickStepType);
+    DataConversion::toMessage(representation.stepControl.kickTarget, *(stepControl->mutable_kicktarget()));
   }
 }
 
@@ -73,6 +75,8 @@ void Serializer<WalkRequest>::deserialize(const naothmessages::WalkRequest* msg,
     representation.stepControl.restriction = (WalkRequest::StepControlRequest::RestrictionMode) stepControl.restriction();
     representation.stepControl.isProtected = stepControl.isprotected();
     representation.stepControl.stepRequestID = stepControl.steprequestid();
+    representation.stepControl.kickStepType = (WalkRequest::StepControlRequest::KickStepType) stepControl.kicksteptype();
+    DataConversion::fromMessage(stepControl.kicktarget(), representation.stepControl.kickTarget);
   }
   else
   {

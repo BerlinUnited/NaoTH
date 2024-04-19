@@ -1,0 +1,204 @@
+/*
+ * @file MinimalPathPlanner.h
+ *
+ * @author <a href="mailto:johan.hartung@informatik.hu-berlin.de">Johan
+ * Hartung</a> Definition of class MinimalPathPlanner
+ */
+
+#ifndef _MinimalPathPlanner_H_
+#define _MinimalPathPlanner_H_
+
+#include <ModuleFramework/Module.h>
+
+#include "Tools/Math/Geometry.h"
+
+// debug
+#include "Tools/Debug/DebugRequest.h"
+#include "Tools/Debug/DebugPlot.h"
+#include "Tools/Debug/DebugModify.h"
+#include "Tools/Debug/DebugDrawings.h"
+#include "Tools/Debug/DebugParameterList.h"
+
+// representations
+#include "Representations/Infrastructure/FieldInfo.h"
+#include "Representations/Infrastructure/FrameInfo.h"
+#include "Representations/Motion/Request/HeadMotionRequest.h"
+#include "Representations/Motion/Request/MotionRequest.h"
+#include "Representations/Motion/MotionStatus.h"
+#include "Representations/Perception/MultiBallPercept.h"
+#include "Representations/Modeling/BallModel.h"
+#include "Representations/Debug/Stopwatch.h"
+#include "Representations/Modeling/ObstacleModel.h"
+
+#include "Representations/Modeling/PathRequest.h"
+#include "Representations/Modeling/PathStatus.h"
+
+BEGIN_DECLARE_MODULE(MinimalPathPlanner)
+PROVIDE(DebugPlot)
+PROVIDE(DebugRequest)
+PROVIDE(DebugModify)
+PROVIDE(DebugDrawings)
+PROVIDE(DebugParameterList)
+
+REQUIRE(FieldInfo)
+REQUIRE(MultiBallPercept)
+REQUIRE(MotionStatus)
+REQUIRE(BallModel)
+REQUIRE(FrameInfo)
+REQUIRE(ObstacleModel)
+
+REQUIRE(PathRequest)
+
+PROVIDE(PathStatus)
+PROVIDE(MotionRequest)
+PROVIDE(HeadMotionRequest)
+PROVIDE(StopwatchManager)
+END_DECLARE_MODULE(MinimalPathPlanner)
+
+class MinimalPathPlanner : public MinimalPathPlannerBase {
+   public:
+    MinimalPathPlanner();
+    ~MinimalPathPlanner();
+
+    virtual void execute();
+
+   private:
+    class Parameters : public ParameterList {
+       public:
+        Parameters() : ParameterList("MinimalPathPlanner") {
+            // general
+            PARAMETER_REGISTER(stepLength) = 80.0;
+
+            // nearApproach_sideKick()
+            PARAMETER_REGISTER(readyForSideKickThresholdX)         = 4.0;
+            PARAMETER_REGISTER(readyForSideKickThresholdY)         = 0.3;
+            PARAMETER_REGISTER(nearApproachSideKickBallPosOffsetX) = 100;
+            PARAMETER_REGISTER(sidekickOffsetY)                    = 40.0;
+
+            // sideKick()
+            PARAMETER_REGISTER(sideKickTime) = 300;
+
+            // nearApproach_forwardKick
+            PARAMETER_REGISTER(forwardKickThreshold_near.x) = 25;  // mm
+            PARAMETER_REGISTER(forwardKickThreshold_near.y) = 25;  // mm
+            PARAMETER_REGISTER(forwardKickThreshold_far.x)  = 50;  // mm
+            PARAMETER_REGISTER(forwardKickThreshold_far.y)  = 25;  // mm
+
+            PARAMETER_REGISTER(forwardKickThreshold.x) = 50;  // mm
+            PARAMETER_REGISTER(forwardKickThreshold.y) = 30;  // mm
+
+            PARAMETER_REGISTER(forwardKickOffset.x) = 120;  // mm
+            PARAMETER_REGISTER(forwardKickOffset.y) = 0;    // mm
+
+            PARAMETER_REGISTER(nearApproach_step_character) = 0.3;
+
+            //??
+            // PARAMETER_REGISTER(nearApproachForwardKickBallPosOffsetX) = 110;
+
+            // forwardKick()
+            PARAMETER_REGISTER(forwardKickAdaptive) = true;  // mm
+            PARAMETER_REGISTER(forwardKickTime)     = 300;
+
+            // farApproach()
+            PARAMETER_REGISTER(farToNearApproachThreshold) = 10.0;
+
+            // Parameters for 2019 - needs cleanup
+
+            // moveAroundBall2()
+            //PARAMETER_REGISTER(moveAroundBallCharacter)       = 1.0;
+            //PARAMETER_REGISTER(moveAroundBallCharacterStable) = 0.3;
+
+            syncWithConfig();
+        }
+
+        virtual ~Parameters() {}
+
+        double readyForSideKickThresholdX;
+        double readyForSideKickThresholdY;
+        Vector2d forwardKickThreshold_far;
+        Vector2d forwardKickThreshold_near;
+        // double nearApproachForwardKickBallPosOffsetX;
+        double nearApproachSideKickBallPosOffsetX;
+        double sidekickOffsetY;
+        int sideKickTime;
+
+        double farToNearApproachThreshold;
+
+        double moveAroundBallCharacter;
+        double moveAroundBallCharacterStable;
+
+        double stepLength;
+        double nearApproach_step_character;
+
+        Vector2d forwardKickThreshold;
+        Vector2d forwardKickOffset;
+        bool forwardKickAdaptive;
+        int forwardKickTime;
+    } params;
+  // NONE means hip
+  enum Foot
+  {
+    RIGHT,
+    LEFT,
+    NONE
+  };
+
+  typedef WalkRequest::StepControlRequest::StepType StepType;
+  typedef WalkRequest::StepControlRequest::RestrictionMode RestrictionMode;
+  typedef WalkRequest::Coordinate Coordinate;
+
+  bool target_reached;
+
+  // goToBall is split up between sideKick and forwardKick so that changing things in upcoming RoboCup 2018
+  // won't be so complex as to introduce bugs easily
+  bool farApproach();
+  bool nearApproach_forwardKick(const double offsetX, const double offsetY);
+  bool nearApproach_sideKick(const Foot& foot, const double offsetX, const double offsetY);
+  bool sidesteps(const Foot& foot, const double direction);
+  void avoid_obstacle(Pose2D target_point);
+
+  void forwardKick();
+  
+// generate a setter method
+#define SET(Type, SetName, Name) \
+  public: StepBufferElement& set##SetName(const Type& v) { Name = v; return *this; } \
+  public: Type Name
+
+  struct StepBufferElement
+  {
+    StepBufferElement() {}
+    StepBufferElement(const std::string& name) : debug_name(name) {}
+
+    SET(Pose2D,Pose, pose);
+    SET(double,SpeedDirection, speedDirection);
+    SET(StepType,StepType,type);
+    SET(int,Time,time);
+    SET(double,Character,character);
+    SET(double,Scale,scale);
+    SET(Foot,Foot,foot);
+    SET(WalkRequest::Coordinate,Coordinate,coordinate);
+    SET(RestrictionMode,Restriction,restriction);
+    SET(bool,Protected,isProtected);
+
+  public:
+    std::string debug_name;
+  };
+
+  std::vector<StepBufferElement> stepBuffer;
+
+  // Used to alternate between left and right foot
+  // or to specify which foot to use
+  Foot footToUse;
+
+  // Used to synchronize stepIDs of WalkEngine to take control
+  unsigned int lastStepRequestID;
+  
+  void manageStepBuffer();
+  void executeStepBuffer();
+
+
+private:
+  bool kickPlanned;
+};
+
+#endif

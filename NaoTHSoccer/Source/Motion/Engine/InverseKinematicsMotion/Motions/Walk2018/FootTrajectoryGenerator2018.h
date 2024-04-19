@@ -22,6 +22,8 @@
 #include "Tools/Debug/DebugPlot.h"
 #include "Tools/Debug/DebugRequest.h"
 
+#include "KickType.h"
+
 // TODO: which one is better?
 #include "Tools/DataStructures/Spline.h"
 #include "Tools/Math/CubicSpline.h"
@@ -98,10 +100,11 @@ class FootTrajectoryGenerator2018 : private FootTrajectoryGenerator2018Base
 
     // adjusted for forward kicks
     // TODO: check if the sideicks still work
-    Pose3D stepControlNew(const FootStep& step,
-                          double cycle, double samplesDoubleSupport, double samplesSingleSupport,
-                          double stepHeight, double footPitchOffset, double footRollOffset,
-                          double speedDirection, double scale, double sidekick_width) const;
+    Pose3D stepControlNew(  const FootStep& step,
+                            double cycle, 
+                            double samplesDoubleSupport, 
+                            double samplesSingleSupport,
+                            const WalkRequest::StepControlRequest& stepRequest) const;
 
 
     // LEGACY (uses sin and cos for trajectory generation)
@@ -117,8 +120,41 @@ class FootTrajectoryGenerator2018 : private FootTrajectoryGenerator2018Base
 
 
   private:
+    // walkstep params
     tk::spline theCubicSplineXY;
     tk::spline theCubicSplineZ;
+
+    // kicks
+    const KickType defaultKick = {{0.0, 0.25, 1.0},
+                                  {0.0, -0.3, 1.0},
+                                  {0.0, 0.125, 0.25, 0.5, 0.65, 0.875, 1.0},
+                                  {0.0, 0.146, 0.8, 1.0, 0.8, 0.146, 0.0}};
+
+    const KickType gewaltKick = {{0.0, 0.125, 0.35, 0.5, 1.0},
+                                 {0.0, 0.0, -0.4, 1.1, 0.0},
+                                 {0.0, 0.125, 0.25, 0.5, 0.65, 0.875, 1.0},
+                                 {0.0, 0.146, 0.8, 1.0, 0.8, 0.146, 0.0}};
+
+    const KickType shortKick = {{0.0, 0.2, 0.5, 0.8, 1.0},
+                                {0.0, 0.0, 1.0, 0.2, 0.0},
+                                {0.0, 0.125, 0.25, 0.5, 0.65, 0.875, 1.0},
+                                {0.0, 0.146, 0.8, 1.0, 0.8, 0.146, 0.0}};
+
+
+    inline const KickType& getKickType(WalkRequest::StepControlRequest::KickStepType typeID) const {
+        switch (typeID) 
+        {
+            case WalkRequest::StepControlRequest::NORMAL:
+                return defaultKick;
+            case WalkRequest::StepControlRequest::SHORT:
+                return shortKick;
+            case WalkRequest::StepControlRequest::LONG:
+                return gewaltKick;
+            default:
+                ASSERT(false);
+        }
+    }
+
 
   public:
     const FootTrajectoryGenerator2018Parameters &parameters;

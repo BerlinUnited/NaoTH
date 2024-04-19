@@ -58,6 +58,7 @@ public:
       time(0),
       speedDirection(0),
       scale(1.0),
+      kickStepType(KickStepType::NORMAL),
       restriction(RestrictionMode::HARD),   
       isProtected(false),
       stepRequestID(0)
@@ -71,7 +72,7 @@ public:
     StepType type;
     unsigned int stepID; // it should match the current step id in walk, otherwise it will not be accepted
     bool moveLeftFoot; // it should also match, false = rightfoot
-    Pose2D target; // in coordinate
+    Pose2D target; // target location for the moving foot after the step in coordinate
     unsigned int time; // in ms
     //angle (in radiant) of the speed of the foot at the end of the controlled step
     //e.g., kick to left => speedDirection = Math::toRadiant(-90)
@@ -79,6 +80,16 @@ public:
     // time scale for the step trajectory (0..1], 
     // e.g., scale = 1 => normal step trajectory, scale < 1 => faster step
     double scale;
+
+    // parameters for the kick steps
+    enum KickStepType {
+        NORMAL,
+        SHORT,
+        LONG
+    };
+    KickStepType kickStepType;
+    Pose2D kickTarget;  // target to be kicked by the kick
+
 
     enum RestrictionMode { HARD, SOFT };
     RestrictionMode restriction; // additionally to restrictStepSize use restrictStepChange ?
