@@ -312,15 +312,17 @@ void Motion::modifyJointOffsets()
 void Motion::debugPlots()
 {
 
-  double avg_stiff = 0;
+//  double avg_stiff = 0;
   if(getMotionStatus().currentMotion == motion::falling) {
       t_run += 1;
 
-      for (int i = 0; i < 6; ++i) {
-          avg_stiff += getSensorJointData().stiffness[i]; // todo: Can't use getMotorJointData data, here, isn't getSensorJointData one exec delayed?
-      }
-      avg_stiff = (avg_stiff * 100) / 6;
-      PLOT_GENERIC("Motion:Betterfalling-Develop:Stiffness", t_run, avg_stiff);
+//      for (int i = 0; i < 6; ++i) {
+//          avg_stiff += getSensorJointData().stiffness[i]; // todo: Can't use getMotorJointData data, here, isn't getSensorJointData one exec delayed?
+//      }
+//      avg_stiff = (avg_stiff * 100) / 6;
+//      PLOT_GENERIC("Motion:Betterfalling-Develop:Stiffness", t_run, avg_stiff);
+      PLOT_GENERIC("Motion:Betterfalling-Develop:r-shoulder-roll-req-position", t_run, getMotorJointData().position[2]); // r shoulder roll
+      PLOT_GENERIC("Motion:Betterfalling-Develop:r-shoulder-roll-req-stiffness", t_run, getMotorJointData().stiffness[2]); // r shoulder roll
   } else {
       t_run = 0;
   }
