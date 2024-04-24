@@ -316,7 +316,8 @@ void GameController::handleButtons()
   }
 
   // go back from penalized to initial both foot bumpers are pressed for more than 1s
-  else if (getPlayerInfo().robotState == PlayerInfo::penalized && ( 
+  else if ((getPlayerInfo().robotState == PlayerInfo::penalized || getPlayerInfo().robotState == PlayerInfo::initial)
+    && ( 
      (getButtonState()[ButtonState::LeftFootLeft].isPressed && getButtonState()[ButtonState::LeftFootLeft].timeSinceEvent() > 1000) || 
      (getButtonState()[ButtonState::LeftFootRight].isPressed && getButtonState()[ButtonState::LeftFootRight].timeSinceEvent() > 1000 )
     )
@@ -325,7 +326,7 @@ void GameController::handleButtons()
      (getButtonState()[ButtonState::RightFootRight].isPressed && getButtonState()[ButtonState::RightFootRight].timeSinceEvent() > 1000))
     )
   {
-    getPlayerInfo().robotState = PlayerInfo::initial;
+    getPlayerInfo().robotState = PlayerInfo::unstiff;
   }
 } // end handleButtons
 
