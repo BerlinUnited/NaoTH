@@ -7,8 +7,8 @@
 *
 */
 
-#ifndef _LolaDataConverter_h_
-#define _LolaDataConverter_h_
+#ifndef LOLA_DATA_CONVERTER_H
+#define LOLA_DATA_CONVERTER_H
 
 
 #include "LolaData.h"
@@ -27,7 +27,43 @@
 
 namespace naoth
 {
-  
+
+// Joint ID order in a lola package.
+enum LolaJointID {
+  HeadYaw,
+  HeadPitch,
+
+  LShoulderPitch,
+  LShoulderRoll,
+  LElbowYaw,
+  LElbowRoll,
+  LWristYaw,
+
+  LHipYawPitch,
+
+  LHipRoll,
+  LHipPitch,
+  LKneePitch,
+  LAnklePitch,
+  LAnkleRoll,
+
+  RHipRoll,
+  RHipPitch,
+  RKneePitch,
+  RAnklePitch,
+  RAnkleRoll,
+
+  RShoulderPitch,
+  RShoulderRoll,
+  RElbowYaw,
+  RElbowRoll,
+  RWristYaw,
+
+  LHand,
+  RHand
+};
+
+// Map the order of joints in Lola to the joint IDs in JointData.
 constexpr std::array<int,25> lolaJointIdx 
 {
   JointData::HeadYaw,
@@ -62,6 +98,46 @@ constexpr std::array<int,25> lolaJointIdx
   JointData::LHand,
   JointData::RHand
 };
+
+
+// Map the order of joints in JointData to the joint IDs in Lola.
+constexpr std::array<int,25> jointMap_Naoth2Lola
+{
+  LolaJointID::HeadPitch,
+  LolaJointID::HeadYaw,
+
+  LolaJointID::RShoulderRoll,
+  LolaJointID::LShoulderRoll,
+  LolaJointID::RShoulderPitch,
+  LolaJointID::LShoulderPitch,
+
+  LolaJointID::RElbowRoll,
+  LolaJointID::LElbowRoll,
+  LolaJointID::RElbowYaw,
+  LolaJointID::LElbowYaw,
+
+  // Lola does not list this joint separately and DCMData as well.
+  //LolaJointID::LHipYawPitch, // JointData::RHipYawPitch, same as LHipYawPitch.
+  LolaJointID::LHipYawPitch,
+  
+  LolaJointID::RHipPitch,
+  LolaJointID::LHipPitch,
+  LolaJointID::RHipRoll,
+  LolaJointID::LHipRoll,
+  LolaJointID::RKneePitch,
+  LolaJointID::LKneePitch,
+  LolaJointID::RAnklePitch,
+  LolaJointID::LAnklePitch,
+  LolaJointID::RAnkleRoll,
+  LolaJointID::LAnkleRoll,
+
+  // NOTE: those values don't exist on the old V3.2/V3.3 robots
+  //       so, we put them at the end for easier support for the old format
+  LolaJointID::LWristYaw,
+  LolaJointID::RWristYaw,
+  LolaJointID::LHand,
+  LolaJointID::RHand,
+};
   
 class LolaDataConverter
 {
@@ -88,104 +164,65 @@ public:
 
   static void set(ActuatorData& actuators, const LEDData& ledData) 
   {
+    // index used to iterate over appays in actuators
+    int idx = 0;
+    
     // REar
-    for(size_t i = 0; i <= LEDData::EarRight324; ++i) {
-      actuators.REar[i] = (float)ledData.theMonoLED[LEDData::EarRight324 - i];
+    idx = 0;
+    for(int i = LEDData::EarRight0; i <= LEDData::EarRight324; ++i) {
+      actuators.REar[idx++] = static_cast<float>(ledData.theMonoLED[LEDData::EarRight324 - i]);
     }
 
     // LEar
-    for(size_t i = 0; i <= LEDData::EarRight324; ++i) {
-      actuators.LEar[i] = (float)ledData.theMonoLED[LEDData::EarLeft0 + i];
+    idx = 0;
+    for(int i = LEDData::EarLeft0; i <= LEDData::EarLeft324; ++i) {
+      actuators.LEar[idx++] = static_cast<float>(ledData.theMonoLED[i]);
     }
 
     // Chest
-    actuators.Chest[0] = (float)ledData.theMultiLED[LEDData::ChestButton][LEDData::RED];
-    actuators.Chest[1] = (float)ledData.theMultiLED[LEDData::ChestButton][LEDData::GREEN];
-    actuators.Chest[2] = (float)ledData.theMultiLED[LEDData::ChestButton][LEDData::BLUE];
-
-    // LEye
-    {
-      actuators.LEye[0] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft45][LEDData::RED]);
-      actuators.LEye[1] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft0][LEDData::RED]);
-      actuators.LEye[2] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft315][LEDData::RED]);
-      actuators.LEye[3] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft270][LEDData::RED]);
-      actuators.LEye[4] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft225][LEDData::RED]);
-      actuators.LEye[5] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft180][LEDData::RED]);
-      actuators.LEye[6] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft135][LEDData::RED]);
-      actuators.LEye[7] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft90][LEDData::RED]);
-
-      actuators.LEye[8] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft45][LEDData::GREEN]);
-      actuators.LEye[9] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft0][LEDData::GREEN]);
-      actuators.LEye[10] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft315][LEDData::GREEN]);
-      actuators.LEye[11] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft270][LEDData::GREEN]);
-      actuators.LEye[12] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft225][LEDData::GREEN]);
-      actuators.LEye[13] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft180][LEDData::GREEN]);
-      actuators.LEye[14] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft135][LEDData::GREEN]);
-      actuators.LEye[15] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft90][LEDData::GREEN]);
-
-      actuators.LEye[16] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft45][LEDData::BLUE]);
-      actuators.LEye[17] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft0][LEDData::BLUE]);
-      actuators.LEye[18] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft315][LEDData::BLUE]);
-      actuators.LEye[19] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft270][LEDData::BLUE]);
-      actuators.LEye[20] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft225][LEDData::BLUE]);
-      actuators.LEye[21] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft180][LEDData::BLUE]);
-      actuators.LEye[22] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft135][LEDData::BLUE]);
-      actuators.LEye[23] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft90][LEDData::BLUE]);
-    }
+    actuators.Chest[0] = static_cast<float>(ledData.theMultiLED[LEDData::ChestButton][LEDData::RED]);
+    actuators.Chest[1] = static_cast<float>(ledData.theMultiLED[LEDData::ChestButton][LEDData::GREEN]);
+    actuators.Chest[2] = static_cast<float>(ledData.theMultiLED[LEDData::ChestButton][LEDData::BLUE]);
 
     // REye
-    {
-      actuators.LEye[0] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft0][LEDData::RED]);
-      actuators.LEye[1] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft45][LEDData::RED]);
-      actuators.LEye[2] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft90][LEDData::RED]);
-      actuators.LEye[3] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceRight135][LEDData::RED]);
-      actuators.LEye[4] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft180][LEDData::RED]);
-      actuators.LEye[5] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft225][LEDData::RED]);
-      actuators.LEye[6] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft270][LEDData::RED]);
-      actuators.LEye[7] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft315][LEDData::RED]);
-
-      actuators.LEye[8] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft0][LEDData::GREEN]);
-      actuators.LEye[9] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft45][LEDData::GREEN]);
-      actuators.LEye[10] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft90][LEDData::GREEN]);
-      actuators.LEye[11] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceRight135][LEDData::GREEN]);
-      actuators.LEye[12] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft180][LEDData::GREEN]);
-      actuators.LEye[13] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft225][LEDData::GREEN]);
-      actuators.LEye[14] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft270][LEDData::GREEN]);
-      actuators.LEye[15] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft315][LEDData::GREEN]);
-
-      actuators.LEye[16] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft0][LEDData::BLUE]);
-      actuators.LEye[17] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft45][LEDData::BLUE]);
-      actuators.LEye[18] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft90][LEDData::BLUE]);
-      actuators.LEye[19] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceRight135][LEDData::BLUE]);
-      actuators.LEye[20] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft180][LEDData::BLUE]);
-      actuators.LEye[21] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft225][LEDData::BLUE]);
-      actuators.LEye[22] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft270][LEDData::BLUE]);
-      actuators.LEye[23] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft315][LEDData::BLUE]);
+    idx = 0;
+    for(int color = LEDData::RED; color < LEDData::numOfLEDColor; ++color) {
+      for(int led = LEDData::FaceRight0; led <= LEDData::FaceRight315; ++led) {
+        actuators.REye[idx++] = static_cast<float>(ledData.theMultiLED[LEDData::FaceRight315 - led][color]);
+      }
+    }
+    
+    // LEye
+    idx = 0;
+    for(int color = LEDData::RED; color < LEDData::numOfLEDColor; ++color) {
+      for(int led = LEDData::FaceLeft0; led <= LEDData::FaceLeft315; ++led) {
+        actuators.LEye[idx++] = static_cast<float>(ledData.theMultiLED[led][color]);
+      }
     }
 
     // Skull
-    actuators.Skull[ 0] = (float)ledData.theMonoLED[LEDData::HeadFrontLeft1];
-    actuators.Skull[ 1] = (float)ledData.theMonoLED[LEDData::HeadFrontLeft0];
-    actuators.Skull[ 2] = (float)ledData.theMonoLED[LEDData::HeadMiddleLeft0];
-    actuators.Skull[ 3] = (float)ledData.theMonoLED[LEDData::HeadRearLeft0];
-    actuators.Skull[ 4] = (float)ledData.theMonoLED[LEDData::HeadRearLeft1];
-    actuators.Skull[ 5] = (float)ledData.theMonoLED[LEDData::HeadRearLeft2];
-    actuators.Skull[ 6] = (float)ledData.theMonoLED[LEDData::HeadRearRight2];
-    actuators.Skull[ 7] = (float)ledData.theMonoLED[LEDData::HeadRearRight1];
-    actuators.Skull[ 8] = (float)ledData.theMonoLED[LEDData::HeadRearRight0];
-    actuators.Skull[ 9] = (float)ledData.theMonoLED[LEDData::HeadMiddleRight0];
-    actuators.Skull[10] = (float)ledData.theMonoLED[LEDData::HeadFrontRight0];
-    actuators.Skull[11] = (float)ledData.theMonoLED[LEDData::HeadFrontRight1];
+    actuators.Skull[ 0] = static_cast<float>(ledData.theMonoLED[LEDData::HeadFrontLeft1]);
+    actuators.Skull[ 1] = static_cast<float>(ledData.theMonoLED[LEDData::HeadFrontLeft0]);
+    actuators.Skull[ 2] = static_cast<float>(ledData.theMonoLED[LEDData::HeadMiddleLeft0]);
+    actuators.Skull[ 3] = static_cast<float>(ledData.theMonoLED[LEDData::HeadRearLeft0]);
+    actuators.Skull[ 4] = static_cast<float>(ledData.theMonoLED[LEDData::HeadRearLeft1]);
+    actuators.Skull[ 5] = static_cast<float>(ledData.theMonoLED[LEDData::HeadRearLeft2]);
+    actuators.Skull[ 6] = static_cast<float>(ledData.theMonoLED[LEDData::HeadRearRight2]);
+    actuators.Skull[ 7] = static_cast<float>(ledData.theMonoLED[LEDData::HeadRearRight1]);
+    actuators.Skull[ 8] = static_cast<float>(ledData.theMonoLED[LEDData::HeadRearRight0]);
+    actuators.Skull[ 9] = static_cast<float>(ledData.theMonoLED[LEDData::HeadMiddleRight0]);
+    actuators.Skull[10] = static_cast<float>(ledData.theMonoLED[LEDData::HeadFrontRight0]);
+    actuators.Skull[11] = static_cast<float>(ledData.theMonoLED[LEDData::HeadFrontRight1]);
 
     // LFoot
-    actuators.LFoot[0] = (float)ledData.theMultiLED[LEDData::FootLeft][LEDData::RED];
-    actuators.LFoot[1] = (float)ledData.theMultiLED[LEDData::FootLeft][LEDData::GREEN];
-    actuators.LFoot[2] = (float)ledData.theMultiLED[LEDData::FootLeft][LEDData::BLUE];
+    actuators.LFoot[0] = static_cast<float>(ledData.theMultiLED[LEDData::FootLeft][LEDData::RED]);
+    actuators.LFoot[1] = static_cast<float>(ledData.theMultiLED[LEDData::FootLeft][LEDData::GREEN]);
+    actuators.LFoot[2] = static_cast<float>(ledData.theMultiLED[LEDData::FootLeft][LEDData::BLUE]);
 
     // RFoot
-    actuators.LFoot[0] = (float)ledData.theMultiLED[LEDData::FootRight][LEDData::RED];
-    actuators.LFoot[1] = (float)ledData.theMultiLED[LEDData::FootRight][LEDData::GREEN];
-    actuators.LFoot[2] = (float)ledData.theMultiLED[LEDData::FootRight][LEDData::BLUE];
+    actuators.RFoot[0] = static_cast<float>(ledData.theMultiLED[LEDData::FootRight][LEDData::RED]);
+    actuators.RFoot[1] = static_cast<float>(ledData.theMultiLED[LEDData::FootRight][LEDData::GREEN]);
+    actuators.RFoot[2] = static_cast<float>(ledData.theMultiLED[LEDData::FootRight][LEDData::BLUE]);
   }
 
   // copy to DCMSensorData for compatibility
@@ -193,17 +230,22 @@ public:
   {
     float* sensorsValue = dcmSensorData.sensorsValue;
     
-    // SensorJointData
-    for(size_t i = 0; i < lolaJointIdx.size(); ++i) 
-    {
-      //NOTE: ignore the JointData::RHipYawPitch
-      size_t j = theSensorJointDataIndex + ((lolaJointIdx[i] >= JointData::RHipYawPitch)?lolaJointIdx[i]-1:lolaJointIdx[i])*4;
-      sensorsValue[j  ] = sensorData.Current[i];
-      sensorsValue[j+1] = sensorData.Temperature[i];
-      sensorsValue[j+2] = sensorData.Position[i];
-      sensorsValue[j+3] = sensorData.Stiffness[i];
+    { // SensorJointData
+      unsigned int currentIndex = theSensorJointDataIndex;
+      for(size_t i = 0; i < jointMap_Naoth2Lola.size(); ++i) 
+      {
+        //NOTE: ignore the JointData::RHipYawPitch
+        //const size_t j = theSensorJointDataIndex + ((lolaJointIdx[i] >= JointData::RHipYawPitch)?lolaJointIdx[i]-1:lolaJointIdx[i])*4;
+        
+        const size_t lolaJointId = jointMap_Naoth2Lola[i];
+        
+        sensorsValue[currentIndex++] = sensorData.Current[lolaJointId];
+        sensorsValue[currentIndex++] = sensorData.Temperature[lolaJointId];
+        sensorsValue[currentIndex++] = sensorData.Position[lolaJointId];
+        sensorsValue[currentIndex++] = sensorData.Stiffness[lolaJointId];
+      }
+      //assert(currentIndex == theFSRDataIndex);
     }
-
     
     { // FSRData
     unsigned int currentIndex = theFSRDataIndex;
@@ -219,22 +261,22 @@ public:
     }
 
     { // AccelerometerData
-    sensorsValue[theAccelerometerDataIndex + 0] = sensorData.Accelerometer.x;
+    sensorsValue[theAccelerometerDataIndex + 0] =  sensorData.Accelerometer.x;
     sensorsValue[theAccelerometerDataIndex + 1] = -sensorData.Accelerometer.y; // y-axis of v6 robots is mirrored compared to v5 and earlier
-    sensorsValue[theAccelerometerDataIndex + 2] = sensorData.Accelerometer.z;
+    sensorsValue[theAccelerometerDataIndex + 2] =  sensorData.Accelerometer.z;
 
-    sensorsValue[theAccelerometerDataIndex + 3] = sensorData.Accelerometer.x;
+    sensorsValue[theAccelerometerDataIndex + 3] =  sensorData.Accelerometer.x;
     sensorsValue[theAccelerometerDataIndex + 4] = -sensorData.Accelerometer.y; // y-axis of v6 robots is mirrored compared to v5 and earlier
-    sensorsValue[theAccelerometerDataIndex + 5] = sensorData.Accelerometer.z;
+    sensorsValue[theAccelerometerDataIndex + 5] =  sensorData.Accelerometer.z;
     }
 
     { // GyrometerData
-    sensorsValue[theGyrometerDataIndex + 0] = sensorData.Gyroscope.x;
-    sensorsValue[theGyrometerDataIndex + 1] = sensorData.Gyroscope.y;
+    sensorsValue[theGyrometerDataIndex + 0] =  sensorData.Gyroscope.x;
+    sensorsValue[theGyrometerDataIndex + 1] =  sensorData.Gyroscope.y;
     sensorsValue[theGyrometerDataIndex + 2] = -sensorData.Gyroscope.z;// z-axis of v6 robots is mirrored compared to v5 and earlier
 
-    sensorsValue[theGyrometerDataIndex + 3] = sensorData.Gyroscope.x;
-    sensorsValue[theGyrometerDataIndex + 4] = sensorData.Gyroscope.y;
+    sensorsValue[theGyrometerDataIndex + 3] =  sensorData.Gyroscope.x;
+    sensorsValue[theGyrometerDataIndex + 4] =  sensorData.Gyroscope.y;
     sensorsValue[theGyrometerDataIndex + 5] = -sensorData.Gyroscope.z;// z-axis of v6 robots is mirrored compared to v5 and earlier
 
     //sensorsValue[theGyrometerDataIndex + 6] = 0;
@@ -296,4 +338,4 @@ public:
 }; // end class LolaDataConverter
 } // end namespace naoth
 
-#endif //_LolaDataConverter_h_
+#endif //LOLA_DATA_CONVERTER_H

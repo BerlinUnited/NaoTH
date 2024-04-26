@@ -9,6 +9,9 @@
 *
 */
 
+#ifndef LOLA_H
+#define LOLA_H
+
 #include "LolaData.h"
 
 // this is needed for communication with the UNIX socket on NAO
@@ -33,7 +36,8 @@ class Lola
   // C-style file pointer to fd used to write by msgpack::fbuffer
   FILE* fp;
   
-  static const int PACKET_ZIZE = 896;
+  static const int PACKET_SIZE_ACTUATOR = 786; // size of th actuator packet expected by lola (for debugging)
+  static const int PACKET_SIZE_SENSOR   = 896;
   msgpack::unpacker m_pac;
 
   // indicated that the LOLA client is in the error state
@@ -73,6 +77,11 @@ class Lola
   
     void writeActuators(const ActuatorData& data) 
     {
+      // DEBUG: check size
+      //std::stringstream sbuf;
+      //msgpack::pack(sbuf, data);
+      //assert(sbuf.str().size() == PACKET_SIZE_ACTUATOR);
+      
       msgpack::fbuffer fbuf(fp);
       msgpack::pack(fbuf, data);
       fflush(fp);
@@ -81,13 +90,13 @@ class Lola
     void readSensors(SensorData& data) 
     {
       // make sure we have enough space
-      m_pac.reserve_buffer(PACKET_ZIZE);
+      m_pac.reserve_buffer(PACKET_SIZE_SENSOR);
 
       // read from the soccet (POSIX style)
       size_t bytes = read(fd, m_pac.buffer(), m_pac.buffer_capacity());
       
-      if(bytes != PACKET_ZIZE) {
-        std::cerr << "[LOLA] wrong message size: " << bytes << " expected " << PACKET_ZIZE << std::endl;
+      if(bytes != PACKET_SIZE_SENSOR) {
+        std::cerr << "[LOLA] wrong message size: " << bytes << " expected " << PACKET_SIZE_SENSOR << std::endl;
       }
       m_pac.buffer_consumed(bytes);
       
@@ -98,7 +107,7 @@ class Lola
       msgpack::object deserialized = oh.get();
       
       // print the decerialized content
-      if(bytes != PACKET_ZIZE) {
+      if(bytes != PACKET_SIZE_SENSOR) {
         std::cout << deserialized << std::endl;
         //assert(false);
       }
@@ -195,4 +204,6 @@ public:
   }
 };
 
-#endif
+#endif // NAO
+
+#endif //LOLA_H
