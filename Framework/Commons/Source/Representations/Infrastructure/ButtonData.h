@@ -5,8 +5,8 @@
  * Created on 6. march 2009, 10:40
  */
 
-#ifndef _BUTTONDATA_H
-#define _BUTTONDATA_H
+#ifndef BUTTONDATA_H
+#define BUTTONDATA_H
 
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/DataStructures/Serializer.h"
@@ -64,5 +64,5 @@ namespace naoth
 
 } // namespace naoth
 
-#endif  /* _BUTTONDATA_H */
+#endif  /* BUTTONDATA_H */
 
