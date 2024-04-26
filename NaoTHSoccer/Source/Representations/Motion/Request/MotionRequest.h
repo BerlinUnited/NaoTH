@@ -35,8 +35,8 @@ public:
     standHeight(-1),
     calibrateFootTouchDetector(false),
     standardStand(true),
-    disable_relaxed_stand(false),
-    standRelaxStiffness(true)
+    standRelaxStiffness(true),
+    disable_relaxed_stand(false)
   {
   }
 
