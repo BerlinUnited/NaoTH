@@ -127,22 +127,9 @@ void DCMSensorData::get(ButtonData& data) const
   unsigned int currentIndex = theButtonDataIndex;
   for (int i = 0; i < ButtonData::numOfButtons; i++)
   {
-    float temp = sensorsValue[currentIndex++];
-    bool wasAlreadPressed = data.isPressed[i];
-    if (temp == 1.0f)
-    {
-      data.isPressed[i] = true;
-      data.numOfFramesPressed[i]++;
-      if (!wasAlreadPressed)
-      {
-        data.eventCounter[i]++;
-      }
-    }
-    else
-    {
-      data.isPressed[i] = false;
-      data.numOfFramesPressed[i] = 0;
-    }
+    // NOTE: data updates internal state. For now simply copying button data is not enough.
+    //data.isPressed[i] = sensorsValue[currentIndex++];
+    data.updatePressed((ButtonData::ButtonID)i, sensorsValue[currentIndex++]);
   }
 }
 
