@@ -21,11 +21,13 @@ class ButtonEvent
       RELEASED,
       CLICKED,  // button is pressed not longer than 1s
       numOfButtonEvent
-    } eventState;
+    };
+
+    EventType eventState; // event in the current frame
 
     unsigned int updateTime; // timestamp when this representation was updated
     
-    unsigned int timeOfLastEvent; // then did the last event occur
+    unsigned int timeOfLastEvent; // when did the last event occur
     unsigned int timeOfLastClick; // this is used to count clicks in a sequence
     unsigned int clicksInSequence;
 
@@ -134,6 +136,63 @@ class ButtonState: public naoth::Printable
     }
     inline const ButtonEvent& operator[](ButtonType id) const {
       return buttons[id];
+    }
+
+    // If all buttons on the head are touched at the same time,
+    // return the time since when they are all touched. 
+    // Otherwise return 0.
+    unsigned int headTouchedAll() const
+    {
+      if(buttons[ButtonState::HeadFront].isPressed && 
+         buttons[ButtonState::HeadMiddle].isPressed && 
+         buttons[ButtonState::HeadRear].isPressed
+        )
+      {
+        return std::min(
+          std::min(
+            buttons[ButtonState::HeadFront].timeSinceEvent(), 
+            buttons[ButtonState::HeadMiddle].timeSinceEvent()),
+          buttons[ButtonState::HeadFront].timeSinceEvent()
+        );
+      }
+      
+      return 0;
+    }
+
+    // If any of the buttons of the left foot are touched,
+    // return the time since the longest touch. 
+    // Otherwise return 0.
+    unsigned int footLeftTouchedAny() const
+    {
+      if(buttons[ButtonState::LeftFootLeft].isPressed ||
+        buttons[ButtonState::LeftFootRight].isPressed
+        )
+      {
+        return std::max(
+            buttons[ButtonState::LeftFootLeft].timeSinceEvent(), 
+            buttons[ButtonState::LeftFootRight].timeSinceEvent()
+        );
+      }
+
+      return 0;
+    }
+
+    // If any of the buttons of the right foot are touched,
+    // return the time since the longest touch. 
+    // Otherwise return 0.
+    unsigned int footRightTouchedAny() const
+    {
+      if(buttons[ButtonState::RightFootLeft].isPressed ||
+        buttons[ButtonState::RightFootRight].isPressed
+        )
+      {
+        return std::max(
+          buttons[ButtonState::RightFootLeft].timeSinceEvent(), 
+          buttons[ButtonState::RightFootRight].timeSinceEvent()
+        );
+      }
+
+      return 0;
     }
 
     virtual void print(std::ostream& stream) const 
