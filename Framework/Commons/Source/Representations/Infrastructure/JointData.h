@@ -1,9 +1,9 @@
-/* 
- * File:   JointData.h
- * Author: Oliver Welter
- *
- * Created on 2. Januar 2009, 16:15
- */
+/** 
+* File:   JointData.h
+* Author: Oliver Welter
+*
+* Created on 2. Januar 2009, 16:15
+*/
 
 #ifndef JOINTDATA_H
 #define JOINTDATA_H
@@ -76,7 +76,7 @@ class JointData
 
     JointData();
 
-    virtual ~JointData(){}
+    virtual ~JointData() {}
 
     //
     static void loadJointLimitsFromConfig();
@@ -123,7 +123,7 @@ class JointData
   {
   public:
     SensorJointData();
-    ~SensorJointData();
+    ~SensorJointData() {}
     double temperature[numOfJoint];
     double electricCurrent[numOfJoint];
     unsigned int timestamp;
@@ -134,8 +134,8 @@ class JointData
   class MotorJointData : public JointData, public Printable
   {
   public:
-    MotorJointData();
-    ~MotorJointData();
+    MotorJointData() {}
+    ~MotorJointData() {}
 
     virtual void print(std::ostream& stream) const;
   };
@@ -143,8 +143,8 @@ class JointData
   class OffsetJointData : public JointData, public Printable
   {
   public:
-    OffsetJointData();
-    ~OffsetJointData();
+    OffsetJointData() {}
+    ~OffsetJointData() {}
 
     virtual void print(std::ostream& stream) const;
   };
