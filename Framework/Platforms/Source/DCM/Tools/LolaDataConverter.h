@@ -27,7 +27,43 @@
 
 namespace naoth
 {
-  
+
+// Joint ID order in a lola package.
+enum LolaJointID {
+  HeadYaw,
+  HeadPitch,
+
+  LShoulderPitch,
+  LShoulderRoll,
+  LElbowYaw,
+  LElbowRoll,
+  LWristYaw,
+
+  LHipYawPitch,
+
+  LHipRoll,
+  LHipPitch,
+  LKneePitch,
+  LAnklePitch,
+  LAnkleRoll,
+
+  RHipRoll,
+  RHipPitch,
+  RKneePitch,
+  RAnklePitch,
+  RAnkleRoll,
+
+  RShoulderPitch,
+  RShoulderRoll,
+  RElbowYaw,
+  RElbowRoll,
+  RWristYaw,
+
+  LHand,
+  RHand
+};
+
+// Map the order of joints in Lola to the joint IDs in JointData.
 constexpr std::array<int,25> lolaJointIdx 
 {
   JointData::HeadYaw,
@@ -61,6 +97,46 @@ constexpr std::array<int,25> lolaJointIdx
 
   JointData::LHand,
   JointData::RHand
+};
+
+
+// Map the order of joints in JointData to the joint IDs in Lola.
+constexpr std::array<int,25> jointMap_Naoth2Lola
+{
+  LolaJointID::HeadPitch,
+  LolaJointID::HeadYaw,
+
+  LolaJointID::RShoulderRoll,
+  LolaJointID::LShoulderRoll,
+  LolaJointID::RShoulderPitch,
+  LolaJointID::LShoulderPitch,
+
+  LolaJointID::RElbowRoll,
+  LolaJointID::LElbowRoll,
+  LolaJointID::RElbowYaw,
+  LolaJointID::LElbowYaw,
+
+  // Lola does not list this joint separately and DCMData as well.
+  //LolaJointID::LHipYawPitch, // JointData::RHipYawPitch, same as LHipYawPitch.
+  LolaJointID::LHipYawPitch,
+  
+  LolaJointID::RHipPitch,
+  LolaJointID::LHipPitch,
+  LolaJointID::RHipRoll,
+  LolaJointID::LHipRoll,
+  LolaJointID::RKneePitch,
+  LolaJointID::LKneePitch,
+  LolaJointID::RAnklePitch,
+  LolaJointID::LAnklePitch,
+  LolaJointID::RAnkleRoll,
+  LolaJointID::LAnkleRoll,
+
+  // NOTE: those values don't exist on the old V3.2/V3.3 robots
+  //       so, we put them at the end for easier support for the old format
+  LolaJointID::LWristYaw,
+  LolaJointID::RWristYaw,
+  LolaJointID::LHand,
+  LolaJointID::RHand,
 };
   
 class LolaDataConverter
@@ -154,17 +230,22 @@ public:
   {
     float* sensorsValue = dcmSensorData.sensorsValue;
     
-    // SensorJointData
-    for(size_t i = 0; i < lolaJointIdx.size(); ++i) 
-    {
-      //NOTE: ignore the JointData::RHipYawPitch
-      size_t j = theSensorJointDataIndex + ((lolaJointIdx[i] >= JointData::RHipYawPitch)?lolaJointIdx[i]-1:lolaJointIdx[i])*4;
-      sensorsValue[j  ] = sensorData.Current[i];
-      sensorsValue[j+1] = sensorData.Temperature[i];
-      sensorsValue[j+2] = sensorData.Position[i];
-      sensorsValue[j+3] = sensorData.Stiffness[i];
+    { // SensorJointData
+      unsigned int currentIndex = theSensorJointDataIndex;
+      for(size_t i = 0; i < jointMap_Naoth2Lola.size(); ++i) 
+      {
+        //NOTE: ignore the JointData::RHipYawPitch
+        //const size_t j = theSensorJointDataIndex + ((lolaJointIdx[i] >= JointData::RHipYawPitch)?lolaJointIdx[i]-1:lolaJointIdx[i])*4;
+        
+        const size_t lolaJointId = jointMap_Naoth2Lola[i];
+        
+        sensorsValue[currentIndex++] = sensorData.Current[lolaJointId];
+        sensorsValue[currentIndex++] = sensorData.Temperature[lolaJointId];
+        sensorsValue[currentIndex++] = sensorData.Position[lolaJointId];
+        sensorsValue[currentIndex++] = sensorData.Stiffness[lolaJointId];
+      }
+      //assert(currentIndex == theFSRDataIndex);
     }
-
     
     { // FSRData
     unsigned int currentIndex = theFSRDataIndex;
