@@ -141,7 +141,7 @@ class ButtonState: public naoth::Printable
       stream << std::left << std::setw(16) << "Button"     << " | "
              << std::left << std::setw(7)  << "Pressed"    << " | "
              << std::left << std::setw(10) << "Event"      << " | "
-             << std::left << std::setw(10) << "Timestamp " << " | "
+             << std::left << std::setw(10) << "Timestamp "
              << std::endl;
 
       stream << "----------------------------------------------------------" << std::endl;
@@ -151,10 +151,10 @@ class ButtonState: public naoth::Printable
         const ButtonType type = static_cast<ButtonType>(i);
         const ButtonEvent& button = buttons[type];
 
-        stream << std::left << std::setw(16) << toString(type)                          << " | "
+        stream << std::left << std::setw(16) << toString(type)                    << " | "
                << std::left << std::setw(7)  << (button.isPressed?"   X   ":" ")  << " | "
                << std::left << std::setw(10) <<  button.print()                   << " | "
-               << std::left << std::setw(10) <<  button.timeOfLastEvent           << " | "
+               << std::left << std::setw(10) <<  button.timeOfLastEvent
                << std::endl;
       }
     }
