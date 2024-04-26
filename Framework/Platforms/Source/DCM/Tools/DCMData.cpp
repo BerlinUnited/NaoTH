@@ -19,23 +19,23 @@ void DCMSensorData::get(SensorJointData& data) const
   for (int i = 0; i < JointData::RHipYawPitch; i++)
   {
     data.electricCurrent[i] = sensorsValue[currentIndex++];
-    data.temperature[i] = sensorsValue[currentIndex++];
-    data.position[i] = sensorsValue[currentIndex++];
-    data.stiffness[i] = sensorsValue[currentIndex++];
+    data.temperature[i]     = sensorsValue[currentIndex++];
+    data.position[i]        = sensorsValue[currentIndex++];
+    data.stiffness[i]       = sensorsValue[currentIndex++];
   }
   for (int i = JointData::RHipYawPitch + 1; i < JointData::numOfJoint; i++)
   {
     data.electricCurrent[i] = sensorsValue[currentIndex++];
-    data.temperature[i] = sensorsValue[currentIndex++];
-    data.position[i] = sensorsValue[currentIndex++];
-    data.stiffness[i] = sensorsValue[currentIndex++];
+    data.temperature[i]     = sensorsValue[currentIndex++];
+    data.position[i]        = sensorsValue[currentIndex++];
+    data.stiffness[i]       = sensorsValue[currentIndex++];
   }
 
-  // copy the data for the fake joint RHipYawPitch
+  // copy the data for the virtual joint RHipYawPitch
   data.electricCurrent[JointData::RHipYawPitch] = data.electricCurrent[JointData::LHipYawPitch];
-  data.temperature[JointData::RHipYawPitch] = data.temperature[JointData::LHipYawPitch];
-  data.position[JointData::RHipYawPitch] = data.position[JointData::LHipYawPitch];
-  data.stiffness[JointData::RHipYawPitch] = data.stiffness[JointData::LHipYawPitch];
+  data.temperature[JointData::RHipYawPitch]     = data.temperature[JointData::LHipYawPitch];
+  data.position[JointData::RHipYawPitch]        = data.position[JointData::LHipYawPitch];
+  data.stiffness[JointData::RHipYawPitch]       = data.stiffness[JointData::LHipYawPitch];
 
   data.timestamp = (unsigned int)(timeStamp - NaoTime::startingTimeInMilliSeconds);
 
