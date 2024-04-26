@@ -294,8 +294,8 @@ void GameController::handleButtons()
   // re-set team color or kickoff in initial
   if (getPlayerInfo().robotState == PlayerInfo::initial)
   {
-    if (getButtonState()[ButtonState::LeftFootLeft] == ButtonEvent::PRESSED ||
-        getButtonState()[ButtonState::LeftFootRight] == ButtonEvent::PRESSED)
+    if (getButtonState()[ButtonState::LeftFootLeft]  == ButtonEvent::CLICKED ||
+        getButtonState()[ButtonState::LeftFootRight] == ButtonEvent::CLICKED)
     {
       // switch team color
       GameData::TeamColor oldColor = getPlayerInfo().teamColor;
@@ -312,25 +312,24 @@ void GameController::handleButtons()
       }
     }
 
-    if (getButtonState()[ButtonState::RightFootLeft] == ButtonEvent::PRESSED ||
-        getButtonState()[ButtonState::RightFootRight] == ButtonEvent::PRESSED)
+    if (getButtonState()[ButtonState::RightFootLeft]  == ButtonEvent::CLICKED ||
+        getButtonState()[ButtonState::RightFootRight] == ButtonEvent::CLICKED)
     {
       // switch kick off team
       getPlayerInfo().kickoff = !getPlayerInfo().kickoff;
     }
   }
 
-  // go back from penalized to initial both foot bumpers are pressed for more than 1s
-  else if (getPlayerInfo().robotState == PlayerInfo::penalized && ( 
-     (getButtonState()[ButtonState::LeftFootLeft].isPressed && getButtonState()[ButtonState::LeftFootLeft].timeSinceEvent() > 1000) || 
-     (getButtonState()[ButtonState::LeftFootRight].isPressed && getButtonState()[ButtonState::LeftFootRight].timeSinceEvent() > 1000 )
-    )
-    && (
-     (getButtonState()[ButtonState::RightFootLeft].isPressed && getButtonState()[ButtonState::RightFootLeft].timeSinceEvent() > 1000) ||
-     (getButtonState()[ButtonState::RightFootRight].isPressed && getButtonState()[ButtonState::RightFootRight].timeSinceEvent() > 1000))
-    )
+  // go from penalized or initial to unstiff, if both foot bumpers are pressed for more than 1s
+  if ((getPlayerInfo().robotState == PlayerInfo::penalized || getPlayerInfo().robotState == PlayerInfo::initial)
+    && 
+       ((getButtonState()[ButtonState::LeftFootLeft].isPressed  && getButtonState()[ButtonState::LeftFootLeft].timeSinceEvent()  > 1000 ) || 
+        (getButtonState()[ButtonState::LeftFootRight].isPressed && getButtonState()[ButtonState::LeftFootRight].timeSinceEvent() > 1000 ))
+    && 
+       ((getButtonState()[ButtonState::RightFootLeft].isPressed  && getButtonState()[ButtonState::RightFootLeft].timeSinceEvent()  > 1000) ||
+        (getButtonState()[ButtonState::RightFootRight].isPressed && getButtonState()[ButtonState::RightFootRight].timeSinceEvent() > 1000)))
   {
-    getPlayerInfo().robotState = PlayerInfo::initial;
+    getPlayerInfo().robotState = PlayerInfo::unstiff;
   }
 } // end handleButtons
 
@@ -351,11 +350,11 @@ void GameController::handleHeadButtons()
     }
   }
 
-
-  if((getButtonState().buttons[ButtonState::HeadFront].isPressed && getButtonState()[ButtonState::HeadFront].timeSinceEvent() > 1000) &&
+  if(
+    (getButtonState()[ButtonState::HeadFront].isPressed  && getButtonState()[ButtonState::HeadFront].timeSinceEvent()  > 1000) &&
     (getButtonState()[ButtonState::HeadMiddle].isPressed && getButtonState()[ButtonState::HeadMiddle].timeSinceEvent() > 1000) &&
-    (getButtonState()[ButtonState::HeadRear].isPressed && getButtonState()[ButtonState::HeadRear].timeSinceEvent() > 1000)) {
-
+    (getButtonState()[ButtonState::HeadRear].isPressed   && getButtonState()[ButtonState::HeadRear].timeSinceEvent()   > 1000)) 
+  {
     getPlayerInfo().robotState = PlayerInfo::unstiff;
   }
 }
@@ -400,8 +399,7 @@ void GameController::updateLEDs()
       // handle blinking chest button for unstiff state
       if (getFrameInfo().getFrameNumber() % 8 < 4) {
         getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::BLUE] = 1.0;
-      }
-      else {
+      } else {
         getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::BLUE] = 0.0;
       }
       break;
@@ -430,15 +428,15 @@ void GameController::updateLEDs()
   }
 
   // show kickoff state on right foot and head in initial, ready and set
-  if (getPlayerInfo().robotState == PlayerInfo::initial
+  if ( getPlayerInfo().robotState == PlayerInfo::initial
     || getPlayerInfo().robotState == PlayerInfo::ready
     || getPlayerInfo().robotState == PlayerInfo::set)
   {
     if (getPlayerInfo().kickoff)
     {
-      getGameControllerLEDRequest().request.theMultiLED[LEDData::FootRight][LEDData::RED] = 0.7;
+      getGameControllerLEDRequest().request.theMultiLED[LEDData::FootRight][LEDData::RED]   = 0.7;
       getGameControllerLEDRequest().request.theMultiLED[LEDData::FootRight][LEDData::GREEN] = 1.0;
-      getGameControllerLEDRequest().request.theMultiLED[LEDData::FootRight][LEDData::BLUE] = 1.0;
+      getGameControllerLEDRequest().request.theMultiLED[LEDData::FootRight][LEDData::BLUE]  = 1.0;
 
       for(unsigned int i=LEDData::HeadFrontLeft0; i <= LEDData::HeadRearRight2; i++)
       {
