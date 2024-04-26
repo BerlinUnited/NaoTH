@@ -49,7 +49,7 @@ string ButtonData::getButtonName(ButtonID id)
     case RightHandRight: return "RightHandRight";
 
     default: return "Unknown Button";
-  }//end switch
+  }
 }//end getBumperName
 
 void ButtonData::print(ostream& stream) const
@@ -97,6 +97,4 @@ void Serializer<ButtonData>::deserialize(std::istream& stream, ButtonData& repre
     representation.eventCounter[i] = static_cast<int>(msg.eventcounter(i));
   }
 }
-
-
 
