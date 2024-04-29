@@ -5,8 +5,7 @@
 
 #include <Tools/Debug/DebugRequest.h>
 #include <Representations/Infrastructure/FrameInfo.h>
-#include <Representations/Infrastructure/LEDRequest.h>
-
+#include "Representations/Infrastructure/LEDRequest.h"
 #include "Representations/Infrastructure/ButtonState.h"
 #include "Representations/Infrastructure/SoundData.h"
 #include "Representations/Modeling/PlayerInfo.h"

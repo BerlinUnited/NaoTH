@@ -2,7 +2,7 @@
 #define FRAMERATECHECK_H
 
 #include <ModuleFramework/Module.h>
-#include <Representations/Infrastructure/LEDRequest.h>
+#include "Representations/Infrastructure/LEDRequest.h"
 #include <Representations/Infrastructure/FrameInfo.h>
 
 BEGIN_DECLARE_MODULE(FrameRateCheck)
