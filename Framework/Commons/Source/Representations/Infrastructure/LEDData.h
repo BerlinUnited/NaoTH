@@ -5,8 +5,8 @@
  * Created on 24. Februar 2009, 11:25
  */
 
-#ifndef _LEDDATA_H
-#define _LEDDATA_H
+#ifndef LEDDATA_H
+#define LEDDATA_H
 
 #include "Tools/DataStructures/Printable.h"
 
@@ -94,14 +94,14 @@ namespace naoth
     double theMonoLED[numOfMonoLED];
     double theMultiLED[numOfMultiLED][numOfLEDColor];
     bool change;
+
     LEDData();
-    ~LEDData();
+    ~LEDData() {}
 
     static std::string getLEDName(MonoLEDID theMonoLEDID);
     static std::string getLEDName(MultiLEDID theMultiLEDID);
-
   };
 }
 
-#endif  /* _LEDDATA_H */
+#endif  /* LEDDATA_H */
 
