@@ -6,22 +6,18 @@
 using namespace naoth;
 using namespace std;
 
-LEDData::LEDData()
+LEDData::LEDData() : change(false)
 {
-  for(int i=0;i<numOfMonoLED;i++)
-  {
+  for(int i=0;i<numOfMonoLED;i++) {
     theMonoLED[i] = 0.0;
   }
 
-  for(int i=0;i<numOfMultiLED;i++)
-  {
+  for(int i=0;i<numOfMultiLED;i++) {
     for(int j=0;j<numOfLEDColor;j++)
     {
       theMultiLED[i][j] = 0.0;
     }
   }
-
-  change = true;
 }
 
 void LEDData::print(std::ostream& stream) const
