@@ -1,3 +1,8 @@
+/**
+* Check the framerate of cognition and warn when the framerate drops.
+* Turn all LEDs to white if the execution time for the current frame exeeds a certain threshold.
+*/
+
 #ifndef FRAMERATECHECK_H
 #define FRAMERATECHECK_H
 
@@ -13,8 +18,8 @@ END_DECLARE_MODULE(FrameRateCheck)
 class FrameRateCheck : public FrameRateCheckBase
 {
 public:
-  FrameRateCheck();
-  virtual ~FrameRateCheck();
+  FrameRateCheck() {}
+  virtual ~FrameRateCheck() {}
 
   virtual void execute();
 
