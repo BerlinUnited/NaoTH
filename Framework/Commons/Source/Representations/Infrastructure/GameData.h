@@ -30,17 +30,17 @@ public:
 
   enum TeamColor
   {
-    blue   = TEAM_BLUE,
-    red    = TEAM_RED,
-    yellow = TEAM_YELLOW,
-    black  = TEAM_BLACK,
+    blue   = TEAM_BLUE,   // blue, cyan
+    red    = TEAM_RED,    // red, magenta, pink
+    yellow = TEAM_YELLOW, // yellow
+    black  = TEAM_BLACK,  // black, dark gray
 
-    white  = TEAM_WHITE,
-    green  = TEAM_GREEN,
-    orange = TEAM_ORANGE,
-    purple = TEAM_PURPLE,
-    brown  = TEAM_BROWN,
-    gray   = TEAM_GRAY,
+    white  = TEAM_WHITE,  // white
+    green  = TEAM_GREEN,  // green
+    orange = TEAM_ORANGE, // orange
+    purple = TEAM_PURPLE, // purple, violet
+    brown  = TEAM_BROWN,  // brown
+    gray   = TEAM_GRAY,   // lighter gray
     
     // invalide team color value
     unknown_team_color = 255
