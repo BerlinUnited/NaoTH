@@ -164,17 +164,23 @@ class ButtonState: public naoth::Printable
     // Otherwise return 0.
     unsigned int footLeftTouchedAny() const
     {
-      if(buttons[ButtonState::LeftFootLeft].isPressed ||
-        buttons[ButtonState::LeftFootRight].isPressed
-        )
-      {
-        return std::max(
-            buttons[ButtonState::LeftFootLeft].timeSinceEvent(), 
-            buttons[ButtonState::LeftFootRight].timeSinceEvent()
+      unsigned int timeSinceFirstTouched = 0;
+      
+      if(buttons[ButtonState::LeftFootLeft].isPressed) {
+        timeSinceFirstTouched = std::max(
+          timeSinceFirstTouched, 
+          buttons[ButtonState::LeftFootLeft].timeSinceEvent()
         );
       }
-
-      return 0;
+      
+      if(buttons[ButtonState::LeftFootRight].isPressed) {
+        timeSinceFirstTouched = std::max(
+          timeSinceFirstTouched, 
+          buttons[ButtonState::LeftFootRight].timeSinceEvent()
+        );
+      }
+      
+      return timeSinceFirstTouched;
     }
 
     // If any of the buttons of the right foot are touched,
@@ -182,17 +188,23 @@ class ButtonState: public naoth::Printable
     // Otherwise return 0.
     unsigned int footRightTouchedAny() const
     {
-      if(buttons[ButtonState::RightFootLeft].isPressed ||
-        buttons[ButtonState::RightFootRight].isPressed
-        )
-      {
-        return std::max(
-          buttons[ButtonState::RightFootLeft].timeSinceEvent(), 
+      unsigned int timeSinceFirstTouched = 0;
+      
+      if(buttons[ButtonState::RightFootLeft].isPressed) {
+        timeSinceFirstTouched = std::max(
+          timeSinceFirstTouched, 
+          buttons[ButtonState::RightFootLeft].timeSinceEvent()
+        );
+      }
+      
+      if(buttons[ButtonState::RightFootRight].isPressed) {
+        timeSinceFirstTouched = std::max(
+          timeSinceFirstTouched, 
           buttons[ButtonState::RightFootRight].timeSinceEvent()
         );
       }
-
-      return 0;
+      
+      return timeSinceFirstTouched;
     }
 
     virtual void print(std::ostream& stream) const 
@@ -200,7 +212,7 @@ class ButtonState: public naoth::Printable
       stream << std::left << std::setw(16) << "Button"     << " | "
              << std::left << std::setw(7)  << "Pressed"    << " | "
              << std::left << std::setw(10) << "Event"      << " | "
-             << std::left << std::setw(10) << "Timestamp "
+             << std::left << std::setw(10) << "Time since Event "
              << std::endl;
 
       stream << "----------------------------------------------------------" << std::endl;
@@ -213,7 +225,7 @@ class ButtonState: public naoth::Printable
         stream << std::left << std::setw(16) << toString(type)                    << " | "
                << std::left << std::setw(7)  << (button.isPressed?"   X   ":" ")  << " | "
                << std::left << std::setw(10) <<  button.print()                   << " | "
-               << std::left << std::setw(10) <<  button.timeOfLastEvent
+               << std::left << std::setw(10) <<  button.timeSinceEvent()
                << std::endl;
       }
     }
