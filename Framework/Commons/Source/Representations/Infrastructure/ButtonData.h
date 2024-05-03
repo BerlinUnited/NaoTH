@@ -5,8 +5,8 @@
  * Created on 6. march 2009, 10:40
  */
 
-#ifndef _BUTTONDATA_H
-#define _BUTTONDATA_H
+#ifndef BUTTONDATA_H
+#define BUTTONDATA_H
 
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/DataStructures/Serializer.h"
@@ -43,13 +43,45 @@ namespace naoth
 
     static std::string getButtonName(ButtonID id);
 
-    /** Whether the button is pressed in this frame. */
+    /**
+    * The button is pressed in this frame.
+    * NOTE: this is the actual data provided by the NAO
+    */
     bool isPressed[numOfButtons];
-    /** The number of frames the button was contiguous pressed (isPressed[numOfButtons] is true). 
-    * I.e., it is 1 already in the first pressed frame and 0 if isPressed[numOfButtons] is false.*/
+
+    /**
+    * The number of frames the button was contiguous pressed (isPressed[numOfButtons] is true). 
+    * I.e., it is 1 already in the first pressed frame and 0 if isPressed[numOfButtons] is false.
+    * NOTE: this is a calculated value.
+    * TODO: remove or move to ButtonState.
+    */
     int numOfFramesPressed[numOfButtons];
-    /** Overall number of contiguous pressing events */
+
+    /** 
+    * Overall number of contiguous pressing events.
+    * NOTE: this is a calculated value.
+    * TODO: remove or move to ButtonState.
+    */
     int eventCounter[numOfButtons];
+
+
+    void updatePressed(ButtonID id, bool pressed) {
+
+      // update calculated values
+      if(pressed) {
+        numOfFramesPressed[id]++;
+
+        // count new event if the button was not pressed in the last frame
+        if(!isPressed[id]) {
+          eventCounter[id]++;
+        }
+      } else { 
+        // the button was released => reset the counter
+        numOfFramesPressed[id] = 0;
+      }
+
+      isPressed[id] = pressed;
+    }
 
     virtual void print(std::ostream& stream) const;
   };
@@ -64,5 +96,5 @@ namespace naoth
 
 } // namespace naoth
 
-#endif  /* _BUTTONDATA_H */
+#endif  /* BUTTONDATA_H */
 

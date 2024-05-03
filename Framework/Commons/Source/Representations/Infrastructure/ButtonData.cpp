@@ -11,6 +11,7 @@
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 
 #include <string>
+#include <iomanip> // for std::setw
 
 using namespace naoth;
 using namespace std;
@@ -48,18 +49,19 @@ string ButtonData::getButtonName(ButtonID id)
     case RightHandRight: return "RightHandRight";
 
     default: return "Unknown Button";
-  }//end switch
+  }
 }//end getBumperName
 
 void ButtonData::print(ostream& stream) const
 {
-  stream << "Button: Pressed, #Pressed, #Events" << std::endl;
+  stream << "      Button     | Pressed | #Pressed | #Events " << std::endl;
+  stream << "------------------------------------------------" << std::endl;
   for(int i = 0; i < numOfButtons; i++)
   {
-    stream  << getButtonName((ButtonID)i) << ": " 
-            << isPressed[i] << ", "
-            << numOfFramesPressed[i] << ", "
-            << eventCounter[i]
+    stream  << std::left << std::setw(16) << getButtonName((ButtonID)i)    << " | "
+            << std::left << std::setw(7)  << (isPressed[i]?"   X   ":" ")  << " | "
+            << std::left << std::setw(8)  << numOfFramesPressed[i]         << " | "
+            << std::left << std::setw(7)  << eventCounter[i]
             << std::endl;
   }
 }//end print
@@ -95,6 +97,4 @@ void Serializer<ButtonData>::deserialize(std::istream& stream, ButtonData& repre
     representation.eventCounter[i] = static_cast<int>(msg.eventcounter(i));
   }
 }
-
-
 

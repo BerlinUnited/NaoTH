@@ -241,8 +241,8 @@ void GameController::handleDebugRequest()
   DEBUG_REQUEST("gamecontroller:secondaryTime:30", getGameData().secondaryTime = 30;);
   DEBUG_REQUEST("gamecontroller:secondaryTime:20", getGameData().secondaryTime = 20;);
   DEBUG_REQUEST("gamecontroller:secondaryTime:10", getGameData().secondaryTime = 10;);
-  DEBUG_REQUEST("gamecontroller:secondaryTime:5", getGameData().secondaryTime = 5;);
-  DEBUG_REQUEST("gamecontroller:secondaryTime:0", getGameData().secondaryTime = 0;);
+  DEBUG_REQUEST("gamecontroller:secondaryTime:5",  getGameData().secondaryTime = 5; );
+  DEBUG_REQUEST("gamecontroller:secondaryTime:0",  getGameData().secondaryTime = 0; );
 
   debug_whistle_heard = false;
   DEBUG_REQUEST("gamecontroller:blow_whistle",
@@ -321,14 +321,9 @@ void GameController::handleButtons()
   }
 
   // go from penalized or initial to unstiff, if both foot bumpers are pressed for more than 1s
-  if ((getPlayerInfo().robotState == PlayerInfo::penalized || getPlayerInfo().robotState == PlayerInfo::initial)
-    && 
-       ((getButtonState()[ButtonState::LeftFootLeft].isPressed  && getButtonState()[ButtonState::LeftFootLeft].timeSinceEvent()  > 1000 ) || 
-        (getButtonState()[ButtonState::LeftFootRight].isPressed && getButtonState()[ButtonState::LeftFootRight].timeSinceEvent() > 1000 ))
-    && 
-       ((getButtonState()[ButtonState::RightFootLeft].isPressed  && getButtonState()[ButtonState::RightFootLeft].timeSinceEvent()  > 1000) ||
-        (getButtonState()[ButtonState::RightFootRight].isPressed && getButtonState()[ButtonState::RightFootRight].timeSinceEvent() > 1000)))
-  {
+  if ( ( getPlayerInfo().robotState == PlayerInfo::penalized || getPlayerInfo().robotState == PlayerInfo::initial ) &&
+      getButtonState().footLeftTouchedAny() > 1000 && getButtonState().footRightTouchedAny() > 1000
+  ) {
     getPlayerInfo().robotState = PlayerInfo::unstiff;
   }
 } // end handleButtons
@@ -336,7 +331,7 @@ void GameController::handleButtons()
 
 void GameController::handleHeadButtons()
 {
-  if(getButtonState().buttons[ButtonState::HeadMiddle] == ButtonEvent::CLICKED
+  if( getButtonState().buttons[ButtonState::HeadMiddle] == ButtonEvent::CLICKED
     && (getPlayerInfo().robotState == PlayerInfo::initial || getPlayerInfo().robotState == PlayerInfo::unstiff || getPlayerInfo().robotState == PlayerInfo::finished))
   {
     int playerNumber = getPlayerInfo().playerNumber;
@@ -350,11 +345,7 @@ void GameController::handleHeadButtons()
     }
   }
 
-  if(
-    (getButtonState()[ButtonState::HeadFront].isPressed  && getButtonState()[ButtonState::HeadFront].timeSinceEvent()  > 1000) &&
-    (getButtonState()[ButtonState::HeadMiddle].isPressed && getButtonState()[ButtonState::HeadMiddle].timeSinceEvent() > 1000) &&
-    (getButtonState()[ButtonState::HeadRear].isPressed   && getButtonState()[ButtonState::HeadRear].timeSinceEvent()   > 1000)) 
-  {
+  if(getButtonState().headTouchedAll() > 1000) {
     getPlayerInfo().robotState = PlayerInfo::unstiff;
   }
 }
@@ -362,17 +353,17 @@ void GameController::handleHeadButtons()
 void GameController::updateLEDs()
 {
   // reset
-  getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::RED] = 0.0;
+  getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::RED]   = 0.0;
   getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::GREEN] = 0.0;
-  getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::BLUE] = 0.0;
+  getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::BLUE]  = 0.0;
 
-  getGameControllerLEDRequest().request.theMultiLED[LEDData::FootLeft][LEDData::RED] = 0.0;
+  getGameControllerLEDRequest().request.theMultiLED[LEDData::FootLeft][LEDData::RED]   = 0.0;
   getGameControllerLEDRequest().request.theMultiLED[LEDData::FootLeft][LEDData::GREEN] = 0.0;
-  getGameControllerLEDRequest().request.theMultiLED[LEDData::FootLeft][LEDData::BLUE] = 0.0;
+  getGameControllerLEDRequest().request.theMultiLED[LEDData::FootLeft][LEDData::BLUE]  = 0.0;
 
-  getGameControllerLEDRequest().request.theMultiLED[LEDData::FootRight][LEDData::RED] = 0.0;
+  getGameControllerLEDRequest().request.theMultiLED[LEDData::FootRight][LEDData::RED]   = 0.0;
   getGameControllerLEDRequest().request.theMultiLED[LEDData::FootRight][LEDData::GREEN] = 0.0;
-  getGameControllerLEDRequest().request.theMultiLED[LEDData::FootRight][LEDData::BLUE] = 0.0;
+  getGameControllerLEDRequest().request.theMultiLED[LEDData::FootRight][LEDData::BLUE]  = 0.0;
 
   for(unsigned int i=LEDData::HeadFrontLeft0; i <= LEDData::HeadRearRight2; i++)
   {
@@ -387,7 +378,7 @@ void GameController::updateLEDs()
       break;
     case PlayerInfo::set:
         getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::GREEN] = 1.0;
-      getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::RED] = 1.0;
+        getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::RED] = 1.0;
       break;
     case PlayerInfo::playing:
         getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::GREEN] = 1.0;
@@ -410,16 +401,16 @@ void GameController::updateLEDs()
   // show team color on left foot
   if (getPlayerInfo().teamColor == GameData::red)
   {
-    getGameControllerLEDRequest().request.theMultiLED[LEDData::FootLeft][LEDData::RED] = 0.3;
-    getGameControllerLEDRequest().request.theMultiLED[LEDData::FootLeft][LEDData::BLUE] = 0.1;
+    getGameControllerLEDRequest().request.theMultiLED[LEDData::FootLeft][LEDData::RED]   = 0.3;
+    getGameControllerLEDRequest().request.theMultiLED[LEDData::FootLeft][LEDData::BLUE]  = 0.1;
   }
   else if (getPlayerInfo().teamColor == GameData::blue)
   {
-    getGameControllerLEDRequest().request.theMultiLED[LEDData::FootLeft][LEDData::BLUE] = 1.0;
+    getGameControllerLEDRequest().request.theMultiLED[LEDData::FootLeft][LEDData::BLUE]  = 1.0;
   }
   else if(getPlayerInfo().teamColor == GameData::yellow)
   {
-    getGameControllerLEDRequest().request.theMultiLED[LEDData::FootLeft][LEDData::RED] = 1.0;
+    getGameControllerLEDRequest().request.theMultiLED[LEDData::FootLeft][LEDData::RED]   = 1.0;
     getGameControllerLEDRequest().request.theMultiLED[LEDData::FootLeft][LEDData::GREEN] = 1.0;
   }
   else if(getPlayerInfo().teamColor == GameData::black)
