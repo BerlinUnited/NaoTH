@@ -136,7 +136,7 @@ void LedSymbols::setLeftEye(int value)
 {
   theInstance->lastREye = value;
   const Color c = theInstance->getEyeColor(value);
-  theInstance->getBehaviorLEDRequest().request.setEyeLeft(c.red, c.green, c.blue);
+  theInstance->getBehaviorLEDRequest().request.setEyeLeft(c[Color::Red], c[Color::Green], c[Color::Blue]);
 
   //theInstance->setEye(LEDData::FaceLeft0, LEDData::FaceLeft315, value);
 }
@@ -150,7 +150,7 @@ void LedSymbols::setRightEye(int value)
 {
   theInstance->lastLEye = value;
   const Color c = theInstance->getEyeColor(value);
-  theInstance->getBehaviorLEDRequest().request.setEyeRight(c.red, c.green, c.blue);
+  theInstance->getBehaviorLEDRequest().request.setEyeRight(c[Color::Red], c[Color::Green], c[Color::Blue]);
   //theInstance->setEye(LEDData::FaceRight0, LEDData::FaceRight315, value);
 }
 
