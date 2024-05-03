@@ -5,16 +5,16 @@ package de.naoth.rc.drawings3d;
 
 import de.naoth.rc.dataformats.JanusImage;
 import java.util.zip.DataFormatException;
-import javax.media.j3d.Appearance;
-import javax.media.j3d.ImageComponent2D;
-import javax.media.j3d.QuadArray;
-import javax.media.j3d.Shape3D;
-import javax.media.j3d.Texture2D;
-import javax.media.j3d.Transform3D;
-import javax.vecmath.Point3f;
-import javax.vecmath.Matrix3f;
-import javax.vecmath.Vector3f;
-import javax.vecmath.TexCoord2f;
+import org.jogamp.java3d.Appearance;
+import org.jogamp.java3d.ImageComponent2D;
+import org.jogamp.java3d.QuadArray;
+import org.jogamp.java3d.Shape3D;
+import org.jogamp.java3d.Texture2D;
+import org.jogamp.java3d.Transform3D;
+import org.jogamp.vecmath.Point3f;
+import org.jogamp.vecmath.Matrix3f;
+import org.jogamp.vecmath.Vector3f;
+import org.jogamp.vecmath.TexCoord2f;
 
 public class Camera extends Drawable
 {
