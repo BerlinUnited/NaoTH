@@ -42,7 +42,7 @@ Debug::Debug() : cognitionLogger("CognitionLog")
   DEBUG_REQUEST_REGISTER("Debug:Test:DebugDrawings:Field", "", false);
   DEBUG_REQUEST_REGISTER("Debug:Test:DebugDrawings:Image", "", false);
 
-  DEBUG_REQUEST_REGISTER("Debug:Cognition:busy_loop", "Block the cognition process with a busy loop to simulate dead cognition.", this);
+  DEBUG_REQUEST_REGISTER("Debug:Cognition:busy_loop", "Block the cognition process with a busy loop to simulate dead cognition.", false);
 
   REGISTER_DEBUG_COMMAND(cognitionLogger.getCommand(), cognitionLogger.getDescription(), &cognitionLogger);
   REGISTER_DEBUG_COMMAND("ParameterList:list", "list all registered parameters", &getDebugParameterList());
@@ -110,7 +110,7 @@ void Debug::execute()
   DEBUG_REQUEST("Debug:Cognition:busy_loop",
     while(true) {
       std::cout << "cognition in endless loop due to \"Debug:cognition_busy_loop\" debug request" << std::endl;
-      ThreadUtil::sleep(5);
+      ThreadUtil::sleep(200);
     }
   );
 }
