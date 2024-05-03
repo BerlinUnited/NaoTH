@@ -83,13 +83,9 @@ public class RobotControlImpl extends javax.swing.JFrame
   
   private final GridBagConstraints statusPanelPluginsConstraints = new GridBagConstraints();
   
-  //FIXME: why is this needed?
-  //private final String RC_TITLE = "";
-  
-  // HACK: set the path to the native libs
   static 
-  {  
-    // load the logger properties
+  {
+    // load the logger properties for debugging purposes
     // NOTE: this also prints a list of properties 
     InputStream stream = RobotControlImpl.class.getResourceAsStream("logging.properties");
     try {
@@ -105,45 +101,9 @@ public class RobotControlImpl extends javax.swing.JFrame
     for(String s: arguments) {
         System.out.println( s );
     }
-    
-    try
-    {
-        // we need an absolute path to import native libs
-        // in netbeans we can use the relative execution path
-        File bin = new File("./bin");
-        if (!bin.isDirectory()) {
-            // with a jar file, we need to determine the correct path relative to the jar file
-            File jar = new File(RobotControlImpl.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-            // ../bin
-            bin = new File(jar.getParentFile().getParentFile(), "bin");
-        }
-        
-        String arch = System.getProperty("os.arch").toLowerCase();
-        String name = System.getProperty("os.name").toLowerCase();
-        
-        if("linux".equals(name)) {
-            if("amd64".equals(arch)) {
-                addLibraryPath(bin.getAbsolutePath() + "/linux64");
-            } else {
-                addLibraryPath(bin.getAbsolutePath() + "/linux32");
-            }
-        } else {
-            if("amd64".equals(arch)) {
-                addLibraryPath(bin.getAbsolutePath() + "/win64");
-            } else {
-                addLibraryPath(bin.getAbsolutePath() + "/win32");
-            }
-            addLibraryPath(bin.getAbsolutePath() + "/macos");
-        }
-        
-        // list all properteies
-        System.getProperties().list(System.out);
-
-    } catch (Throwable ex) {
-          getLogger().log(Level.SEVERE, null, ex);
-      }
   }
 
+  
     /**
      * Adds the specified path to the java library path
      * Option 2 from: https://stackoverflow.com/a/15409446
