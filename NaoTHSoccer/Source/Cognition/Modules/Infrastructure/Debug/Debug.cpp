@@ -5,7 +5,6 @@
  * Created on 11. November 2010, 18:32
  */
 
-
 #include "Debug.h"
 
 #include <PlatformInterface/Platform.h>
@@ -23,19 +22,8 @@ Debug::Debug() : cognitionLogger("CognitionLog")
 
   REGISTER_DEBUG_COMMAND("file::read", "read a file, usage: file::read path=<file path>", this);
   REGISTER_DEBUG_COMMAND("file::write", "read a file, usage: file::write path=<file path> [+]content=<content>", this);
-  
-  REGISTER_DEBUG_COMMAND("colortable:load", "set the current color table", this);
-  REGISTER_DEBUG_COMMAND("colortable:file_path",
-    "return the path of the currentelly loaded colortable (needed by ColorTableTool", this);
 
-
-  REGISTER_DEBUG_COMMAND("motion_request:set",
-    "force a motion request (usage MotionRequest:set <name> )", this);
-  REGISTER_DEBUG_COMMAND("walk", "let the robot walk", this);
-  REGISTER_DEBUG_COMMAND("kick", "let the robot kick", this);
-
-  REGISTER_DEBUG_COMMAND("kill_cognition", "kill cognition", this);
-
+  // initialize cognition logger
   registerLogableRepresentationList();
 
   // 3d drawings
@@ -54,6 +42,7 @@ Debug::Debug() : cognitionLogger("CognitionLog")
   DEBUG_REQUEST_REGISTER("Debug:Test:DebugDrawings:Field", "", false);
   DEBUG_REQUEST_REGISTER("Debug:Test:DebugDrawings:Image", "", false);
 
+  DEBUG_REQUEST_REGISTER("Debug:Cognition:busy_loop", "Block the cognition process with a busy loop to simulate dead cognition.", false);
 
   REGISTER_DEBUG_COMMAND(cognitionLogger.getCommand(), cognitionLogger.getDescription(), &cognitionLogger);
   REGISTER_DEBUG_COMMAND("ParameterList:list", "list all registered parameters", &getDebugParameterList());
@@ -84,8 +73,9 @@ Debug::~Debug()
 
 void Debug::execute()
 {
-  // log only when a ball was seen
-  if(!params.log.onlyWhenBallwasSeen || getMultiBallPercept().wasSeen()) {
+  // log only when a ball was seen if the parameter is activated
+  if(!params.log.onlyWhenBallwasSeen || getMultiBallPercept().wasSeen()) 
+  {
     if(lastLogFrameInfo.getFrameNumber() == 0 || 
        getFrameInfo().getTimeSince(lastLogFrameInfo.getTime()) >= params.log.skipTimeMS) 
     {
@@ -117,6 +107,12 @@ void Debug::execute()
 
   PLOT("Debug:Test", sin(getFrameInfo().getTimeInSeconds()));
 
+  DEBUG_REQUEST("Debug:Cognition:busy_loop",
+    while(true) {
+      std::cout << "cognition in endless loop due to \"Debug:cognition_busy_loop\" debug request" << std::endl;
+      ThreadUtil::sleep(200);
+    }
+  );
 }
 
 void Debug::executeDebugCommand(const std::string& command, const std::map<std::string,std::string>& arguments, std::ostream& outstream)
@@ -165,10 +161,11 @@ void Debug::executeDebugCommand(const std::string& command, const std::map<std::
       {
         const string& str = cIter->second;
         //int tmp = str.size();
-        if(FileUtils::writeStringToFile(str, fileName))
+        if(FileUtils::writeStringToFile(str, fileName)) {
           outstream << fileName << " successfull written.";
-        else
+        } else {
           outstream << fileName << " couldn't write file " << fileName;
+        }
       }
       else
       {
@@ -206,19 +203,9 @@ void Debug::executeDebugCommand(const std::string& command, const std::map<std::
     }
     return;
   }
-  else if(command == "kill_cognition")
-  {
-    outstream << "will go into endless loop" << std::endl;
-    while(true)
-    {
-      std::cout << "cognition in endless loop due to \"kill_cognition\" debug command"
-                 << std::endl;
-      ThreadUtil::sleep(5);
-    }
-  }
 }
 
-void Debug::draw3D()
+void Debug::draw3D() const
 {
   Pose3D robotPose3D;
   DEBUG_REQUEST("3DViewer:Global",
@@ -265,7 +252,7 @@ void Debug::draw3D()
 }//end draw3D
 
 
-void Debug::drawRobot3D(const Pose3D& robotPose)
+void Debug::drawRobot3D(const Pose3D& robotPose) const
 {
   const Kinematics::Link* theLink = getKinematicChain().theLinks;
 
@@ -279,10 +266,10 @@ void Debug::drawRobot3D(const Pose3D& robotPose)
       Pose3D p = robotPose * theLink[i].M;
       ENTITY(KinematicChain::getLinkName((KinematicChain::LinkID)i), p);
     }
-  }//end for
+  }
 }//end drawRobot3D
 
-void Debug::drawKinematicChain3D()
+void Debug::drawKinematicChain3D() const
 {
   const Kinematics::Link* theLink = getKinematicChain().theLinks;
 
@@ -317,5 +304,5 @@ void Debug::drawKinematicChain3D()
         LINE_3D(ColorClasses::red, theLink[i].p, (*child).p);
         child = child->sister;
       }
-  }//end for
+  }
 }//end drawKinematicChain3D

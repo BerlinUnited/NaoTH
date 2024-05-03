@@ -5,13 +5,13 @@
  * Created on 11. November 2010, 18:32
  */
 
-#ifndef _DEBUG_H
-#define _DEBUG_H
+#ifndef DEBUG_H
+#define DEBUG_H
 
 #include <ModuleFramework/Module.h>
 #include <DebugCommunication/DebugCommandExecutor.h>
 
-#include <Representations/Infrastructure/GyrometerData.h>
+
 #include <Representations/Infrastructure/FrameInfo.h>
 
 #include <Representations/Infrastructure/Image.h>
@@ -19,41 +19,38 @@
 
 #include <Representations/Infrastructure/AudioControl.h>
 
-#include <Representations/Infrastructure/JointData.h>
-#include <Representations/Infrastructure/InertialSensorData.h>
-#include <Representations/Infrastructure/AccelerometerData.h>
-#include <Representations/Infrastructure/FSRData.h>
-#include <Representations/Infrastructure/CameraSettings.h>
+#include <Representations/Infrastructure/CameraInfo.h>
 #include <Representations/Infrastructure/FieldInfo.h>
 
-//#include "Representations/Modeling/ColorClassificationModel.h"
-//#include "Representations/Motion/Request/MotionRequest.h"
 #include "Representations/Modeling/RobotPose.h"
 #include "Representations/Modeling/KinematicChain.h"
 #include "Representations/Modeling/BallModel.h"
 #include "Representations/Perception/CameraMatrix.h"
 #include "Representations/Perception/MultiBallPercept.h"
 
-#include <DebugCommunication/DebugCommandManager.h>
-#include "Tools/Debug/Logger.h"
+
+// debug
 #include <Representations/Debug/Stopwatch.h>
 #include <Tools/Debug/DebugImageDrawings.h>
 #include "Tools/Debug/DebugDrawings.h"
 #include <Tools/Debug/DebugRequest.h>
-#include <Tools/Debug/DebugPlot.h>
-#include <Tools/Debug/DebugParameterList.h>
-#include "Tools/Debug/DebugModify.h"
+#include <DebugCommunication/DebugCommandManager.h>
 
 #include <Tools/DataStructures/ParameterList.h>
+#include <Tools/Debug/DebugParameterList.h>
 
-// debug
+#include "Tools/Debug/DebugModify.h"
+#include <Tools/Debug/DebugPlot.h>
 #include <Tools/Debug/DebugDrawings3D.h>
+
+#include "Tools/Debug/Logger.h"
+
 
 using namespace naoth;
 
 BEGIN_DECLARE_MODULE(Debug)
 
-// debug
+  // debug
   PROVIDE(StopwatchManager)
   PROVIDE(DebugImageDrawings)
   PROVIDE(DebugImageDrawingsTop)
@@ -85,10 +82,6 @@ BEGIN_DECLARE_MODULE(Debug)
   PROVIDE(CameraInfoTop)
 
   REQUIRE(MultiBallPercept)
-  
-//  PROVIDE(ColorTable64)
-//  PROVIDE(ColorClassificationModel)
-//  PROVIDE(MotionRequest)
 END_DECLARE_MODULE(Debug)
 
 class Debug : public DebugBase, virtual private BlackBoardInterface, public DebugCommandExecutor
@@ -125,9 +118,9 @@ private:
   Logger cognitionLogger;
   FrameInfo lastLogFrameInfo;
 
-  void draw3D();
-  void drawRobot3D(const Pose3D& robotPose);
-  void drawKinematicChain3D();
+  void draw3D() const;
+  void drawRobot3D(const Pose3D& robotPose) const;
+  void drawKinematicChain3D() const;
 
   void registerLogableRepresentationList()
   {
@@ -145,5 +138,5 @@ private:
 
 };
 
-#endif  /* _DEBUG_H */
+#endif  /* DEBUG_H */
 
