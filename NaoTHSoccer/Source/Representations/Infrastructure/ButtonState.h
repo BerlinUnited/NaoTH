@@ -148,6 +148,7 @@ class ButtonState: public naoth::Printable
          buttons[ButtonState::HeadRear].isPressed
         )
       {
+        // NOTE: all head buttons are pressed, so all times are valid
         return std::min(
           std::min(
             buttons[ButtonState::HeadFront].timeSinceEvent(), 
