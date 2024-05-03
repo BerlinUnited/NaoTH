@@ -18,7 +18,6 @@ import org.jogamp.vecmath.TexCoord2f;
 
 public class Camera extends Drawable
 {
-
   private Point3f[] vertex = new Point3f[4];
   private String id = new String();
   
@@ -98,7 +97,7 @@ public class Camera extends Drawable
       return this.id;
   }
   
-  public void addImage(JanusImage image)
+  public void setImage(JanusImage image)
   {
     if (null != image && vertex.length == 4)
     {
