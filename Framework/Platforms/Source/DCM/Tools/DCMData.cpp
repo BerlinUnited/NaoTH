@@ -129,7 +129,7 @@ void DCMSensorData::get(ButtonData& data) const
   {
     // NOTE: data updates internal state. For now simply copying button data is not enough.
     //data.isPressed[i] = sensorsValue[currentIndex++];
-    data.updatePressed((ButtonData::ButtonID)i, sensorsValue[currentIndex++]);
+    data.updatePressed((ButtonData::ButtonID)i, sensorsValue[currentIndex++] == 1.0f);
   }
 }
 
