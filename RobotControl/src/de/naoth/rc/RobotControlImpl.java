@@ -942,6 +942,8 @@ public class RobotControlImpl extends javax.swing.JFrame
       getLogger().log(Level.INFO, "Could not find the layout file: {0}", userLayoutFile.getAbsolutePath());
     } catch(IOException ex) {
         Helper.handleException("Error while reading the layout file.", ex);
+    } catch(Exception ex) {
+        Helper.handleException("Error loading layout.", ex);
     }
   }//end configureDocking
 
