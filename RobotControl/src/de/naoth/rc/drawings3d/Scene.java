@@ -44,7 +44,7 @@ public class Scene extends BranchGroup
   }
 
   // set the image for the camre with the id
-  public void addCameraImage(JanusImage image, String id)
+  public void setCameraImage(JanusImage image, String id)
   {
     Camera camera = getCamera(id);
     if(camera != null) {

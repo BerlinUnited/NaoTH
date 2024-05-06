@@ -3,7 +3,6 @@
  */
 package de.naoth.rc.dialogs;
 
-import com.sun.j3d.exp.swing.JCanvas3D;
 import de.naoth.rc.Helper;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.core.dialog.AbstractDialog;
@@ -11,12 +10,13 @@ import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.dataformats.JanusImage;
-import de.naoth.rc.drawings3d.OrbitBehavior;
 import de.naoth.rc.drawings3d.Scene;
 import de.naoth.rc.drawings3d.VirtualWorld;
 import de.naoth.rc.manager.ImageManagerBottom;
 import de.naoth.rc.manager.ImageManagerTop;
 import de.naoth.rc.manager.ThreeDimensionSceneManager;
+import java.awt.BorderLayout;
+
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.ComponentEvent;
@@ -24,25 +24,20 @@ import java.awt.event.ComponentListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import javax.imageio.ImageIO;
-import javax.media.j3d.Appearance;
-import javax.media.j3d.BoundingSphere;
-import javax.media.j3d.BranchGroup;
-import javax.media.j3d.GraphicsConfigTemplate3D;
-import javax.media.j3d.ImageComponent2D;
-import javax.media.j3d.PhysicalBody;
-import javax.media.j3d.PhysicalEnvironment;
-import javax.media.j3d.QuadArray;
-import javax.media.j3d.Shape3D;
-import javax.media.j3d.Texture2D;
-import javax.media.j3d.TextureAttributes;
-import javax.media.j3d.TransformGroup;
-import javax.media.j3d.View;
-import javax.media.j3d.ViewPlatform;
-import javax.vecmath.Point3d;
-import javax.vecmath.Point3f;
-import javax.vecmath.TexCoord2f;
-import javax.vecmath.Vector3d;
-import javax.vecmath.Vector3f;
+
+import org.jogamp.java3d.GraphicsConfigTemplate3D;
+import org.jogamp.java3d.exp.swing.JCanvas3D;
+
+import org.jogamp.java3d.Appearance;
+import org.jogamp.java3d.ImageComponent2D;
+import org.jogamp.java3d.QuadArray;
+import org.jogamp.java3d.Shape3D;
+import org.jogamp.java3d.Texture2D;
+import org.jogamp.java3d.TextureAttributes;
+
+import org.jogamp.vecmath.Point3f;
+import org.jogamp.vecmath.TexCoord2f;
+
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
@@ -68,7 +63,7 @@ public class ThreeDimensionViewer extends AbstractDialog
   
   private VirtualWorld vw;
   private JCanvas3D canvas;
-  private final BoundingSphere globalBounds = new BoundingSphere(new Point3d(0, 0, 0), Double.MAX_VALUE);
+  
   // Entities
   private Scene activeScene;
   private static boolean java3dAvailable = true;
@@ -84,20 +79,15 @@ public class ThreeDimensionViewer extends AbstractDialog
   {
     super();
     initComponents();
+    
     if (java3dAvailable)
     {
       try
       {
-        vw = VirtualWorld.get();
-//        GraphicsConfigTemplate3D template = new GraphicsConfigTemplate3D();
-//
-//        GraphicsConfiguration gconf = GraphicsEnvironment.getLocalGraphicsEnvironment()
-//          .getDefaultScreenDevice().getBestConfiguration(template);
-//
-//        canvas = new Canvas3D(gconf);
-        canvas = new JCanvas3D(new GraphicsConfigTemplate3D());
-      } catch (java.lang.UnsatisfiedLinkError e)
-      {
+        System.setProperty("sun.awt.noerasebackground", "true");
+        this.canvas = new JCanvas3D(new GraphicsConfigTemplate3D());
+
+      } catch (java.lang.UnsatisfiedLinkError e) {
         Helper.handleException("Java 3D is not installed!\n" +
                 "Visit https://java3d.dev.java.net", new Exception(e));
         java3dAvailable = false;
@@ -123,18 +113,8 @@ public class ThreeDimensionViewer extends AbstractDialog
         jCheckBoxImage = new javax.swing.JCheckBox();
         cbUseFieldViewer = new javax.swing.JCheckBox();
 
-        javax.swing.GroupLayout jPanelCanvasLayout = new javax.swing.GroupLayout(jPanelCanvas);
-        jPanelCanvas.setLayout(jPanelCanvasLayout);
-        jPanelCanvasLayout.setHorizontalGroup(
-            jPanelCanvasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
-        );
-        jPanelCanvasLayout.setVerticalGroup(
-            jPanelCanvasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 269, Short.MAX_VALUE)
-        );
+        jPanelCanvas.setLayout(new java.awt.BorderLayout());
 
-        jToolBar.setFloatable(false);
         jToolBar.setRollover(true);
 
         jToggleButtonUpdate.setText("Update");
@@ -223,15 +203,12 @@ public class ThreeDimensionViewer extends AbstractDialog
   {//GEN-HEADEREND:event_jToggleButtonUpdateActionPerformed
     if (jToggleButtonUpdate.isSelected())
     {
-      if (Plugin.parent.checkConnected())
-      {
+      if (Plugin.parent.checkConnected()) {
         Plugin.threeDimensionSceneManager.addListener(this);
-      } else
-      {
+      } else {
         jToggleButtonUpdate.setSelected(false);
       }
-    } else
-    {
+    } else {
       Plugin.threeDimensionSceneManager.removeListener(this);
     }
   }//GEN-LAST:event_jToggleButtonUpdateActionPerformed
@@ -244,12 +221,10 @@ public class ThreeDimensionViewer extends AbstractDialog
       {
         Plugin.imageManager.addListener(imageListener);
         Plugin.imageTopManager.addListener(imageListenerTop);
-      } else
-      {
+      } else {
         jCheckBoxImage.setSelected(false);
       }
-    } else
-    {
+    } else {
       Plugin.imageManager.removeListener(imageListener);
       Plugin.imageTopManager.removeListener(imageListenerTop);
       image = null;
@@ -276,18 +251,28 @@ public class ThreeDimensionViewer extends AbstractDialog
       return;
     }
 
-    jPanelCanvas.add(canvas);
-    canvas.setSize(1, 1);
+    // configure canvas
+    //canvas.setResizeMode(JCanvas3D.RESIZE_DELAYED);
+    canvas.setResizeMode(JCanvas3D.RESIZE_IMMEDIATELY);
+    canvas.setSize(100, 100); // set initial size
+    
+    jPanelCanvas.add(canvas, BorderLayout.CENTER);
+    
+    vw = new VirtualWorld(canvas);
+    
+    // enable background features
+    vw.enableField(this.jCheckBoxField.isSelected());
+    vw.enableCoordinates(this.jCheckBoxGrid.isSelected());
+    
+    /*
     jPanelCanvas.addComponentListener(new ComponentListener()
     {
       @Override
       public void componentResized(ComponentEvent e)
       {
-        try
-        {
+        try {
           canvas.setSize(jPanelCanvas.getSize());
-        } catch (IllegalArgumentException ex)
-        {
+        } catch (IllegalArgumentException ex) {
         }
       }
 
@@ -300,16 +285,12 @@ public class ThreeDimensionViewer extends AbstractDialog
       @Override
       public void componentHidden(ComponentEvent e){}
     });
-
-
-    createViewBranch(new Vector3f(2, 0, 0.5f));
+    */
 
     imageListener = new ObjectListener<JanusImage>()
     {
-
       @Override
-      public void newObjectReceived(JanusImage object)
-      {
+      public void newObjectReceived(JanusImage object) {
         image = object;
       }
 
@@ -324,10 +305,8 @@ public class ThreeDimensionViewer extends AbstractDialog
     
     imageListenerTop = new ObjectListener<JanusImage>()
     {
-
       @Override
-      public void newObjectReceived(JanusImage object)
-      {
+      public void newObjectReceived(JanusImage object) {
         imageTop = object;
       }
 
@@ -342,36 +321,7 @@ public class ThreeDimensionViewer extends AbstractDialog
     
   }
 
-  private void createViewBranch(Vector3f homeViewPos)
-  {
-    BranchGroup viewBranch = new BranchGroup();
 
-    TransformGroup viewTG = new TransformGroup();
-    viewTG.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
-
-    ViewPlatform vp = new ViewPlatform();
-
-    View view = new View();
-    view.setPhysicalBody(new PhysicalBody());
-    view.setPhysicalEnvironment(new PhysicalEnvironment());
-
-    view.attachViewPlatform(vp);
-    // View renders into the off-screen Canvas3D
-    view.addCanvas3D(canvas.getOffscreenCanvas3D());
-
-    OrbitBehavior orbit = new OrbitBehavior(canvas, viewTG, view);
-    orbit.setSchedulingBounds(globalBounds);
-    orbit.setClippingEnabled(false);
-
-    orbit.setViewingTransform(new Point3d(homeViewPos), new Point3d(0, 0, 0),
-            new Vector3d(0, 0, 1), new Point3d(0, 0, 0));
-
-    viewTG.addChild(vp);
-    viewTG.addChild(orbit);
-
-    viewBranch.addChild(viewTG);
-    vw.add(viewBranch);
-  }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox<String> cbProcess;
     private javax.swing.JCheckBox cbUseFieldViewer;
@@ -386,32 +336,28 @@ public class ThreeDimensionViewer extends AbstractDialog
   @Override
   public void newObjectReceived(Scene object)
   {
-    if (object == activeScene)
-    {
+    if (object == activeScene) {
       return;
     }
 
     // attach the image of camera
-    object.addCameraImage(image, "bottom");
-    object.addCameraImage(imageTop, "top");
+    object.setCameraImage(image, "bottom");
+    object.setCameraImage(imageTop, "top");
     
-    if(this.cbUseFieldViewer.isSelected() && FieldViewer.getCanvas() != null)
-    {
+    if(this.cbUseFieldViewer.isSelected() && FieldViewer.getCanvas() != null) {
         object.addChild(createFieldViewertexture());
     }
     
-    
-    
     vw.add(object);
-    if (activeScene != null)
-    {
+    
+    if (activeScene != null) {
       activeScene.detach();
     }
+    
     activeScene = object;
     
     //exportScreenshotToPNG(new File("test3d_" + (kkk++) + ".png"));
   }
-  
   
   
   private Shape3D createFieldViewertexture()
@@ -458,9 +404,10 @@ public class ThreeDimensionViewer extends AbstractDialog
     BufferedImage image = new BufferedImage(canvas.getWidth(), canvas.getHeight(), BufferedImage.TYPE_INT_RGB);
     Graphics2D g2d = image.createGraphics();
     canvas.paintAll(g2d);
-    try{
+    try {
         ImageIO.write(image, "PNG", file);
-    }catch(Exception e){}
+    } catch(Exception e) {
+    }
   }
   
   @Override
@@ -478,5 +425,10 @@ public class ThreeDimensionViewer extends AbstractDialog
     Plugin.imageManager.removeListener(imageListener);
     Plugin.imageTopManager.removeListener(imageListenerTop);
     //System.out.println("Dispose is not implemented for: " + this.getClass().getName());
-  }//end dispose
+   
+    // cleanup the universe
+    if(this.vw != null) {
+        this.vw.cleanup();
+    }
+  }
 }
