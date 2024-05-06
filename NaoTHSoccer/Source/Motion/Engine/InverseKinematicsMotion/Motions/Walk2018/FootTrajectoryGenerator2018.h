@@ -150,9 +150,11 @@ class FootTrajectoryGenerator2018 : private FootTrajectoryGenerator2018Base
                 return shortKick;
             case WalkRequest::StepControlRequest::LONG:
                 return gewaltKick;
-            default:
-                ASSERT(false);
         }
+
+        // this should never be reached
+        ASSERT(false);
+        return defaultKick;
     }
 
 
