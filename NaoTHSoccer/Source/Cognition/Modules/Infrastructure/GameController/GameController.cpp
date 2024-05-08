@@ -252,11 +252,11 @@ void GameController::handleDebugRequest()
   );
 
   // DebugRequests for the secondary game time (eg. free kick)
-  DEBUG_REQUEST("gamecontroller:secondaryTime:30", getGameData().secondaryTime = 30; );
-  DEBUG_REQUEST("gamecontroller:secondaryTime:20", getGameData().secondaryTime = 20; );
-  DEBUG_REQUEST("gamecontroller:secondaryTime:10", getGameData().secondaryTime = 10; );
-  DEBUG_REQUEST("gamecontroller:secondaryTime:5",  getGameData().secondaryTime = 5;  );
-  DEBUG_REQUEST("gamecontroller:secondaryTime:0",  getGameData().secondaryTime = 0;  );
+  DEBUG_REQUEST("gamecontroller:secondaryTime:30", getGameData().secondaryTime = 30;);
+  DEBUG_REQUEST("gamecontroller:secondaryTime:20", getGameData().secondaryTime = 20;);
+  DEBUG_REQUEST("gamecontroller:secondaryTime:10", getGameData().secondaryTime = 10;);
+  DEBUG_REQUEST("gamecontroller:secondaryTime:5",  getGameData().secondaryTime = 5; );
+  DEBUG_REQUEST("gamecontroller:secondaryTime:0",  getGameData().secondaryTime = 0; );
 
   debug_whistle_heard = false;
   DEBUG_REQUEST("gamecontroller:blow_whistle",
@@ -311,13 +311,13 @@ void GameController::handleButtons()
     if (getButtonState()[ButtonState::LeftFootLeft]  == ButtonEvent::CLICKED ||
         getButtonState()[ButtonState::LeftFootRight] == ButtonEvent::CLICKED)
     {
-      // switch team color
+      // manualy switch team color between the ones that we actively use
       GameData::TeamColor oldColor = getPlayerInfo().teamColor;
       if (oldColor == GameData::blue) {
         getPlayerInfo().teamColor = GameData::red;
       } else if (oldColor == GameData::red) {
-        getPlayerInfo().teamColor = GameData::yellow;
-      } else if (oldColor == GameData::yellow) {
+        getPlayerInfo().teamColor = GameData::white;
+      } else if (oldColor == GameData::white) {
         getPlayerInfo().teamColor = GameData::black;
       } else if (oldColor == GameData::black) {
         getPlayerInfo().teamColor = GameData::blue;
@@ -401,18 +401,20 @@ void GameController::updateLEDs()
       break;
   }
 
-  // offer only avaliable colors of jerseys :)
+  // offer all avaliable colors of jerseys :)
   switch (getPlayerInfo().teamColor)
   {
-  case GameData::red: // red, magenta, pink
-    getGameControllerLEDRequest().request.setFootLeft(1.0, 0.0, 0.0);
-    break;
-  case GameData::blue: // blue, cyan
-    getGameControllerLEDRequest().request.setFootLeft(0.0, 0.0, 1.0);
-    break;
-  default: // OFF
-    getGameControllerLEDRequest().request.setFootLeft(0.0, 0.0, 0.0);
-    break;
+  case GameData::red:    getGameControllerLEDRequest().request.setFootLeft(1.0, 0.0, 0.0); break;
+  case GameData::blue:   getGameControllerLEDRequest().request.setFootLeft(0.0, 0.0, 1.0); break;
+  case GameData::yellow: getGameControllerLEDRequest().request.setFootLeft(1.0, 1.0, 0.0); break;
+  case GameData::black:  getGameControllerLEDRequest().request.setFootLeft(0.0, 0.0, 0.0); break;
+  case GameData::white:  getGameControllerLEDRequest().request.setFootLeft(1.0, 1.0, 1.0); break;
+  case GameData::green:  getGameControllerLEDRequest().request.setFootLeft(0.0, 1.0, 0.0); break;
+  case GameData::orange: getGameControllerLEDRequest().request.setFootLeft(1.0, 0.5, 0.0); break;
+  case GameData::purple: getGameControllerLEDRequest().request.setFootLeft(1.0, 0.0, 1.0); break;
+  case GameData::brown:  getGameControllerLEDRequest().request.setFootLeft(0.5, 0.25, 1.0); break;
+  case GameData::gray:   getGameControllerLEDRequest().request.setFootLeft(0.5, 0.5, 0.5); break;
+  default:               getGameControllerLEDRequest().request.setFootLeft(0.0, 0.0, 0.0); break;
   }
 
   // show kickoff state on right foot and head in initial, ready and set
