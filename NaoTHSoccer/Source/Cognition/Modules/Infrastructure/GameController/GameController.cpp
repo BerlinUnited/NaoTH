@@ -377,20 +377,14 @@ void GameController::updateLEDs()
   // show game state on the chest button
   switch (getPlayerInfo().robotState)
   {
-    case PlayerInfo::ready:
-      getGameControllerLEDRequest().request.setChestButton(0.0, 0.0, 1.0); // BLUE
-      break;
-    case PlayerInfo::set:
-      getGameControllerLEDRequest().request.setChestButton(1.0, 1.0, 0.0); // YELLOW
-      break;
-    case PlayerInfo::playing:
-      getGameControllerLEDRequest().request.setChestButton(0.0, 1.0, 0.0); // GREEN
-      break;
-    case PlayerInfo::penalized:
-      getGameControllerLEDRequest().request.setChestButton(1.0, 0.0, 0.0); // RED
-      break;
-    case PlayerInfo::unstiff:
-      // handle blinking chest button for unstiff state
+    case PlayerInfo::initial:   getGameControllerLEDRequest().request.setChestButton(0.0, 0.0, 0.0); break; // OFF
+    case PlayerInfo::ready:     getGameControllerLEDRequest().request.setChestButton(0.0, 0.0, 1.0); break; // BLUE
+    case PlayerInfo::set:       getGameControllerLEDRequest().request.setChestButton(1.0, 1.0, 0.0); break; // YELLOW
+    case PlayerInfo::playing:   getGameControllerLEDRequest().request.setChestButton(0.0, 1.0, 0.0); break; // GREEN
+    case PlayerInfo::finished:  getGameControllerLEDRequest().request.setChestButton(0.0, 0.0, 0.0); break; // OFF
+    case PlayerInfo::penalized: getGameControllerLEDRequest().request.setChestButton(1.0, 0.0, 0.0); break; // RED
+    case PlayerInfo::unstiff:   
+      // blinking chest button for unstiff state: blue <-> off
       if (getFrameInfo().getFrameNumber() % 8 < 4) {
         getGameControllerLEDRequest().request.setChestButton(0.0, 0.0, 1.0); // BLUE
       } else {
