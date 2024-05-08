@@ -40,8 +40,9 @@ void LEDSetter::execute()
   {
     // get all head LEDs from frame rate check
     copyMonoLEDData(getFrameRateCheckLEDRequest(), LEDData::EarRight0, LEDData::EarLeft324);
-    copyMonoLEDData(getGameControllerLEDRequest(), LEDData::HeadFrontLeft0, LEDData::HeadRearRight2);
+    copyMonoLEDData(getFrameRateCheckLEDRequest(), LEDData::HeadFrontLeft0, LEDData::HeadRearRight2);
 
+    // copy both eyes
     copyMultiLEDData(getFrameRateCheckLEDRequest(), LEDData::FaceRight0, LEDData::FaceLeft315);
   }
 
