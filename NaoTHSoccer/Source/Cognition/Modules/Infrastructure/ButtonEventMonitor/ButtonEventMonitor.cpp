@@ -37,7 +37,9 @@ void ButtonEventMonitor::execute()
 void ButtonEventMonitor::update(ButtonEvent& buttonEvent, bool pressed)
 {
   // NOTE: carefully choosen magic numbers in ms
-  // if the time between clicks is smaller than this, then the click counter is increased (e.g. for double cklicks)
+  // ignore accidental button presses
+  static const unsigned int minTimeLengthOfClick = 50;
+  // if the time between clicks is smaller than this, then the click counter is increased (e.g. for double clicks)
   static const unsigned int maxTimeBetweenClicksInSequence = 350;
   // the maximal time between PRESSED and RELEASED for the event to count as a CLICK
   static const unsigned int maxTimeLengthOfClick = 1000;
@@ -52,7 +54,8 @@ void ButtonEventMonitor::update(ButtonEvent& buttonEvent, bool pressed)
   }
 
   // button is pressed not longer than 1s
-  if(buttonEvent == ButtonEvent::RELEASED && buttonEvent.timeSinceEvent() > 50 && buttonEvent.timeSinceEvent() < maxTimeLengthOfClick) {
+  if(buttonEvent == ButtonEvent::RELEASED && buttonEvent.timeSinceEvent() > minTimeLengthOfClick && buttonEvent.timeSinceEvent() < maxTimeLengthOfClick) 
+  {
     buttonEvent = ButtonEvent::CLICKED;
 
     if(buttonEvent.clicksInSequence > 0  && buttonEvent.timeSinceClick() < maxTimeBetweenClicksInSequence) {
