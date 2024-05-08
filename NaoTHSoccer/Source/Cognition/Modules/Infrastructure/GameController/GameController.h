@@ -42,7 +42,7 @@ class GameController : public GameControllerBase
 public:
   GameController();
   virtual void execute();
-  virtual ~GameController();
+  virtual ~GameController() {}
 
 private:
   void handleDebugRequest();

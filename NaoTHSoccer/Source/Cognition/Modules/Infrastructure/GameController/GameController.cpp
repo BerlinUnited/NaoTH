@@ -17,10 +17,11 @@ GameController::GameController()
   DEBUG_REQUEST_REGISTER("gamecontroller:game_state:unstiff", "force the unstiff state", false);
 
   DEBUG_REQUEST_REGISTER("gamecontroller:set_play:none", "force the setPlay state to none", false);
-  DEBUG_REQUEST_REGISTER("gamecontroller:set_play:goal_free_kick", "force the setPlay state to goal free kick", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:set_play:goal_kick", "force the setPlay state to goal free kick", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:set_play:pushing_free_kick", "force the setPlay state to pushing free kick", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:set_play:corner_kick", "force the setPlay state to corner kick", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:set_play:kick_in", "force the setPlay state to kick-in", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:set_play:penalty_kick", "force the setPlay state to penalty kick", false);
 
   DEBUG_REQUEST_REGISTER("gamecontroller:gamephase:normal", "force the gamephase", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:gamephase:penaltyshoot", "force the gamephase", false);
@@ -203,8 +204,8 @@ void GameController::handleDebugRequest()
   DEBUG_REQUEST("gamecontroller:set_play:none",
     getPlayerInfo().robotSetPlay = PlayerInfo::set_none;
   );
-  DEBUG_REQUEST("gamecontroller:set_play:goal_free_kick",
-    getPlayerInfo().robotSetPlay = PlayerInfo::goal_free_kick;
+  DEBUG_REQUEST("gamecontroller:set_play:goal_kick",
+    getPlayerInfo().robotSetPlay = PlayerInfo::goal_kick;
   );
   DEBUG_REQUEST("gamecontroller:set_play:pushing_free_kick",
     getPlayerInfo().robotSetPlay = PlayerInfo::pushing_free_kick;
@@ -214,6 +215,9 @@ void GameController::handleDebugRequest()
   );
   DEBUG_REQUEST("gamecontroller:set_play:kick_in",
     getPlayerInfo().robotSetPlay = PlayerInfo::kick_in;
+  );
+  DEBUG_REQUEST("gamecontroller:set_play:penalty_kick",
+    getPlayerInfo().robotSetPlay = PlayerInfo::penalty_kick;
   );
 
   DEBUG_REQUEST("gamecontroller:gamephase:normal",
@@ -436,7 +440,3 @@ void GameController::updateLEDs()
     }
   }
 } // end updateLEDs
-
-GameController::~GameController()
-{
-}

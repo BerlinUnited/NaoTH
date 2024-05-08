@@ -94,32 +94,36 @@ public:
   enum SetPlay 
   {
     set_none          = SET_PLAY_NONE,
-    goal_free_kick    = 99, //SET_PLAY_GOAL_FREE_KICK, // Deprecated since 2021
+    goal_kick         = SET_PLAY_GOAL_KICK,
     pushing_free_kick = SET_PLAY_PUSHING_FREE_KICK,
     corner_kick       = SET_PLAY_CORNER_KICK,
-    kick_in           = SET_PLAY_KICK_IN
+    kick_in           = SET_PLAY_KICK_IN,
+    penalty_kick      = SET_PLAY_PENALTY_KICK
   };
 
   enum Penalty
   {
-    penalty_none            = PENALTY_NONE,
+    penalty_none              = PENALTY_NONE,
+                              
+    illegal_ball_contact      = PENALTY_SPL_ILLEGAL_BALL_CONTACT,
+    player_pushing            = PENALTY_SPL_PLAYER_PUSHING,
+    illegal_motion_in_set     = PENALTY_SPL_ILLEGAL_MOTION_IN_SET,
+    inactive_player           = PENALTY_SPL_INACTIVE_PLAYER,
+    illegal_position          = PENALTY_SPL_ILLEGAL_POSITION,
+    leaving_the_field         = PENALTY_SPL_LEAVING_THE_FIELD,
+    request_for_pickup        = PENALTY_SPL_REQUEST_FOR_PICKUP,
+    local_game_stuck          = PENALTY_SPL_LOCAL_GAME_STUCK,
 
-    illegal_ball_contact    = PENALTY_SPL_ILLEGAL_BALL_CONTACT,
-    player_pushing          = PENALTY_SPL_PLAYER_PUSHING,
-    illegal_motion_in_set   = PENALTY_SPL_ILLEGAL_MOTION_IN_SET,
-    inactive_player         = PENALTY_SPL_INACTIVE_PLAYER,
-    illegal_defender        = 97, //PENALTY_SPL_ILLEGAL_DEFENDER, // Deprecated since 2021
-    leaving_the_field       = PENALTY_SPL_LEAVING_THE_FIELD,
-    kick_off_goal           = 98, //PENALTY_SPL_KICK_OFF_GOAL, // Deprecated since 2021
-    request_for_pickup      = PENALTY_SPL_REQUEST_FOR_PICKUP,
-    local_game_stuck        = PENALTY_SPL_LOCAL_GAME_STUCK,
-    illegal_positioning     = 99, //PENALTY_SPL_ILLEGAL_POSITIONING, // Deprecated since 2021
-    illegal_position        = PENALTY_SPL_ILLEGAL_POSITION,
-    illegal_position_in_set = PENALTY_SPL_ILLEGAL_POSITION_IN_SET,
-    player_stance           = PENALTY_SPL_PLAYER_STANCE,
-    illegal_motion_in_initial =  PENALTY_SPL_ILLEGAL_MOTION_IN_INITIAL,
-    substitute              = PENALTY_SUBSTITUTE,
-    manual                  = PENALTY_MANUAL,
+    //kick_off_goal             = 98, //PENALTY_SPL_KICK_OFF_GOAL, // Deprecated since 2021
+    //illegal_defender          = 97, //PENALTY_SPL_ILLEGAL_DEFENDER, // Deprecated since 2021
+    //illegal_positioning       = 99, //PENALTY_SPL_ILLEGAL_POSITIONING, // Deprecated since 2021
+    
+    illegal_position_in_set   = PENALTY_SPL_ILLEGAL_POSITION_IN_SET,
+    player_stance             = PENALTY_SPL_PLAYER_STANCE,
+    illegal_motion_in_initial = PENALTY_SPL_ILLEGAL_MOTION_IN_INITIAL,
+
+    substitute                = PENALTY_SUBSTITUTE,
+    manual                    = PENALTY_MANUAL,
   };
 
 
