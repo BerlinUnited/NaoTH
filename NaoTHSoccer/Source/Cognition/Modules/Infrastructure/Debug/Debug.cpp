@@ -42,8 +42,11 @@ Debug::Debug() : cognitionLogger("CognitionLog")
   DEBUG_REQUEST_REGISTER("Debug:Test:DebugDrawings:Field", "", false);
   DEBUG_REQUEST_REGISTER("Debug:Test:DebugDrawings:Image", "", false);
 
+  // debuggin delays in the processing
   DEBUG_REQUEST_REGISTER("Debug:Cognition:busy_loop", "Block the cognition process with a busy loop to simulate dead cognition.", false);
+  DEBUG_REQUEST_REGISTER("Debug:Cognition:delay_100", "Sleep for 100ms in each cycle to simulate slow processing.", false);
 
+  // parameters
   REGISTER_DEBUG_COMMAND(cognitionLogger.getCommand(), cognitionLogger.getDescription(), &cognitionLogger);
   REGISTER_DEBUG_COMMAND("ParameterList:list", "list all registered parameters", &getDebugParameterList());
   REGISTER_DEBUG_COMMAND("ParameterList:get", "get the parameter list with the given name", &getDebugParameterList());
@@ -109,10 +112,12 @@ void Debug::execute()
 
   DEBUG_REQUEST("Debug:Cognition:busy_loop",
     while(true) {
-      std::cout << "cognition in endless loop due to \"Debug:cognition_busy_loop\" debug request" << std::endl;
+      std::cout << "Cognition in endless loop due to \"Debug:cognition_busy_loop\" debug request" << std::endl;
       ThreadUtil::sleep(200);
     }
   );
+
+  DEBUG_REQUEST("Debug:Cognition:delay_100", ThreadUtil::sleep(100); );
 }
 
 void Debug::executeDebugCommand(const std::string& command, const std::map<std::string,std::string>& arguments, std::ostream& outstream)
