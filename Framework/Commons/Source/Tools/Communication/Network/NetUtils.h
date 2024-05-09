@@ -14,15 +14,19 @@
 #include <cstring>
 #include <string>
 
-#ifndef WIN32
-#include <sys/ioctl.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <net/if.h>
-#include <ifaddrs.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
+#ifdef WIN32
+  #include <winsock.h>
+#else // Linux/MACOS
+  #include <sys/ioctl.h>
+  #include <sys/types.h>
+  #include <sys/socket.h>
+  #include <net/if.h>
+  #include <ifaddrs.h>
+  #include <netinet/in.h>
+  #include <arpa/inet.h>
+  #include <sys/socket.h>
 #endif // undef WIN32
+
 
 namespace naoth
 {
@@ -115,6 +119,34 @@ public:
 #endif
     return ip;
   }
+
+  // GLib supports setting soccet options starting version 2.36.
+  //   g_socket_set_broadcast (socket, true);
+  //   https://github.com/GNOME/glib/blob/86dd02f48762ae97c7bc805c45e8905cd969bbac/gio/gsocket.c#L1764
+  // and ..
+  //   g_socket_set_option (...);
+  //   https://github.com/GNOME/glib/blob/86dd02f48762ae97c7bc805c45e8905cd969bbac/gio/gsocket.c#L6515
+  // 
+  // Set the broadcast option directly. 
+  // Linux and Windows let you set a single-byte value from an int,
+  // but most other platforms don't.
+  // https://github.com/GNOME/glib/blob/main/gio/gsocket.c#L6340
+
+  static void my_g_socket_set_broadcast(GSocket* socket, gboolean broadcast)
+  {
+#ifdef WIN32
+    // https://learn.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-setsockopt
+    // https://learn.microsoft.com/en-us/windows/win32/winprog/windows-data-types
+    BOOL broadcastFlag = (broadcast ? TRUE : FALSE);
+    setsockopt(g_socket_get_fd(socket), SOL_SOCKET, SO_BROADCAST, (const char*)(&broadcastFlag), sizeof(broadcastFlag));
+#else // Linux/MACOS
+    // TODO: the following might not work on MACOS
+    // https://linux.die.net/man/3/setsockopt
+    int broadcastFlag = (broadcast ? 1 : 0);
+    setsockopt(g_socket_get_fd(socket), SOL_SOCKET, SO_BROADCAST, (const char*)(&broadcastFlag), static_cast<socklen_t> (sizeof(int)));
+#endif
+  }
+
 };
 } // namespace naoth
 

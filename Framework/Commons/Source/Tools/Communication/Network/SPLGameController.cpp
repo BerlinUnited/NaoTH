@@ -1,5 +1,11 @@
+/**
+* @file SPLGameController.cpp
+* @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
+*
+*/
 
 #include "SPLGameController.h"
+#include "NetUtils.h"
 
 //#include <PlatformInterface/Platform.h>
 
@@ -54,28 +60,9 @@ GError* SPLGameController::bindAndListen(unsigned int port)
 
   g_socket_set_blocking(socket, true);
 
-  // NOTE:
-  // Set the broadcast option directly. GLib spoorts it starting version 2.36.
-  // Linux and Windows let you set a single-byte value from an int,
-  // but most other platforms don't.
-  // https://github.com/GNOME/glib/blob/main/gio/gsocket.c#L6340
-  // TODO: the following might not work on MACOS
-
-#ifdef WIN32
-  // https://learn.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-setsockopt
-  // https://learn.microsoft.com/en-us/windows/win32/winprog/windows-data-types
-  BOOL broadcastFlag = TRUE;
-  setsockopt(g_socket_get_fd(socket), SOL_SOCKET, SO_BROADCAST, (const char*)(&broadcastFlag), sizeof(broadcastFlag));
-#else // Linux/MACOS
-  // https://linux.die.net/man/3/setsockopt
-  int broadcastFlag = 1;
-  setsockopt(g_socket_get_fd(socket), SOL_SOCKET, SO_BROADCAST, (const char*)(&broadcastFlag), static_cast<socklen_t> (sizeof(int)));
-#endif
-
   // NOTE: needs newer glib 2.36
-  //g_socket_set_broadcast(socket, true);
-  // or ...
-  //g_socket_set_option (...);
+  //  g_socket_set_broadcast(socket, true);
+  NetUtils::my_g_socket_set_broadcast(socket, true);
 
   GInetAddress* inetAddress = g_inet_address_new_any(G_SOCKET_FAMILY_IPV4);
   GSocketAddress* socketAddress = g_inet_socket_address_new(inetAddress, static_cast<guint16>(port));
