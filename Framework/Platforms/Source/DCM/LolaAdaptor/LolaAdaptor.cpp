@@ -1,4 +1,7 @@
+
 #include "LolaAdaptor.h"
+
+#include "Tools/FileUtils.h"
 
 using namespace naoth;
 
@@ -192,7 +195,7 @@ void LolaAdaptor::waitForLolaSocket()
     int tryCount = 0;
 
     // end the thread if the lola (unix) socket doesn't exists (after 5s)!
-    while(!fileExists("/tmp/robocup"))
+    while(!FileUtils::fileExists("/tmp/robocup"))
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(250));
         if(tryCount > 20 )
@@ -204,12 +207,6 @@ void LolaAdaptor::waitForLolaSocket()
     }
     std::this_thread::sleep_for(std::chrono::milliseconds(900));
 }//end waitForLolaSocket()
-
-bool LolaAdaptor::fileExists(const std::string& filename)
-{
-    struct stat buffer;
-    return (stat (filename.c_str(), &buffer) == 0);
-}
 
 void LolaAdaptor::setMotorJoints(ActuatorData &actuators)
 {
