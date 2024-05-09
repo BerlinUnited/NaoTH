@@ -1,8 +1,13 @@
+/**
+* @file UDPSender.cpp
+* @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
+*
+*/
+
 #include "UDPSender.h"
 
-#include <PlatformInterface/Platform.h>
-#include "Tools/Communication/NetAddr.h"
 #include <Tools/ThreadUtil.h>
+//#include "Tools/Debug/NaoTHAssert.h"
 
 #ifdef WIN32
 #include <winsock.h>
@@ -10,9 +15,9 @@
 #include <sys/socket.h>
 #endif
 
-using namespace naoth;
-using namespace std;
+#include <iostream>
 
+using namespace naoth;
 
 UDPSender::UDPSender(std::string ip, unsigned int port, std::string name)
   : ip(ip), port(port), name(name)

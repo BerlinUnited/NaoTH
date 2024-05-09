@@ -2,7 +2,7 @@
 #include "SPLGameController.h"
 
 //#include <PlatformInterface/Platform.h>
-#include "Tools/Communication/NetAddr.h"
+
 #include <Tools/ThreadUtil.h>
 
 #include <cstdlib>

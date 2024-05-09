@@ -5,8 +5,10 @@
  */
 
 #include "BroadCaster.h"
+#include "NetUtils.h"
 
-#include <Tools/ThreadUtil.h>
+#include "Tools/Debug/NaoTHAssert.h"
+#include "Tools/ThreadUtil.h"
 
 #ifdef WIN32
   #include <winsock.h>
@@ -14,13 +16,10 @@
   #include <sys/socket.h>
 #endif
 
-#include "Tools/Communication/NetAddr.h"
-#include "Tools/Debug/NaoTHAssert.h"
+#include <sstream>
 
-using namespace std;
 using namespace naoth;
 
-#include <sstream>
 
 BroadCaster::BroadCaster(const std::string& interfaceName, unsigned int port)
  :exiting(false), socket(NULL), broadcastAddress(NULL),
@@ -69,14 +68,14 @@ BroadCaster::BroadCaster(const std::string& interfaceName, unsigned int port)
   socketThread = std::thread(&BroadCaster::loop, this);
   ThreadUtil::setPriority(socketThread, ThreadUtil::Priority::lowest);
 
-  stringstream s;
+  std::stringstream s;
   s << "BC " << interfaceName << ":" << port;
   ThreadUtil::setName(socketThread, s.str());
 }
 
 bool BroadCaster::queryBroadcastAddress()
 {
-  string broadcast = NetAddr::getBroadcastAddr(interfaceName);
+  std::string broadcast = NetUtils::getBroadcastAddr(interfaceName);
   if("unknown" != broadcast && "" != broadcast)
   {
     GInetAddress* address = g_inet_address_new_from_string(broadcast.c_str());
@@ -155,7 +154,7 @@ void BroadCaster::loop()
       message.clear();
     }
 
-    for(list<string>::const_iterator iter=messages.begin(); iter!=messages.end(); ++iter)
+    for(std::list<std::string>::const_iterator iter=messages.begin(); iter!=messages.end(); ++iter)
     {
       socketSend(*iter);
     }
