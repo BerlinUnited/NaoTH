@@ -1,5 +1,5 @@
-#ifndef CPUTemperatureReader_H
-#define CPUTemperatureReader_H
+#ifndef CPU_TEMPERATURE_READER_H
+#define CPU_TEMPERATURE_READER_H
 
 #include "Representations/Infrastructure/CpuData.h"
 
@@ -14,17 +14,17 @@ public:
   ~CPUTemperatureReader();
 
   void get(naoth::CpuData& cpuData);
-
-  void readLoop();
   
 private:
+  void readLoop();
+  
   bool exiting;
   std::thread readThread;
 
   naoth::CpuData data;
-  std::mutex  dataMutex;
+  std::mutex dataMutex;
   
   std::ifstream temperatureFile;
 };
 
-#endif // CPUTemperatureReader_H
+#endif // CPU_TEMPERATURE_READER_H
