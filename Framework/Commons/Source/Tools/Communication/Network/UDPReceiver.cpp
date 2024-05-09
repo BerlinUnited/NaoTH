@@ -111,8 +111,9 @@ void UDPReceiver::socketLoop()
     if (error) {
       std::cout << "[WARN] UDPReceiver on port " << " g_socket_receive error: " << error->message << std::endl;
       g_error_free(error);
-    }
-    if(result > 0)
+    } 
+    // TODO: output warning on 0 bytes messages?
+    else if(result > 0)
     {
       std::lock_guard<std::mutex> lock(messageInMutex);
       messageIn.push_back(std::string(buffer, static_cast<size_t>(result)));
