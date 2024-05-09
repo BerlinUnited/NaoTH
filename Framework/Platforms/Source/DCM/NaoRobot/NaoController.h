@@ -61,12 +61,12 @@ public:
 
   // platform info
   const bool nao6;
-  virtual std::string getBodyID() const { return theBodyID; }
-  virtual std::string getBodyNickName() const { return theBodyNickName; }
-  virtual std::string getHeadNickName() const { return theHeadNickName; }
-  virtual std::string getRobotName() const { return theRobotName; }
-  virtual std::string getPlatformName() const { return nao6 ? "Nao6" : "Nao"; }
-  virtual unsigned int getBasicTimeStep() const { return nao6 ? 12 : 10; }
+  virtual std::string getBodyID() const         { return theBodyID;             }
+  virtual std::string getBodyNickName() const   { return theBodyNickName;       }
+  virtual std::string getHeadNickName() const   { return theHeadNickName;       }
+  virtual std::string getRobotName() const      { return theRobotName;          } // e.g., nao12
+  virtual std::string getPlatformName() const   { return nao6 ? "Nao6" : "Nao"; }
+  virtual unsigned int getBasicTimeStep() const { return nao6 ? 12 : 10;        }
   
   // camera stuff
   void get(Image& data) { 
@@ -83,12 +83,20 @@ public:
     theTopCameraHandler.getCameraSettings(data);
   }
   
-  void set(const CameraSettingsRequest& data);
-  void set(const CameraSettingsRequestTop& data);
+  void set(const CameraSettingsRequest &request) {
+    // FIXME: CameraSettings are assembled and copied in every frame 
+    CameraSettings settings = request.getCameraSettings();
+    theBottomCameraHandler.setAllCameraParams(settings);
+  }
+
+  void set(const CameraSettingsRequestTop &request) {
+    // FIXME: CameraSettings are assembled and copied in every frame
+    CameraSettings settings = request.getCameraSettings();
+    theTopCameraHandler.setAllCameraParams(settings);
+  }
 
   // sound
-  void set(const SoundPlayData& data)
-  {
+  void set(const SoundPlayData& data) {
     theSoundHandler.setSoundData(data);
   }
 
@@ -139,6 +147,7 @@ public:
 
   void set(const AudioControl& data) { theAudioRecorder.set(data); }
 
+
   virtual void getMotionInput()
   {
     //STOPWATCH_START("getMotionInput");
@@ -175,6 +184,8 @@ public:
     //STOPWATCH_STOP("setCognitionOutput");
   }
 
+private:
+  void readNaoInfo();
 
 protected:
   virtual MessageQueue* createMessageQueue(const std::string& /*name*/)
