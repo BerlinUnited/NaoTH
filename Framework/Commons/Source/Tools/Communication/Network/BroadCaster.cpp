@@ -46,6 +46,7 @@ BroadCaster::BroadCaster(const std::string& interfaceName, unsigned int port)
 
   queryBroadcastAddress();
 
+  // configute and start the thread
   socketThread = std::thread(&BroadCaster::loop, this);
   ThreadUtil::setPriority(socketThread, ThreadUtil::Priority::lowest);
 
@@ -60,6 +61,8 @@ bool BroadCaster::queryBroadcastAddress()
   if("unknown" != broadcast && "" != broadcast)
   {
     GInetAddress* address = g_inet_address_new_from_string(broadcast.c_str());
+
+    // delete old broadcastAddress if it was already set
     if(broadcastAddress != NULL) {
       g_object_unref(broadcastAddress);
     }
@@ -122,22 +125,23 @@ void BroadCaster::loop()
   while(!exiting)
   {
     std::unique_lock<std::mutex> lock(messageMutex);
-    // wait until it is necessary to send data
+    // wait until there is data to be sent
     while ( message.empty() && messages.empty() && !exiting )
     {
       messageCond.wait(lock);
     }
 
-    // send data via socket
+    // send a single message
     if ( !message.empty() )
     {
       socketSend(message);
       message.clear();
     }
 
-    for(std::list<std::string>::const_iterator iter=messages.begin(); iter!=messages.end(); ++iter)
+    // send a list of messages
+    for(const std::string& msg: messages)
     {
-      socketSend(*iter);
+      socketSend(msg);
     }
     messages.clear();
 
@@ -146,8 +150,8 @@ void BroadCaster::loop()
 
 void BroadCaster::socketSend(const std::string& data)
 {
-
-  if(broadcastAddress == NULL) {
+  if(broadcastAddress == NULL) 
+  {
     messagesWithoutInterface++;
     if(messagesWithoutInterface % queryAddressPause == 0)
     {
