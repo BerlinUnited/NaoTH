@@ -1,15 +1,18 @@
 /**
- * @file MacAddr.h
+ * @file NetUtils.h
  *
  * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
- * get the mac address
+ * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
+ * 
+ * Various tools for working with network.
  */
 
-#ifndef _MAC_ADDR_H_
-#define _MAC_ADDR_H_
+#ifndef NET_UTILS_H
+#define NET_UTILS_H
 
 #include <cstdio>
 #include <cstring>
+#include <string>
 
 #ifndef WIN32
 #include <sys/ioctl.h>
@@ -24,7 +27,7 @@
 namespace naoth
 {
 
-class NetAddr
+class NetUtils
 {
 public:
   // get Media Access Control address
@@ -115,4 +118,4 @@ public:
 };
 } // namespace naoth
 
-#endif //_MAC_ADDR_H_
+#endif // NET_UTILS_H
