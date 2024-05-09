@@ -107,14 +107,15 @@ bool BroadCaster::queryBroadcastAddress()
   std::string broadcast = NetUtils::getBroadcastAddr(interfaceName);
   if("unknown" != broadcast && "" != broadcast)
   {
-    GInetAddress* address = g_inet_address_new_from_string(broadcast.c_str());
+    GInetAddress* inet_address = g_inet_address_new_from_string(broadcast.c_str());
 
+    // TODO: queryBroadcastAddress() is only called when broadcastAddress == NULL
     // delete old broadcastAddress if it was already set
     if(broadcastAddress != NULL) {
       g_object_unref(broadcastAddress);
     }
-    broadcastAddress = g_inet_socket_address_new(address, static_cast<guint16>(port));
-    g_object_unref(address);
+    broadcastAddress = g_inet_socket_address_new(inet_address, static_cast<guint16>(port));
+    g_object_unref(inet_address);
     std::cout << "[INFO] BroadCaster configured (" << interfaceName << ", " << broadcast << ", " << port << ")" << std::endl;
     return true;
   } else {

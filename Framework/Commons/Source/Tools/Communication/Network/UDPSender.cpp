@@ -83,7 +83,6 @@ GError* UDPSender::bindAddress()
 
   GInetAddress* inet_address = g_inet_address_new_from_string(ip.c_str());
   address = g_inet_socket_address_new(inet_address, static_cast<guint16>(port));
-
   g_object_unref(inet_address);
 
   return err;
@@ -106,19 +105,21 @@ void UDPSender::send(const std::string& data)
 
 void UDPSender::socketSend(const std::string& data)
 {
-  GError *error = NULL;
-  if(address != NULL)
+  if(address == NULL)
   {
-    gssize result = g_socket_send_to(socket, address, data.c_str(), data.size(), cancelable, &error);
-    if (error) 
-    {
-      std::cout << "[WARN] " << name << " g_socket_send_to error: " << error->message << std::endl;
-      g_error_free(error);
-    }
-    else if ( result != static_cast<int>(data.size()) ) 
-    {
-      std::cout << "[WARN] UDPSender error wrong size sent: data size = " << data.size() << ", sent size = " << result << std::endl;
-    }
+    return;
+  }
+
+  GError *error = NULL;
+  gssize result = g_socket_send_to(socket, address, data.c_str(), data.size(), cancelable, &error);
+  if (error) 
+  {
+    std::cout << "[WARN] " << name << " g_socket_send_to error: " << error->message << std::endl;
+    g_error_free(error);
+  }
+  else if ( result != static_cast<int>(data.size()) ) 
+  {
+    std::cout << "[WARN] UDPSender error wrong size sent: data size = " << data.size() << ", sent size = " << result << std::endl;
   }
 }
 
