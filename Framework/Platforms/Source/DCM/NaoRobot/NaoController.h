@@ -61,9 +61,9 @@ public:
 
   // platform info
   const bool nao6;
-  virtual std::string getBodyID() const         { return theBodyID;             }
-  virtual std::string getBodyNickName() const   { return theBodyNickName;       }
-  virtual std::string getHeadNickName() const   { return theHeadNickName;       }
+  virtual std::string getBodyID() const         { return theBodyID;             } // body serial number: AL...XXXX
+  virtual std::string getBodyNickName() const   { return theBodyNickName;       } // NaoXXXX
+  virtual std::string getHeadNickName() const   { return theHeadNickName;       } // mac of the eth0
   virtual std::string getRobotName() const      { return theRobotName;          } // e.g., nao12
   virtual std::string getPlatformName() const   { return nao6 ? "Nao6" : "Nao"; }
   virtual unsigned int getBasicTimeStep() const { return nao6 ? 12 : 10;        }
