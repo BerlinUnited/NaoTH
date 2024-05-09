@@ -17,7 +17,6 @@
 #include "Tools/Math/Pose2D.h"
 
 #include "Tools/DataStructures/Printable.h"
-#include "Representations/Infrastructure/Configuration.h"
 #include <MessagesSPL/RoboCupGameControlData.h>
 #include <Tools/Debug/NaoTHAssert.h>
 
@@ -217,7 +216,8 @@ public:
     :
     playerNum(0),
     teamNum(0),
-    fallen(ROBOT_CAN_PLAY)
+    fallen(ROBOT_CAN_PLAY),
+    ballAge(-1)
   {}
 
   enum FallenState
@@ -231,39 +231,23 @@ public:
   int playerNum;
   int teamNum;
   
-  FallenState fallen;  // 1 means that the robot is fallen, 0 means that the robot can play
+  FallenState fallen;    // 1 means that the robot is fallen, 0 means that the robot can play
 
-  // copy from team message
-  Pose2D pose;                // robot pose
-  double ballAge;             // milliseconds since this robot last saw the ball. -1 if we haven't seen it
-  Vector2d ballPosition;      // position of ball relative to the robot coordinates in millimeters; 0,0 is in centre of the robot
+  Pose2D pose;           // robot pose
+  double ballAge;        // milliseconds since this robot last saw the ball. -1 if we haven't seen it
+  Vector2d ballPosition; // position of ball relative to the robot coordinates in millimeters
 
-  /*
-  // NOT YET implemented
-  // position and orientation of robot
-  // coordinates in millimeters
-  // 0,0 is in center of field
-  // +ve x-axis points towards the goal we are attempting to score on
-  // +ve y-axis is 90 degrees counter clockwise from the +ve x-axis
-  // angle in radians, 0 along the +x axis, increasing counter clockwise
-  float pose[3];         // x,y,theta
-
-  // ball information
-  float ballAge;         // seconds since this robot last saw the ball. -1.f if we haven't seen it
-
-  // position of ball relative to the robot
-  // coordinates in millimeters
-  // 0,0 is in center of the robot
-  // +ve x-axis points forward from the robot
-  // +ve y-axis is 90 degrees counter clockwise from the +ve x-axis
-  float ball[2];
-  */
+  // wrote the values to the standard SPL message
+  void writeTo(spl::RoboCupGameControlReturnData& data) const;
 
   virtual void print(std::ostream& stream) const
   {
-    stream << "player:\t"   << playerNum << std::endl;
-    stream << "team:\t"     << teamNum << std::endl;
-    stream << "message:\t"  << toString(fallen) << std::endl;
+    stream << "player:  " << playerNum << std::endl;
+    stream << "team:    " << teamNum << std::endl;
+    stream << "fallen:  " << toString(fallen) << std::endl;
+    stream << "pose:    " << pose << std::endl;
+    stream << "ballAge: " << ballAge << std::endl;
+    stream << "ball:    " << ballPosition << std::endl;
   }
 };
 

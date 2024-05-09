@@ -13,21 +13,21 @@ using namespace std;
 
 GameData::GameData()
   : 
-    valid(false),
-    playersPerTeam(0),
+  valid(false),
+  playersPerTeam(0),
 
-    competitionPhase(roundrobin),
-    competitionType(competition_normal),
-    gamePhase(normal),
-    gameState(unknown_game_state),
-    setPlay(set_none),
+  competitionPhase(roundrobin),
+  competitionType(competition_normal),
+  gamePhase(normal),
+  gameState(unknown_game_state),
+  setPlay(set_none),
 
-    firstHalf(true),
-    kickingTeam(0),
-    secsRemaining(0),
-    secondaryTime(0),
-    // HACK: for more info see declaration
-    newPlayerNumber(0)
+  firstHalf(true),
+  kickingTeam(0),
+  secsRemaining(0),
+  secondaryTime(0),
+  // HACK: for more info see declaration
+  newPlayerNumber(0)
 {
 }
 
@@ -236,10 +236,10 @@ void GameData::parseFrom(const spl::RoboCupGameControlData& data, int teamNumber
 
 void GameData::parseTeamInfo(TeamInfo& teamInfoDst, const spl::TeamInfo& teamInfoSrc) const
 {
-  teamInfoDst.penaltyShot = teamInfoSrc.penaltyShot;
-  teamInfoDst.score = teamInfoSrc.score;
-  teamInfoDst.teamColor = (TeamColor)teamInfoSrc.fieldPlayerColour;
-  teamInfoDst.teamNumber = teamInfoSrc.teamNumber;
+  teamInfoDst.penaltyShot   = teamInfoSrc.penaltyShot;
+  teamInfoDst.score         = teamInfoSrc.score;
+  teamInfoDst.teamColor     = (TeamColor)teamInfoSrc.fieldPlayerColour;
+  teamInfoDst.teamNumber    = teamInfoSrc.teamNumber;
   teamInfoDst.messageBudget = teamInfoSrc.messageBudget;
 
   teamInfoDst.players.resize(playersPerTeam);
@@ -302,7 +302,27 @@ std::string GameReturnData::toString(FallenState value)
   }
   
   ASSERT(false);
-  return "invalide Message";
+  return "invalide fallen state";
+}
+
+void GameReturnData::writeTo(spl::RoboCupGameControlReturnData& data) const 
+{
+  data.playerNum = static_cast<uint8_t>(playerNum);
+  data.teamNum   = static_cast<uint8_t>(teamNum);
+  data.fallen    = static_cast<uint8_t>(fallen);
+
+  // position and orientation of robot in millimeters
+  data.pose[0]   = static_cast<float>(pose.translation.x);
+  data.pose[1]   = static_cast<float>(pose.translation.y);
+  data.pose[2]   = static_cast<float>(pose.rotation);
+
+  // in seconds (only if positive)!
+  // seconds since this robot last saw the ball. -1.f if we haven't seen it
+  data.ballAge   = static_cast<float>((ballAge < 0)? -1 : ballAge / 1000.0);
+
+  // position of ball relative to the robot in millimeters
+  data.ball[0]   = static_cast<float>(ballPosition.x);
+  data.ball[1]   = static_cast<float>(ballPosition.y);
 }
 
 
