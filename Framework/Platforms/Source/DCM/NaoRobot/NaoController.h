@@ -7,13 +7,12 @@
  *
  */
 
-#ifndef _NaoController_H_
-#define _NaoController_H_
+#ifndef NAO_CONTROLLER_H
+#define NAO_CONTROLLER_H
 
 #include <string>
 #include <fstream>
 #include <iostream>
-#include <sys/stat.h>
 
 //
 #include "PlatformInterface/PlatformInterface.h"
@@ -49,6 +48,7 @@
 #include "Tools/DCMData.h"
 #include "Tools/NaoTime.h"
 #include "Tools/SharedMemoryIO.h"
+#include "Tools/FileUtils.h"
 
 namespace naoth
 {
@@ -69,10 +69,10 @@ public:
   virtual unsigned int getBasicTimeStep() const { return nao6 ? 12 : 10; }
   
   // camera stuff
-  void get(Image& data){ 
+  void get(Image& data) { 
     theBottomCameraHandler.get(data); 
   } // blocking
-  void get(ImageTop& data){ 
+  void get(ImageTop& data) { 
     theTopCameraHandler.get(data); 
   } // non blocking
   
@@ -89,7 +89,7 @@ public:
   // sound
   void set(const SoundPlayData& data)
   {
-    theSoundHandler->setSoundData(data);
+    theSoundHandler.setSoundData(data);
   }
 
   // teamcomm stuff
@@ -188,8 +188,6 @@ protected:
   std::string theHeadNickName;
   std::string theRobotName;
 
-  bool lolaAvailable;
-
   // -- begin -- shared memory access --
   // DCM --> NaoController
   SharedMemoryReader<DCMSensorData> naoSensorData;
@@ -205,20 +203,21 @@ protected:
   V4lCameraHandler theBottomCameraHandler;
   V4lCameraHandler theTopCameraHandler;
   
-  SoundControl *theSoundHandler;
+  SoundControl theSoundHandler;
+  AudioRecorder theAudioRecorder;
+  
+  CPUTemperatureReader theCPUTemperatureReader;
+  
+  // communication
   UDPSender* theTeamCommDebugger;
   BroadCaster* theTeamCommSender;
   UDPReceiver* theTeamCommListener;
   UDPReceiver* theRemoteCommandListener;
   SPLGameController* theGameController;
   DebugServer* theDebugServer;
-  CPUTemperatureReader theCPUTemperatureReader;
-  AudioRecorder theAudioRecorder;
 
-private:
-  static bool fileExists (const std::string& filename);
 };
 
 } // end namespace naoth
 
-#endif // _NAO_CONTROLLER_BASE_H_
+#endif // NAO_CONTROLLER_H

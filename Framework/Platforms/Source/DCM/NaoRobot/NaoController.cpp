@@ -20,7 +20,6 @@ using namespace naoth;
 NaoController::NaoController(bool nao6)
     : 
     nao6(nao6),
-    theSoundHandler(NULL),
     theTeamCommDebugger(NULL),
     theTeamCommSender(NULL),
     theTeamCommListener(NULL),
@@ -52,10 +51,9 @@ NaoController::NaoController(bool nao6)
   // read the theBodyID and the theBodyNickName from file "nao.info"
   const std::string naoInfoPath = Platform::getInstance().theConfigDirectory + "nao.info";
   while(true){
-    if (!fileExists(naoInfoPath)){        
+    if (!FileUtils::fileExists(naoInfoPath)) {        
       std::this_thread::sleep_for(std::chrono::milliseconds(500));
-    }
-    else{
+    } else {
       break;
     }
   }
@@ -137,9 +135,6 @@ NaoController::NaoController(bool nao6)
   std::cout << "[NaoController] " << "Init Platform" << endl;
   Platform::getInstance().init(this);
 
-  std::cout << "[NaoController] " << "Init SoundHandler" <<endl;
-  theSoundHandler = new SoundControl();
-
   // create the teamcomm
   std::cout << "[NaoController] " << "Init TeamComm" << endl;
   const naoth::Configuration& config = naoth::Platform::getInstance().theConfiguration;
@@ -195,7 +190,7 @@ NaoController::NaoController(bool nao6)
 NaoController::~NaoController()
 {
   std::cout << "[NaoController] destruct" << std::endl;
-  delete theSoundHandler;
+
   delete theTeamCommSender;
   delete theTeamCommListener;
   delete theTeamCommDebugger;
@@ -215,10 +210,4 @@ void NaoController::set(const CameraSettingsRequestTop &request)
   // FIXME: CameraSettings are assembled and copied in every frame
   CameraSettings settings = request.getCameraSettings();
   theTopCameraHandler.setAllCameraParams(settings);
-}
-
-bool NaoController::fileExists(const std::string& filename)
-{
-    struct stat buffer;
-    return (stat (filename.c_str(), &buffer) == 0);
 }
