@@ -7,11 +7,10 @@
 #ifndef UDPReceiver_H
 #define UDPReceiver_H
 
-#include <string>
-#include <vector>
-#include <glib.h>
 #include <gio/gio.h>
 
+#include <string>
+#include <vector>
 #include <mutex>
 #include <thread>
 
@@ -22,19 +21,16 @@ class UDPReceiver
 
 public:
   UDPReceiver(unsigned int port, unsigned int buffersize=4096);
-
-  void receive(std::vector<std::string>& data);
-
   virtual ~UDPReceiver();
 
-  void loop();
+  void receive(std::vector<std::string>& data);
 
 private:
   unsigned int bufferSize;
   bool exiting;
 
   GSocket* socket;
-  GCancellable* socket_cancelable;
+  GCancellable* cancelable;
 
   char* buffer;
   std::thread socketThread;
@@ -42,6 +38,8 @@ private:
   std::mutex messageInMutex;
 
   GError* bindAndListen(unsigned int port);
+  //void socketReceive();
+  void socketLoop();
 };
 } // namespace naoth
 
