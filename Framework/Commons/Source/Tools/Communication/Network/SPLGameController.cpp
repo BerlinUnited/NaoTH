@@ -1,7 +1,7 @@
 
 #include "SPLGameController.h"
 
-#include <PlatformInterface/Platform.h>
+//#include <PlatformInterface/Platform.h>
 #include "Tools/Communication/NetAddr.h"
 #include <Tools/ThreadUtil.h>
 
@@ -33,29 +33,8 @@ SPLGameController::SPLGameController()
   {
     // init player number, team number and etc.
     //data.loadFromCfg( naoth::Platform::getInstance().theConfiguration );
-    cancelable = g_cancellable_new();
 
-    // init return data
-    // 
-    // NOTE: subtle harmless "bug": copy zero terminated c-string (4+1 chars) 
-    //       but header is only 4 chars long. 
-    //       The terminal '\0' is copied into 'version' and is then overwritten
-    // 
-    // Is there a more elegant+safer way of doing this?
-    strcpy(dataOut.header, GAMECONTROLLER_RETURN_STRUCT_HEADER);
-    dataOut.version = GAMECONTROLLER_RETURN_STRUCT_VERSION;
-    dataOut.playerNum = 0;
-    dataOut.teamNum = 0;
-    dataOut.fallen = 0;
-    
-    // new in 2022
-    dataOut.pose[0] = 0;
-    dataOut.pose[1] = 0;
-    dataOut.pose[2] = 0;
-    dataOut.ballAge = -1;
-    dataOut.ball[0] = 0;
-    dataOut.ball[1] = 0;
-    
+    cancelable = g_cancellable_new();
 
     std::cout << "[INFO] SPLGameController start socket thread" << std::endl;
     socketThread = std::thread(&SPLGameController::socketLoop, this);
@@ -158,20 +137,8 @@ void SPLGameController::get(GameData& gameData)
 void SPLGameController::set(const naoth::GameReturnData& data)
 {
   std::unique_lock<std::mutex> lock(returnDataMutex, std::try_to_lock);
-  if ( lock.owns_lock() )
-  {
-    dataOut.playerNum = (uint8_t)data.playerNum;
-    dataOut.teamNum   = (uint8_t)data.teamNum;
-    dataOut.fallen    = data.fallen;
-
-    dataOut.pose[0]   = (float) data.pose.translation.x;
-    dataOut.pose[1]   = (float) data.pose.translation.y;
-    dataOut.pose[2]   = (float) data.pose.rotation;
-
-    // in seconds (only if positive)!
-    dataOut.ballAge   = (float) ((data.ballAge < 0)? data.ballAge : data.ballAge / 1000.0);
-    dataOut.ball[0]   = (float) data.ballPosition.x;
-    dataOut.ball[1]   = (float) data.ballPosition.y;
+  if ( lock.owns_lock() ) {
+    data.writeTo(dataOut);
   }
 }
 
