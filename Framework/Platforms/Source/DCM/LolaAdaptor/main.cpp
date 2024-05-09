@@ -5,11 +5,11 @@
  */
 
 #include "LolaAdaptor.h"
+#include "Tools/FileUtils.h"
 
 #include <csignal>
 #include <unistd.h>
 #include <chrono>
-#include <sys/stat.h>
 
 using namespace naoth;
 using namespace std;
@@ -89,10 +89,6 @@ void got_signal(int sigid)
 
 }//end got_signal
 
-bool fileExists (const std::string& filename) {
-  struct stat buffer;   
-  return (stat (filename.c_str(), &buffer) == 0); 
-}
 
 int main(int /*argc*/, char **/*argv[]*/)
 {
@@ -139,7 +135,7 @@ int main(int /*argc*/, char **/*argv[]*/)
   std::signal(SIGILL,  got_signal);
 
   // create the controller
-  if(fileExists("/usr/bin/lola") || fileExists("/opt/aldebaran/bin/lola"))
+  if(FileUtils::fileExists("/usr/bin/lola") || FileUtils::fileExists("/opt/aldebaran/bin/lola"))
   {
     LolaAdaptor theLolaAdaptor;
 
