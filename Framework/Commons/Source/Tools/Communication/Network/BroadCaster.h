@@ -32,11 +32,10 @@ public:
   void send(std::list<std::string>& msgs);
 
 private:
-  void loop();
-
-  void socketSend(const std::string& data);
-
+  GError* bindAddress();
   bool queryBroadcastAddress();
+  void socketSend(const std::string& data);
+  void loop();
 
 private:
   // threading
@@ -47,6 +46,7 @@ private:
 
   // socket
   GSocket* socket;
+  GCancellable* cancelable;
   GSocketAddress* broadcastAddress;
   const std::string interfaceName;
   const unsigned int port;

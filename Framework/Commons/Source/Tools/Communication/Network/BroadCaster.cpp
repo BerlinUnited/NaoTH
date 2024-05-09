@@ -7,8 +7,8 @@
 #include "BroadCaster.h"
 #include "NetUtils.h"
 
-#include "Tools/Debug/NaoTHAssert.h"
 #include "Tools/ThreadUtil.h"
+//#include "Tools/Debug/NaoTHAssert.h"
 
 #ifdef WIN32
   #include <winsock.h>
@@ -16,43 +16,90 @@
   #include <sys/socket.h>
 #endif
 
+#include <iostream>
 #include <sstream>
 
 using namespace naoth;
 
 
 BroadCaster::BroadCaster(const std::string& interfaceName, unsigned int port)
- :exiting(false), socket(NULL), broadcastAddress(NULL),
-    interfaceName(interfaceName), port(port),
-    messagesWithoutInterface(0),
-    // try to query broadcast address in every frame
-    queryAddressPause(1)
+ :
+  exiting(false), 
+  socket(NULL), 
+  broadcastAddress(NULL),
+  interfaceName(interfaceName), 
+  port(port),
+  messagesWithoutInterface(0),
+  // try to query broadcast address in every frame
+  queryAddressPause(1)
+{
+  GError* err = bindAddress();
+  if(err)
+  {
+    std::cout << "[WARN] could not initialize BroadCaster on inferface: " << interfaceName << ", port: " << port << ": " << err->message << std::endl;
+    socket = NULL;
+    g_error_free(err);
+  }
+  else
+  {
+    std::cout << "[INFO] start BroadCaster thread on inferface: " << interfaceName << ", port: " << port << std::endl;
+    cancelable = g_cancellable_new();
+    
+    // configute and start the thread
+    socketThread = std::thread(&BroadCaster::loop, this);
+    ThreadUtil::setPriority(socketThread, ThreadUtil::Priority::lowest);
+
+    std::stringstream s;
+    s << "BC " << interfaceName << ":" << port;
+    ThreadUtil::setName(socketThread, s.str());
+  }
+}
+
+BroadCaster::~BroadCaster()
+{
+  std::cout << "[BroadCaster] stop wait" << std::endl;
+  // request the thread to stop
+  exiting = true;
+  messageCond.notify_all();
+
+  // notify all waiting connections to cancel
+  g_cancellable_cancel(cancelable);
+
+  if(socketThread.joinable()) {
+    socketThread.join();
+  }
+
+  if(socket != NULL) {
+    g_object_unref(socket);
+  }
+
+  if(broadcastAddress != NULL) {
+    g_object_unref(broadcastAddress);
+  }
+
+  g_object_unref(cancelable);
+  std::cout << "[BroadCaster] stop done" << std::endl;
+}
+
+
+GError* BroadCaster::bindAddress()
 {
   GError* err = NULL;
   socket = g_socket_new(G_SOCKET_FAMILY_IPV4, G_SOCKET_TYPE_DATAGRAM, G_SOCKET_PROTOCOL_UDP, &err);
 
-  if(err)
-  {
-    std::cout << "[WARN] could not initialize BroadCaster properly: " << err->message << std::endl;
-    g_error_free(err);
-    return;
+  if(err) { 
+    return err;
   }
 
   g_socket_set_blocking(socket, true);
-  
+
   // NOTE: needs newer glib 2.36
   //  g_socket_set_broadcast(socket, true);
   NetUtils::my_g_socket_set_broadcast(socket, true);
 
   queryBroadcastAddress();
 
-  // configute and start the thread
-  socketThread = std::thread(&BroadCaster::loop, this);
-  ThreadUtil::setPriority(socketThread, ThreadUtil::Priority::lowest);
-
-  std::stringstream s;
-  s << "BC " << interfaceName << ":" << port;
-  ThreadUtil::setName(socketThread, s.str());
+  return err;
 }
 
 bool BroadCaster::queryBroadcastAddress()
@@ -66,7 +113,7 @@ bool BroadCaster::queryBroadcastAddress()
     if(broadcastAddress != NULL) {
       g_object_unref(broadcastAddress);
     }
-    broadcastAddress = g_inet_socket_address_new(address, static_cast<unsigned short>(port));
+    broadcastAddress = g_inet_socket_address_new(address, static_cast<guint16>(port));
     g_object_unref(address);
     std::cout << "[INFO] BroadCaster configured (" << interfaceName << ", " << broadcast << ", " << port << ")" << std::endl;
     return true;
@@ -74,22 +121,6 @@ bool BroadCaster::queryBroadcastAddress()
     std::cerr << "[BroadCaster] WARNING: unable to get broadcast address (" << interfaceName << ", " << broadcast << ", " << port << ")" << std::endl;
   }
   return false;
-}
-
-BroadCaster::~BroadCaster()
-{
-  std::cout << "[BroadCaster] stop wait" << std::endl;
-  exiting = true;
-  messageCond.notify_all(); // tell socket thread to exit
-
-  if(socketThread.joinable()) {
-    socketThread.join();
-  }
-
-  if(broadcastAddress != NULL) {
-    g_object_unref(broadcastAddress);
-  }
-  std::cout << "[BroadCaster] stop done" << std::endl;
 }
 
 void BroadCaster::send(const std::string& data)
@@ -167,7 +198,7 @@ void BroadCaster::socketSend(const std::string& data)
   }
 
   GError *error = NULL;
-  int result = static_cast<int> (g_socket_send_to(socket, broadcastAddress, data.c_str(), data.size(), NULL, &error));
+  gssize result = g_socket_send_to(socket, broadcastAddress, data.c_str(), data.size(), cancelable, &error);
   if (error)
   {
     std::cout << "[WARN] g_socket_send_to error: " << error->message << std::endl;
@@ -175,7 +206,7 @@ void BroadCaster::socketSend(const std::string& data)
   }
   else if ( result != static_cast<int>(data.size()) )
   {
-    std::cout << "[WARN] broadcast error, sended size = " << result << std::endl;
+    std::cout << "[WARN] broadcast error wrong size sent: data size = " << data.size() << ", sent size = " << result << std::endl;
   }
 }
 
