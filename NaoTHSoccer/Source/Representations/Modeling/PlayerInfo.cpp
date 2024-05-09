@@ -12,14 +12,17 @@ using namespace std;
 
 PlayerInfo::PlayerInfo() 
 :
-  playersPerTeam(0),
   playerNumber(0),
   teamNumber(0),
+
   teamColor(naoth::GameData::unknown_team_color),
-  kickoff(false),
+  playersPerTeam(0),
+  
   robotState(unstiff), // this was changed in 2021 from initial to unstiff
   robotSetPlay(set_none),
   gamePhase(normal),
+  kickoff(false),
+
   isPlayingStriker(false),
   // HACK: this should be somewhere else
   scheme(Platform::getInstance().theScheme)
