@@ -5,8 +5,8 @@
  * Created on 16. Juni 2009, 20:44
  */
 
-#ifndef _SOUNDCONTROL_H
-#define	_SOUNDCONTROL_H
+#ifndef SOUND_CONTROL_H
+#define	SOUND_CONTROL_H
 
 #include <string>
 #include <thread>
@@ -42,5 +42,5 @@ private:
 
 } // end namespace naoth
 
-#endif	/* _SOUNDCONTROL_H */
+#endif	/* SOUND_CONTROL_H */
 

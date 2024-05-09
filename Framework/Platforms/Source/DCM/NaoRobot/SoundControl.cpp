@@ -12,8 +12,9 @@ SoundControl::SoundControl() :
   stopping(false),
   media_path("Media/")
 {
+  std::cout << "[INFO] SoundControl start thread" << std::endl;
+  
   playThread = std::thread(&SoundControl::play, this);
-
   ThreadUtil::setPriority(playThread, ThreadUtil::Priority::lowest);
   ThreadUtil::setName(playThread, "SoundControl");
 }
