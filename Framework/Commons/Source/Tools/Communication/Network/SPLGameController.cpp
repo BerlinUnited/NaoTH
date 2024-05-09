@@ -155,17 +155,21 @@ SPLGameController::~SPLGameController()
 
 void SPLGameController::sendData(const RoboCupGameControlReturnData& data)
 {
-  GError *error = NULL;
   if(gamecontrollerAddress != NULL)
   {
-    gssize result = g_socket_send_to(socket, gamecontrollerAddress, (char*)(&data), sizeof(data), cancelable, &error);
-    if ( result != sizeof(data) ) {
-      std::cout << "[WARN] SPLGameController::returnData, sended size = " <<  result << std::endl;
-    }
-    if (error) {
-      std::cout << "[WARN] g_socket_send_to error: " << error->message << std::endl;
-      g_error_free(error);
-    }
+    return;
+  }
+
+  GError *error = NULL;
+  gssize result = g_socket_send_to(socket, gamecontrollerAddress, (char*)(&data), sizeof(data), cancelable, &error);
+  if (error) 
+  {
+    std::cout << "[WARN] g_socket_send_to error: " << error->message << std::endl;
+    g_error_free(error);
+  }
+  else if ( result != sizeof(data) ) 
+  {
+    std::cout << "[WARN] SPLGameController::returnData, error wrong size sent: data size = " << sizeof(data) << ", sent size = " <<  result << std::endl;
   }
 }
 
