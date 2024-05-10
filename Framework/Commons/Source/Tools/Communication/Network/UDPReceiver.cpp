@@ -106,11 +106,11 @@ void UDPReceiver::socketLoop()
 
   while(!exiting)
   {
-    GError *error = NULL;
-    gssize result = g_socket_receive(socket, buffer, bufferSize, cancelable, &error);
-    if (error) {
-      std::cout << "[WARN] UDPReceiver on port " << " g_socket_receive error: " << error->message << std::endl;
-      g_error_free(error);
+    GError *err = NULL;
+    gssize result = g_socket_receive(socket, buffer, bufferSize, cancelable, &err);
+    if (err) {
+      std::cout << "[WARN] UDPReceiver on port " << " g_socket_receive error: " << err->message << std::endl;
+      g_error_free(err);
     } 
     // TODO: output warning on 0 bytes messages?
     else if(result > 0)

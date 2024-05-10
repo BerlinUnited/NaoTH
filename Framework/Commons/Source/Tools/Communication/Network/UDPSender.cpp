@@ -77,6 +77,8 @@ GError* UDPSender::bindAddress()
 
   g_socket_set_blocking(socket, true);
 
+  // TODO: do we need to enable it in general? Who is using it?
+  // Enable socket to be allowed to send  packets to a broadcast address.
   // NOTE: needs newer glib 2.36
   //  g_socket_set_broadcast(socket, true);
   NetUtils::my_g_socket_set_broadcast(socket, true);
