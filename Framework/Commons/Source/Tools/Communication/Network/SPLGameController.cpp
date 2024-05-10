@@ -60,10 +60,13 @@ GError* SPLGameController::bindAndListen(unsigned int port)
 
   g_socket_set_blocking(socket, true);
 
+  // TODO: check and remove: broadcast option is only necessary for sending to broadcast.
+  // SPLGameController sends messages directly to GameController.
   // NOTE: needs newer glib 2.36
   //  g_socket_set_broadcast(socket, true);
-  NetUtils::my_g_socket_set_broadcast(socket, true);
+  //NetUtils::my_g_socket_set_broadcast(socket, true);
 
+  // setup the socket for receiving messages at the port
   GInetAddress* inetAddress = g_inet_address_new_any(G_SOCKET_FAMILY_IPV4);
   GSocketAddress* socketAddress = g_inet_socket_address_new(inetAddress, static_cast<guint16>(port));
 
@@ -80,12 +83,13 @@ bool SPLGameController::update()
 {
   data.valid = false;
 
-  // check the header
+  // check the header and the version
   std::string header;
   header.assign(dataIn.header, 4);
   if(header == GAMECONTROLLER_STRUCT_HEADER && dataIn.version == GAMECONTROLLER_STRUCT_VERSION)
   {
-    // team number was set
+    // dataOut.teamNum - is my team number
+    // check if my team number was set and only accept the game data that was sent to my team
     if( dataOut.teamNum > 0 && 
        (dataIn.teams[0].teamNumber == dataOut.teamNum || dataIn.teams[1].teamNumber == dataOut.teamNum)
       ) 
@@ -177,36 +181,43 @@ void SPLGameController::socketLoop()
 {
   while(!exiting && socket != NULL)
   {
+    GError* err = NULL;
     GSocketAddress* senderAddress = NULL;
     gssize size = g_socket_receive_from(socket, &senderAddress,
                                      (char*)(&dataIn),
                                      sizeof(RoboCupGameControlData),
-                                     cancelable, NULL);
+                                     cancelable, &err);
 
-    if(senderAddress != NULL)
-    {
-      // construct a proper return address from the receiver
-      GInetAddress* rawAddress = g_inet_socket_address_get_address(G_INET_SOCKET_ADDRESS(senderAddress));
-      if(gamecontrollerAddress != NULL)
+    if (err) {
+      std::cout << "[WARN] SPLGameController g_socket_receive_from error: " << err->message << std::endl;
+      g_error_free(err);
+    } 
+    else {
+      // construct a return address with the given returnPort
+      if(senderAddress != NULL)
       {
-        g_object_unref(gamecontrollerAddress);
+        GInetAddress* rawAddress = g_inet_socket_address_get_address(G_INET_SOCKET_ADDRESS(senderAddress));
+        if(gamecontrollerAddress != NULL) {
+          g_object_unref(gamecontrollerAddress);
+        }
+        gamecontrollerAddress = g_inet_socket_address_new(rawAddress, static_cast<guint16>(returnPort));
+        g_object_unref(senderAddress);
       }
-      gamecontrollerAddress = g_inet_socket_address_new(rawAddress, static_cast<guint16>(returnPort));
-      g_object_unref(senderAddress);
-    }
 
-    if(size == sizeof(RoboCupGameControlData))
-    {
-      bool validPackage = false;
+      if(size == sizeof(RoboCupGameControlData))
       {
-        std::lock_guard<std::mutex> lock(dataMutex);
-        validPackage = update();
-      }
-      // only send return package if we are sure the initial package was a proper game controller message
-      if(validPackage)
-      {
-        std::lock_guard<std::mutex> lock(returnDataMutex);
-        sendData(dataOut);
+        bool validPackage = false;
+        {
+          std::lock_guard<std::mutex> lock(dataMutex);
+          validPackage = update();
+        }
+
+        // only send return package if we are sure the initial package was a proper game controller message
+        if(validPackage)
+        {
+          std::lock_guard<std::mutex> lock(returnDataMutex);
+          sendData(dataOut);
+        }
       }
     }
   }
