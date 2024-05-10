@@ -133,22 +133,27 @@ public:
   *   https://github.com/GNOME/glib/blob/86dd02f48762ae97c7bc805c45e8905cd969bbac/gio/gsocket.c#L6515
   * 
   * Set the broadcast option directly. 
-  * Linux and Windows let you set a single-byte value from an int,
-  * but most other platforms don't.
-  * https://github.com/GNOME/glib/blob/main/gio/gsocket.c#L6340
   */
   static void my_g_socket_set_broadcast(GSocket* socket, gboolean broadcast)
   {
+    // NOTE: following two cases seem to be actually identical, because BOOL in windows is defined as int.
+    //       They are treated in identical manner in g_socket_set_broadcast() glib starting 2.36
+    //       "A BOOL is a 32-bit field that is set to 1 to indicate TRUE, or 0 to indicate FALSE."
 #ifdef WIN32
     // https://learn.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-setsockopt
     // https://learn.microsoft.com/en-us/windows/win32/winprog/windows-data-types
     BOOL broadcastFlag = (broadcast ? TRUE : FALSE);
     setsockopt(g_socket_get_fd(socket), SOL_SOCKET, SO_BROADCAST, (const char*)(&broadcastFlag), sizeof(broadcastFlag));
 #else // Linux/MACOS
-    // TODO: the following might not work on MACOS
     // https://linux.die.net/man/3/setsockopt
     int broadcastFlag = (broadcast ? 1 : 0);
-    setsockopt(g_socket_get_fd(socket), SOL_SOCKET, SO_BROADCAST, (const char*)(&broadcastFlag), static_cast<socklen_t> (sizeof(int)));
+    setsockopt(g_socket_get_fd(socket), SOL_SOCKET, SO_BROADCAST, (const char*)(&broadcastFlag), sizeof(broadcastFlag));
+
+    // TODO: this might not work on MACOS
+    // Linux and Windows let you set a single-byte value from an int,
+    // but most other platforms don't.
+    // g_socket_set_broadcast() in the newer versions of glib starting 2.36 treat this case.
+    // https://github.com/GNOME/glib/blob/86dd02f48762ae97c7bc805c45e8905cd969bbac/gio/gsocket.c#L6537
 #endif
   }
 
