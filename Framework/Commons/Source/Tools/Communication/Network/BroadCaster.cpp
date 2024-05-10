@@ -93,9 +93,11 @@ GError* BroadCaster::bindAddress()
 
   g_socket_set_blocking(socket, true);
 
+  // Enable socket to be allowed to send  packets to a broadcast address.
   // NOTE: needs newer glib 2.36
   //  g_socket_set_broadcast(socket, true);
   NetUtils::my_g_socket_set_broadcast(socket, true);
+
 
   queryBroadcastAddress();
 
