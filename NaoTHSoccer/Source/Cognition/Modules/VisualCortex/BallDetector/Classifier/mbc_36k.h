@@ -1,11 +1,11 @@
-#ifndef MBC_GOPEN_56K_H
-#define MBC_GOPEN_56K_H
+#ifndef MBC_36K_H
+#define MBC_36K_H
 
 #include <emmintrin.h>
 
 #include "AbstractCNNClassifier.h"
 
-class mbc_gopen_56k : public AbstractCNNFinder {
+class mbc_36k : public AbstractCNNFinder {
 
 public:
 	void cnn(float x0[16][16][1]);
