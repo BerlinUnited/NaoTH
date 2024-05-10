@@ -23,6 +23,7 @@ naoth.egg-info*
 
 #pyenv
 .python-version
+.env
 
 #
 trace.dump.*
