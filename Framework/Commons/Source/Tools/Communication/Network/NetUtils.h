@@ -120,18 +120,23 @@ public:
     return ip;
   }
 
-  // GLib supports setting soccet options starting version 2.36.
-  //   g_socket_set_broadcast (socket, true);
-  //   https://github.com/GNOME/glib/blob/86dd02f48762ae97c7bc805c45e8905cd969bbac/gio/gsocket.c#L1764
-  // and ..
-  //   g_socket_set_option (...);
-  //   https://github.com/GNOME/glib/blob/86dd02f48762ae97c7bc805c45e8905cd969bbac/gio/gsocket.c#L6515
-  // 
-  // Set the broadcast option directly. 
-  // Linux and Windows let you set a single-byte value from an int,
-  // but most other platforms don't.
-  // https://github.com/GNOME/glib/blob/main/gio/gsocket.c#L6340
-
+  /**
+  * Sets the broadcast flag for the socket. If true, datagram
+  * sockets are allowed to send packets to a broadcast address.  
+  * This option has no effect on stream-oriented sockets.
+  * 
+  * GLib supports setting soccet options starting version 2.36.
+  *   g_socket_set_broadcast (socket, true);
+  *   https://github.com/GNOME/glib/blob/86dd02f48762ae97c7bc805c45e8905cd969bbac/gio/gsocket.c#L1764
+  * and ..
+  *   g_socket_set_option (...);
+  *   https://github.com/GNOME/glib/blob/86dd02f48762ae97c7bc805c45e8905cd969bbac/gio/gsocket.c#L6515
+  * 
+  * Set the broadcast option directly. 
+  * Linux and Windows let you set a single-byte value from an int,
+  * but most other platforms don't.
+  * https://github.com/GNOME/glib/blob/main/gio/gsocket.c#L6340
+  */
   static void my_g_socket_set_broadcast(GSocket* socket, gboolean broadcast)
   {
 #ifdef WIN32
