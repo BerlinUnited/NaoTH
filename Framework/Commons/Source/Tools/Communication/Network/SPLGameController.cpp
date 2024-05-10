@@ -192,15 +192,31 @@ void SPLGameController::socketLoop()
       std::cout << "[WARN] SPLGameController g_socket_receive_from error: " << err->message << std::endl;
       g_error_free(err);
     } 
-    else {
-      // construct a return address with the given returnPort
+    else 
+    {
+      // construct a return address with the given returnPort of the GameController
+      //
+      // The senderAddress is a socket address, which consists of an inet-address (IP address) and a port,
+      //   <ip address>:<port>, e.g., 10.0.0.1:3838
+      // We want to construct a new socket address with the same ip, but different port (return port).
       if(senderAddress != NULL)
       {
-        GInetAddress* rawAddress = g_inet_socket_address_get_address(G_INET_SOCKET_ADDRESS(senderAddress));
+        // get the ip-address from the socket address of the sender
+        GInetAddress* senderIPAddress = g_inet_socket_address_get_address(G_INET_SOCKET_ADDRESS(senderAddress));
+
+        // DEBUG
+        //   get the ip-address of the sender as a string
+        // 
+        //gchar* senderIPAddressString = g_inet_address_to_string(senderIPAddress);
+        //std::cout << "[SPLGameController] received GC message from " << senderIPAddressString << std::endl;
+        //g_object_unref(senderIPAddressString);
+
+        // delete the old address
         if(gamecontrollerAddress != NULL) {
           g_object_unref(gamecontrollerAddress);
         }
-        gamecontrollerAddress = g_inet_socket_address_new(rawAddress, static_cast<guint16>(returnPort));
+        // construct new socket address with the ip-address of the sender and a new port
+        gamecontrollerAddress = g_inet_socket_address_new(senderIPAddress, static_cast<guint16>(returnPort));
         g_object_unref(senderAddress);
       }
 
