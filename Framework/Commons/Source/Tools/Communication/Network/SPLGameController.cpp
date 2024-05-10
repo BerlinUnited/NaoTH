@@ -24,8 +24,9 @@ using namespace std;
 
 SPLGameController::SPLGameController()
   : exiting(false),
-    returnPort(GAMECONTROLLER_RETURN_PORT),
     socket(NULL),
+    cancelable(NULL),
+    returnPort(GAMECONTROLLER_RETURN_PORT),
     gamecontrollerAddress(NULL)
 {
   GError* err = bindAndListen();
@@ -159,8 +160,7 @@ SPLGameController::~SPLGameController()
 
 void SPLGameController::sendData(const RoboCupGameControlReturnData& data)
 {
-  if(gamecontrollerAddress != NULL)
-  {
+  if(gamecontrollerAddress == NULL) {
     return;
   }
 
@@ -209,7 +209,7 @@ void SPLGameController::socketLoop()
         // 
         //gchar* senderIPAddressString = g_inet_address_to_string(senderIPAddress);
         //std::cout << "[SPLGameController] received GC message from " << senderIPAddressString << std::endl;
-        //g_object_unref(senderIPAddressString);
+        //g_free(senderIPAddressString);
 
         // delete the old address
         if(gamecontrollerAddress != NULL) {
@@ -217,6 +217,10 @@ void SPLGameController::socketLoop()
         }
         // construct new socket address with the ip-address of the sender and a new port
         gamecontrollerAddress = g_inet_socket_address_new(senderIPAddress, static_cast<guint16>(returnPort));
+        
+        if(gamecontrollerAddress == NULL) {
+          std::cout << "[WARNING] SPLGameController: could not construct return address" << std::endl;
+        }
         g_object_unref(senderAddress);
       }
 
