@@ -2,10 +2,10 @@ import os
 import struct as _struct
 from typing import Iterator
 
-from ._experimental_parser import Parser
-
 # protobuf
 from google.protobuf.message import Message as _Message
+
+from ._experimental_parser import Parser
 
 """
 NaoTH log file parsing implementation in python 3.
@@ -185,8 +185,18 @@ class Frame:
         :param position: of payload data in the log file
         :param size: of payload data in the log file
         """
+
         if name in self._fields:
-            raise ValueError(f'Frame already contains member {name}.')
+            
+            # HACK: Only add RobotInfo once, because as of May 2024
+            # it appears to be logged twice in the first frame of every log
+            if name == "RobotInfo":
+                return
+
+            raise ValueError(
+                f"Frame already contains member {name}: "
+                f"{self._fields[name]} [current]  vs ({position, size}) [incoming]"
+            )
 
         self._fields[name] = position, size
         self.size += Scanner.size_of_field(name, size)
