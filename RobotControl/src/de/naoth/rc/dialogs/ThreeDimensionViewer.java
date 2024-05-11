@@ -84,7 +84,10 @@ public class ThreeDimensionViewer extends AbstractDialog
     {
       try
       {
+        // This disables erazing of the background for AWT components.
+        // It improves the performance and prevents flickering.
         System.setProperty("sun.awt.noerasebackground", "true");
+        
         this.canvas = new JCanvas3D(new GraphicsConfigTemplate3D());
 
       } catch (java.lang.UnsatisfiedLinkError e) {
