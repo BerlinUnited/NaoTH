@@ -140,19 +140,6 @@ void BroadCaster::send(const std::string& data)
   }
 }
 
-void BroadCaster::send(std::list<std::string>& msgs)
-{
-  if ( msgs.empty() ) {
-    return;
-  }
-
-  std::unique_lock<std::mutex> lock(messageMutex, std::try_to_lock);
-  if ( lock.owns_lock() ) {
-    messages = msgs;
-    lock.unlock();
-    messageCond.notify_all(); // tell socket thread to sends
-  }
-}
 
 void BroadCaster::loop()
 {
@@ -160,7 +147,7 @@ void BroadCaster::loop()
   {
     std::unique_lock<std::mutex> lock(messageMutex);
     // wait until there is data to be sent
-    while ( message.empty() && messages.empty() && !exiting )
+    while ( message.empty() && !exiting )
     {
       messageCond.wait(lock);
     }
@@ -171,14 +158,6 @@ void BroadCaster::loop()
       socketSend(message);
       message.clear();
     }
-
-    // send a list of messages
-    for(const std::string& msg: messages)
-    {
-      socketSend(msg);
-    }
-    messages.clear();
-
   }
 }
 

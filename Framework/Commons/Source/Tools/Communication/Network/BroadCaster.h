@@ -28,9 +28,6 @@ public:
   // send a single message
   void send(const std::string& data);
 
-  // send a list of messages
-  void send(std::list<std::string>& msgs);
-
 private:
   GError* bindAddress();
   bool queryBroadcastAddress();
@@ -48,12 +45,12 @@ private:
   GSocket* socket;
   GCancellable* cancelable;
   GSocketAddress* broadcastAddress;
+
   const std::string interfaceName;
   const unsigned int port;
   
   // internal message buffers
   std::string message;
-  std::list<std::string> messages;
 
   // monior the state of the broadcastAddress
   /** Number of message where no broadcast information was available since the interface was down */
