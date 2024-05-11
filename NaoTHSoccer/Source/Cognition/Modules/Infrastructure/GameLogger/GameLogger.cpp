@@ -49,7 +49,7 @@ void GameLogger::execute()
     if(getBehaviorStateComplete().state.framenumber() >= lastCompleteFrameNumber)
     {
       LOGSTUFF(BehaviorStateComplete);
-      LOGSTUFF(RobotInfo);
+      LOGSTUFF(RobotInfo); // TODO: Find out why this is logged twice for the first frame
 
       lastCompleteFrameNumber = getFrameInfo().getFrameNumber();
       something_recorded = true;
