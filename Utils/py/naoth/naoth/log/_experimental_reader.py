@@ -187,15 +187,9 @@ class Frame:
         """
 
         if name in self._fields:
-            
-            # HACK: Only add RobotInfo once, because as of May 2024
-            # it appears to be logged twice in the first frame of every log
-            if name == "RobotInfo":
-                return
-
             raise ValueError(
                 f"Frame already contains member {name}: "
-                f"{self._fields[name]} [current]  vs ({position, size}) [incoming]"
+                f"{self._fields[name]} [current] vs ({position, size}) [incoming]"
             )
 
         self._fields[name] = position, size
