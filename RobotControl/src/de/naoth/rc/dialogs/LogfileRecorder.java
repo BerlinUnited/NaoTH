@@ -91,7 +91,8 @@ public class LogfileRecorder extends AbstractDialog implements ObjectListener<Mo
                 "GyrometerData",
                 "AccelerometerData",
                 "InertialSensorData",
-                "InertialModel")
+                "InertialModel",
+                "RobotInfo")
     );
     
     defaultSelectionSchemes.forEach((item) -> { cbSelectionScheme.addItem(item); });
