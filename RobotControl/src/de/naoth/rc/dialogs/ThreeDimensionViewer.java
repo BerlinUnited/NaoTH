@@ -112,6 +112,7 @@ public class ThreeDimensionViewer extends AbstractDialog
         jToggleButtonUpdate = new javax.swing.JToggleButton();
         cbProcess = new javax.swing.JComboBox<>();
         jCheckBoxField = new javax.swing.JCheckBox();
+        jCheckBoxFieldLab = new javax.swing.JCheckBox();
         jCheckBoxGrid = new javax.swing.JCheckBox();
         jCheckBoxImage = new javax.swing.JCheckBox();
         cbUseFieldViewer = new javax.swing.JCheckBox();
@@ -141,8 +142,8 @@ public class ThreeDimensionViewer extends AbstractDialog
         jToolBar.add(cbProcess);
 
         jCheckBoxField.setSelected(true);
-        jCheckBoxField.setText("Field");
-        jCheckBoxField.setToolTipText("Show the soccer field.");
+        jCheckBoxField.setText("RC Field");
+        jCheckBoxField.setToolTipText("Show the RC soccer field.");
         jCheckBoxField.setFocusable(false);
         jCheckBoxField.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
         jCheckBoxField.addActionListener(new java.awt.event.ActionListener() {
@@ -152,8 +153,20 @@ public class ThreeDimensionViewer extends AbstractDialog
         });
         jToolBar.add(jCheckBoxField);
 
+        jCheckBoxFieldLab.setText("Lab Field");
+        jCheckBoxFieldLab.setToolTipText("Show the lab soccer field.");
+        jCheckBoxFieldLab.setFocusable(false);
+        jCheckBoxFieldLab.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+        jCheckBoxFieldLab.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jCheckBoxFieldLab.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBoxFieldLabActionPerformed(evt);
+            }
+        });
+        jToolBar.add(jCheckBoxFieldLab);
+
         jCheckBoxGrid.setText("Grid");
-        jCheckBoxGrid.setToolTipText("Show the soccer field.");
+        jCheckBoxGrid.setToolTipText("Show grid (coordinates: 0.5m).");
         jCheckBoxGrid.setFocusable(false);
         jCheckBoxGrid.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jCheckBoxGrid.addActionListener(new java.awt.event.ActionListener() {
@@ -185,7 +198,7 @@ public class ThreeDimensionViewer extends AbstractDialog
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jToolBar, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
+            .addComponent(jToolBar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(jPanelCanvas, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
@@ -244,6 +257,10 @@ public class ThreeDimensionViewer extends AbstractDialog
         Plugin.threeDimensionSceneManager.setModuleOwner(process);
     }//GEN-LAST:event_cbProcessActionPerformed
 
+    private void jCheckBoxFieldLabActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxFieldLabActionPerformed
+        vw.enableFieldLab(jCheckBoxFieldLab.isSelected());
+    }//GEN-LAST:event_jCheckBoxFieldLabActionPerformed
+
   @Override
   public void init()
   {
@@ -251,6 +268,7 @@ public class ThreeDimensionViewer extends AbstractDialog
     {
       jToggleButtonUpdate.setEnabled(false);
       jCheckBoxField.setEnabled(false);
+      jCheckBoxFieldLab.setEnabled(false);
       return;
     }
 
@@ -329,6 +347,7 @@ public class ThreeDimensionViewer extends AbstractDialog
     private javax.swing.JComboBox<String> cbProcess;
     private javax.swing.JCheckBox cbUseFieldViewer;
     private javax.swing.JCheckBox jCheckBoxField;
+    private javax.swing.JCheckBox jCheckBoxFieldLab;
     private javax.swing.JCheckBox jCheckBoxGrid;
     private javax.swing.JCheckBox jCheckBoxImage;
     private javax.swing.JPanel jPanelCanvas;

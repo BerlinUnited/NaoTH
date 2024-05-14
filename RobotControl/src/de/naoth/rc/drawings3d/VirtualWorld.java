@@ -39,7 +39,9 @@ public class VirtualWorld
   private final BranchGroup root;
   
   // fixed objects
-  private final BranchGroup field;
+  private final BranchGroup field;  
+  private final BranchGroup fieldLab;
+
   private final BranchGroup coordinates;
   
   //private final BoundingSphere globalBounds = new BoundingSphere(new Point3d(0, 0, 0), Double.MAX_VALUE);
@@ -78,10 +80,15 @@ public class VirtualWorld
     root.addChild(new Entity("Light"));
 
     field = new BranchGroup();
+    fieldLab = new BranchGroup();
+
     // load entities
     field.addChild(new Entity("Field"));
     field.setCapability(BranchGroup.ALLOW_DETACH);
     //enableField(true);
+    
+    fieldLab.addChild(new Entity("FieldLab"));
+    fieldLab.setCapability(BranchGroup.ALLOW_DETACH);
     
     coordinates = createCoordinateSystem();
     coordinates.setCapability(BranchGroup.ALLOW_DETACH);
@@ -171,6 +178,18 @@ public class VirtualWorld
     } else {
       universe.getLocale().removeBranchGraph(field);
       //root.removeChild(field);
+    }
+  }
+  
+  public final void enableFieldLab(boolean v)
+  {
+    if (v) {
+      //locale.addBranchGraph(fieldLab);
+      universe.addBranchGraph(fieldLab);
+      //root.addChild(fieldLab);
+    } else {
+      universe.getLocale().removeBranchGraph(fieldLab);
+      //root.removeChild(fieldLab);
     }
   }
 
