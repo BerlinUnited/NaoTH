@@ -16,6 +16,8 @@ import org.jogamp.java3d.ColoringAttributes;
 import org.jogamp.java3d.LineArray;
 import org.jogamp.java3d.PolygonAttributes;
 import org.jogamp.java3d.QuadArray;
+import org.jogamp.java3d.RenderingError;
+import org.jogamp.java3d.RenderingErrorListener;
 import org.jogamp.java3d.Shape3D;
 import org.jogamp.java3d.utils.geometry.Primitive;
 
@@ -49,9 +51,16 @@ public class VirtualWorld
     universe = new SimpleUniverse(canvas.getOffscreenCanvas3D());
     
     universe.getViewingPlatform().setNominalViewingTransform();
-    universe.getViewer().getView().setMinimumFrameCycleTime(30);
     
+    // for efficiency ensure at least 5 msec per frame (i.e., < 200Hz) 
+    universe.getViewer().getView().setMinimumFrameCycleTime(5);
+    // better handling of transparancy in textures
     universe.getViewer().getView().setTransparencySortingPolicy(View.TRANSPARENCY_SORT_GEOMETRY);
+    
+    // print rendering errors for debugging
+    SimpleUniverse.addRenderingErrorListener((RenderingError re) -> {
+        re.printVerbose(System.err);
+    });
     
     
     root = new BranchGroup();
