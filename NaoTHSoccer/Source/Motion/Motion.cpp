@@ -311,6 +311,26 @@ void Motion::modifyJointOffsets()
 
 void Motion::debugPlots()
 {
+  //  double avg_stiff = 0;
+  if(getMotionStatus().currentMotion == motion::save_fall_back || getMotionStatus().currentMotion == motion::save_fall_front) {
+    fall_times_run += 1;
+
+    //      for (int i = 0; i < 6; ++i) {
+    //          avg_stiff += getSensorJointData().stiffness[i]; // todo: Can't use getMotorJointData data, here, isn't getSensorJointData one exec delayed?
+    //      }
+    //      avg_stiff = (avg_stiff * 100) / 6;
+    //      PLOT_GENERIC("Motion:Betterfalling-Develop:Stiffness", t_run, avg_stiff);
+    PLOT_GENERIC("Motion:FirstSemesterFalling:r-shoulder-roll-req-position", fall_times_run, getMotorJointData().position[2]); // r shoulder roll
+    PLOT_GENERIC("Motion:FirstSemesterFalling:r-shoulder-roll-req-stiffness", fall_times_run, getMotorJointData().stiffness[2]); // r shoulder roll
+    //PLOT_GENERIC("Motion:FirstSemesterFalling:r-shoulder-roll-req-position-s", fall_times_run, getSensorJointData().position[2]); // r shoulder roll
+    //PLOT_GENERIC("Motion:FirstSemesterFalling:r-shoulder-roll-req-stiffness-s", fall_times_run, getSensorJointData().stiffness[2]); // r shoulder roll
+  } else {
+    fall_times_run = 0;
+  }
+  //  PLOT("Motion:A_StiffnessWritten:s", avg_stiff);
+
+
+
   // some basic plots
   // plotting sensor data
   PLOT("Motion:GyrometerData:data:x", getGyrometerData().data.x);

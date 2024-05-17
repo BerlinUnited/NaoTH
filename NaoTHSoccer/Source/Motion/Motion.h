@@ -173,6 +173,7 @@ private:
   void debugPlots();
   void updateCameraMatrix();
   void drawRobot3D(const KinematicChain& kinematicChain);
+  int fall_times_run = 0; // todo: delete this
 
 private: // motion modules
   // HACK: needs a better solution
