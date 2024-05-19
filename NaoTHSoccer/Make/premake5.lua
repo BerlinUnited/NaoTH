@@ -73,6 +73,7 @@ workspace "NaoTHSoccer"
   naoth_links = {
       "opencv_core",
       "opencv_imgproc",
+      "tensorflowlite_c",
       --"opencv_ml",
       --"opencv_objdetect",
       --"opencv_dnn",
