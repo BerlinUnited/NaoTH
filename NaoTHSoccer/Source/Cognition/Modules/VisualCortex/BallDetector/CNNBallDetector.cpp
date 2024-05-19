@@ -10,6 +10,7 @@
 #include "Classifier/fy_1500_new2_new_dataset.h"
 #include "Classifier/mbc_36k.h"
 #include "Classifier/mbd_gopen_56k.h"
+#include "Classifier/TFLiteModelNaoTH.h"
 
 using namespace std;
 
@@ -120,6 +121,8 @@ std::map<string, std::shared_ptr<AbstractCNNFinder> > CNNBallDetector::createCNN
 
   result.insert({ "fdeep_fy1300", std::make_shared<FrugallyDeep>("fy1300.json", true, true, true)});
   result.insert({ "fdeep_fy1500", std::make_shared<FrugallyDeep>("fy1500.json", true, true, true)});
+
+  result.insert({ "tflite", std::make_shared<TFLiteModelNaoTH>("Config/mbc_aug.tflite", false, false, true)});
   
   return result;
 }
