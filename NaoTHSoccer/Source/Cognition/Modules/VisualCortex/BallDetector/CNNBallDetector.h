@@ -156,8 +156,8 @@ private:
       PARAMETER_REGISTER(contrastMinimumClose) = 50;
 
 
-      PARAMETER_REGISTER(classifier) = "fy1500_conf";
-      PARAMETER_REGISTER(classifierClose) = "fy1500_conf";
+      PARAMETER_REGISTER(classifier) = "tflite";
+      PARAMETER_REGISTER(classifierClose) = "tflite";
 
       PARAMETER_REGISTER(detector) = "fy1500_conf";
       PARAMETER_REGISTER(detectorClose) = "fy1500_conf";
