@@ -4,10 +4,8 @@
 #include "Tools/PatchWork.h"
 #include "Tools/BlackSpotExtractor.h"
 
-#include "Classifier/Model1.h"
 #include "Classifier/Fy1500_Conf.h"
 #include "Classifier/FrugallyDeep.h"
-#include "Classifier/fy_1500_new2_new_dataset.h"
 #include "Classifier/mbc_36k.h"
 #include "Classifier/mbd_gopen_56k.h"
 
@@ -113,8 +111,6 @@ std::map<string, std::shared_ptr<AbstractCNNFinder> > CNNBallDetector::createCNN
 
   // register classifiers
   result.insert({ "fy1500_conf", std::make_shared<Fy1500_Conf>() });
-  result.insert({ "model1", std::make_shared<Model1>() });
-  result.insert({ "rc23v1", std::make_shared<fy_1500_new2_new_dataset>() });
   result.insert({ "mbc_36k", std::make_shared<mbc_36k>() });
   result.insert({ "mbd_gopen_56k", std::make_shared<mbd_gopen_56k>() });
 

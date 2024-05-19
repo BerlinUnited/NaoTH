@@ -1,8 +1,6 @@
 #ifndef _FY1500_CONF_H
 #define _FY1500_CONF_H
 
-# include <emmintrin.h>
-
 #include "AbstractCNNClassifier.h"
 
 class Fy1500_Conf : public AbstractCNNFinder {

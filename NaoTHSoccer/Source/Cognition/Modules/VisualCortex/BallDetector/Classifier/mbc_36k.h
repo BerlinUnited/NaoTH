@@ -1,8 +1,6 @@
 #ifndef MBC_36K_H
 #define MBC_36K_H
 
-#include <emmintrin.h>
-
 #include "AbstractCNNClassifier.h"
 
 class mbc_36k : public AbstractCNNFinder {

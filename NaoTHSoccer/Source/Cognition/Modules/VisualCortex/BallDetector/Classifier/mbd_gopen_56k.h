@@ -1,8 +1,6 @@
 #ifndef MBD_GOPEN_56K_H
 #define MBD_GOPEN_56K_H
 
-#include <emmintrin.h>
-
 #include "AbstractCNNClassifier.h"
 
 class mbd_gopen_56k : public AbstractCNNFinder {

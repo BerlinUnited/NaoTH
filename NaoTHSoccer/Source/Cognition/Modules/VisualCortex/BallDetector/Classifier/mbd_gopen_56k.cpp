@@ -10,7 +10,9 @@
 
 // disable on macos and aarch64, i.e apple silicon
 // where emmintrin.h is not available
-#if !defined(__APPLE__) && !defined(__aarch64__)
+#if defined(__APPLE__) && defined(__aarch64__)
+void mbd_gopen_56k::cnn(float x0[16][16][1]){}
+#else
 
 #include <emmintrin.h>
 
@@ -28241,6 +28243,8 @@ void mbd_gopen_56k::cnn(float x0[16][16][1])
 
 }
 
+#endif
+
 void mbd_gopen_56k::predict(const BallCandidates::PatchYUVClassified& patch, double meanBrightnessOffset)
 {
 	ASSERT(patch.size() == 16);
@@ -28268,4 +28272,3 @@ double mbd_gopen_56k::getBallConfidence() const {
 	return 1.0f;
 }
 
-#endif

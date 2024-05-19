@@ -10,7 +10,9 @@
 
 // disable on macos and aarch64, i.e apple silicon
 // where emmintrin.h is not available
-#if !defined(__APPLE__) && !defined(__aarch64__)
+#if defined(__APPLE__) && defined(__aarch64__)
+void mbc_36k::cnn(float x0[16][16][1]){}
+#else
 
 #include <emmintrin.h>
 
@@ -28293,6 +28295,8 @@ void mbc_36k::cnn(float x0[16][16][1])
 
 }
 
+#endif
+
 void mbc_36k::predict(const BallCandidates::PatchYUVClassified& patch, double meanBrightnessOffset)
 {
 	ASSERT(patch.size() == 16);
@@ -28319,5 +28323,3 @@ Vector2d mbc_36k::getCenter() const {
 double mbc_36k::getBallConfidence() const {
 	return scores[1];
 }
-
-#endif
