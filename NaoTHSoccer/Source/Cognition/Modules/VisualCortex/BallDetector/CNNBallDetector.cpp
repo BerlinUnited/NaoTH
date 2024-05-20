@@ -122,19 +122,25 @@ std::map<string, std::shared_ptr<AbstractCNNFinder> > CNNBallDetector::createCNN
 
   // tflite models 
 
-  // trained on naodevils data + GO24 + labor tests 2024 up to 2024-05-10
-  // includes batch normalization, can not be compiled with devils compiler
-  // dataset mean brightness offset: -0.5101
-  result.insert({ "bc_22k", std::make_shared<TFLiteModelNaoTH>("ball_classifier_22k_2024-05-19v2.tflite", false, false, true)});
 
   // trained on naodevils data + GO24
+  // dataset path: naoth/datasets/classification_gopen24_nao_devils_labelstudio_validated_ball_no_ball_X_y.h5
   // dataset mean brightness offset: -0.5130
   result.insert({ "bc_36k_go24", std::make_shared<TFLiteModelNaoTH>("ball_classifier_36k_2024-04-21_GO24.tflite", false, false, true)});
 
   // trained on naodevils data + GO24 + labor tests 2024 up to 2024-05-10
+  // dataset path: naoth/datasets/classification_naodevils_gopen_validated_sampled_labor_testgame_may_X_y.h5
   // dataset mean brightness offset: -0.5101
   result.insert({ "bc_36k_labor", std::make_shared<TFLiteModelNaoTH>("ball_classifier_36k_2024-05-17v2.tflite", false, false, true)});
   
+  // NOTE: includes batch normalization layers, can (currently) not be compiled with devils compiler
+  //
+  // trained on naodevils data + GO24 + labor tests 2024 up to 2024-05-10
+  // dataset path: naoth/datasets/classification_naodevils_gopen_validated_sampled_labor_testgame_may_X_y.h5
+  // dataset mean brightness offset: -0.5101
+  result.insert({ "bc_22k", std::make_shared<TFLiteModelNaoTH>("ball_classifier_22k_2024-05-19v2.tflite", false, false, true)});
+
+
   return result;
 }
 
