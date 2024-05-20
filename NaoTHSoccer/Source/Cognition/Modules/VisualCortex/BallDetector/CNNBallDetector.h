@@ -137,10 +137,11 @@ private:
       PARAMETER_REGISTER(keyDetector.borderRadiusFactorFar) = 0.8;
       PARAMETER_REGISTER(keyDetector.maxInnerGreenDensitiy) = 0.5;
       
-      PARAMETER_REGISTER(cnn.threshold) = 0.4;
-      PARAMETER_REGISTER(cnn.thresholdClose) = 0.45;
-      // Constant offset added to the input of the CNN. < 0 darker, > 0 brighter. T
-      PARAMETER_REGISTER(cnn.meanBrightnessOffset) = 0.0; 
+      PARAMETER_REGISTER(cnn.threshold) = 0.99;
+      PARAMETER_REGISTER(cnn.thresholdClose) = 0.99;
+      // Constant offset added to the input of the CNN. < 0 darker, > 0 brighter
+      PARAMETER_REGISTER(cnn.classifierMeanBrightnessOffset) = 0.0; 
+      PARAMETER_REGISTER(cnn.detectorMeanBrightnessOffset) = 0.0; 
       
 
       PARAMETER_REGISTER(maxNumberOfKeys) = 12;
@@ -156,11 +157,11 @@ private:
       PARAMETER_REGISTER(contrastMinimumClose) = 50;
 
 
-      PARAMETER_REGISTER(classifier) = "tflite";
-      PARAMETER_REGISTER(classifierClose) = "tflite";
+      PARAMETER_REGISTER(classifier) = "bc_22k";
+      PARAMETER_REGISTER(classifierClose) = "bc_22k";
 
-      PARAMETER_REGISTER(detector) = "fy1500_conf";
-      PARAMETER_REGISTER(detectorClose) = "fy1500_conf";
+      PARAMETER_REGISTER(detector) = "mbd_gopen_56k";
+      PARAMETER_REGISTER(detectorClose) = "mbd_gopen_56k";
 
       PARAMETER_REGISTER(brightnessMultiplierBottom) = 1.0;
       PARAMETER_REGISTER(brightnessMultiplierTop) = 1.0;
@@ -177,7 +178,8 @@ private:
       double threshold;
       double thresholdClose;
 
-      double meanBrightnessOffset;
+      double classifierMeanBrightnessOffset;
+      double detectorMeanBrightnessOffset;
     } cnn;
 
     int maxNumberOfKeys;

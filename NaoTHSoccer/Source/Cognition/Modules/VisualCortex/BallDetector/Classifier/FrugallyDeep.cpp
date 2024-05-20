@@ -11,9 +11,8 @@ void FrugallyDeep::predict(const BallCandidates::PatchYUVClassified &patch, doub
     {
         for (size_t y = 0; y < patch.size(); y++)
         {
-            // TODO: check if x and y are correct
-            // The average brightness should have value 0.0
-            float value = (static_cast<float>((patch.data[patch.size() * x + y].pixel.y)) / 255.0f) - static_cast<float>(meanBrightness);
+            // Add a custom brightness offset that depends on the dataset, if zero centering was used
+            float value = (static_cast<float>((patch.data[patch.size() * x + y].pixel.y)) / 255.0f) + static_cast<float>(meanBrightness);
             inputTensor.set(0, 0, y, x, 0, value);
         }
     }

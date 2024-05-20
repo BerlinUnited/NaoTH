@@ -41,7 +41,7 @@ public:
       has_center(has_center),
       has_confidence(has_confidence)
     {
-		TfLiteModel* model = TfLiteModelCreateFromFileWithErrorReporter(file.c_str(), error_reporter, nullptr);
+		TfLiteModel* model = TfLiteModelCreateFromFileWithErrorReporter(("Config/"+file).c_str(), error_reporter, nullptr);
 		if (model == nullptr) {
 			std::cerr << "Could not load tflite file!\n" << std::endl;
 			exit(1);
