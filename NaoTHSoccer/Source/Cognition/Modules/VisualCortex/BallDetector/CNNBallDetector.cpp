@@ -111,14 +111,30 @@ std::map<string, std::shared_ptr<AbstractCNNFinder> > CNNBallDetector::createCNN
   std::map<string, std::shared_ptr<AbstractCNNFinder> > result;
 
   // register classifiers
-  result.insert({ "fy1500_conf", std::make_shared<Fy1500_Conf>() });
-  result.insert({ "mbc_36k", std::make_shared<mbc_36k>() });
-  result.insert({ "mbd_gopen_56k", std::make_shared<mbd_gopen_56k>() });
 
+  // devils compiled models
+  result.insert({ "fy1500_conf", std::make_shared<Fy1500_Conf>() });
+  result.insert({ "mbc_36k", std::make_shared<mbc_36k>() }); // mbc: max ball classifier
+  result.insert({ "mbd_gopen_56k", std::make_shared<mbd_gopen_56k>() }); // mbd: max ball detector
+
+  // frugally deep models
   result.insert({ "fdeep_fy1300", std::make_shared<FrugallyDeep>("fy1300.json", true, true, true)});
   result.insert({ "fdeep_fy1500", std::make_shared<FrugallyDeep>("fy1500.json", true, true, true)});
 
-  result.insert({ "tflite", std::make_shared<TFLiteModelNaoTH>("Config/mbc_aug.tflite", false, false, true)});
+  // tflite models 
+
+  // trained on naodevils data + GO24 + labor tests 2024 up to 2024-05-10
+  // includes batch normalization, can not be compiled with devils compiler
+  // dataset mean brightness offset: -0.5101
+  result.insert({ "bc_22k", std::make_shared<TFLiteModelNaoTH>("ball_classifier_22k_2024-05-19v2.tflite", false, false, true)});
+
+  // trained on naodevils data + GO24
+  // dataset mean brightness offset: -0.5130
+  result.insert({ "bc_36k_go24", std::make_shared<TFLiteModelNaoTH>("ball_classifier_36k_2024-04-21_GO24.tflite", false, false, true)});
+
+  // trained on naodevils data + GO24 + labor tests 2024 up to 2024-05-10
+  // dataset mean brightness offset: -0.5101
+  result.insert({ "bc_36k_labor", std::make_shared<TFLiteModelNaoTH>("ball_classifier_36k_2024-05-17v2.tflite", false, false, true)});
   
   return result;
 }
