@@ -109,7 +109,6 @@ void CNNBallDetector::execute(CameraInfo::CameraID id)
 std::map<string, std::shared_ptr<AbstractCNNFinder> > CNNBallDetector::createCNNMap()
 {
   std::map<string, std::shared_ptr<AbstractCNNFinder> > result;
-
   // register classifiers
 
   // devils compiled models
@@ -284,10 +283,13 @@ void CNNBallDetector::calculateCandidates()
         cnn_detector = currentCNNClose_detector;
       }
 
-      STOPWATCH_START("CNNBallDetector:predict");
-      cnn->predict(patch, params.cnn.meanBrightnessOffset);
-      cnn_detector->predict(patch, params.cnn.meanBrightnessOffset);
-      STOPWATCH_STOP("CNNBallDetector:predict");
+      STOPWATCH_START("CNNBallDetector:classifierPredict");
+      cnn->predict(patch, params.cnn.classifierMeanBrightnessOffset);
+      STOPWATCH_STOP("CNNBallDetector:classifierPredict");
+
+      STOPWATCH_START("CNNBallDetector:detectorPredict");
+      cnn_detector->predict(patch, params.cnn.detectorMeanBrightnessOffset);
+      STOPWATCH_STOP("CNNBallDetector:detectorPredict");
 
       bool found = false;
       double radius = cnn_detector->getRadius();

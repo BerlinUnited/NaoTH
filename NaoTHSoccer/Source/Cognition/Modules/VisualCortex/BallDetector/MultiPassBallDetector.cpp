@@ -237,8 +237,9 @@ void MultiPassBallDetector::executeCNNOnPatches(const std::vector<BestPatchList:
       }
 
       STOPWATCH_START("MultiPassBallDetector:predict");
-      cnn->predict(patch, params.cnn.meanBrightnessOffset);
+      cnn->predict(patch, params.cnn.classifierMeanBrightnessOffset);
       STOPWATCH_STOP("MultiPassBallDetector:predict");
+
 
       double radius = cnn->getRadius();
       Vector2d pos = cnn->getCenter();

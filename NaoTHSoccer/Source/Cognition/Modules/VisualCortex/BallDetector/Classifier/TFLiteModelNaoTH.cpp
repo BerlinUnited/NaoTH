@@ -28,8 +28,9 @@ void TFLiteModelNaoTH::predict(const BallCandidates::PatchYUVClassified &patch, 
      for (size_t x = 0; x < patchSize; x++)
     {
         for (size_t y = 0; y < patchSize; y++)
-        {
-            float value = (static_cast<float>((patch.data[patchSize * x + y].pixel.y)) / 255.0f) - 0.5 - static_cast<float>(meanBrightness); // - 0.56;
+        {   
+            // Add a custom brightness offset that depends on the dataset, if zero centering was used
+            float value = (static_cast<float>((patch.data[patchSize * x + y].pixel.y)) / 255.0f) + static_cast<float>(meanBrightness);
             inputTensor->data.raw[patchSize * x + y] = value;
         }
     }
