@@ -14,7 +14,7 @@ import java.util.ArrayList;
  * @author Heinrich Mellmann
  */
 public class XABSLAction {
-    public static class OptionExecution extends XABSLAction{
+    public static class OptionExecution extends XABSLAction {
 
         public int id;
         public Option option;
@@ -26,11 +26,17 @@ public class XABSLAction {
 	ArrayList<XABSLAction> activeSubActions = new ArrayList<>();
     }
     
-    public static class BasicBehaviorExecution extends XABSLAction{
-        public String name;
+    public static class BasicBehaviorExecution extends XABSLAction {
+        public final String name;
+        public BasicBehaviorExecution(String name) {
+            this.name = name;
+        }
     }
     
-    public static class SymbolAssignment extends XABSLAction{
-        public Symbol symbol;
+    public static class SymbolAssignment extends XABSLAction {
+        public final Symbol symbol;
+        public SymbolAssignment(Symbol symbol) {
+            this.symbol = symbol;
+        }
     }
 }

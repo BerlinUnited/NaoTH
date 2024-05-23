@@ -6,8 +6,10 @@
 
 package de.naoth.rc.dialogs;
 
+import de.naoth.rc.RobotControl;
 import de.naoth.rc.logmanager.LogDataFrame;
 import de.naoth.rc.components.FileDrop;
+import de.naoth.rc.components.ExceptionDialog;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.core.dialog.RCDialog;
@@ -17,13 +19,23 @@ import de.naoth.rc.core.messages.FrameworkRepresentations;
 import java.awt.Color;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeListenerProxy;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
+import sun.swing.SwingUtilities2;
 
 /**
  *
@@ -35,45 +47,43 @@ public class LogfileInspector extends AbstractDialog
   @RCDialog(category = RCDialog.Category.Log, name = "Inspector")
   @PluginImplementation
   public static class Plugin extends DialogPlugin<LogfileInspector> {
-    //@InjectPlugin
-    //static public RobotControl parent;
+    @InjectPlugin
+    static public RobotControl parent;
     @InjectPlugin
     static public LogFileEventManager logFileEventManager;
   }
 
   private LogFile logFile = null;
+  
+  private final FileDrop fileDrop;
 
   /** Creates new form LogfileInspector */
   public LogfileInspector() {
-      initComponents();
+        initComponents();
 
-      fileChooser.setFileFilter(new LogFileFilter());
-      
-      this.jSlider1.addMouseWheelListener(new MouseWheelListener() {
-              @Override
-              public void mouseWheelMoved(MouseWheelEvent e) {
-                      if(e.getWheelRotation() > 0) {
-                        jSlider1.setValue(jSlider1.getValue() + 1);
-                      } else {
-                        jSlider1.setValue(jSlider1.getValue() - 1);
-                      }
-              }
-      });
+        fileChooser.setFileFilter(new LogFileFilter());
 
-      FileDrop f = new FileDrop(this, new FileDrop.Listener() {
-        @Override
-        public void filesDropped(File[] files) {
-          openFile(files[0]);
-        }
-      });
+        this.jSlider1.addMouseWheelListener((MouseWheelEvent e) -> {
+            if(e.getWheelRotation() > 0) {
+                jSlider1.setValue(jSlider1.getValue() + 1);
+            } else {
+                jSlider1.setValue(jSlider1.getValue() - 1);
+            }
+        });
+
+        fileDrop = new FileDrop(this, (File[] files) -> {
+            openFile(files[0]);
+        });
   }
 
   @Override
   public void dispose() {
     if(logFile != null) {
         logFile.close();
+        logFile = null;
     }
     this.jSlider1.setEnabled(false);
+    this.fileNameLabel.setText("no file loaded");
   }
 
     /** This method is called from within the constructor to
@@ -86,12 +96,44 @@ public class LogfileInspector extends AbstractDialog
     private void initComponents() {
 
         fileChooser = new javax.swing.JFileChooser();
+        loadingProgress = new javax.swing.JDialog();
+        text = new javax.swing.JLabel();
+        progressBar = new javax.swing.JProgressBar();
         openMenuButton = new javax.swing.JButton();
         avaliableRepresentations = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
         jSlider1 = new javax.swing.JSlider();
         fileNameLabel = new javax.swing.JTextField();
+
+        loadingProgress.setAlwaysOnTop(true);
+        loadingProgress.setMinimumSize(new java.awt.Dimension(382, 62));
+        loadingProgress.setUndecorated(true);
+
+        text.setText("loading ...");
+
+        javax.swing.GroupLayout loadingProgressLayout = new javax.swing.GroupLayout(loadingProgress.getContentPane());
+        loadingProgress.getContentPane().setLayout(loadingProgressLayout);
+        loadingProgressLayout.setHorizontalGroup(
+            loadingProgressLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, loadingProgressLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(loadingProgressLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(progressBar, javax.swing.GroupLayout.DEFAULT_SIZE, 370, Short.MAX_VALUE)
+                    .addComponent(text, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        loadingProgressLayout.setVerticalGroup(
+            loadingProgressLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(loadingProgressLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(text)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(progressBar, javax.swing.GroupLayout.DEFAULT_SIZE, 28, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        loadingProgress.getAccessibleContext().setAccessibleParent(this);
 
         openMenuButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/toolbarButtonGraphics/general/Open24.gif"))); // NOI18N
         openMenuButton.setToolTipText("Open");
@@ -139,9 +181,8 @@ public class LogfileInspector extends AbstractDialog
 
         fileNameLabel.setEditable(false);
         fileNameLabel.setBackground(new Color(0.f,0.f,0.f,0.f));
-        fileNameLabel.setText("no file selected");
+        fileNameLabel.setText("no file loaded");
         fileNameLabel.setBorder(null);
-        fileNameLabel.setOpaque(false);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -181,70 +222,53 @@ public class LogfileInspector extends AbstractDialog
         //System.out.println(frame.number + " - " + frame.position);
         try
         {
-          HashMap<String,LogDataFrame> f = this.logFile.readFrame(this.jSlider1.getValue());
-          if(f != null) {
+          HashMap<String,LogDataFrame> frame = this.logFile.readFrame(this.jSlider1.getValue());
+          if(frame != null) {
             StringBuilder sb = new StringBuilder();
             sb.append(this.jSlider1.getValue()).append('\n');
-            for(String s: f.keySet()) {
+            for(String s: frame.keySet()) 
+            {
                 // parse "FrameInfo" and add it to view
                 if(s.equals("FrameInfo")) {
-                    FrameworkRepresentations.FrameInfo fi = FrameworkRepresentations.FrameInfo.parseFrom(f.get(s).getData());
+                    FrameworkRepresentations.FrameInfo fi = FrameworkRepresentations.FrameInfo.parseFrom(frame.get(s).getData());
                     sb.insert(0, "FN: " + fi.getFrameNumber() + " | C: ");
                 }
                 sb.append(s).append('\n');
             }
             this.jTextArea1.setText(sb.toString());
             
-            if(Plugin.logFileEventManager != null) {  
-              Plugin.logFileEventManager.fireLogFrameEvent(f.values());
+            if(Plugin.logFileEventManager != null) {
+              Plugin.logFileEventManager.fireLogFrameEvent(frame.values());
             }
           } else {
             this.jTextArea1.setText("Unable to retrieve frame info!");
           }
-        }catch(IOException e)
+        } 
+        catch(IOException ex)
         {
-          System.err.println("Couldn't read the a frame: " + e);
+            getLogger().log(Level.SEVERE, "Couldn't read the a frame: " + this.jSlider1.getValue(), ex);
         }
     }//GEN-LAST:event_jSlider1StateChanged
 
     
-    private void openFile(File f) {
-        
-        // TODO: in progress
-        //ImageIcon loading = new ImageIcon(getClass().getResource("/de/naoth/rc/res/ball_24.gif"));
-        //String[] options = {"Cancel"};
-        //JOptionPane.showOptionDialog(this, f.getPath(), "Loading...", JOptionPane.NO_OPTION, JOptionPane.PLAIN_MESSAGE, loading, options , options[0]);
-        //JOptionPane jp = new JOptionPane(f.getPath(), JOptionPane.NO_OPTION, JOptionPane.PLAIN_MESSAGE, loading, options , options[0]);
-        //JDialog dialog = jp.createDialog(null, "Loading...");
-        //dialog.setModal(true);
-        //dialog.setVisible(true);
-        
-        if(logFile != null) {
-            logFile.close();
-        }
-        
-        this.jSlider1.setEnabled(false);
+    private void openFile(File f) 
+    {
+        // clear the old file and set the new path
+        dispose();
         
         if(f.exists()) 
         {
-            this.fileNameLabel.setText(f.getAbsolutePath());
-     
-            try {
-                // clear the old file
-                dispose();
-
-                logFile = new LogFile(f);
-
-                this.jSlider1.setEnabled(true);
-                this.jSlider1.setValue(0);
-                this.jSlider1.setMinimum(0);
-                this.jSlider1.setMaximum(logFile.getFrameCount()-1);
-
-            } catch(IOException e) {
-                e.printStackTrace(System.err);
-            }
+            this.openMenuButton.setEnabled(false);
+            
+            LogReadWorker worker = new LogReadWorker(f);
+            
+            // experiment with the property change listener
+            worker.addPropertyChangeListener(new PropertyChangeListenerProxy("progress", 
+                (PropertyChangeEvent evt) -> { System.out.println(evt.getNewValue()); }
+            ));
+            
+            worker.execute();
         }
-        //dialog.dispose();
     }
 
 
@@ -255,17 +279,77 @@ public class LogfileInspector extends AbstractDialog
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSlider jSlider1;
     private javax.swing.JTextArea jTextArea1;
+    private javax.swing.JDialog loadingProgress;
     private javax.swing.JButton openMenuButton;
+    private javax.swing.JProgressBar progressBar;
+    private javax.swing.JLabel text;
     // End of variables declaration//GEN-END:variables
 
     // TODO: in progress
   public class LogReadWorker extends SwingWorker<LogFile, Void> 
   {
+    private final File file;
+    public LogReadWorker(File file) {
+        this.file = file;
+    }
+      
     @Override
-    protected LogFile doInBackground() throws Exception {
+    protected LogFile doInBackground() throws Exception 
+    {
+        loadingProgress.setLocationRelativeTo(LogfileInspector.this);
+        progressBar.setMaximum(100);
+        progressBar.setValue(0);
+        loadingProgress.setVisible(true);
+            
+        getLogger().addHandler(new ConsoleHandler() {
+            @Override
+            public void publish(LogRecord record) {
+                if(record.getLevel() == Level.WARNING) {
+                    //ExceptionDialog.show(LogfileInspector.this, "WARNING", record.getMessage(), (Exception)record.getThrown());
+                }
+            }
+        });
 
-      setProgress(100);
-      return null;
+        // open and scan the file
+        LogFile logFile = new LogFile(this.file, getLogger(), new LogFile.ProgressMonitor() {
+            @Override
+            public void setMaximum(int v) {
+                progressBar.setMaximum(v);
+            }
+            @Override
+            public void setValue(int v) {
+                progressBar.setValue(v);
+                setProgress(v);
+            }
+        });
+      
+        return logFile;
+    }
+    
+    @Override 
+    protected void done() 
+    { 
+        try
+        {
+            logFile = get();
+            
+            fileNameLabel.setText(this.file.getAbsolutePath());
+
+            jSlider1.setEnabled(true);
+            jSlider1.setValue(0);
+            jSlider1.setMinimum(0);
+            jSlider1.setMaximum(logFile.getFrameCount()-1);
+        }
+        catch (InterruptedException | ExecutionException ex)
+        {
+            ExceptionDialog.show(LogfileInspector.this, "Error while opening log file", ex);
+        }
+        
+        // reset and hide the progress bar
+        progressBar.setValue(0);
+        loadingProgress.setVisible(false);
+
+        openMenuButton.setEnabled(true);
     }
   }
 

@@ -846,16 +846,23 @@ public class BehaviorViewer extends AbstractDialog
   
   private class LogBehaviorListener implements LogFrameListener
   {
+    private LogDataFrame lastBehaviorStateCompleteLogDataFrame = null;
+            
     @Override
     public void newFrame(BlackBoard b) {
         
         try
         {
+          // only parse if the data changed
           LogDataFrame f = b.get("BehaviorStateComplete");
-          Messages.BehaviorStateComplete status = Messages.BehaviorStateComplete.parseFrom(f.getData());
-          
-          behaviorParser = new XABSLProtoParser();
-          currentBehavior = behaviorParser.parseComplete(status);
+          if(f != null && f != lastBehaviorStateCompleteLogDataFrame)
+          {
+            final Messages.BehaviorStateComplete status = Messages.BehaviorStateComplete.parseFrom(f.getData());
+
+            behaviorParser = new XABSLProtoParser();
+            currentBehavior = behaviorParser.parseComplete(status);
+            lastBehaviorStateCompleteLogDataFrame = f;
+          }
         }
         catch(InvalidProtocolBufferException ex)
         {

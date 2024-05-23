@@ -11,7 +11,8 @@ package de.naoth.rc.components.behaviorviewer.model;
  *
  * @author thomas
  */
-public class Symbol {
+public class Symbol 
+{
     public final String name;
 
     public Symbol(String name) {
@@ -34,8 +35,13 @@ public class Symbol {
         return new Boolean(name, value);
     }
 
-    public Enum createEnum(EnumType enumType, int value) {
-        return new Enum(name, enumType, value);
+    /**
+     * Creates a value object of a XABSL enumeration symbol based on this symbol declaration.
+     * @param value
+     * @return new XABSL enum value, or null is the current declaration is not Enum
+     */
+    public Enum createEnum(int value) {
+        return null;
     }
     
     @Override
@@ -79,7 +85,7 @@ public class Symbol {
 
         @Override
         public String getValueAsString() {
-            return "" + this.value;
+            return "" + this.value; 
         }
 
         @Override
@@ -98,6 +104,11 @@ public class Symbol {
         public final int value;
         public final EnumType enumType;
 
+        @Override
+        public Enum createEnum(int value) {
+            return new Enum(name, this.enumType, value);
+        }
+        
         @Override
         public String getValueAsString() {
             return enumType.elements.get(value).name;

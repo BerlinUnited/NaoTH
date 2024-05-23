@@ -11,7 +11,11 @@ package de.naoth.rc.components.behaviorviewer.model;
  * @author thomas
  */
 public class Agent {
-    public String name;
-    public String rootOption;
+    final public String name;
+    final public String rootOption;
     
+    public Agent(String name, String rootOption) {
+        this.name = name;
+        this.rootOption = rootOption;
+    }
 }
