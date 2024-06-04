@@ -166,8 +166,6 @@ private:
       PARAMETER_REGISTER(brightnessMultiplierTop) = 1.0;
       PARAMETER_REGISTER(brightnessMultiplierTopDark) = 1.0;
       
-      
-      syncWithConfig();
       syncWithConfig();
     }
 
