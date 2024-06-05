@@ -14,7 +14,8 @@ FallMotion::FallMotion()
 }
 
 
-void FallMotion::execute() {
+void FallMotion::execute() 
+{
     if ( getMotionRequest().id != getId() )
     {
         if ( setStiffness(getMotorJointData(), getSensorJointData(), oldStiffness, stiffness_increase) ) {
@@ -27,107 +28,40 @@ void FallMotion::execute() {
     }
     else if( isStopped() ) // runs once on start
     {
+      // decide on the falling direction once
+      // TODO: maybe the decision should be made by a separate module and passed here
+      fallingForward = (Math::toDegrees(getInertialSensorData().data.y) > 0);
       startTime = getFrameInfo();
-      for (size_t i = 0; i < JointData::numOfJoint; i++) { // store joint data
+
+      // store old joint data and stiffness
+      for (size_t i = 0; i < JointData::numOfJoint; i++) {
           oldStiffness[i] = getSensorJointData().stiffness[i];
 //          oldJoints[i] = getSensorJointData().position[i];
       }
     }
 
+    // time since start in ms
+    const int t = getFrameInfo().getTimeSince(startTime); 
 
-    int t = getFrameInfo().getTimeSince(startTime); // in ms
-    if(abs(getInertialSensorData().data.y) > 20 || t < 1500) { // assure motion lasts 2s max
-        /*    HeadPitch,
-                                                                   HeadYaw,
+    if(t < 1500) // assure motion lasts 2s max
+    { 
+        const std::vector<keyFrame>& currKf = fallingForward ? forwards : backwards;
 
-        RShoulderRoll,
-            LShoulderRoll,
-            RShoulderPitch,
-            LShoulderPitch,
+        double t_kf_end = 0;
+        for (const keyFrame& kf : currKf)
+        {
+            // time when the current kf will end
+            t_kf_end += kf.triggerMs;
 
-            RElbowRoll,
-            LElbowRoll,
-            RElbowYaw,
-            LElbowYaw,
-
-            RHipYawPitch, // doesn't exist on Nao
-            LHipYawPitch,
-            RHipPitch,
-            LHipPitch,
-            RHipRoll,
-            LHipRoll,
-            RKneePitch,
-            LKneePitch,
-            RAnklePitch,
-            LAnklePitch,
-            RAnkleRoll,
-            LAnkleRoll,
-
-            LWristYaw,
-            RWristYaw,
-            LHand,
-            RHand*/
-        bool fallingForward = (Math::toDegrees(getInertialSensorData().data.y) > 0);
-
-        std::vector<keyFrame> forwards = {
-            {
-                {-38,0,-10,10,90,90, 0,  0,-100,100,0,0,-24,-24,0,0,105,105,-75,-75,0,0},
-                {100,100,  100,100,100,100,  100,100,100,100, 30,30,30,30,30,30, 30,30,30,30},
-                100,
-                30
-            },{
-                {-38,0,-10,10, 5, 5,60,-60,-100,100,0,0,-24,-24,0,0,105,105,-75,-75,0,0},
-                {100,100,  100,100,100,100,  100,100,100,100, 30,30,30,30,30,30, 30,30,30,30},
-                250,
-                55
-            },{
-                {-38,0,-10,10, 5, 5,60,-60,-100,100,0,0,-24,-24,0,0,105,105,-75,-75,0,0},
-                {15,15,  15,15,15,15,  15,15,15,15, 5,5,5,5,5,5, 5,5,5,5},
-                600,
-                70
-            },{
-                {-38,0,-10,10, 5, 5,60,-60,-100,100,0,0,-24,-24,0,0,105,105,-75,-75,0,0},
-                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                1500,
-                999
-            }
-        };
-
-        std::vector<keyFrame> backwards = {
-            {
-                {29,0,-12,12,123,123, 0,  0,-17,17,0,0,-90,-90,0,0,105,105,-45,-45,0,0},
-                {100,100,  100,100,100,100,  100,100,100,100, 30,30,30,30,30,30, 30,30,30,30},
-                150,
-                28
-            },{
-                {29,0,-12,12,123,123,78,-78,-17,17,0,0,-90,-90,0,0,105,105,-45,-45,0,0},
-                {100,100,  100,100,100,100,  100,100,100,100, 30,30,30,30,30,30, 30,30,30,30},
-                300,
-                55
-            },{
-                {29,0,-12,12,123,123,78,-78,-17,17,0,0,-90,-90,0,0,105,105,-45,-45,0,0},
-                {15,15,  15,15,15,15,  15,15,15,15, 5,5,5,5,5,5, 5,5,5,5},
-                600,
-                70
-            },{
-                {29,0,-12,12,123,123,78,-78,-17,17,0,0,-90,-90,0,0,105,105,-45,-45,0,0},
-                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                1500,
-                999
-            }
-        };
-
-        std::vector<keyFrame>& currKf = fallingForward ? forwards : backwards;
-
-        for (keyFrame kf : currKf) {
-            if (t > kf.triggerMs || Math::toDegrees(getInertialSensorData().data.y) > kf.altTriggerGrad) {
+            if (t > t_kf_end || Math::toDegrees(getInertialSensorData().data.y) > kf.altTriggerGrad) {
                 continue;
             }
+
             for (int i = 0; i < 22; ++i)
             {
-                getMotorJointData().position[i] = Math::fromDegrees(kf.jointValues[i]);
+                getMotorJointData().position[i]  = Math::fromDegrees(kf.jointValues[i]);
                 getMotorJointData().stiffness[i] = kf.stiffnessValues[i] / 100.0;
-                std::cerr << kf.jointValues[i] << " ";
+                //std::cerr << kf.jointValues[i] << " ";
             }
 
             /*for (int i = 0; i < 22; ++i) {
@@ -137,7 +71,10 @@ void FallMotion::execute() {
             break;
         }
     }
-    else { // will be triggered if we are still standing or if we fall sideways
+    else 
+    { 
+        // TODO: is will also be triggered after the end of the falling motion. Why?
+        // will be triggered if we are still standing or if we fall sideways
         int x[] = {0,0,0,0,90,90,0,0,-100,100,0,0,-24,-24,0,0,105,105,0,0,0,0}; // maybe bend knees less here
         for (int i = 0; i < 22; ++i) {
             getMotorJointData().position[i]  = Math::fromDegrees(x[i]);
