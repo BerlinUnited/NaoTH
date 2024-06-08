@@ -1,6 +1,5 @@
-
 plugins {
-    id 'application' // uses the java and distribution plugin
+    id 'application'
 }
 
 repositories {
@@ -11,42 +10,64 @@ dependencies {
     implementation 'com.jcraft:jsch:0.1.55'
 }
 
-// by default just (build and) run NaoScp
-defaultTasks 'run' // 'clean', 'build', 
+// Define the default tasks
+defaultTasks 'run'
 
-// define the targeted versions
-project.version = 1.1
-java.sourceCompatibility = JavaVersion.VERSION_1_8
-java.targetCompatibility = JavaVersion.VERSION_1_8
+// Set the project version and Java compatibility versions
+version = '1.1'
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
 
-// configure the application plugin
-application.mainClassName = 'Main'
-application.executableDir = '' // do not create a "bin" directory in install/zip
-application.applicationName = 'naoscp' // set the startscripts to lower case
+// Configure the application plugin
+application {
+    mainClass = 'Main'
+    executableDir = '' // do not create a "bin" directory in install/zip
+    applicationName = 'naoscp' // set the startscripts to lower case
+}
 
-// set the source directory and disable the other dirs
-sourceSets.main.java.srcDirs = ['src']
-sourceSets.main.resources.srcDirs = []
-sourceSets.test.java.srcDirs = []
-sourceSets.test.resources.srcDirs = []
+// Set source directories and disable unnecessary directories
+sourceSets {
+    main {
+        java.srcDirs = ['src']
+        resources.srcDirs = []
+    }
+    test {
+        java.srcDirs = []
+        resources.srcDirs = []
+    }
+}
 
 // "install" the resulting application to the "dist" directory (mimic the old behavior)
-installDist.destinationDir = file("$projectDir/dist")
+installDist {
+    destinationDir = file("$projectDir/dist")
+}
 
-// disable tar generation
-distTar.enabled = false
+// Disable TAR generation
+distTar {
+    enabled = false
+}
 
-// make sure the "installDist" task is executed
-build.finalizedBy(installDist)
+// Ensure "installDist" task is executed after build
+build {
+    finalizedBy installDist
+}
 
-// make sure the dist directory is also cleaned (since we're moved it out of the build directory)
-task cleanDist(type: Delete) {
+// Ensure the "dist" directory is also cleaned (needs to be done separately, since we're moved it out of the build directory)
+tasks.register('cleanDist', Delete) {
     delete "$projectDir/dist"
 }
-clean.finalizedBy(cleanDist)
+clean {
+    finalizedBy tasks.cleanDist
+}
 
-// create a manifest for the jar
-jar.manifest {
-    attributes 'Class-Path': sourceSets.main.runtimeClasspath.collect { it.name }.join(' ')
-    attributes 'Main-Class': application.mainClassName
+// Create a manifest for the JAR
+jar {
+    manifest {
+        attributes(
+            'Class-Path': sourceSets.main.runtimeClasspath.files.collect { it.name }.join(' '),
+            'Main-Class': application.mainClass
+        )
+    }
 }
