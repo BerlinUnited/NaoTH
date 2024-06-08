@@ -437,18 +437,16 @@ public class FileDrop
     {   // Static Boolean
         if( supportsDnD == null )
         {
-            boolean support = false;
-            try
-            {   Class arbitraryDndClass = Class.forName( "java.awt.dnd.DnDConstants" );
-                support = true;
-            }   // end try
-            catch( Exception e )
-            {   support = false;
-            }   // end catch
-            supportsDnD = new Boolean( support );
+            supportsDnD = false;
+            try {
+                Class arbitraryDndClass = Class.forName( "java.awt.dnd.DnDConstants" );
+                supportsDnD = true;
+            } catch( Exception e ) {   
+                supportsDnD = false;
+            }
         }   // end if: first time through
-        return supportsDnD.booleanValue();
-    }   // end supportsDnD
+        return supportsDnD;
+    } // end supportsDnD
 
 
      // BEGIN 2007-09-12 Nathan Blomquist -- Linux (KDE/Gnome) support added.
