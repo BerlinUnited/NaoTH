@@ -7,11 +7,8 @@ import de.naoth.rc.core.server.ConnectionStatusEvent;
 import de.naoth.rc.core.server.ConnectionStatusListener;
 import de.naoth.rc.core.server.MessageServer;
 import java.awt.Color;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
@@ -28,8 +25,8 @@ import javafx.beans.property.StringProperty;
  * 
  * @author Philipp Strobel <philippstrobel@posteo.de>
  */
-public class RobotStatus {
-
+public class RobotStatus 
+{
     public final static long MAX_TIME_BEFORE_DEAD = 5000; //ms
     
     public static final Color COLOR_INFO = new Color(0.0f, 1.0f, 0.0f, 0.5f);
@@ -155,8 +152,8 @@ public class RobotStatus {
             }
         });
 
-        this.messageServer.addConnectionStatusListener(new ConnectionStatusListener() {
-
+        this.messageServer.addConnectionStatusListener(new ConnectionStatusListener() 
+        {
             @Override
             public void connected(ConnectionStatusEvent event) {
                 isConnected.set(true);
@@ -171,6 +168,9 @@ public class RobotStatus {
         });
     }
 
+    /*
+    // this method is deprecated
+    // TODO: do we need a better way of stopping the timers?
     @Override
     protected void finalize() throws Throwable {
         if(isDeadTimer != null) {
@@ -178,6 +178,7 @@ public class RobotStatus {
         }
         super.finalize();
     }
+    */
 
     public void addListener(RobotStatusListener l) {
         listener.add(l);
@@ -187,7 +188,7 @@ public class RobotStatus {
     }
 
     /**
-     * Updates all informations with the given message.
+     * Updates all information with the given message.
      * @param timestamp
      * @param msg 
      */
@@ -305,6 +306,7 @@ public class RobotStatus {
                 try {
                     port = Integer.parseInt(parts[1]);
                 } catch (Exception e) {
+                    // don't report
                 }
             }
             return this.messageServer.connect(host, port);
@@ -360,11 +362,11 @@ public class RobotStatus {
             while (running) {
                 synchronized(sync) {
                     long c = (startTime + MAX_TIME_BEFORE_DEAD) - System.currentTimeMillis();
-                    if(c<=0) {
+                    if( c <= 0 ) {
                         isDead.set(true);
                     }
                     try {
-                        sync.wait(c<0?0:c);
+                        sync.wait( c < 0 ? 0 : c );
                     } catch (InterruptedException ex) {}
                 }
             }

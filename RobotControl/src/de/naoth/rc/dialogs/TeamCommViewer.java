@@ -430,6 +430,8 @@ public class TeamCommViewer extends AbstractDialog {
         } catch (IOException | InterruptedException ex) {}
         
         this.log.stopLogging();
+        
+        // TODO: maybe stop the timers in RobotStatus?
     }
 
     private boolean setLogFile() {

@@ -321,6 +321,7 @@ public class TeamCommViewerFx extends AbstractJFXDialog
     @Override
     public void dispose() {
         stopLogging();
+        // TODO: maybe stop the timers in RobotStatus?
     }
 
     /**
@@ -337,8 +338,8 @@ public class TeamCommViewerFx extends AbstractJFXDialog
     }
     
     /**
-     * Checks, whether the available playernumbers are unique.
-     * If not, a warning with the ip adresses of the robots with the same playernumber is shown.
+     * Checks, whether the available player numbers are unique.
+     * If not, a warning with the ip-addresses of the robots with the same player number is shown.
      */
     private void checkPlayerNumbers() {
         String warningText = "";
