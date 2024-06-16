@@ -68,6 +68,9 @@ BEGIN_DECLARE_MODULE(MultiPassBallDetector)
   REQUIRE(Image)
   REQUIRE(ImageTop)
 
+  REQUIRE(BestPatchList)
+  REQUIRE(BestPatchListTop)
+
   REQUIRE(BallDetectorIntegralImage)
   REQUIRE(BallDetectorIntegralImageTop)
 

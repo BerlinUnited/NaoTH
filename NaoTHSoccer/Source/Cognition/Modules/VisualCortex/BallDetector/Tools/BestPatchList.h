@@ -205,4 +205,9 @@ private:
 
 };
 
+class BestPatchListTop : public BestPatchList {
+public:
+  virtual ~BestPatchListTop() {}
+};
+
 #endif // _BestPatchList_H_

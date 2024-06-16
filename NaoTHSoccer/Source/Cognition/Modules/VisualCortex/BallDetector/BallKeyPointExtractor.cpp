@@ -10,6 +10,13 @@ using namespace naoth;
 using namespace std;
 
 void BallKeyPointExtractor::execute() {
+  execute(CameraInfo::CameraID::Bottom);
+  execute(CameraInfo::CameraID::Top);
+}
+
+void BallKeyPointExtractor::execute(const CameraInfo::CameraID id) {
+  cameraID = id;
+
   calculateKeyPointsFast(getBallDetectorIntegralImage(), getBestPatchList());
 }
 

@@ -72,6 +72,8 @@ BEGIN_DECLARE_MODULE(CNNBallDetector)
   REQUIRE(BallDetectorIntegralImage)
   REQUIRE(BallDetectorIntegralImageTop)
 
+  REQUIRE(BestPatchList)
+
   REQUIRE(FieldColorPercept)
   REQUIRE(FieldColorPerceptTop)
 

@@ -32,6 +32,7 @@
 
 BEGIN_DECLARE_MODULE(BallKeyPointExtractor)
   PROVIDE(BestPatchList)
+  PROVIDE(BestPatchListTop)
 
   PROVIDE(DebugRequest)
   PROVIDE(DebugImageDrawings)
@@ -79,7 +80,9 @@ public:
   {
     DEBUG_REQUEST_REGISTER("Vision:BallKeyPointExtractor:draw_value","", false);
   }
-
+private:
+  void execute(const CameraInfo::CameraID id);
+  
 public:
 
   void calculateKeyPoints(BestPatchList& best) const {
@@ -188,6 +191,8 @@ private:
 
   DOUBLE_CAM_REQUIRE(BallKeyPointExtractor, GameColorIntegralImage);
   DOUBLE_CAM_REQUIRE(BallKeyPointExtractor, BallDetectorIntegralImage);
+
+  DOUBLE_CAM_PROVIDE(BallKeyPointExtractor, BestPatchList);
 };
 
 
