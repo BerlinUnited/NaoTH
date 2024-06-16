@@ -73,6 +73,7 @@ BEGIN_DECLARE_MODULE(CNNBallDetector)
   REQUIRE(BallDetectorIntegralImageTop)
 
   REQUIRE(BestPatchList)
+  REQUIRE(BestPatchListTop)
 
   REQUIRE(FieldColorPercept)
   REQUIRE(FieldColorPerceptTop)
@@ -210,7 +211,6 @@ private:
 
   std::map<std::string, std::shared_ptr<AbstractCNNFinder> > cnnMap;
  
-  ModuleCreator<BallKeyPointExtractor>* theBallKeyPointExtractor;
   BestPatchList best;
 
 private:
@@ -243,6 +243,7 @@ private:
   //DOUBLE_CAM_REQUIRE(CNNBallDetector, BodyContour);
   DOUBLE_CAM_REQUIRE(CNNBallDetector, BallDetectorIntegralImage);
   DOUBLE_CAM_REQUIRE(CNNBallDetector, FieldColorPercept);
+  DOUBLE_CAM_REQUIRE(CNNBallDetector, BestPatchList);
 
   DOUBLE_CAM_PROVIDE(CNNBallDetector, BallCandidates);
 };//end class CNNBallDetector

@@ -202,8 +202,6 @@ private:
   std::string currentCNNCloseName;
 
   std::map<std::string, std::shared_ptr<AbstractCNNFinder> > cnnMap;
-
-  ModuleCreator<BallKeyPointExtractor>* theBallKeyPointExtractor;
   
 private:
   MultiBallPercept::BallPercept createBallPercept(const Vector2d& center, double radius);
@@ -244,6 +242,7 @@ private:
   //DOUBLE_CAM_REQUIRE(MultiPassBallDetector, BodyContour);
   DOUBLE_CAM_REQUIRE(MultiPassBallDetector, BallDetectorIntegralImage);
   DOUBLE_CAM_REQUIRE(MultiPassBallDetector, FieldColorPercept);
+  DOUBLE_CAM_REQUIRE(MultiPassBallDetector, BestPatchList);
 
   DOUBLE_CAM_PROVIDE(MultiPassBallDetector, BallCandidates);
 };//end class MultiPassBallDetector

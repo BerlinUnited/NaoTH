@@ -19,8 +19,6 @@ MultiPassBallDetector::MultiPassBallDetector()
   DEBUG_REQUEST_REGISTER("Vision:MultiPassBallDetector:drawProjectedBall","", false);
 
   DEBUG_REQUEST_REGISTER("Vision:MultiPassBallDetector:drawPatchInImage", "draw the gray-scale patch like it is passed to the CNN in the image", false);
-
-  theBallKeyPointExtractor = registerModule<BallKeyPointExtractor>("BallKeyPointExtractor", true);
   getDebugParameterList().add(&params);
 
   cnnMap = createCNNMap();
@@ -58,9 +56,7 @@ void MultiPassBallDetector::execute(CameraInfo::CameraID id)
     scores.clear();
 
     // update parameter
-    BestPatchList keypointList;
-    theBallKeyPointExtractor->getModuleT()->calculateKeyPoints(keypointList);
-    keypointPatches = keypointList.asVector();
+    keypointPatches = getBestPatchList().asVector();
     allPatches.insert(allPatches.end(), keypointPatches.begin(), keypointPatches.end());
 
     executeCNNOnPatches(keypointPatches, params.maxNumberOfKeys, params.checkContrast, percepts, scores, ColorClasses::orange);

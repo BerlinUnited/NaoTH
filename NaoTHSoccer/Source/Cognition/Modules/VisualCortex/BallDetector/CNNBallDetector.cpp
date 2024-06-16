@@ -27,7 +27,6 @@ CNNBallDetector::CNNBallDetector()
 
   DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:drawPatchInImage", "draw the gray-scale patch like it is passed to the CNN in the image", false);
 
-  theBallKeyPointExtractor = registerModule<BallKeyPointExtractor>("BallKeyPointExtractor", true);
   getDebugParameterList().add(&params);
 
   cnnMap = createCNNMap();
@@ -49,10 +48,9 @@ void CNNBallDetector::execute(CameraInfo::CameraID id)
   getBallCandidates().reset();
 
   best.clear();
-  // update parameter
-  theBallKeyPointExtractor->getModuleT()->setCameraId(cameraID);
-  theBallKeyPointExtractor->getModuleT()->calculateKeyPoints(best);
-
+  for(BestPatchList::reverse_iterator i = getBestPatchList().rbegin(); i != getBestPatchList().rend(); ++i) {
+      best.add(*i);
+  }
   addPatchByLastBall();
 
   if(best.size() > 0) {
