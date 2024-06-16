@@ -133,11 +133,7 @@ private:
   struct Parameters: public ParameterList
   {
     Parameters() : ParameterList("MultiPassBallDetector")
-    {
-      PARAMETER_REGISTER(keyDetector.borderRadiusFactorClose) = 0.5;
-      PARAMETER_REGISTER(keyDetector.borderRadiusFactorFar) = 0.8;
-      PARAMETER_REGISTER(keyDetector.maxInnerGreenDensitiy) = 0.5;
-      
+    {      
       PARAMETER_REGISTER(cnn.threshold) = 0.4;
       // Constant offset added to the input of the CNN. < 0 darker, > 0 brighter. T
       PARAMETER_REGISTER(cnn.meanBrightnessOffset) = 0.0; 
@@ -167,7 +163,6 @@ private:
       syncWithConfig();
     }
 
-    BallKeyPointExtractor::Parameter keyDetector;
 
     struct CNN {
       double threshold;

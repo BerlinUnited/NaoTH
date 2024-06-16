@@ -58,8 +58,6 @@ void MultiPassBallDetector::execute(CameraInfo::CameraID id)
     scores.clear();
 
     // update parameter
-    theBallKeyPointExtractor->getModuleT()->setParameter(params.keyDetector);
-    theBallKeyPointExtractor->getModuleT()->setCameraId(cameraID);
     BestPatchList keypointList;
     theBallKeyPointExtractor->getModuleT()->calculateKeyPoints(keypointList);
     keypointPatches = keypointList.asVector();

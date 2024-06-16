@@ -69,20 +69,35 @@ class BallKeyPointExtractor : public BallKeyPointExtractorBase
 public:
   virtual void execute();
 
-  struct Parameter {
-    double borderRadiusFactorClose;
-    double borderRadiusFactorFar;
 
-    double maxInnerGreenDensitiy;
-  };
 
   BallKeyPointExtractor() : cameraID(CameraInfo::Bottom)
   {
     DEBUG_REQUEST_REGISTER("Vision:BallKeyPointExtractor:draw_value","", false);
   }
+
+private:
+  
+  struct Parameter: public ParameterList
+  {
+    double borderRadiusFactorClose;
+    double borderRadiusFactorFar;
+
+    double maxInnerGreenDensitiy;
+
+    Parameter() : ParameterList("BallKeyPointExtractor")
+    {
+      PARAMETER_REGISTER(borderRadiusFactorClose) = 0.5;
+      PARAMETER_REGISTER(borderRadiusFactorFar) = 0.8;
+      PARAMETER_REGISTER(maxInnerGreenDensitiy) = 0.5;
+      
+      
+      syncWithConfig();
+    };
+  } params;
 private:
   void execute(const CameraInfo::CameraID id);
-  
+
 public:
 
   void calculateKeyPoints(BestPatchList& best) const {
@@ -176,7 +191,6 @@ private:
   }
 
 private:
-  Parameter params;
   CameraInfo::CameraID cameraID;
 
   // FIXME: the same size as integral image?
