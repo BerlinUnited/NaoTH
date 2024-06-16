@@ -38,10 +38,10 @@
                 "${NAOTH_TOOLCHAIN_PATH}/toolchain_nao/extern/lib/glib-2.0/include"
             ],
             "defines": [],
-            "intelliSenseMode": "clang-x64",
-            "compilerPath": "/usr/bin/clang",
-            "cStandard": "c11",
-            "cppStandard": "c++14"
+            "intelliSenseMode": "gcc-x64",
+            "compilerPath": "/usr/bin/g++",
+            "cStandard": "c17",
+            "cppStandard": "c++17"
         },
         {
             "name": "Win32",
