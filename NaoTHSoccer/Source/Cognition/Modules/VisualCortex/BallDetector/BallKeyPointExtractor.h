@@ -134,8 +134,7 @@ private:
 
     if (inner*2 > size*size && greenBelow > 0.3)
     {
-      // TODO should it be point.y-border in the second argument????
-      unsigned int outer = integralImage.getSumForRect(point.x-border, point.y+size, point.x+size+border, point.y+size+border, 0);
+      unsigned int outer = integralImage.getSumForRect(point.x-border, point.y-border, point.x+size+border, point.y+size+border, 0);
       double value = (double)(inner - (outer - inner))/((double)(size+border)*(size+border));
 
       // scale the patch up to the image coordinates
@@ -156,8 +155,7 @@ private:
 
     if (inner*2 > size*size && greenBelow > 0.3 && greeInner <= params.maxInnerGreenDensitiy)
     {
-	  // TODO should it be point.y-border in the second argument????
-      unsigned int outer = integralImage.getSumForRect(point.x-border, point.y+size, point.x+size+border, point.y+size+border, 0);
+      unsigned int outer = integralImage.getSumForRect(point.x-border, point.y-border, point.x+size+border, point.y+size+border, 0);
       double value = (double)(inner - (outer - inner))/((double)(size+border)*(size+border));
 
       // scale the patch up to the image coordinates
@@ -249,7 +247,7 @@ void BallKeyPointExtractor::calculateKeyPoints(const ImageType& integralImage, B
     }
     border = std::max( 2u, border);
 
-    // smalest ball size == 3 => ball size == FACTOR*3 == 12
+    // smallest ball size == 3 => ball size == FACTOR*3 == 12
     if (point.y <= border || point.y+size+border >= integralImage.getHeight()) {
       continue;
     }
