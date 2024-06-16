@@ -213,7 +213,7 @@ private:
   std::string currentCNNCloseName;
 
   std::map<std::string, std::shared_ptr<AbstractCNNFinder> > cnnMap;
-
+ 
   ModuleCreator<BallKeyPointExtractor>* theBallKeyPointExtractor;
   BestPatchList best;
 

@@ -52,8 +52,7 @@ void CNNBallDetector::execute(CameraInfo::CameraID id)
   // update parameter
   theBallKeyPointExtractor->getModuleT()->setParameter(params.keyDetector);
   theBallKeyPointExtractor->getModuleT()->setCameraId(cameraID);
-  //theBallKeyPointExtractor->getModuleT()->calculateKeyPoints(best);
-  theBallKeyPointExtractor->getModuleT()->calculateKeyPointsBetter(best);
+  theBallKeyPointExtractor->getModuleT()->calculateKeyPoints(best);
 
   addPatchByLastBall();
 

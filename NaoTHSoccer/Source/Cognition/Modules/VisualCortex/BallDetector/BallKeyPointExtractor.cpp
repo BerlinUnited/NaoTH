@@ -9,6 +9,9 @@
 using namespace naoth;
 using namespace std;
 
+void BallKeyPointExtractor::execute() {
+  calculateKeyPointsFast(getBallDetectorIntegralImage(), getBestPatchList());
+}
 
 BestPatchList::Patch BallKeyPointExtractor::refineKeyPoint(const BestPatchList::Patch& patch) const
 {

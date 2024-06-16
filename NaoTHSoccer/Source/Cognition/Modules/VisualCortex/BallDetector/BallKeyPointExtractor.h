@@ -31,12 +31,14 @@
 #include "Tools/Debug/DebugDrawings.h"
 
 BEGIN_DECLARE_MODULE(BallKeyPointExtractor)
+  PROVIDE(BestPatchList)
+
   PROVIDE(DebugRequest)
   PROVIDE(DebugImageDrawings)
   PROVIDE(DebugImageDrawingsTop)
   PROVIDE(DebugParameterList)
   PROVIDE(DebugDrawings)
-
+  
   REQUIRE(FieldInfo) // needed for ball radius
 
   REQUIRE(CameraInfo)
@@ -64,7 +66,7 @@ END_DECLARE_MODULE(BallKeyPointExtractor)
 class BallKeyPointExtractor : public BallKeyPointExtractorBase
 {
 public:
-  virtual void execute(){} // dummy, do not use
+  virtual void execute();
 
   struct Parameter {
     double borderRadiusFactorClose;
@@ -81,14 +83,9 @@ public:
 public:
 
   void calculateKeyPoints(BestPatchList& best) const {
-    calculateKeyPoints(getGameColorIntegralImage(), best);
+    calculateKeyPointsFast(getBallDetectorIntegralImage(), best);
   }
 
-  void calculateKeyPointsBetter(BestPatchList& best) const {
-    //calculateKeyPoints(getBallDetectorIntegralImage(), best);
-    calculateKeyPointsFast(getBallDetectorIntegralImage(), best);
-    //calculateKeyPointsFull(getBallDetectorIntegralImage(), best);
-  }
 
   // scan the integral image for white key points
   template<class ImageType>
