@@ -82,6 +82,11 @@ public:
   BallPatchDetector() : cameraID(CameraInfo::Bottom)
   {
     DEBUG_REQUEST_REGISTER("Vision:BallPatchDetector:draw_value","", false);
+    getDebugParameterList().add(&params);
+  }
+
+  virtual ~BallPatchDetector() {
+      getDebugParameterList().remove(&params);
   }
 
 private:
