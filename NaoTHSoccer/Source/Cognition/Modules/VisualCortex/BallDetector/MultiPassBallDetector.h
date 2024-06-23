@@ -33,7 +33,7 @@
 
 // local tools
 #include "Tools/BestPatchList.h"
-#include "BallKeyPointExtractor.h"
+#include "BallPatchDetector.h"
 #include "Tools/BlackSpotExtractor.h"
 #include "Tools/DataStructures/RingBufferWithSum.h"
 

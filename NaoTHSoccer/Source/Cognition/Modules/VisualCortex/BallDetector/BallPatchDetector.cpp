@@ -1,26 +1,24 @@
 /**
-* @file BallKeyPointExtractor.cpp
-*
-* Sorted list evaluated non-overlaping patches
+* @file BallPatchDetector.cpp
 */
 
-#include "BallKeyPointExtractor.h"
+#include "BallPatchDetector.h"
 
 using namespace naoth;
 using namespace std;
 
-void BallKeyPointExtractor::execute() {
+void BallPatchDetector::execute() {
   execute(CameraInfo::CameraID::Bottom);
   execute(CameraInfo::CameraID::Top);
 }
 
-void BallKeyPointExtractor::execute(const CameraInfo::CameraID id) {
+void BallPatchDetector::execute(const CameraInfo::CameraID id) {
   cameraID = id;
 
   calculateKeyPointsFast(getBallDetectorIntegralImage(), getBestPatchList());
 }
 
-BestPatchList::Patch BallKeyPointExtractor::refineKeyPoint(const BestPatchList::Patch& patch) const
+BestPatchList::Patch BallPatchDetector::refineKeyPoint(const BestPatchList::Patch& patch) const
 {
   // todo needs a better place
   const int32_t FACTOR = getGameColorIntegralImage().FACTOR;

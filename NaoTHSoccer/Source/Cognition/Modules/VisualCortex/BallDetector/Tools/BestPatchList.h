@@ -1,7 +1,5 @@
 /**
 * @file BestPatchList.h
-*
-* Sorted list evaluated non-overlaping patches
 */
 
 #ifndef _BestPatchList_H_
@@ -11,6 +9,12 @@
 #include <list>
 #include <vector>
 
+/**
+ * Sorted list non-overlaping patches which contain possible ball candidates.
+ * The list is sorted by a quality criteria defined by the ball patch detector.
+ * By iterating over the list, the most "interesting" candidates are emitted
+ * first and thus the amount of work for checking the ball patches is reduced.
+ */
 class BestPatchList
 {
 

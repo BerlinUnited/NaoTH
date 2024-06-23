@@ -1,7 +1,5 @@
 /**
-* @file BallKeyPointExtractor.h
-*
-* Sorted list evaluated non-overlaping patches
+* @file BallPatchDetector.h
 */
 
 #ifndef BALLKEYPOINTEXTRACTOR_H
@@ -30,7 +28,7 @@
 #include "Tools/Debug/DebugModify.h"
 #include "Tools/Debug/DebugDrawings.h"
 
-BEGIN_DECLARE_MODULE(BallKeyPointExtractor)
+BEGIN_DECLARE_MODULE(BallPatchDetector)
   PROVIDE(BestPatchList)
   PROVIDE(BestPatchListTop)
 
@@ -62,18 +60,27 @@ BEGIN_DECLARE_MODULE(BallKeyPointExtractor)
 
   REQUIRE(FieldPercept)
   REQUIRE(FieldPerceptTop)
-END_DECLARE_MODULE(BallKeyPointExtractor)
+END_DECLARE_MODULE(BallPatchDetector)
 
-class BallKeyPointExtractor : public BallKeyPointExtractorBase
+/**
+ * Provides a sorted list of evaluated non-overlaping patches. The detector will
+ * search for key points ( possible candiate center points for a ball patches).
+ * Each key point is evaluated and if the evaluation criteria are fullfilled, a
+ * patch for the projected ball size is created around the key point. The
+ * provided representation will automatically sort the patches by a value
+ * provided by this detector, which determines how "interesting" the key point
+ * is.
+ */
+class BallPatchDetector : public BallPatchDetectorBase
 {
 public:
   virtual void execute();
 
 
 
-  BallKeyPointExtractor() : cameraID(CameraInfo::Bottom)
+  BallPatchDetector() : cameraID(CameraInfo::Bottom)
   {
-    DEBUG_REQUEST_REGISTER("Vision:BallKeyPointExtractor:draw_value","", false);
+    DEBUG_REQUEST_REGISTER("Vision:BallPatchDetector:draw_value","", false);
   }
 
 private:
@@ -85,7 +92,7 @@ private:
 
     double maxInnerGreenDensitiy;
 
-    Parameter() : ParameterList("BallKeyPointExtractor")
+    Parameter() : ParameterList("BallPatchDetector")
     {
       PARAMETER_REGISTER(borderRadiusFactorClose) = 0.5;
       PARAMETER_REGISTER(borderRadiusFactorFar) = 0.8;
@@ -195,21 +202,21 @@ private:
   mutable double values[naoth::IMAGE_WIDTH/4][naoth::IMAGE_HEIGHT/4][2];
 
   // double cam stuff
-  DOUBLE_CAM_REQUIRE(BallKeyPointExtractor, CameraInfo);
-  DOUBLE_CAM_REQUIRE(BallKeyPointExtractor, Image);
-  DOUBLE_CAM_REQUIRE(BallKeyPointExtractor, CameraMatrix);
-  DOUBLE_CAM_REQUIRE(BallKeyPointExtractor, FieldPercept);
-  DOUBLE_CAM_REQUIRE(BallKeyPointExtractor, BodyContour);
+  DOUBLE_CAM_REQUIRE(BallPatchDetector, CameraInfo);
+  DOUBLE_CAM_REQUIRE(BallPatchDetector, Image);
+  DOUBLE_CAM_REQUIRE(BallPatchDetector, CameraMatrix);
+  DOUBLE_CAM_REQUIRE(BallPatchDetector, FieldPercept);
+  DOUBLE_CAM_REQUIRE(BallPatchDetector, BodyContour);
 
-  DOUBLE_CAM_REQUIRE(BallKeyPointExtractor, GameColorIntegralImage);
-  DOUBLE_CAM_REQUIRE(BallKeyPointExtractor, BallDetectorIntegralImage);
+  DOUBLE_CAM_REQUIRE(BallPatchDetector, GameColorIntegralImage);
+  DOUBLE_CAM_REQUIRE(BallPatchDetector, BallDetectorIntegralImage);
 
-  DOUBLE_CAM_PROVIDE(BallKeyPointExtractor, BestPatchList);
+  DOUBLE_CAM_PROVIDE(BallPatchDetector, BestPatchList);
 };
 
 
 template<class ImageType>
-void BallKeyPointExtractor::calculateKeyPoints(const ImageType& integralImage, BestPatchList& best) const
+void BallPatchDetector::calculateKeyPoints(const ImageType& integralImage, BestPatchList& best) const
 {
   //
   // STEP I: find the maximal height minY to be scanned in the image
@@ -261,9 +268,9 @@ void BallKeyPointExtractor::calculateKeyPoints(const ImageType& integralImage, B
 
 
 template<class ImageType>
-void BallKeyPointExtractor::calculateKeyPointsFast(const ImageType& integralImage, BestPatchList& best) const
+void BallPatchDetector::calculateKeyPointsFast(const ImageType& integralImage, BestPatchList& best) const
 {
-  DEBUG_REQUEST("Vision:BallKeyPointExtractor:draw_value",
+  DEBUG_REQUEST("Vision:BallPatchDetector:draw_value",
     CANVAS(((cameraID == CameraInfo::Top)?"ImageTop":"ImageBottom"));
   );
 
@@ -331,7 +338,7 @@ void BallKeyPointExtractor::calculateKeyPointsFast(const ImageType& integralImag
             value);
       }
 
-      DEBUG_REQUEST("Vision:BallKeyPointExtractor:draw_value",
+      DEBUG_REQUEST("Vision:BallPatchDetector:draw_value",
           double value = ((double)inner)/((double)(area));
 
           value = Math::clamp(value / 200.0, 0.0,1.0);
@@ -348,9 +355,9 @@ void BallKeyPointExtractor::calculateKeyPointsFast(const ImageType& integralImag
 
 
 template<class ImageType>
-void BallKeyPointExtractor::calculateKeyPointsFull(const ImageType& integralImage, BestPatchList& best) const
+void BallPatchDetector::calculateKeyPointsFull(const ImageType& integralImage, BestPatchList& best) const
 {
-  DEBUG_REQUEST("Vision:BallKeyPointExtractor:draw_value",
+  DEBUG_REQUEST("Vision:BallPatchDetector:draw_value",
     CANVAS(((cameraID == CameraInfo::Top)?"ImageTop":"ImageBottom"));
   );
 
