@@ -23,6 +23,7 @@
 #include "Representations/Perception/FieldColorPercept.h"
 #include "Representations/Infrastructure/FieldInfo.h"
 #include "Representations/Modeling/BallModel.h"
+#include "Representations/Perception/BestPatchList.h"
 
 #include "Representations/Perception/MultiChannelIntegralImage.h"
 #include "Representations/Perception/BallCandidates.h"
@@ -32,8 +33,6 @@
 #include "Tools/DoubleCamHelpers.h"
 
 // local tools
-#include "Tools/BestPatchList.h"
-#include "BallPatchDetector.h"
 #include "Tools/BlackSpotExtractor.h"
 #include "Tools/DataStructures/RingBufferWithSum.h"
 

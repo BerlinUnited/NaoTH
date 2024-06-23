@@ -14,8 +14,9 @@
 #include "Representations/Perception/FieldPercept.h"
 #include "Representations/Perception/CameraMatrix.h"
 #include "Representations/Perception/BodyContour.h"
+#include "Representations/Perception/BestPatchList.h"
+
 // tools
-#include "Tools/BestPatchList.h"
 #include "Tools/DoubleCamHelpers.h"
 #include "Tools/CameraGeometry.h"
 //#include <algorithm>

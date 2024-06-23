@@ -34,7 +34,7 @@ public:
     double value;
   };
 
-  // make it cons iterable
+  // make it const iterable
   typedef std::list<Patch> PatchList;
   typedef std::list<Patch>::const_iterator iterator;
   typedef std::list<Patch>::const_reverse_iterator reverse_iterator;
