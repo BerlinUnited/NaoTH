@@ -13,7 +13,6 @@ using namespace std;
 
 CNNBallDetector::CNNBallDetector()
 {
-  DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:keyPoints", "draw key points extracted from integral image", false);
   DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:drawCandidates", "draw ball candidates", false);
   DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:drawCandidatesResizes", "draw ball candidates (resized)", false);
   DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:refinePatches", "draw refined ball key points", false);

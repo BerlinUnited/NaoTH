@@ -11,7 +11,6 @@ using namespace std;
 
 MultiPassBallDetector::MultiPassBallDetector()
 {
-  DEBUG_REQUEST_REGISTER("Vision:MultiPassBallDetector:keyPoints", "draw key points extracted from integral image", false);
   DEBUG_REQUEST_REGISTER("Vision:MultiPassBallDetector:drawCandidates", "draw ball candidates", false);
   DEBUG_REQUEST_REGISTER("Vision:MultiPassBallDetector:drawCandidatesResizes", "draw ball candidates (resized)", false);
   DEBUG_REQUEST_REGISTER("Vision:MultiPassBallDetector:drawPercepts", "draw ball percepts", false);
