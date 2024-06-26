@@ -2,13 +2,11 @@
 #define UDPSENDER_H
 
 #include <gio/gio.h>
-#include "Representations/Infrastructure/GameData.h"
 
+#include <string>
 #include <mutex>
 #include <thread>
 #include <condition_variable>
-
-using namespace spl;
 
 class UDPSender
 {
@@ -20,8 +18,6 @@ public:
   void send(const std::string& data);
 
 private:
-  void socketLoop();
-
   std::string ip;
   unsigned int port;
   std::string name;
@@ -39,6 +35,7 @@ private:
 
   GError* bindAddress();
   void socketSend(const std::string& data);
+  void socketLoop();
 };
 
 #endif // UDPSENDER_H

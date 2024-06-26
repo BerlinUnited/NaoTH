@@ -1,6 +1,6 @@
+
 #include "GameController.h"
 
-#include "Tools/Debug/DebugRequest.h"
 #include <PlatformInterface/Platform.h>
 
 GameController::GameController()
@@ -17,10 +17,11 @@ GameController::GameController()
   DEBUG_REQUEST_REGISTER("gamecontroller:game_state:unstiff", "force the unstiff state", false);
 
   DEBUG_REQUEST_REGISTER("gamecontroller:set_play:none", "force the setPlay state to none", false);
-  DEBUG_REQUEST_REGISTER("gamecontroller:set_play:goal_free_kick", "force the setPlay state to goal free kick", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:set_play:goal_kick", "force the setPlay state to goal free kick", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:set_play:pushing_free_kick", "force the setPlay state to pushing free kick", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:set_play:corner_kick", "force the setPlay state to corner kick", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:set_play:kick_in", "force the setPlay state to kick-in", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:set_play:penalty_kick", "force the setPlay state to penalty kick", false);
 
   DEBUG_REQUEST_REGISTER("gamecontroller:gamephase:normal", "force the gamephase", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:gamephase:penaltyshoot", "force the gamephase", false);
@@ -41,12 +42,6 @@ GameController::GameController()
   // load values from config
   const Configuration& config = naoth::Platform::getInstance().theConfiguration;
 
-  if (config.hasKey("player", "NumOfPlayer")) {
-    getPlayerInfo().playersPerTeam = config.getInt("player", "NumOfPlayer");
-  } else {
-    std::cerr << "[GameData] " << "No number of players (NumOfPlayers) given" << std::endl;
-  }
-
   if (config.hasKey("player", "PlayerNumber")) {
     getPlayerInfo().playerNumber = config.getInt("player", "PlayerNumber");
   } else {
@@ -61,11 +56,19 @@ GameController::GameController()
     getPlayerInfo().teamNumber = 0;
   }
 
+  // following values can be set by the config, but are also set by the game controller.
+  // The config can be used to configute the values for the simulation, e.g., SimSpark
   if (config.hasKey("player", "TeamName")) {
     getPlayerInfo().teamName = config.getString("player", "TeamName");
   } else {
     std::cerr << "[PlayerInfo] " << "No team name (TeamName) given" << std::endl;
     getPlayerInfo().teamName = "unknown";
+  }
+
+  if (config.hasKey("player", "NumOfPlayer")) {
+    getPlayerInfo().playersPerTeam = config.getInt("player", "NumOfPlayer");
+  } else {
+    std::cerr << "[GameData] " << "No number of players (NumOfPlayers) given" << std::endl;
   }
 
   // NOTE: default team color is red
@@ -148,6 +151,7 @@ void GameController::execute()
     }
   }
 
+  // TODO: when to show / update led states?
   if(  oldRobotState != getPlayerInfo().robotState
     || oldTeamColor  != getPlayerInfo().teamColor
     || getPlayerInfo().robotState == PlayerInfo::initial
@@ -156,17 +160,24 @@ void GameController::execute()
     updateLEDs();
   }
 
-  // provide the return message
-  getGameReturnData().teamNum = getPlayerInfo().teamNumber;
-  getGameReturnData().playerNum = getPlayerInfo().playerNumber;
-  // TODO: this is not correctly set
-  getGameReturnData().fallen = getWifiMode().wifiEnabled ? GameReturnData::ROBOT_CAN_PLAY : GameReturnData::ROBOT_FALLEN;
 
-  getGameReturnData().pose = getRobotPose();
+  // provide the return message for the game controller
+  getGameReturnData().teamNum        = getPlayerInfo().teamNumber;
+  getGameReturnData().playerNum      = getPlayerInfo().playerNumber;
 
-  // here in milliseconds (conversion to seconds is in TeamMessageData::createSplMessage())
-  getGameReturnData().ballAge = getFrameInfo().getTimeSince(getBallModel().getFrameInfoWhenBallWasSeen().getTime());
-  getGameReturnData().ballPosition = getBallModel().position;
+  if(getBodyState().fall_down_state == BodyState::State::upright) {
+    getGameReturnData().fallen = GameReturnData::ROBOT_CAN_PLAY;
+  } else {
+    getGameReturnData().fallen = GameReturnData::ROBOT_FALLEN;
+  }
+
+  getGameReturnData().pose           = getRobotPose();
+
+  // ball was seen at least once
+  if(getBallModel().getFrameInfoWhenBallWasSeen().getFrameNumber() > 0) {
+    getGameReturnData().ballAge      = getFrameInfo().getTimeSince(getBallModel().getFrameInfoWhenBallWasSeen().getTime());
+    getGameReturnData().ballPosition = getBallModel().position;
+  }
 } // end execute
 
 
@@ -203,8 +214,8 @@ void GameController::handleDebugRequest()
   DEBUG_REQUEST("gamecontroller:set_play:none",
     getPlayerInfo().robotSetPlay = PlayerInfo::set_none;
   );
-  DEBUG_REQUEST("gamecontroller:set_play:goal_free_kick",
-    getPlayerInfo().robotSetPlay = PlayerInfo::goal_free_kick;
+  DEBUG_REQUEST("gamecontroller:set_play:goal_kick",
+    getPlayerInfo().robotSetPlay = PlayerInfo::goal_kick;
   );
   DEBUG_REQUEST("gamecontroller:set_play:pushing_free_kick",
     getPlayerInfo().robotSetPlay = PlayerInfo::pushing_free_kick;
@@ -214,6 +225,9 @@ void GameController::handleDebugRequest()
   );
   DEBUG_REQUEST("gamecontroller:set_play:kick_in",
     getPlayerInfo().robotSetPlay = PlayerInfo::kick_in;
+  );
+  DEBUG_REQUEST("gamecontroller:set_play:penalty_kick",
+    getPlayerInfo().robotSetPlay = PlayerInfo::penalty_kick;
   );
 
   DEBUG_REQUEST("gamecontroller:gamephase:normal",
@@ -332,8 +346,10 @@ void GameController::handleButtons()
 void GameController::handleHeadButtons()
 {
   if( getButtonState().buttons[ButtonState::HeadMiddle] == ButtonEvent::CLICKED
-    && (getPlayerInfo().robotState == PlayerInfo::initial || getPlayerInfo().robotState == PlayerInfo::unstiff || getPlayerInfo().robotState == PlayerInfo::finished))
-  {
+    && ( getPlayerInfo().robotState == PlayerInfo::initial || 
+         getPlayerInfo().robotState == PlayerInfo::unstiff || 
+         getPlayerInfo().robotState == PlayerInfo::finished )
+  ) {
     int playerNumber = getPlayerInfo().playerNumber;
     if(playerNumber <= 9)
     {
@@ -436,7 +452,3 @@ void GameController::updateLEDs()
     }
   }
 } // end updateLEDs
-
-GameController::~GameController()
-{
-}
