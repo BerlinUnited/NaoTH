@@ -2,18 +2,6 @@
 #include <iostream>
 #include <vector>
 
-int getTensorSize(const TfLiteTensor* tensor) {
-    // Initialize the size to 1 (multiplicative identity)
-    int size = 1;
-
-    // Multiply the dimensions to compute the total number of elements
-    for (int i = 0; i < tensor->dims->size; ++i) {
-        size *= tensor->dims->data[i];
-    }
-
-    return size;
-}
-
 void TFLiteModelNaoTH::predict(const BallCandidates::PatchYUVClassified &patch, double meanBrightness)
 {
     // create input data from patch (TODO: why not use a Y-patch directly and save the copy operation?)
@@ -23,19 +11,22 @@ void TFLiteModelNaoTH::predict(const BallCandidates::PatchYUVClassified &patch, 
     // Copy patch data to input tensor
     //float* input = interpreter->typed_input_tensor<float>(0);
 	
+    // Ensure input tensor is properly accessed
+    float* input = inputTensor->data.f;
+    ASSERT(input != nullptr);
+
     int patchSize = patch.size();
 
-     for (size_t x = 0; x < patchSize; x++)
+    // Copy the input data Y-channel directly into the input tensor
+    for (size_t x = 0; x < patchSize; x++)
     {
         for (size_t y = 0; y < patchSize; y++)
         {   
-            // Add a custom brightness offset that depends on the dataset, if zero centering was used
-            float value = (static_cast<float>((patch.data[patchSize * x + y].pixel.y)) / 255.0f) + static_cast<float>(meanBrightness);
-            inputTensor->data.raw[patchSize * x + y] = value;
+            // Directly copy Y-channel data with brightness adjustment
+            float value = (static_cast<float>(patch.data[patchSize * x + y].pixel.y) / 255.0f) + static_cast<float>(meanBrightness);
+            input[patchSize * x + y] = value;
         }
     }
-	//memcpy(inputTensor->data.raw, myData, inputTensor->bytes);
-
 
     // Perform inference
      MY_ASSERT_EQ(TfLiteInterpreterInvoke(interpreter), kTfLiteOk);
@@ -46,7 +37,7 @@ void TFLiteModelNaoTH::predict(const BallCandidates::PatchYUVClassified &patch, 
     result = std::vector<float>(outputData, outputData + numOutputElements);
 
     // Print the result
-    // std::cout << "The result is: " << result[1] << std::endl;
+    // std::cout << "The result is: " << result[0] << ", " << result[1]  << std::endl;
 }
 
 double TFLiteModelNaoTH::getBallConfidence() const 
