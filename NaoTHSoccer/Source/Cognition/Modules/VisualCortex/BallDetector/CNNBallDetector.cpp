@@ -133,12 +133,6 @@ std::map<string, std::shared_ptr<AbstractCNNFinder> > CNNBallDetector::createCNN
   // dataset mean brightness offset: -0.5101
   result.insert({ "bc_36k_labor", std::make_shared<TFLiteModelNaoTH>("ball_classifier_36k_2024-05-17v2.tflite", false, false, true)});
   
-  // NOTE: includes batch normalization layers, can (currently) not be compiled with devils compiler
-  //
-  // trained on naodevils data + GO24 + labor tests 2024 up to 2024-05-10
-  // dataset path: naoth/datasets/classification_naodevils_gopen_validated_sampled_labor_testgame_may_X_y.h5
-  // dataset mean brightness offset: -0.5101
-  result.insert({ "bc_22k", std::make_shared<TFLiteModelNaoTH>("ball_classifier_22k_2024-05-19v2.tflite", false, false, true)});
 
 
   return result;
