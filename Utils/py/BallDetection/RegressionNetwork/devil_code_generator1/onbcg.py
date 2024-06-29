@@ -14,7 +14,7 @@ import numpy as np
 from tensorflow.keras import backend as K
 from tensorflow.keras.layers import (BatchNormalization, Convolution2D, Dense,
                                      Dropout, Flatten, LeakyReLU, MaxPooling2D,
-                                     ReLU)
+                                     ReLU, InputLayer)
 
 sse_conv = '''
 {indent}w = _mm_set_ps({w3}f, {w2}f, {w1}f, {w0}f);
@@ -151,7 +151,7 @@ class NaoTHCompiler:
                 _x, self.c_inf = self.max_pool(_x, layer.pool_size, layer.strides)
             elif type(layer) == LeakyReLU:
                 self.write_cpp('\n \t// Leaky ReLu Layer\n')
-                _x, self.c_inf = self.rectified_linear_unit(_x, float(layer.alpha))
+                _x, self.c_inf = self.rectified_linear_unit(_x, float(layer.negative_slope))
             elif type(layer) == ReLU:
                 self.write_cpp('\n \t// ReLu Layer\n')
                 _x, self.c_inf = self.rectified_linear_unit(_x, 0)
@@ -159,8 +159,22 @@ class NaoTHCompiler:
                 pass
             elif type(layer) == Dropout:
                 pass
+            elif type(layer) == InputLayer:
+                pass
             elif type(layer) == BatchNormalization:
-                print("Warning: BatchNormalization not implemented")
+                # preliminary work fo rintegrating BatchNormalization
+                #https://www.tensorflow.org/api_docs/python/tf/nn/batch_normalization
+                #print(layer)
+                #print(dir(layer))
+                #print("moving_mean: ", layer.moving_mean)
+                #print("moving_variance: ", layer.moving_variance)
+                #print("beta: ", layer.beta[:])
+                #print("gamma: ", layer.gamma)
+                #print("axis: ", layer.axis)
+                #print("epsilon: ", layer.epsilon)
+                #print(_x.shape)
+                
+                print("Warning: BatchNormalization not implemented yet.")
                 pass
             elif type(layer) == Dense:
                 self.write_cpp('\n \t// Dense Layer\n')
@@ -175,6 +189,11 @@ class NaoTHCompiler:
                     
                     if layer.activation.__name__ == 'softmax':
                         _x, self.c_inf = self.softmax_output(_x)
+                    elif layer.activation.__name__ == 'leaky_relu':
+                        negative_slope = (-1)*layer.activation(-1)
+                        _x, self.c_inf = self.rectified_linear_unit(_x, float(negative_slope))
+                    else:
+                        print(f"Unsupported activation function: {layer.activation}")
 
             else:
                 print("ERROR: Unknown layer: {}".format(type(layer)))
@@ -1250,34 +1269,30 @@ void {}::predict(float in_step[16][16][1], double meanBrightnessOffset)
         y_dim = _x.shape[1]
         channels = _x.shape[2]
         
-        # hack: assume dimensions
-        output_dim = x_dim
-        
+        # check if last layer is a dense layer
+        if y_dim != 1 or channels != 1:
+            raise("softmax_output is was not implemented for non dence layer yet")
+
         x_out = np.zeros(_x.shape).astype('float32')
         
-        self.write_cpp('\talignas(16) static float sum = ')
-        i = 0
-        for x in range(x_dim):
-            for y in range(y_dim):
-                for c in range(channels):
-                    if i % 4 is 0:
-                        self.c_inf["f"].write('\n\t')
-                    
-                    self.c_inf["f"].write(' + ')
-                    # check if last layer is a dense layer
-                    if y_dim == 1 and channels == 1:
-                        self.c_inf["f"].write('exp(x{:d}[{:d}])'.format(
-                            self.c_inf["layer"] - 1, x
-                        ))
-                    else:
-                        self.c_inf["f"].write('exp(x{:d}[{:d}][{:d}][{:d}])'.format(
-                            self.c_inf["layer"] - 1, x, y, c
-                        ))
-        self.c_inf["f"].write(';\n')
         
-        self.c_inf["f"].write('\n')
+        self.write_cpp(f'\talignas(16) static float ex[{x_dim}] = {{}};\n')
+        
+        # apply exp
         for x in range(x_dim):
-            self.c_inf["f"].write("\tscores[{:d}] = exp(x{:d}[{:d}]) / sum;\n".format(x, self.c_inf["layer"] - 1, x))
+            self.c_inf["f"].write('\tex[{:d}] = exp(x{:d}[{:d}]);\n'.format(x, self.c_inf["layer"] - 1, x))
+        self.write_cpp('\n')
+        
+        # compute sum
+        self.write_cpp(f'\tfloat sum = \n')
+        for x in range(x_dim):
+            self.write_cpp(f'\t\t + ex[{x}]\n')
+        self.write_cpp('\t;\n')
+
+        # compute the output
+        self.write_cpp('\n')
+        for x in range(x_dim):
+            self.write_cpp(f"\tscores[{x}] = ex[{x}] / sum;\n")
         
         return x_out, self.c_inf
         
