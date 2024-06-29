@@ -131,6 +131,7 @@ class NaoTHCompiler:
                 self.write_cpp('\n \t// Convolution Layer\n')
                 w = K.eval(layer.weights[0])
                 b = K.eval(layer.bias)
+                
                 if self.conv_mode == 0:
                     _x, self.c_inf = self.convolution(_x, w, b, layer.strides, layer.padding)
                 elif self.conv_mode == 1:
@@ -139,10 +140,12 @@ class NaoTHCompiler:
                     _x, self.c_inf = self.convolution_3(_x, w, b, layer.strides, layer.padding)
                 else:
                     raise NotImplementedError
+                    
                 if layer.activation.__name__ == 'relu':
                     _x, self.c_inf = self.rectified_linear_unit(_x, 0)
-                if layer.activation.__name__ == 'softmax':
+                elif layer.activation.__name__ == 'softmax':
                     _x, self.c_inf = self.softmax(_x)
+                    
             elif type(layer) == MaxPooling2D:
                 self.write_cpp('\n \t// Maxpool Layer \n')
                 _x, self.c_inf = self.max_pool(_x, layer.pool_size, layer.strides)
@@ -166,9 +169,12 @@ class NaoTHCompiler:
 
                 if layer.activation.__name__ == 'relu':
                     print("use dense layer argument for activation")
-                    _x, self.c_inf = self.dense(_x, w, b, relu=True, is_output_layer=output_layer)
+                    _x, self.c_inf = self.dense(_x, w, b, relu=True, is_output_layer=False)
                 else:
-                    _x, self.c_inf = self.dense(_x, w, b, relu=False, is_output_layer=output_layer)
+                    _x, self.c_inf = self.dense(_x, w, b, relu=False, is_output_layer=False)
+                    
+                    if layer.activation.__name__ == 'softmax':
+                        _x, self.c_inf = self.softmax_output(_x)
 
             else:
                 print("ERROR: Unknown layer: {}".format(type(layer)))
@@ -373,10 +379,11 @@ void {}::predict(float in_step[16][16][1], double meanBrightnessOffset)
 {{
 \tfor(size_t x=0; x < 16; x++) {{
 \t\tfor(size_t y=0; y < 16; y++) {{
-\t\t\tin_step[y][x][0] = (in_step[y][x][0] / 255.0f) - %ff - static_cast<float>(meanBrightnessOffset);
+\t\t\tin_step[y][x][0] = (in_step[y][x][0] / 255.0f) - static_cast<float>(meanBrightnessOffset);
 \t\t}}
 \t}}
-''' % self.dataset_mean
+'''
+
         cnn_part = '''
 \tcnn(in_step);
 }\n
@@ -1156,12 +1163,15 @@ void {}::predict(float in_step[16][16][1], double meanBrightnessOffset)
             self.write_cpp('\t}\n')
         return x_out, self.c_inf
 
+
     def dense(self, _x, weights, b, relu, is_output_layer = False):
         x_dim = _x.shape[0]
         y_dim = _x.shape[1]
         channels = _x.shape[2]
         
         output_dim = weights.shape[1]
+        
+        print(x_dim, y_dim, channels, output_dim)
         
         str_data = {
             'prev_layer': self.c_inf["layer"] - 1,
@@ -1172,7 +1182,7 @@ void {}::predict(float in_step[16][16][1], double meanBrightnessOffset)
         }
         
         if not is_output_layer:
-            self.write_cpp('\tstatic float x{layer}[{dim}] = {{}};\n'.format(**str_data))
+            self.write_cpp('\talignas(16) static float x{layer}[{dim}] = {{}};\n'.format(**str_data))
 
         for output in range(output_dim):
             if is_output_layer:
@@ -1198,12 +1208,12 @@ void {}::predict(float in_step[16][16][1], double meanBrightnessOffset)
 
                         # check if last layer is a dense layer
                         if y_dim == 1 and channels == 1:
-                            self.c_inf["f"].write('{:f}f * x{:d}[{:d}]'.format(
+                            self.c_inf["f"].write('{}f * x{:d}[{:d}]'.format(
                                 abs(weights[idx, output]),
                                 self.c_inf["layer"] - 1, x
                             ))
                         else:
-                            self.c_inf["f"].write('{:f}f * x{:d}[{:d}][{:d}][{:d}]'.format(
+                            self.c_inf["f"].write('{}f * x{:d}[{:d}][{:d}][{:d}]'.format(
                                 abs(weights[idx, output]),
                                 self.c_inf["layer"] - 1, x, y, c
                             ))
@@ -1213,7 +1223,7 @@ void {}::predict(float in_step[16][16][1], double meanBrightnessOffset)
 
             # ReLU
             if relu:
-                self.c_inf["f"].write(';\n\n')
+                self.c_inf["f"].write('\n\n')
                 self.c_inf["f"].write("\t// Apply ReLU\n")
                 if is_output_layer:
                     self.c_inf["f"].write("\tscores[{:d}] = scores[{:d}] > 0.0f ? scores[{:d}] : 0.0f;\n".format(output, output, output))
@@ -1231,6 +1241,46 @@ void {}::predict(float in_step[16][16][1], double meanBrightnessOffset)
         x_out = np.zeros(shape=(output_dim, 1, 1)).astype('float32')
 
         return x_out, self.c_inf
+
+
+    # not done yet
+    def softmax_output(self, _x):
+        print(_x.shape)
+        x_dim = _x.shape[0]
+        y_dim = _x.shape[1]
+        channels = _x.shape[2]
+        
+        # hack: assume dimensions
+        output_dim = x_dim
+        
+        x_out = np.zeros(_x.shape).astype('float32')
+        
+        self.write_cpp('\talignas(16) static float sum = ')
+        i = 0
+        for x in range(x_dim):
+            for y in range(y_dim):
+                for c in range(channels):
+                    if i % 4 is 0:
+                        self.c_inf["f"].write('\n\t')
+                    
+                    self.c_inf["f"].write(' + ')
+                    # check if last layer is a dense layer
+                    if y_dim == 1 and channels == 1:
+                        self.c_inf["f"].write('exp(x{:d}[{:d}])'.format(
+                            self.c_inf["layer"] - 1, x
+                        ))
+                    else:
+                        self.c_inf["f"].write('exp(x{:d}[{:d}][{:d}][{:d}])'.format(
+                            self.c_inf["layer"] - 1, x, y, c
+                        ))
+        self.c_inf["f"].write(';\n')
+        
+        self.c_inf["f"].write('\n')
+        for x in range(x_dim):
+            self.c_inf["f"].write("\tscores[{:d}] = exp(x{:d}[{:d}]) / sum;\n".format(x, self.c_inf["layer"] - 1, x))
+        
+        return x_out, self.c_inf
+        
 
     def softmax(self, x):
         assert (x.shape[2] == 2)  # Sorry, only for depth 2 at the moment
