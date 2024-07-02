@@ -77,11 +77,11 @@ class BallPatchDetector : public BallPatchDetectorBase
 public:
   virtual void execute();
 
-
-
   BallPatchDetector() : cameraID(CameraInfo::Bottom)
   {
     DEBUG_REQUEST_REGISTER("Vision:BallPatchDetector:draw_value","", false);
+    DEBUG_REQUEST_REGISTER("Vision:BallPatchDetector:drawPatches", "draw ball key points", false);
+
     getDebugParameterList().add(&params);
   }
 

@@ -16,6 +16,13 @@ void BallPatchDetector::execute(const CameraInfo::CameraID id) {
   cameraID = id;
 
   calculateKeyPointsFast(getBallDetectorIntegralImage(), getBestPatchList());
+
+
+  DEBUG_REQUEST("Vision:BallPatchDetector:drawPatches",
+    for(BestPatchList::reverse_iterator i = getBestPatchList().rbegin(); i != getBestPatchList().rend(); ++i) {
+      RECT_PX(ColorClasses::red, (*i).min.x, (*i).min.y, (*i).max.x, (*i).max.y);
+    }
+  );
 }
 
 BestPatchList::Patch BallPatchDetector::refineKeyPoint(const BestPatchList::Patch& patch) const

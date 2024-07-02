@@ -15,7 +15,6 @@ CNNBallDetector::CNNBallDetector()
 {
   DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:drawCandidates", "draw ball candidates", false);
   DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:drawCandidatesResizes", "draw ball candidates (resized)", false);
-  DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:refinePatches", "draw refined ball key points", false);
   DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:drawPercepts", "draw ball percepts", false);
   DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:drawPatchContrast", "draw patch contrast (only when contrast-check is in use!", false);
   DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:draw_projected_ball","", false);
@@ -55,13 +54,6 @@ void CNNBallDetector::execute(CameraInfo::CameraID id)
   if(best.size() > 0) {
     calculateCandidates();
   }
-
-  DEBUG_REQUEST("Vision:CNNBallDetector:refinePatches",
-    for(BestPatchList::reverse_iterator i = best.rbegin(); i != best.rend(); ++i) {
-      //BestPatchList::Patch p = theBallKeyPointExtractor->getModuleT()->refineKeyPoint(*i);
-      RECT_PX(ColorClasses::red, (*i).min.x, (*i).min.y, (*i).max.x, (*i).max.y);
-    }
-  );
 
   DEBUG_REQUEST("Vision:CNNBallDetector:drawPercepts",
     for(MultiBallPercept::ConstABPIterator iter = getMultiBallPercept().begin(); iter != getMultiBallPercept().end(); iter++) {
