@@ -214,6 +214,7 @@ private:
   DOUBLE_CAM_REQUIRE(BallPatchDetector, BallDetectorIntegralImage);
 
   DOUBLE_CAM_PROVIDE(BallPatchDetector, BestPatchList);
+  DOUBLE_CAM_PROVIDE(BallPatchDetector, DebugImageDrawings);
 };
 
 
