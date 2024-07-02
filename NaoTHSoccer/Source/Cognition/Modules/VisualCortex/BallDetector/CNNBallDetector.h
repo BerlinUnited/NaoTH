@@ -50,6 +50,7 @@
 #include "Tools/Debug/DebugPlot.h"
 
 #include <memory>
+#include <Representations.pb.h>
 
 BEGIN_DECLARE_MODULE(CNNBallDetector)
   PROVIDE(DebugRequest)
@@ -211,7 +212,7 @@ private:
 
   std::map<std::string, std::shared_ptr<AbstractCNNFinder> > cnnMap;
  
-  BestPatchList best;
+  BestPatchList::PatchList patches;
 
 private:
   void calculateCandidates();

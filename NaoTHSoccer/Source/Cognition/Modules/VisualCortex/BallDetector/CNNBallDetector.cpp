@@ -45,13 +45,16 @@ void CNNBallDetector::execute(CameraInfo::CameraID id)
   cameraID = id;
   getBallCandidates().reset();
 
-  best.clear();
+  patches.clear();
+  // Add the existing patches from the module, but do not perform any sorting.
+  // Instead, use the order as it is provided by the original patch list.
+  // Add in reverse order, so the entries with the highest value come first
   for(BestPatchList::reverse_iterator i = getBestPatchList().rbegin(); i != getBestPatchList().rend(); ++i) {
-      best.add(*i);
+    patches.push_back(*i);
   }
   addPatchByLastBall();
 
-  if(best.size() > 0) {
+  if(!patches.empty()) {
     calculateCandidates();
   }
 
@@ -78,7 +81,7 @@ void CNNBallDetector::execute(CameraInfo::CameraID id)
 
   DEBUG_REQUEST("Vision:CNNBallDetector:keyPointsBlack",  
     BestPatchList bbest;
-    for(BestPatchList::reverse_iterator i = best.rbegin(); i != best.rend(); ++i) {
+    for(BestPatchList::PatchList::iterator i = patches.begin(); i != patches.end(); ++i) {
       bbest.clear();
       BlackSpotExtractor::calculateKeyPointsBlackBetter(getBallDetectorIntegralImage(), bbest, (*i).min.x, (*i).min.y, (*i).max.x, (*i).max.y);
       int idx = 0;
@@ -141,7 +144,7 @@ void CNNBallDetector::calculateCandidates()
 
   // NOTE: patches are sorted in the ascending order, so start from the end to get the best patches
   int index = 0;
-  for(BestPatchList::reverse_iterator i = best.rbegin(); i != best.rend(); ++i)
+  for(BestPatchList::PatchList::iterator i = patches.begin(); i != patches.end(); ++i)
   {
     if(getFieldPercept().getValidField().isInside((*i).min) && getFieldPercept().getValidField().isInside((*i).max))
     {
@@ -298,7 +301,7 @@ void CNNBallDetector::calculateCandidates()
 void CNNBallDetector::extractPatches()
 {
   int idx = 0;
-  for(BestPatchList::reverse_iterator i = best.rbegin(); i != best.rend(); ++i)
+  for(BestPatchList::PatchList::iterator i = patches.begin(); i != patches.end(); ++i)
   {
     if(idx >= params.numberOfExportBestPatches) {
       break;
@@ -323,7 +326,7 @@ void CNNBallDetector::extractPatches()
 /** Provides all the internally generated patches in the representation */
 void CNNBallDetector::providePatches()
 {
-  for(BestPatchList::reverse_iterator i = best.rbegin(); i != best.rend(); ++i)
+  for(BestPatchList::PatchList::iterator i = patches.begin(); i != patches.end(); i++)
   {
     BallCandidates::PatchYUVClassified& q = getBallCandidates().nextFreePatchYUVClassified();
     q.min = (*i).min;
@@ -382,12 +385,26 @@ void CNNBallDetector::addPatchByLastBall()
                       RECT_PX(ColorClasses::pink, start.x, start.y, end.x, end.y);
                       CIRCLE_PX(ColorClasses::pink, ballInImage.x, ballInImage.y, static_cast<int>(estimatedRadius));
                       );
-        best.add(
-            start.x,
+        // Insert ball patch if there is not already another Patch that overlaps it
+        BestPatchList::Patch ballPatch  = BestPatchList::Patch(start.x,
             start.y,
             end.x,
             end.y,
             -1.0);
+        bool overlaps = false;
+        for(BestPatchList::PatchList::iterator i = patches.begin(); i != patches.end(); i++) {
+          
+          if(ballPatch.min.x < (*i).max.x && 
+              ballPatch.max.x > (*i).min.x &&
+              ballPatch.min.y < (*i).max.y && 
+              ballPatch.max.y > (*i).min.y) {
+            overlaps = true;
+            break;
+          }
+        }
+        if(overlaps == false) {
+          patches.insert(patches.begin(), ballPatch);
+        }
       }
     }
   }
