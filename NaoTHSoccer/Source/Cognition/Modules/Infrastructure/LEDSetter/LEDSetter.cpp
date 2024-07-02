@@ -13,8 +13,10 @@ void LEDSetter::execute()
 
   // 1. Behavior
   //   - ears
+  //   - head
   //   - eyes
-  copyMonoLEDData(getBehaviorLEDRequest(), LEDData::EarRight0, LEDData::HeadRearRight2);
+  copyMonoLEDData(getBehaviorLEDRequest(), LEDData::EarRight0, LEDData::EarLeft324);
+  copyMonoLEDData(getBehaviorLEDRequest(), LEDData::HeadFrontLeft0, LEDData::HeadRearRight2);
   copyMultiLEDData(getBehaviorLEDRequest(), LEDData::FaceRight0, LEDData::FaceLeft315);
 
   // 2. GameController: feet and chest button and head from GameController
@@ -22,7 +24,8 @@ void LEDSetter::execute()
   //  - head
   copyMultiLEDData(getGameControllerLEDRequest(), LEDData::FootLeft, LEDData::ChestButton);
   // NOTE: GameController shows kickoff state in initial, ready and set
-  copyMonoLEDData(getGameControllerLEDRequest(), LEDData::HeadFrontLeft0, LEDData::HeadRearRight2);
+  // TODO: Behavior uses the head to visualize striker and charging state, which colides with this.
+  //copyMonoLEDData(getGameControllerLEDRequest(), LEDData::HeadFrontLeft0, LEDData::HeadRearRight2);
 
   // 3. WifiModeSetter
   //  - chest button
