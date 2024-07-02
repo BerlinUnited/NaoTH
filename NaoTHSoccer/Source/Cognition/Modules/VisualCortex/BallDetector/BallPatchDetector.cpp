@@ -14,6 +14,7 @@ void BallPatchDetector::execute() {
 
 void BallPatchDetector::execute(const CameraInfo::CameraID id) {
   cameraID = id;
+  getBestPatchList().clear();
 
   calculateKeyPointsFast(getBallDetectorIntegralImage(), getBestPatchList());
 

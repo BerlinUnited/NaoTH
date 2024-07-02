@@ -113,10 +113,6 @@ private:
 
 public:
 
-  void calculateKeyPoints(BestPatchList& best) const {
-    calculateKeyPointsFast(getBallDetectorIntegralImage(), best);
-  }
-
 
   // scan the integral image for white key points
   template<class ImageType>
