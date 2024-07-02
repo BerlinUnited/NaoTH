@@ -10,9 +10,9 @@ namespace led_symbols("Led Symbols") {
     blue
   };
 
-  /** values 0-9 possible */
+  /** values 0-10 possible */
   float output set_right_ear;
-  /** values 0-9 possible */
+  /** values 0-10 possible */
   float output set_left_ear; 
 
   /** values 0-6 possible  (0 nil, 6 all) */

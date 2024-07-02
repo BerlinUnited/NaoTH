@@ -84,6 +84,8 @@ double LedSymbols::getHead()
 void LedSymbols::setRightEar(double id)
 {
   id = floor(id + 0.5);
+
+  // TODO: why do we need this check?
   if (id <= 10.0)
   {
     theInstance->lastREar = id;
@@ -108,8 +110,9 @@ double LedSymbols::getRightEar()
 
 void LedSymbols::setLeftEar(double id)
 {
-
   id = floor(id + 0.5);
+
+  // TODO: why do we need this check?
   if (id <= 10.0)
   {
     theInstance->lastLEar = id;
