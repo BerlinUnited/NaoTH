@@ -5,8 +5,8 @@
 * Declaration of class ModuleManager (base class for ModuleManagers)
 */
 
-#ifndef _ModuleManager_h_
-#define _ModuleManager_h_
+#ifndef MODULEMANAGER_H
+#define MODULEMANAGER_H
 
 #include <map>
 #include <set>
@@ -14,7 +14,6 @@
 #include <list>
 #include <iterator>
 #include <vector>
-
 
 #include "Module.h"
 #include "BlackBoard.h"
@@ -72,7 +71,23 @@ public:
     {
       getModule(*iter)->print(stream);
     }
-  }//end print
+  }
+
+  /**
+  * Lists all cases where a the execution order of two modules M1 and M2
+  * seems to be switched. It means, that module M2 is executed *before* the module M1,
+  * while the module M2 requires a representation R provided mb M1.
+  * Let N1 and N2 be the numbers in the execution orders of modules M1 and M2, then
+  * we have
+  *
+  *   M1(N1) -> R -> M2(N2)
+  *
+  * and
+  *
+  *   N2 < N1
+  * 
+  */
+  void inspectExecutionOrder() const;
 
 
 private:
@@ -117,4 +132,4 @@ private:
 // implementations for the template methods
 #include "ModuleManager.hpp"
 
-#endif //_ModuleManager_h_
+#endif // MODULEMANAGER_H

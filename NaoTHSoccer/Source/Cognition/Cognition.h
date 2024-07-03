@@ -5,8 +5,8 @@
  *
  */
 
-#ifndef _Cognition_h_
-#define _Cognition_h_
+#ifndef COGNITION_H
+#define COGNITION_H
 
 #include <iostream>
 
@@ -38,8 +38,8 @@ END_DECLARE_MODULE(Cognition)
 class Cognition : public naoth::Callable, private CognitionBase, public ModuleManagerWithDebug
 {
 public:
-  Cognition();
-  virtual ~Cognition();
+  Cognition() : ModuleManagerWithDebug("") {}
+  virtual ~Cognition() {}
 
   virtual void call();
 
@@ -53,5 +53,5 @@ private:
 
 };
 
-#endif  /* _Cognition_h_ */
+#endif  /* COGNITION_H */
 
