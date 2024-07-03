@@ -351,9 +351,9 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   std::cout << "[Cognition] register end" << std::endl;
 
   // run a self test
-  std::cout << "[Cognition] test execution order" << std::endl;
+  std::cout << "[Cognition] check for possible conflicts in the execution order: " << std::endl;
   inspectExecutionOrder();
-  std::cout << "[Cognition] test execution order done" << std::endl;
+  std::cout << "[Cognition] check execution order: done" << std::endl;
 
   stopwatch.start();
 }//end init
