@@ -36,19 +36,22 @@ public class TreeNodeItem<T extends Object> extends CheckBoxTreeItem<T>
     private final HashMap<T, TreeNodeItem> mapping = new HashMap<>();
     /** The tooltip for this tree node. */
     private final String tooltip;
+    
+    private final String path;
 
     public TreeNodeItem() {
-        this(null, null);
+        this(null, null, null);
     }
     
     public TreeNodeItem(T name) {
-        this(name, null);
+        this(name, null, null);
     }
     
-    public TreeNodeItem(T name, String tooltip) {
+    public TreeNodeItem(T name, String tooltip, String path) {
         super(name);
         
         this.tooltip = tooltip;
+        this.path = path;
        
         // sync the children: source -> filtered -> children
         Bindings.bindContent(getChildren(), filteredList);
@@ -89,26 +92,43 @@ public class TreeNodeItem<T extends Object> extends CheckBoxTreeItem<T>
     {
         return Bindings.createObjectBinding(() -> {
             Predicate<TreeItem<T>> p = child -> {
+                
+                // If there is no predicate, keep this tree item
+                if (this.predicate.get() == null) {
+                    return true;
+                }
+                
+                // if the child confirms to the predicate, 
+                // keep this node and all it's children
+                if ( this.predicate.get().test(this, child.getValue()) ) {
+                    return true;
+                }
+                
                 // Set the predicate of child items to trigger filtering
                 if (child instanceof TreeNodeItem) {
                     TreeNodeItem<T> filterableChild = (TreeNodeItem<T>) child;
                     filterableChild.setPredicate(this.predicate.get());
                 }
-                // If there is no predicate, keep this tree item
-                if (this.predicate.get() == null) {
-                    return true;
-                }
-                // If there are children, keep this tree item
-                if (child.getChildren().size() > 0) {
+                
+                // If there are children left after filtering, 
+                // keep this tree item
+                if (!child.getChildren().isEmpty()) {
                     return true;
                 }
                 // Intermediate nodes are not matched and hidden by default 
-                // if they doesn't have visible children
-                if (((TreeNodeItem)child).getSourceChildren().size() > 0) {
-                    return false;
-                }
-                // Otherwise ask the TreeNodeItemPredicate
-                return this.predicate.get().test(this, child.getValue());
+                // if they do not have visible children
+                //if (((TreeNodeItem)child).getSourceChildren().size() > 0) {
+                //    return false;
+                //}
+                
+                // DEBUG: check if the testing the path yields the same result
+                //String path = ((TreeNodeItem<T>)child).getPath();
+                //if(path != null && this.predicate.get().test(this, (T)path)) {
+                //    System.out.println("Error: " + path);
+                //}
+                
+                // othervise hide the node
+                return false;
             };
             return p;
         }, this.predicate);
@@ -163,6 +183,14 @@ public class TreeNodeItem<T extends Object> extends CheckBoxTreeItem<T>
         return tooltip;
     }
 
+    /**
+     * Returns the path of this node
+     * @return the path of this node
+     */
+    public String getPath() {
+        return path;
+    }
+    
     /**
      * Returns the child node of the given name.
      * @param name  the name of the child
