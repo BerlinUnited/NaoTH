@@ -93,18 +93,23 @@ public class TreeNodeItem<T extends Object> extends CheckBoxTreeItem<T>
         return Bindings.createObjectBinding(() -> {
             Predicate<TreeItem<T>> p = child -> {
                 
-                // If there is no predicate, keep this tree item
-                if (this.predicate.get() == null) {
-                    return true;
-                }
-                
                 // if the child confirms to the predicate, 
-                // keep this node and all it's children
-                if ( this.predicate.get().test(this, child.getValue()) ) {
+                // or if there is no predicate
+                // => keep this node and its entire subtree
+                if ( this.predicate.get() == null || this.predicate.get().test(this, child.getValue()) ) 
+                {
+                    // Propagate the null predicate to child items to ensure
+                    // they are left visible
+                    if (child instanceof TreeNodeItem) {
+                        TreeNodeItem<T> filterableChild = (TreeNodeItem<T>) child;
+                        filterableChild.setPredicate(null);
+                    }
+                    
                     return true;
                 }
                 
-                // Set the predicate of child items to trigger filtering
+                // Propagate the current predicate to child items to ensure
+                // correct filtering.
                 if (child instanceof TreeNodeItem) {
                     TreeNodeItem<T> filterableChild = (TreeNodeItem<T>) child;
                     filterableChild.setPredicate(this.predicate.get());
@@ -112,12 +117,12 @@ public class TreeNodeItem<T extends Object> extends CheckBoxTreeItem<T>
                 
                 // If there are children left after filtering, 
                 // keep this tree item
-                if (!child.getChildren().isEmpty()) {
+                if (!(child.getChildren().isEmpty())) {
                     return true;
                 }
                 // Intermediate nodes are not matched and hidden by default 
                 // if they do not have visible children
-                //if (((TreeNodeItem)child).getSourceChildren().size() > 0) {
+                //if (!((TreeNodeItem)child).getSourceChildren().isEmpty()) {
                 //    return false;
                 //}
                 
