@@ -1,6 +1,7 @@
 package de.naoth.rc.components.simspark;
 
 import de.naoth.rc.dataformats.SimsparkState;
+import javafx.beans.property.BooleanProperty;
 import net.xeoh.plugins.base.Plugin;
 
 /**
@@ -8,6 +9,43 @@ import net.xeoh.plugins.base.Plugin;
  */
 public interface SimsparkManager extends Plugin
 {
+    /**
+     * Connects to a SimSpark instance on the given host & port.
+     * @param host the host, where the SimSpark instance is running
+     * @param port the port, where the SimSpark instance has the monitor port
+     */
+    public void connect(String host, int port);
+    
+    /**
+     * Disconnects from the SimSpark instance.
+     */
+    public void disconnect();
+    
+    /**
+     * Returns a boolean property indicating the connection state to SimSpark.
+     * @return the connection state
+     */
+    public BooleanProperty isConnected();
+    
+    /**
+     * Returns the host of the connected SimSpark instance.
+     * @return the SimSpark host
+     */
+    public String getHost();
+    
+    /**
+     * Returns the port of the connected SimSpark instance.
+     * @return the SimSpark monitor port
+     */
+    public int getPort();
+    
+    /**
+     * Sends a command to the SimSpark instance.
+     * @param command the command to send
+     * @return true, if sending was successful, false otherwise
+     */
+    public boolean sendCommand(String command);
+    
     /**
      * Removes a simspark listener from the active listener list.
      * 
