@@ -3,12 +3,8 @@ package de.naoth.rc.statusbar;
 import de.naoth.rc.RobotControlImpl;
 import de.naoth.rc.components.simspark.SimsparkListener;
 import de.naoth.rc.components.simspark.SimsparkManager;
-import de.naoth.rc.components.simspark.SimsparkMonitor;
 import de.naoth.rc.dataformats.SimsparkState;
 import java.awt.event.KeyEvent;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.beans.property.BooleanProperty;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -30,20 +26,21 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 public class StatusbarSimspark extends StatusbarPluginImpl implements SimsparkListener
 {
     @InjectPlugin
-    public SimsparkManager simsparkManger;
+    public SimsparkManager simsparkManager;
 
     /* some vars */
     private ConnectionDialog connectionDialog;
     private CommandDialog commandDialog;
-    private SimsparkMonitor simspark_comm;
     
     private final String defaultTooltip = "Not connected to simspark.";
     
     @Override
-    protected void init() {
+    protected void init()
+    {
         // create connection dialog
         this.connectionDialog = new ConnectionDialog((RobotControlImpl)rc);
-        this.connectionDialog.setLocationRelativeTo((RobotControlImpl)rc);
+        this.connectionDialog.setLocationRelativeTo((RobotControlImpl) rc);
+
         // create command dialog
         commandDialog = new CommandDialog((RobotControlImpl)rc);
         commandDialog.setLocationRelativeTo((RobotControlImpl)rc);
@@ -73,6 +70,16 @@ public class StatusbarSimspark extends StatusbarPluginImpl implements SimsparkLi
                 }
             }
         });
+        
+        // register connection listener
+        simsparkManager.isConnected().addListener((o) -> {
+            if(((BooleanProperty)o).get()) {
+                this.onConnect();
+            } else {
+                disconnect();
+                onDisconnect();
+            }
+        });
     }
 
     @Override
@@ -80,53 +87,30 @@ public class StatusbarSimspark extends StatusbarPluginImpl implements SimsparkLi
         disconnect();
     }
 
-    private void connect(String host, String port) {
-        try {
-            if(simspark_comm != null) {
-                simspark_comm.disconnect();
-            }
-            simspark_comm = new SimsparkMonitor();
-            // register connection listener
-            simspark_comm.isConnected.addListener((o) -> {
-                if(((BooleanProperty)o).get()) {
-                    this.onConnect();
-                } else {
-                    disconnect();
-                    onDisconnect();
-                }
-            });
-            simspark_comm.connect(host.trim(), Integer.parseInt(port.trim()));
-            connectionDialog.setVisible(false);
-        } catch (IOException | InterruptedException ex) {
-            JOptionPane.showMessageDialog(null, "Couldn't connect!", "Couldn't connect", JOptionPane.WARNING_MESSAGE);
-        }
+    private void connect(String host, String port)
+    {
+        simsparkManager.connect(host.trim(), Integer.parseInt(port.trim()));
+        connectionDialog.setVisible(false);
     }
     
-    private void disconnect() {
-        try {
-            if(simspark_comm != null) {
-                simspark_comm.disconnect();
-            }
-            simspark_comm = null;
-        } catch (IOException | InterruptedException ex) {
-            Logger.getLogger(StatusbarSimspark.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    private void disconnect()
+    {
+        simsparkManager.disconnect();
     }
     
-    private void onConnect() {
-        if(simsparkManger != null) {
-            simsparkManger.addSimsparkListener(this);
-        }
+    private void onConnect()
+    {
+        simsparkManager.addSimsparkListener(this);
 
         // update UI
         setEnabled(true);
-        setToolTipText("Connected to simspark ("+simspark_comm.getHost()+":"+simspark_comm.getPort()+")");
+        setToolTipText("Connected to simspark ("+simsparkManager.getHost()+":"+simsparkManager.getPort()+")");
     }
     
-    private void onDisconnect() {
-        if(simsparkManger != null) {
-            simsparkManger.removeSimsparkListener(this);
-        }
+    private void onDisconnect()
+    {
+        simsparkManager.removeSimsparkListener(this);
+        
         setEnabled(false);
         setToolTipText(defaultTooltip);
         setTooltipHeight(1, 0);
@@ -145,19 +129,20 @@ public class StatusbarSimspark extends StatusbarPluginImpl implements SimsparkLi
         setToolTipText("<html>" + "<table border=\"0\">" + ttt + "</table>" + "</html>");
     }
     
-    private void sendCommand(String cmd) {
-        if(simspark_comm == null || !simspark_comm.isAlive()) {
-            JOptionPane.showMessageDialog(this, "Not connected to simspark!", "Not connected", JOptionPane.ERROR_MESSAGE);
-        } else {
-            try {
-                System.out.println(cmd);
-                commandDialog.lastSendCommand.setText(" Last command: "+cmd);
-                simspark_comm.sendMessage(cmd);
-            } catch (IOException ex) {
-                if(!simspark_comm.checkConnection()) {
-                    JOptionPane.showMessageDialog(null, "Connection to server lost!\nStill running?", "Lost connection", JOptionPane.WARNING_MESSAGE);
-                }
+    private void sendCommand(String cmd)
+    {
+        if (simsparkManager.isConnected().get())
+        {
+            System.out.println(cmd);
+            commandDialog.lastSendCommand.setText(" Last command: " + cmd);
+            if (!simsparkManager.sendCommand(cmd))
+            {
+                JOptionPane.showMessageDialog(null, "Connection to server lost!\nStill running?", "Lost connection", JOptionPane.WARNING_MESSAGE);
             }
+        }
+        else
+        {
+            JOptionPane.showMessageDialog(this, "Not connected to simspark!", "Not connected", JOptionPane.ERROR_MESSAGE);
         }
     }
 
