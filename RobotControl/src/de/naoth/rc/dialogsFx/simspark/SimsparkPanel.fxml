@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+
+<SplitPane dividerPositions="0.3" orientation="VERTICAL" stylesheets="@../../res/style.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.naoth.rc.dialogsFx.simspark.SimsparkPanel">
+   <items>
+      <TableView fx:id="stateData" prefHeight="200.0" prefWidth="200.0">
+         <columns>
+            <TableColumn prefWidth="75.0" text="Name" />
+            <TableColumn prefWidth="75.0" text="Data" />
+         </columns>
+         <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+         </columnResizePolicy>
+      </TableView>
+      <BorderPane prefHeight="200.0" prefWidth="200.0">
+         <bottom>
+            <TextField fx:id="commandBox" onAction="#fxCommandBox" promptText="Enter a command" BorderPane.alignment="CENTER" />
+         </bottom>
+         <center>
+            <ListView fx:id="commandHistory" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+         </center>
+      </BorderPane>
+   </items>
+</SplitPane>

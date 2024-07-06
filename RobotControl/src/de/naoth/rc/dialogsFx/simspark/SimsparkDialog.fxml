@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <ToolBar prefHeight="40.0" prefWidth="200.0">
+        <items>
+            <TextField fx:id="host" alignment="CENTER_RIGHT" text="127.0.0.1">
+              <tooltip>
+                <Tooltip text="SimSpark hostname or ip" />
+              </tooltip>
+            </TextField>
+            <Spinner fx:id="port" editable="true">
+              <valueFactory>
+                <SpinnerValueFactory.IntegerSpinnerValueFactory initialValue="3200" max="1000000" min="0" />
+              </valueFactory>
+              <tooltip>
+                <Tooltip text="SimSpark monitor port" />
+              </tooltip>
+            </Spinner>
+            <ToggleButton fx:id="connectBtn" mnemonicParsing="false" onAction="#fxHandleConnectBtn" text="Connect" />
+        </items>
+      </ToolBar>
+      <fx:include fx:id="simsparkPanel" source="SimsparkPanel.fxml" VBox.vgrow="ALWAYS" />
+   </children>
+</VBox>
