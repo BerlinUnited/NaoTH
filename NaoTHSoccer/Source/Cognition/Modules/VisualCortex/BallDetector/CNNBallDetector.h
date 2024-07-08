@@ -157,8 +157,8 @@ private:
       PARAMETER_REGISTER(contrastMinimumClose) = 50;
 
 
-      PARAMETER_REGISTER(classifier) = "bc_22k";
-      PARAMETER_REGISTER(classifierClose) = "bc_22k";
+      PARAMETER_REGISTER(classifier) = "bc_36k_go24_f32";
+      PARAMETER_REGISTER(classifierClose) = "bc_36k_go24_f32";
 
       PARAMETER_REGISTER(detector) = "mbd_gopen_56k";
       PARAMETER_REGISTER(detectorClose) = "mbd_gopen_56k";

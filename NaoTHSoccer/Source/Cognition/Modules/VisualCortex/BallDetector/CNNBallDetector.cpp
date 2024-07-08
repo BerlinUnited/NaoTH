@@ -122,7 +122,6 @@ std::map<string, std::shared_ptr<AbstractCNNFinder> > CNNBallDetector::createCNN
 
   // tflite models 
 
-
   // trained on naodevils data + GO24
   // dataset path: naoth/datasets/classification_gopen24_nao_devils_labelstudio_validated_ball_no_ball_X_y.h5
   // dataset mean brightness offset: -0.5130
