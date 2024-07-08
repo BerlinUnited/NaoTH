@@ -127,11 +127,13 @@ std::map<string, std::shared_ptr<AbstractCNNFinder> > CNNBallDetector::createCNN
   // dataset path: naoth/datasets/classification_gopen24_nao_devils_labelstudio_validated_ball_no_ball_X_y.h5
   // dataset mean brightness offset: -0.5130
   result.insert({ "bc_36k_go24", std::make_shared<TFLiteModelNaoTH>("ball_classifier_36k_2024-04-21_GO24.tflite", false, false, true)});
+  result.insert({ "bc_36k_go24_f32", std::make_shared<TFLiteModelNaoTH>("ball_classifier_36k_2024-04-21_GO24_float32.tflite", false, false, true)});
 
   // trained on naodevils data + GO24 + labor tests 2024 up to 2024-05-10
   // dataset path: naoth/datasets/classification_naodevils_gopen_validated_sampled_labor_testgame_may_X_y.h5
   // dataset mean brightness offset: -0.5101
   result.insert({ "bc_36k_labor", std::make_shared<TFLiteModelNaoTH>("ball_classifier_36k_2024-05-17v2.tflite", false, false, true)});
+  result.insert({ "bc_36k_labor_f32", std::make_shared<TFLiteModelNaoTH>("ball_classifier_36k_2024-05-17v2_float32.tflite", false, false, true)});
   
 
 
