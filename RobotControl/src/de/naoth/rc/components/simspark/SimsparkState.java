@@ -14,10 +14,7 @@ public class SimsparkState
 {
     /** Container holding the state of the connected simspark instance */
     public final ConcurrentHashMap<String, Object> data = new ConcurrentHashMap<>();
-    
-    /** Indicator, whether the state was already updated or not. */
-    public boolean hasBeenUpdated = false;
-    
+
     /**
      * Constructor.
      * Initializes this simspark state with known fields.
@@ -84,7 +81,6 @@ public class SimsparkState
                 data.replace(key, (value instanceof List ? value:Collections.emptyList()));
                 break;
         }
-        hasBeenUpdated = true;
     }
 
     /**
