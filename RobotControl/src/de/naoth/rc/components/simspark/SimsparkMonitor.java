@@ -268,25 +268,31 @@ public class SimsparkMonitor extends Simspark {
         
         private void updateSimsparkState(String attribute, List<Object> value)
         {
-            if (value.isEmpty())
+            if (attribute.equals("messages"))
+            {
+                // if it's a list of message, broadcast them
+                //broadcastTeamCommMessages(value);
+            }
+            else if (value.isEmpty())
             {
                 // if there's no value, attribute is handled as boolean and set to true
                 state.set(attribute, true);
-            } else if(value.size() == 1) {
+            }
+            else if (value.size() == 1)
+            {
                 // if there's only one value in the list, set simsparkstate value to this one
                 state.set(attribute, value.get(0));
-            } else {
+            }
+            else
+            {
                 // otherwise it's a list of values ...
                 state.set(attribute, value);
-                // if it's a list of message, broadcast them
-                if (attribute.equals("messages"))
-                {
-                    broadcastTeamCommMessages(value);
-                }
             }
+            stateHasBeenUpdated = true;
         }
-        
-        private void broadcastTeamCommMessages(List<Object> messages) {
+
+        private void broadcastTeamCommMessages(List<Object> messages)
+        {
             List<TeamCommMessage> c = new ArrayList<>();
             ByteBuffer readBuffer = ByteBuffer.allocateDirect(SPLMessage.size());
             readBuffer.order(ByteOrder.LITTLE_ENDIAN);
@@ -303,7 +309,8 @@ public class SimsparkMonitor extends Simspark {
                     }
                 }
                 String message = (String) msg_list.get(0);
-                try {
+                try
+                {
                     byte[] b = Base64.getDecoder().decode(message);
                     readBuffer.clear();
                     readBuffer.put(b);
