@@ -6,11 +6,8 @@
 
 StaticDebugModelProvider::StaticDebugModelProvider()
 {
-
-}
-
-StaticDebugModelProvider::~StaticDebugModelProvider()
-{
+  DEBUG_REQUEST_REGISTER("StaticDebugModelProvider:drawBallOnFieldGlobal", "", false);
+  DEBUG_REQUEST_REGISTER("StaticDebugModelProvider:drawRobotOnField", "", false);
 }
 
 void StaticDebugModelProvider::execute()
@@ -19,14 +16,16 @@ void StaticDebugModelProvider::execute()
   getObstacleModel().frontDistance = 2550.0;
 
   //Roboter
-  Pose2D pose;
-  double rotation = 0;
+  Pose2D pose(0.0, 1000.0, -2000.0);
   pose.translation.x = 1000.0;
   pose.translation.y = -2000.0;
-  MODIFY("StaticDebugModelProvider:Robotx", pose.translation.x);
-  MODIFY("StaticDebugModelProvider:Roboty", pose.translation.y);
-  MODIFY("StaticDebugModelProvider:Robotrot", rotation);
+  MODIFY("StaticDebugModelProvider:RobotPose:x", pose.translation.x);
+  MODIFY("StaticDebugModelProvider:RobotPose:y", pose.translation.y);
+
+  double rotation = 0;
+  MODIFY("StaticDebugModelProvider:RobotPose:rotation", rotation);
   pose.rotation = Math::fromDegrees(rotation);
+
   getRobotPose() = pose;
 
   // update the goal model based on the robot pose
@@ -34,11 +33,10 @@ void StaticDebugModelProvider::execute()
  
   //Ball
   Vector2d ballPosition(0.0, 0.0);
-  MODIFY("StaticDebugModelProvider:ballx", ballPosition.x);
-  MODIFY("StaticDebugModelProvider:bally", ballPosition.y);
+  MODIFY("StaticDebugModelProvider:Ball:x", ballPosition.x);
+  MODIFY("StaticDebugModelProvider:Ball:y", ballPosition.y);
 
   getBallModel().setFrameInfoWhenBallWasSeen(getFrameInfo());
-
   getBallModel().valid = true;
 
   // set ball model representation
@@ -58,21 +56,29 @@ void StaticDebugModelProvider::execute()
   getBallModel().positionPreviewInRFoot = ballRightFoot;
 
 
+  DEBUG_REQUEST("StaticDebugModelProvider:drawBallOnFieldGlobal", 
+    FIELD_DRAWING_CONTEXT;
+
+    const Vector2d ballPositionField = getRobotPose()*getBallModel().position;
+    const double lineWidth = 10;
+    PEN("FF9900", lineWidth);
+    FILLOVAL(ballPositionField.x, ballPositionField.y, getFieldInfo().ballRadius-lineWidth/2, getFieldInfo().ballRadius-lineWidth/2);
+    PEN("000000", lineWidth);
+    CIRCLE( ballPositionField.x, ballPositionField.y, getFieldInfo().ballRadius-lineWidth/2);
+  );
+
   //Set Obstacle Model
   double obstacles = 0.0;
   MODIFY("StaticDebugModelProvider:Obstacles", obstacles);
-  if(obstacles != 0.0){
+  if(obstacles != 0.0) {
     getObstacleModel().frontDistance = 399;
     getObstacleModel().blockedTime = 101;
   }
 
-  //Draw Roboter
-  bool show_robot = false;
-  MODIFY("StaticDebugModelProvider:showRobotOnField", show_robot);
-  if (show_robot){
+  DEBUG_REQUEST("StaticDebugModelProvider:drawRobotOnField", 
     FIELD_DRAWING_CONTEXT;
     PEN("FFFFFF", 20);
-    ROBOT(pose.translation.x, pose.translation.y, pose.rotation);
-  }
+    ROBOT(getRobotPose().translation.x, getRobotPose().translation.y, getRobotPose().rotation);
+  );
   
 }

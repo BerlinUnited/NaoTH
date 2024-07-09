@@ -23,37 +23,41 @@ class BroadCaster
 {
 public:
   BroadCaster(const std::string& interfaceName, unsigned int port);
-
   ~BroadCaster();
 
+  // send a single message
   void send(const std::string& data);
 
-  void send(std::list<std::string>& msgs);
-
+private:
+  GError* bindAddress();
+  bool queryBroadcastAddress();
+  void socketSend(const std::string& data);
   void loop();
 
 private:
-  void socketSend(const std::string& data);
-
-  bool queryBroadcastAddress();
-
-private:
+  // threading
   bool exiting;
-  GSocket* socket;
-  GSocketAddress* broadcastAddress;
   std::thread socketThread;
   std::mutex  messageMutex;
   std::condition_variable messageCond;
-  std::string message;
-  std::list<std::string> messages;
+
+  // socket
+  GSocket* socket;
+  GCancellable* cancelable;
+  GSocketAddress* broadcastAddress;
+
   const std::string interfaceName;
   const unsigned int port;
+  
+  // internal message buffers
+  std::string message;
+
+  // monior the state of the broadcastAddress
   /** Number of message where no broadcast information was available since the interface was down */
   int messagesWithoutInterface;
   /** The number of message we should wait before re-attempting to query the broadcast address */
   const int queryAddressPause;
 };
-
 
 } // namespace naoth
 

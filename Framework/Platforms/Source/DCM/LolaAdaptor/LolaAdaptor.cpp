@@ -1,4 +1,7 @@
+
 #include "LolaAdaptor.h"
+
+#include "Tools/FileUtils.h"
 
 using namespace naoth;
 
@@ -37,12 +40,13 @@ void LolaAdaptor::openSharedMemory(SharedMemory<T> &sm, const std::string &path)
     sm.open(path);
 }
 
-void LolaAdaptor::writeNaoInfo(const std::string& theBodyID, const std::string& /*theHeadID*/) const
+void LolaAdaptor::writeNaoInfo(const std::string& theBodyID, const std::string& theHeadID) const
 {
     // save the body ID
     std::cout << "[LolaAdaptor] bodyID: " << theBodyID << std::endl;
 
-    // save the nick name
+    // generate the theBodyNickName = NaoXXXX, 
+    // where XXXX are the last 4 digits of the body ID
     std::string theBodyNickName = "error";
     if(theBodyID.length() >= 4) {
       theBodyNickName = "Nao" + theBodyID.substr( theBodyID.length() - 4 ); //theDCMHandler.getBodyNickName();
@@ -52,11 +56,13 @@ void LolaAdaptor::writeNaoInfo(const std::string& theBodyID, const std::string& 
     // save the value to file
     // FIXME: fixed path "Config/nao.info"
     {
-        std::string staticMemberPath("/home/nao/Config/nao.info");
-        std::ofstream os(staticMemberPath.c_str());
-        ASSERT(os.good());
-        os << theBodyID << "\n" << theBodyNickName << std::endl;
-        os.close();
+      std::ofstream os("/home/nao/Config/nao.info");
+      ASSERT(os.good());
+      os << theBodyID << "\n" 
+         << theBodyNickName << "\n" 
+         << theHeadID << "\n"
+         << std::endl;
+      os.close();
     }
 }//end writeNaoInfo()
 
@@ -192,7 +198,7 @@ void LolaAdaptor::waitForLolaSocket()
     int tryCount = 0;
 
     // end the thread if the lola (unix) socket doesn't exists (after 5s)!
-    while(!fileExists("/tmp/robocup"))
+    while(!FileUtils::fileExists("/tmp/robocup"))
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(250));
         if(tryCount > 20 )
@@ -204,12 +210,6 @@ void LolaAdaptor::waitForLolaSocket()
     }
     std::this_thread::sleep_for(std::chrono::milliseconds(900));
 }//end waitForLolaSocket()
-
-bool LolaAdaptor::fileExists(const std::string& filename)
-{
-    struct stat buffer;
-    return (stat (filename.c_str(), &buffer) == 0);
-}
 
 void LolaAdaptor::setMotorJoints(ActuatorData &actuators)
 {

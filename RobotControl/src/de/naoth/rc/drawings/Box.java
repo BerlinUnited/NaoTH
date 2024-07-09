@@ -33,12 +33,13 @@ public class Box implements Drawable
 
     public Box(int x0, int y0, int width, int height)
     {
-      this.x0 = x0;
-      this.y0 = y0;
-      this.width = width;
-      this.height = height;
+        this.x0 = x0;
+        this.y0 = y0;
+        this.width = width;
+        this.height = height;
     }
 
+    @Override
     public void draw(Graphics2D g2d)
     {
         g2d.drawRect(x0, y0, width, height);

@@ -181,7 +181,7 @@ option roles_play_soccer
   {
     decision
     {
-      else if (game.set_play != goal_free_kick || game.msecsRemainingSecondary <= 5000)
+      else if (game.set_play != goal_kick || game.msecsRemainingSecondary <= 5000)
         goto play;
       else
         stay;
@@ -195,7 +195,7 @@ option roles_play_soccer
   {
     decision
     {
-      else if (game.set_play != goal_free_kick)
+      else if (game.set_play != goal_kick)
         goto play;
       else
         stay;

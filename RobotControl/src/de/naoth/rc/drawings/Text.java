@@ -53,9 +53,17 @@ public class Text implements Drawable
     Font oldFont = g2d.getFont();
     g2d.setFont (myFont);
     
-    g2d.transform(new AffineTransform(1,0,0,-1,0,0));
-    g2d.translate(x, -y);
+    AffineTransform flipOnYAxis = new AffineTransform(
+        1, 0, 0,
+       -1, 0, 0
+      //0, 0, 1  <-- this is only for better intuition
+    );
+            
+    
+    g2d.translate(x, y);
     g2d.rotate(-this.rotation);
+    
+    g2d.transform(flipOnYAxis);
     
     FontMetrics metrics = g2d.getFontMetrics(this.myFont);
     // Determine the X coordinate for the text
@@ -64,9 +72,10 @@ public class Text implements Drawable
     int y0 = - metrics.getHeight() / 2 + metrics.getAscent();
     g2d.drawString(text, x0, y0);
     
+    g2d.transform(flipOnYAxis);
+    
     g2d.rotate(this.rotation);
-    g2d.translate(-x, y);
-    g2d.transform(new AffineTransform(1,0,0,-1,0,0));
+    g2d.translate(-x, -y);
     
     // IMPORTANT: reset the font
     g2d.setFont(oldFont);

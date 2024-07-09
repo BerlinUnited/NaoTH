@@ -2,8 +2,8 @@
 * @file StaticDebugModelProvider.h
 */
 
-#ifndef _StaticDebugModelProvider_H
-#define _StaticDebugModelProvider_H
+#ifndef STATICDEBUGMODELPROVIDER_H
+#define STATICDEBUGMODELPROVIDER_H
 
 #include <ModuleFramework/Module.h>
 
@@ -22,26 +22,28 @@
 #include "Tools/Debug/DebugModify.h"
 
 BEGIN_DECLARE_MODULE(StaticDebugModelProvider)
-	REQUIRE(KinematicChain)
-    REQUIRE(FrameInfo)
-    REQUIRE(FieldInfo)
-    PROVIDE(DebugRequest)
-    PROVIDE(DebugDrawings)
-    PROVIDE(DebugModify)
-    PROVIDE(RobotPose)
-    PROVIDE(SelfLocGoalModel)
-    PROVIDE(BallModel)
-    PROVIDE(ObstacleModel)
+  PROVIDE(DebugRequest)
+  PROVIDE(DebugDrawings)
+  PROVIDE(DebugModify)
+  
+  REQUIRE(KinematicChain)
+  REQUIRE(FrameInfo)
+  REQUIRE(FieldInfo)
+
+  PROVIDE(RobotPose)
+  PROVIDE(SelfLocGoalModel)
+  PROVIDE(BallModel)
+  PROVIDE(ObstacleModel)
 END_DECLARE_MODULE(StaticDebugModelProvider)
 
 class StaticDebugModelProvider: public StaticDebugModelProviderBase
 {
 public:
- StaticDebugModelProvider();
+  StaticDebugModelProvider();
 
- ~StaticDebugModelProvider();
+  ~StaticDebugModelProvider(){}
 
  virtual void execute();
 };
 
-#endif  /* _StaticDebugModelProvider_H */
+#endif  /* STATICDEBUGMODELPROVIDER_H */

@@ -8,7 +8,6 @@
 #ifndef _Representation_h_
 #define _Representation_h_
 
-// standart
 #include <string>
 #include <iostream>
 #include <list>
@@ -40,8 +39,9 @@ private:
 
 protected:
   // pointers to the providing and requiring modules
-  std::list<const Module*> provide;
-  std::list<const Module*> require;
+  typedef std::list<const Module*> ModuleList;
+  ModuleList provide;
+  ModuleList require;
 
   Representation(const std::string& name)
     : name(name)
@@ -67,6 +67,14 @@ public:
     require.remove(&module);
   }
 
+  const ModuleList& getRequire() const {
+    return require;
+  }
+
+  const ModuleList& getProvide() const {
+    return provide;
+  }
+
   /**
    * This method can be overwritten bei a particular
    * representation in order to stream out some specific (visible) data
@@ -76,7 +84,6 @@ public:
     // use representation name as fallback
     stream << name;
   }
-
 
   virtual bool serializable() const = 0;
   virtual void serialize(MsgOut<Representation>::type& stream) const = 0;

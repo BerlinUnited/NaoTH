@@ -13,21 +13,21 @@ using namespace std;
 
 GameData::GameData()
   : 
-    valid(false),
-    playersPerTeam(0),
+  valid(false),
+  playersPerTeam(0),
 
-    competitionPhase(roundrobin),
-    competitionType(competition_normal),
-    gamePhase(normal),
-    gameState(unknown_game_state),
-    setPlay(set_none),
+  competitionPhase(roundrobin),
+  competitionType(competition_normal),
+  gamePhase(normal),
+  gameState(unknown_game_state),
+  setPlay(set_none),
 
-    firstHalf(true),
-    kickingTeam(0),
-    secsRemaining(0),
-    secondaryTime(0),
-    // HACK: for more info see declaration
-    newPlayerNumber(0)
+  firstHalf(true),
+  kickingTeam(0),
+  secsRemaining(0),
+  secondaryTime(0),
+  // HACK: for more info see declaration
+  newPlayerNumber(0)
 {
 }
 
@@ -119,10 +119,11 @@ std::string GameData::toString(SetPlay value)
   switch (value)
   {
     RETURN_VALUE_TO_STR(set_none);
-    RETURN_VALUE_TO_STR(goal_free_kick);
+    RETURN_VALUE_TO_STR(goal_kick);
     RETURN_VALUE_TO_STR(pushing_free_kick);
     RETURN_VALUE_TO_STR(corner_kick);
     RETURN_VALUE_TO_STR(kick_in);
+    RETURN_VALUE_TO_STR(penalty_kick);
   }
   
   ASSERT(false);
@@ -139,13 +140,10 @@ std::string GameData::toString(Penalty value)
     RETURN_VALUE_TO_STR(player_pushing);
     RETURN_VALUE_TO_STR(illegal_motion_in_set);
     RETURN_VALUE_TO_STR(inactive_player);
-    RETURN_VALUE_TO_STR(illegal_defender);
+    RETURN_VALUE_TO_STR(illegal_position);
     RETURN_VALUE_TO_STR(leaving_the_field);
-    RETURN_VALUE_TO_STR(kick_off_goal);
     RETURN_VALUE_TO_STR(request_for_pickup);
     RETURN_VALUE_TO_STR(local_game_stuck);
-    RETURN_VALUE_TO_STR(illegal_positioning);
-    RETURN_VALUE_TO_STR(illegal_position);
     RETURN_VALUE_TO_STR(illegal_position_in_set);
     RETURN_VALUE_TO_STR(player_stance);
     RETURN_VALUE_TO_STR(illegal_motion_in_initial);
@@ -193,15 +191,13 @@ GameData::Penalty GameData::penaltyFromString(const std::string& str)
   RETURN_STING_TO_VALUE(player_pushing, str);
   RETURN_STING_TO_VALUE(illegal_motion_in_set, str);
   RETURN_STING_TO_VALUE(inactive_player, str);
-  RETURN_STING_TO_VALUE(illegal_defender, str);
+  RETURN_STING_TO_VALUE(illegal_position, str);
   RETURN_STING_TO_VALUE(leaving_the_field, str);
-  RETURN_STING_TO_VALUE(kick_off_goal, str);
   RETURN_STING_TO_VALUE(request_for_pickup, str);
   RETURN_STING_TO_VALUE(local_game_stuck, str);
-  RETURN_STING_TO_VALUE(illegal_positioning, str);
-  RETURN_STING_TO_VALUE(illegal_position, str);
   RETURN_STING_TO_VALUE(illegal_position_in_set, str);
   RETURN_STING_TO_VALUE(player_stance, str);
+  RETURN_STING_TO_VALUE(illegal_motion_in_initial, str);
   RETURN_STING_TO_VALUE(substitute, str);
   RETURN_STING_TO_VALUE(manual, str);
 
@@ -240,10 +236,10 @@ void GameData::parseFrom(const spl::RoboCupGameControlData& data, int teamNumber
 
 void GameData::parseTeamInfo(TeamInfo& teamInfoDst, const spl::TeamInfo& teamInfoSrc) const
 {
-  teamInfoDst.penaltyShot = teamInfoSrc.penaltyShot;
-  teamInfoDst.score = teamInfoSrc.score;
-  teamInfoDst.teamColor = (TeamColor)teamInfoSrc.fieldPlayerColour;
-  teamInfoDst.teamNumber = teamInfoSrc.teamNumber;
+  teamInfoDst.penaltyShot   = teamInfoSrc.penaltyShot;
+  teamInfoDst.score         = teamInfoSrc.score;
+  teamInfoDst.teamColor     = (TeamColor)teamInfoSrc.fieldPlayerColour;
+  teamInfoDst.teamNumber    = teamInfoSrc.teamNumber;
   teamInfoDst.messageBudget = teamInfoSrc.messageBudget;
 
   teamInfoDst.players.resize(playersPerTeam);
@@ -306,7 +302,27 @@ std::string GameReturnData::toString(FallenState value)
   }
   
   ASSERT(false);
-  return "invalide Message";
+  return "invalide fallen state";
+}
+
+void GameReturnData::writeTo(spl::RoboCupGameControlReturnData& data) const 
+{
+  data.playerNum = static_cast<uint8_t>(playerNum);
+  data.teamNum   = static_cast<uint8_t>(teamNum);
+  data.fallen    = static_cast<uint8_t>(fallen);
+
+  // position and orientation of robot in millimeters
+  data.pose[0]   = static_cast<float>(pose.translation.x);
+  data.pose[1]   = static_cast<float>(pose.translation.y);
+  data.pose[2]   = static_cast<float>(pose.rotation);
+
+  // in seconds (only if positive)!
+  // seconds since this robot last saw the ball. -1.f if we haven't seen it
+  data.ballAge   = static_cast<float>((ballAge < 0)? -1 : ballAge / 1000.0);
+
+  // position of ball relative to the robot in millimeters
+  data.ball[0]   = static_cast<float>(ballPosition.x);
+  data.ball[1]   = static_cast<float>(ballPosition.y);
 }
 
 

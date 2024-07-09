@@ -11,7 +11,7 @@ template<class T>
 ModuleCreator<T>* ModuleManager::createModule(bool enabled)
 {
   return new ModuleCreator<T>(getBlackBoard(), enabled);
-}//end createModule
+}
 
 
 template<class T>
