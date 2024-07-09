@@ -24,4 +24,12 @@ public class SimsparkScene
     {
         data.add(object);
     }
+
+    /**
+     * Removes all scene objects.
+     */
+    public void clear()
+    {
+        data.clear();
+    }
 }

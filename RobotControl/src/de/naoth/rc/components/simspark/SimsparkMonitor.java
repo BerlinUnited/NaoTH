@@ -163,6 +163,7 @@ public class SimsparkMonitor extends Simspark {
 
         private void parseRubySceneGraph(List<Object> nodes)
         {
+            scene.clear();
             for (int i = 0; i < nodes.size(); i++)
             {
                 List<Object> nd = (List<Object>) nodes.get(i);
