@@ -4,6 +4,7 @@ import de.naoth.rc.components.simspark.SimsparkManager;
 import de.naoth.rc.components.simspark.SimsparkSceneListener;
 import de.naoth.rc.components.simspark.SimsparkState;
 import de.naoth.rc.components.simspark.SimsparkStateListener;
+import de.naoth.rc.components.simspark.commands.AgentCommand;
 import de.naoth.rc.components.simspark.commands.BallCommand;
 import de.naoth.rc.components.simspark.commands.DropBallCommand;
 import de.naoth.rc.components.simspark.commands.SimsparkCommand;
@@ -27,10 +28,15 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.util.Duration;
 
 /**
@@ -47,7 +53,13 @@ public class SimsparkPanel implements SimsparkStateListener, SimsparkSceneListen
     
     @FXML private TableView<SimsparkData> stateData;
     @FXML private ListView<String> commandHistory;
-    @FXML private TextField commandBox;
+    @FXML
+    private TextField commandBox;
+    @FXML
+    private MenuButton commandHelp;
+
+    private int commandHistoryIdx = -1;
+    private String commandCurrent = null;
 
     /**
      * Some pre-defined data entries.
@@ -108,6 +120,7 @@ public class SimsparkPanel implements SimsparkStateListener, SimsparkSceneListen
             simsparkManager.removeSimsparkStateListener(this);
             commandBox.disableProperty().unbind();
             commandHistory.disableProperty().unbind();
+            commandHelp.disableProperty().unbind();
         }
 
         simsparkManager = manager;
@@ -116,6 +129,7 @@ public class SimsparkPanel implements SimsparkStateListener, SimsparkSceneListen
         simsparkManager.addSimsparkSceneListener(this);
         commandBox.disableProperty().bind(simsparkManager.isConnected().not());
         commandHistory.disableProperty().bind(simsparkManager.isConnected().not());
+        commandHelp.disableProperty().bind(simsparkManager.isConnected().not());
     }
 
     public void setDrawingEventManager(DrawingEventManager manager)
@@ -183,17 +197,217 @@ public class SimsparkPanel implements SimsparkStateListener, SimsparkSceneListen
     {
         this.scene = scene;
     }
+
+    @FXML
+    private void fxCommandHistoryClicked(MouseEvent event)
+    {
+        if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2)
+        {
+            String command = commandHistory.getSelectionModel().getSelectedItem();
+            if (command != null)
+            {
+                handleCommand(command);
+            }
+        }
+    }
     
     @FXML
     private void fxCommandBox(ActionEvent ev)
     {
-        String command = commandBox.getText();
+        if (!handleCommand(commandBox.getText().trim()))
+        {
+            playErrorAnimation(commandBox);
+
+        }
+    }
+
+    private boolean handleCommand(String command)
+    {
+        String[] commandParts = command.split("\\s+");
+
+        System.out.println("Command (" + commandParts.length + "): " + command);
+
+        if (commandParts.length == 0)
+        {
+            Logger.getLogger(SimsparkPanel.class.getName()).log(Level.INFO, "Empty command");
+            return false;
+        }
+
+        SimsparkCommand cmd = null;
+        switch (commandParts[0])
+        {
+            case "b":
+            case "ball":
+                cmd = handleCommandBall(command);
+                break;
+            case "p":
+            case "pos":
+                cmd = handleCommandAgent(command, null);
+                break;
+            case "l":
+            case "left":
+                cmd = handleCommandAgent(command, "Left");
+                break;
+            case "r":
+            case "right":
+                cmd = handleCommandAgent(command, "Right");
+                break;
+        }
+
+        if (cmd == null)
+        {
+            Logger.getLogger(SimsparkPanel.class.getName()).log(Level.INFO, "Invalid or unknown command: {0}", command);
+            return false;
+        }
+
+        System.out.println("Send: " + cmd.getCommand());
         commandBox.clear();
-        
-        // TODO: Check commands
         commandHistory.itemsProperty().get().add(command);
-        
-        System.out.println("Command: " + command);
+        simsparkManager.sendCommand(cmd.getCommand());
+
+        return true;
+    }
+
+    private SimsparkCommand handleCommandBall(String command)
+    {
+        String[] commandParts = command.split("\\s+");
+        Pattern ballPattern = Pattern.compile("(b|ball)(\\s+drop|(\\s+[+-]?(\\d*\\.\\d+|\\d+(\\.\\d+)?)){3,6})");
+        Matcher ballMatcher = ballPattern.matcher(command);
+        if (ballMatcher.matches())
+        {
+            switch (commandParts.length)
+            {
+                case 2:
+                    return new DropBallCommand();
+                case 4:
+                    return new BallCommand(
+                            Float.parseFloat(commandParts[1]),
+                            Float.parseFloat(commandParts[2]),
+                            Float.parseFloat(commandParts[3]));
+                case 7:
+                    return new BallCommand(
+                            Float.parseFloat(commandParts[1]),
+                            Float.parseFloat(commandParts[2]),
+                            Float.parseFloat(commandParts[3]),
+                            Float.parseFloat(commandParts[4]),
+                            Float.parseFloat(commandParts[5]),
+                            Float.parseFloat(commandParts[6]));
+            }
+        }
+
+        return null;
+    }
+
+    private SimsparkCommand handleCommandAgent(String command, String team)
+    {
+        String[] commandParts = command.split("\\s+");
+        String pattern = (team == null ? "(p|pos)\\s+(Left|Right)" : "(l|left|r|right)") + "\\s+(\\d+)(\\s+[+-]?(\\d*\\.\\d+|\\d+(\\.\\d+)?)){3}";
+        System.out.println(pattern);
+        Pattern posPattern = Pattern.compile(pattern);
+        Matcher posMatcher = posPattern.matcher(command);
+        if (posMatcher.matches())
+        {
+            int i = 0;
+            return new AgentCommand(
+                    team != null ? team : commandParts[++i],
+                    Integer.parseInt(commandParts[++i]),
+                    Float.parseFloat(commandParts[++i]),
+                    Float.parseFloat(commandParts[++i]),
+                    Float.parseFloat(commandParts[++i]));
+        }
+
+        return null;
+    }
+
+    private void playErrorAnimation(TextField textField)
+    {
+        Timeline timeline = new Timeline(
+                new KeyFrame(Duration.seconds(0.2), event ->
+                {
+                    textField.getStyleClass().add("error-background");
+                }),
+                new KeyFrame(Duration.seconds(0.4), event ->
+                {
+                    textField.getStyleClass().remove("error-background");
+                })
+        );
+        timeline.setCycleCount(3);
+        timeline.playFromStart();
+    }
+
+    @FXML
+    private void fxKeyPressed(KeyEvent k)
+    {
+        if (commandHistory.getItems().isEmpty())
+        {
+            return;
+        }
+
+        switch (k.getCode())
+        {
+            case UP:
+                fxKeyPressedUp();
+                break;
+            case DOWN:
+                fxKeyPressedDown();
+                break;
+            default:
+                if (!k.getText().isEmpty())
+                {
+                    commandCurrent = null;
+                    commandHistoryIdx = -1;
+                }
+        }
+    }
+
+    /**
+     * Going the command history "up".
+     */
+    private void fxKeyPressedUp()
+    {
+        if (commandHistoryIdx == 0)
+        {
+            return;
+        }
+
+        if (commandCurrent == null)
+        {
+            commandCurrent = commandBox.getText();
+        }
+        commandHistoryIdx = (commandHistoryIdx <= 0 ? commandHistory.getItems().size() : commandHistoryIdx) - 1;
+        commandBox.setText(commandHistory.getItems().get(commandHistoryIdx));
+        commandBox.positionCaret(commandBox.getText().length());
+    }
+
+    /**
+     * Going the command history "down".
+     */
+    private void fxKeyPressedDown()
+    {
+        if (commandHistoryIdx == -1)
+        {
+            return;
+        }
+
+        commandHistoryIdx++;
+        if (commandHistoryIdx >= commandHistory.getItems().size())
+        {
+            commandBox.setText(commandCurrent == null ? "" : commandCurrent);
+            commandCurrent = null;
+            commandHistoryIdx = -1;
+        }
+        else
+        {
+            commandBox.setText(commandHistory.getItems().get(commandHistoryIdx));
+            commandBox.positionCaret(commandBox.getText().length());
+        }
+    }
+
+    @FXML
+    private void fxCommandHelp(ActionEvent ev)
+    {
+        commandBox.setText(((MenuItem) ev.getSource()).getText());
+        commandBox.requestFocus();
     }
 
     public class SimsparkData

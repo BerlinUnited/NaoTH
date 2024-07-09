@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
 
 <SplitPane dividerPositions="0.3" orientation="VERTICAL" stylesheets="@../../res/style.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.naoth.rc.dialogsFx.simspark.SimsparkPanel">
    <items>
@@ -19,12 +23,28 @@
          </columnResizePolicy>
       </TableView>
       <BorderPane prefHeight="200.0" prefWidth="200.0">
-         <bottom>
-            <TextField fx:id="commandBox" onAction="#fxCommandBox" promptText="Enter a command" BorderPane.alignment="CENTER" />
-         </bottom>
          <center>
-            <ListView fx:id="commandHistory" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+            <ListView fx:id="commandHistory" onMouseClicked="#fxCommandHistoryClicked" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
          </center>
+         <bottom>
+            <HBox BorderPane.alignment="CENTER">
+               <children>
+                  <TextField fx:id="commandBox" onAction="#fxCommandBox" onKeyPressed="#fxKeyPressed" promptText="Enter a command" HBox.hgrow="ALWAYS" />
+                  <MenuButton fx:id="commandHelp" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" popupSide="TOP">
+                     <items>
+                        <MenuItem mnemonicParsing="false" onAction="#fxCommandHelp" text="ball drop" />
+                        <MenuItem mnemonicParsing="false" onAction="#fxCommandHelp" text="ball 0 0 0.2" />
+                        <MenuItem mnemonicParsing="false" onAction="#fxCommandHelp" text="ball 0 0 0.2 0 0 0" />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <MenuItem mnemonicParsing="false" onAction="#fxCommandHelp" text="pos Left 1 0 0 90" />
+                        <MenuItem mnemonicParsing="false" onAction="#fxCommandHelp" text="pos Right 3 0 0 90" />
+                        <MenuItem mnemonicParsing="false" onAction="#fxCommandHelp" text="left 3 0 0 90" />
+                        <MenuItem mnemonicParsing="false" onAction="#fxCommandHelp" text="right 3 0 0 90" />
+                     </items>
+                  </MenuButton>
+               </children>
+            </HBox>
+         </bottom>
       </BorderPane>
    </items>
 </SplitPane>

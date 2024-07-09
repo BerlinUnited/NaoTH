@@ -145,3 +145,7 @@ Button.representation:hover {
 #representation-list .list-cell.error:odd:selected {
     -fx-background-color: -fx-selection-bar;
 }
+
+.error-background {
+    -fx-background-color: #ffb4b4;
+}
