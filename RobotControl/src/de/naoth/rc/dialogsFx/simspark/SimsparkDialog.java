@@ -5,9 +5,11 @@ import de.naoth.rc.components.simspark.SimsparkManager;
 import de.naoth.rc.core.dialog.AbstractJFXDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.core.dialog.RCDialog;
+import de.naoth.rc.drawingmanager.DrawingEventManager;
 import java.net.URL;
 import javafx.beans.property.BooleanProperty;
 import javafx.fxml.FXML;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
@@ -26,6 +28,8 @@ public class SimsparkDialog extends AbstractJFXDialog
         public static RobotControl parent;
         @InjectPlugin
         public static SimsparkManager simsparkManager;
+        @InjectPlugin
+        public static DrawingEventManager drawingEventManager;
         @Override
         public String getDisplayName() { return "Simspark (FX)"; }
     }
@@ -35,7 +39,10 @@ public class SimsparkDialog extends AbstractJFXDialog
     SimsparkPanel simsparkPanelController;
     @FXML ToggleButton connectBtn;
     @FXML TextField host;
-    @FXML Spinner<Integer> port;
+    @FXML
+    Spinner<Integer> port;
+    @FXML
+    CheckBox fieldDrawings;
 
     /**
      * Returns the ui definition.
@@ -74,12 +81,24 @@ public class SimsparkDialog extends AbstractJFXDialog
     @Override
     public void afterInit()
     {
-        Plugin.simsparkManager.addSimsparkListener(simsparkPanelController);
+        simsparkPanelController.setSimsparkManager(Plugin.simsparkManager);
+        simsparkPanelController.setDrawingEventManager(Plugin.drawingEventManager);
         // handle some ui changes
         host.disableProperty().bind(Plugin.simsparkManager.isConnected());
         port.disableProperty().bind(Plugin.simsparkManager.isConnected());
         Plugin.simsparkManager.isConnected().addListener((b) -> {
             connectBtn.setSelected(((BooleanProperty)b).get());
+        });
+        fieldDrawings.selectedProperty().addListener((v) ->
+        {
+            if (((BooleanProperty) v).get())
+            {
+                simsparkPanelController.enableFieldDrawings();
+            }
+            else
+            {
+                simsparkPanelController.disableFieldDrawings();
+            }
         });
     }
     

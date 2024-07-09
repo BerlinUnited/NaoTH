@@ -1,29 +1,49 @@
 package de.naoth.rc.dialogsFx.simspark;
 
-import de.naoth.rc.RobotControl;
-import de.naoth.rc.components.simspark.SimsparkListener;
-import de.naoth.rc.dataformats.SimsparkState;
+import de.naoth.rc.components.simspark.SimsparkManager;
+import de.naoth.rc.components.simspark.SimsparkSceneListener;
+import de.naoth.rc.components.simspark.SimsparkState;
+import de.naoth.rc.components.simspark.SimsparkStateListener;
+import de.naoth.rc.components.simspark.commands.BallCommand;
+import de.naoth.rc.components.simspark.commands.DropBallCommand;
+import de.naoth.rc.components.simspark.commands.SimsparkCommand;
+import de.naoth.rc.components.simspark.scene.SimsparkScene;
+import de.naoth.rc.drawingmanager.DrawingEventManager;
+import de.naoth.rc.drawings.DrawingCollection;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.TableView;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.util.Duration;
 
 /**
  * @author Philipp Strobel <philippstrobel@posteo.de>
  */
-public class SimsparkPanel implements SimsparkListener
+public class SimsparkPanel implements SimsparkStateListener, SimsparkSceneListener
 {
     /** The controlling instance representing the connection to the robot. */
-    private RobotControl control;
+    private SimsparkManager simsparkManager;
+    private DrawingEventManager drawingEventManager;
+
+    private SimsparkScene scene;
+    private Timer timerDrawScene;
     
     @FXML private TableView<SimsparkData> stateData;
     @FXML private ListView<String> commandHistory;
@@ -61,7 +81,6 @@ public class SimsparkPanel implements SimsparkListener
      */
     private final Map<String, StringProperty> simsparkDataMapping = simsparkData.stream().collect(Collectors.toMap((v) -> v.name.get(), (v) -> v.value));
 
-
     /**
      * Gets called, after the FXML file was loaded.
      */
@@ -75,6 +94,65 @@ public class SimsparkPanel implements SimsparkListener
         col2.setCellValueFactory(new PropertyValueFactory<>("value"));
 
         stateData.setItems(simsparkData);
+    }
+
+    /**
+     * Sets the simspark manager.
+     *
+     * @param manager the (global) simspark manager
+     */
+    public void setSimsparkManager(SimsparkManager manager)
+    {
+        if (simsparkManager != null)
+        {
+            simsparkManager.removeSimsparkStateListener(this);
+            commandBox.disableProperty().unbind();
+            commandHistory.disableProperty().unbind();
+        }
+
+        simsparkManager = manager;
+
+        simsparkManager.addSimsparkStateListener(this);
+        simsparkManager.addSimsparkSceneListener(this);
+        commandBox.disableProperty().bind(simsparkManager.isConnected().not());
+        commandHistory.disableProperty().bind(simsparkManager.isConnected().not());
+    }
+
+    public void setDrawingEventManager(DrawingEventManager manager)
+    {
+        drawingEventManager = manager;
+    }
+
+    public void enableFieldDrawings()
+    {
+        // start/schedule robots field drawer
+        timerDrawScene = new Timer();
+        timerDrawScene.scheduleAtFixedRate(new TimerTask()
+        {
+            @Override
+            public void run()
+            {
+                if (scene != null)
+                {
+                    DrawingCollection drawings = new DrawingCollection();
+                    scene.data.forEach((o) ->
+                    {
+                        o.draw(drawings);
+                    });
+                    drawingEventManager.fireDrawingEvent(drawings, this);
+                }
+            }
+        }, 100, 33);
+    }
+
+    public void disableFieldDrawings()
+    {
+        if (timerDrawScene != null)
+        {
+            timerDrawScene.cancel();
+            timerDrawScene.purge();
+            timerDrawScene = null;
+        }
     }
 
     /**
@@ -98,6 +176,12 @@ public class SimsparkPanel implements SimsparkListener
                 simsparkDataMapping.put(newData.getName(), newData.value);
             }
         });
+    }
+
+    @Override
+    public void newSimsparkScene(SimsparkScene scene)
+    {
+        this.scene = scene;
     }
     
     @FXML
