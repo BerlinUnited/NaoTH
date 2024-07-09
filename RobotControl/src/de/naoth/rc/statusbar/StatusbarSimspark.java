@@ -1,7 +1,7 @@
 package de.naoth.rc.statusbar;
 
 import de.naoth.rc.RobotControlImpl;
-import de.naoth.rc.components.simspark.SimsparkListener;
+import de.naoth.rc.components.simspark.SimsparkStateListener;
 import de.naoth.rc.components.simspark.SimsparkManager;
 import de.naoth.rc.dataformats.SimsparkState;
 import java.awt.event.KeyEvent;
@@ -23,7 +23,7 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  * @author Philipp Strobel <philippstrobel@posteo.de>
  */
 @PluginImplementation
-public class StatusbarSimspark extends StatusbarPluginImpl implements SimsparkListener
+public class StatusbarSimspark extends StatusbarPluginImpl implements SimsparkStateListener
 {
     @InjectPlugin
     public SimsparkManager simsparkManager;
@@ -100,7 +100,7 @@ public class StatusbarSimspark extends StatusbarPluginImpl implements SimsparkLi
     
     private void onConnect()
     {
-        simsparkManager.addSimsparkListener(this);
+        simsparkManager.addSimsparkStateListener(this);
 
         // update UI
         setEnabled(true);
@@ -109,7 +109,7 @@ public class StatusbarSimspark extends StatusbarPluginImpl implements SimsparkLi
     
     private void onDisconnect()
     {
-        simsparkManager.removeSimsparkListener(this);
+        simsparkManager.removeSimsparkStateListener(this);
         
         setEnabled(false);
         setToolTipText(defaultTooltip);
@@ -128,7 +128,7 @@ public class StatusbarSimspark extends StatusbarPluginImpl implements SimsparkLi
         setTooltipHeight(state.data.size(), 6);
         setToolTipText("<html>" + "<table border=\"0\">" + ttt + "</table>" + "</html>");
     }
-    
+
     private void sendCommand(String cmd)
     {
         if (simsparkManager.isConnected().get())

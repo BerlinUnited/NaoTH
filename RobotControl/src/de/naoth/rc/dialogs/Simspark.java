@@ -1,6 +1,6 @@
 package de.naoth.rc.dialogs;
 
-import de.naoth.rc.components.simspark.SimsparkListener;
+import de.naoth.rc.components.simspark.SimsparkStateListener;
 import de.naoth.rc.components.simspark.SimsparkManager;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
@@ -16,7 +16,7 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  * 
  * @author Philipp Strobel <philippstrobel@posteo.de>
  */
-public class Simspark extends AbstractDialog implements SimsparkListener
+public class Simspark extends AbstractDialog implements SimsparkStateListener
 {
     @RCDialog(category = RCDialog.Category.Tools, name = "SimsparkMonitor")
     @PluginImplementation
@@ -35,7 +35,7 @@ public class Simspark extends AbstractDialog implements SimsparkListener
         jTable1.getColumnModel().getColumn(0).setWidth(20);
         jTable1.getColumnModel().getColumn(0).setPreferredWidth(20);
         
-        Plugin.simsparkManger.addSimsparkListener(this);
+        Plugin.simsparkManger.addSimsparkStateListener(this);
     }
 
     /**
