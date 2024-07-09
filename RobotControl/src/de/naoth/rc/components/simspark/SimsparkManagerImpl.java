@@ -1,6 +1,6 @@
 package de.naoth.rc.components.simspark;
 
-import de.naoth.rc.dataformats.SimsparkState;
+import de.naoth.rc.components.simspark.scene.SimsparkScene;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,7 +19,12 @@ import net.xeoh.plugins.base.annotations.events.Shutdown;
 public class SimsparkManagerImpl implements SimsparkManager
 {
     /** The registered simspark listener. */
-    private final List<SimsparkListener> simsparkListeners = Collections.synchronizedList(new ArrayList<>());
+    private final List<SimsparkStateListener> simsparkStateListeners = Collections.synchronizedList(new ArrayList<>());
+    /**
+     * The registered simspark listener.
+     */
+    private final List<SimsparkSceneListener> simsparkSceneListeners = Collections.synchronizedList(new ArrayList<>());
+
     /** The connected SimSpark monitor instance. */
     private SimsparkMonitor simsparkMonitor;
     /** Boolean property indicating the connection state of the SimSpark monitor instance. */
@@ -134,9 +139,9 @@ public class SimsparkManagerImpl implements SimsparkManager
      * @param l the listener, which should be removed
      */
     @Override
-    public void removeSimsparkListener(SimsparkListener l)
+    public void removeSimsparkStateListener(SimsparkStateListener l)
     {
-        simsparkListeners.remove(l);
+        simsparkStateListeners.remove(l);
     }
 
     /**
@@ -146,11 +151,37 @@ public class SimsparkManagerImpl implements SimsparkManager
      * @param l the listener, which should be added
      */
     @Override
-    public void addSimsparkListener(SimsparkListener l)
+    public void addSimsparkStateListener(SimsparkStateListener l)
     {
         if (l != null)
         {
-            simsparkListeners.add(l);
+            simsparkStateListeners.add(l);
+        }
+    }
+
+    /**
+     * Removes a simspark listener from the active listener list.
+     *
+     * @param l the listener, which should be removed
+     */
+    @Override
+    public void removeSimsparkSceneListener(SimsparkSceneListener l)
+    {
+        simsparkSceneListeners.remove(l);
+    }
+
+    /**
+     * Adds a simspark listener to the active listner list. The listener gets
+     * called, when a new simspark state is received.
+     *
+     * @param l the listener, which should be added
+     */
+    @Override
+    public void addSimsparkSceneListener(SimsparkSceneListener l)
+    {
+        if (l != null)
+        {
+            simsparkSceneListeners.add(l);
         }
     }
 
@@ -162,11 +193,27 @@ public class SimsparkManagerImpl implements SimsparkManager
     @Override
     public void receivedSimsparkState(SimsparkState s)
     {
-        simsparkListeners.forEach((l) ->
+        simsparkStateListeners.forEach((l) ->
         {
             try
             {
                 l.newSimsparkData(s);
+            }
+            catch (Exception e)
+            {
+                Logger.getLogger(SimsparkManagerImpl.class.getName()).log(Level.SEVERE, null, e);
+            }
+        });
+    }
+
+    @Override
+    public void updateSimsparkScene(SimsparkScene s)
+    {
+        simsparkSceneListeners.forEach((l) ->
+        {
+            try
+            {
+                l.newSimsparkScene(s);
             }
             catch (Exception e)
             {

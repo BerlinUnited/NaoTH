@@ -1,10 +1,13 @@
 package de.naoth.rc.components.simspark;
 
+import de.naoth.rc.components.simspark.scene.SimsparkScene;
+import de.naoth.rc.components.simspark.scene.SimsparkSceneAgent;
+import de.naoth.rc.components.simspark.scene.SimsparkSceneBall;
+import de.naoth.rc.components.simspark.scene.SimsparkSceneObject;
 import de.naoth.rc.components.teamcomm.TeamCommManager;
 import de.naoth.rc.components.teamcomm.TeamCommMessage;
 import de.naoth.rc.dataformats.SPLMessage;
 import de.naoth.rc.dataformats.Sexp;
-import de.naoth.rc.dataformats.SimsparkState;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -21,10 +24,11 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 /**
  * A simple Simspark monitor.
  * Receives Simspark monitor messages and parses them.
- * Additional, the parsed state is provided to other modules via the SimsparkManger and if simspark 
- * sends teamcomm messages, these are parsed too and  broadcasted to other listening modules/dialog
- * (eg. TeamCommViewer).
- * 
+ * Additional, the parsed state is provided to other modules via the
+ * SimsparkManger and if simspark * sends teamcomm messages, these are parsed too
+ * and broadcasted to other listening modules/dialog (eg. TeamCommViewer). Also
+ * the simspark scene graph is parsed and published to the scene listeners.
+ *
  * @author Philipp Strobel <philippstrobel@posteo.de>
  */
 public class SimsparkMonitor extends Simspark {
@@ -37,9 +41,26 @@ public class SimsparkMonitor extends Simspark {
         public static SimsparkManager simsparkManger;
     }//end Plugin
 
-    /** Representation of the simspark game state. */
+    /**
+     * Representation of the simspark game state.
+     */
     public SimsparkState state = new SimsparkState();
-    
+
+    /**
+     * Indicates, if the state was updated.
+     */
+    private boolean stateHasBeenUpdated = false;
+
+    /**
+     * Representation of the simspark scene.
+     */
+    public SimsparkScene scene = new SimsparkScene();
+
+    /**
+     * Indicates, if the scene was updated.
+     */
+    private boolean sceneHasBeenUpdated = false;
+
     /**
      * Main method of the simspark monitor thread.
      */
@@ -77,38 +98,177 @@ public class SimsparkMonitor extends Simspark {
         }
 
         @Override
-        public void run() {
-            state.hasBeenUpdated = false;
+        public void run()
+        {
+            stateHasBeenUpdated = false;
+            sceneHasBeenUpdated = false;
+
             parseMessages(parser.parseSexp());
-            if(state.hasBeenUpdated) {
+
+            if (stateHasBeenUpdated)
+            {
                 Plugin.simsparkManger.receivedSimsparkState(state);
+            }
+
+            if (sceneHasBeenUpdated)
+            {
+                Plugin.simsparkManger.updateSimsparkScene(scene);
             }
         }
 
-        public void parseMessages(List<Object> messages) {
+        public void parseMessages(List<Object> messages)
+        {
             // skip empty messages
-            if (!messages.isEmpty()) {
-                    // get the first "object"
-                    Object o = messages.get(0);
-                    // first "object" could be a string ...
-                    if (o instanceof String) {
-                        updateSimsparkState((String) o, messages.subList(1, messages.size()));
-                        // if there are TeamCommMessages - parse and "broadcast" them
-                        if(((String) o).equals("messages")) {
-                            broadcastTeamCommMessages(messages.subList(1, messages.size()));
-                        }
-                    } else {
-                        // ... or object could be a list of objects/strings
-                        for (Object object : messages) {
-                            // iterate over list and parse the objects/strings
-                            parseMessages((List<Object>) object);
-                        }
+            if (messages.isEmpty())
+            {
+                return;
+            }
+
+            // the message must have 3 parts
+            if (messages.size() != 3)
+            {
+                return;
+            }
+
+            // the first part contains the environment (update)
+            ((List<Object>) messages.get(0)).stream().forEach((env) ->
+            {
+                List<Object> p = (List<Object>) env;
+                updateSimsparkState((String) p.get(0), p.subList(1, p.size()));
+            });
+
+            // the second part contains the update type and consist of 3 parts
+            List<Object> type = (List<Object>) messages.get(1);
+            if (type.size() != 3)
+            {
+                return;
+            }
+
+            String name = (String) type.get(0);
+            if (name.equals("RSG"))
+            {
+                // Ruby Scene Graph: indicates that the scene graph is a full description of the env.
+                parseRubySceneGraph((List<Object>) messages.get(2));
+            }
+            else if (name.equals("RDS"))
+            {
+                // Ruby Diff Scene, and indicates that the scene graph is a partial description of the environment
+                parseRubyDiffScene((List<Object>) messages.get(2));
+            }
+            else
+            {
+                Logger.getLogger(SimsparkMonitor.class.getName()).log(Level.WARNING, "Invalid scene graph update!");
+            }
+        } // end parseMessages()
+
+        private void parseRubySceneGraph(List<Object> nodes)
+        {
+            for (int i = 0; i < nodes.size(); i++)
+            {
+                List<Object> nd = (List<Object>) nodes.get(i);
+
+                // check if node is ball
+                Object value = listAccessor(nd, 3, 3, 1);
+                if (value instanceof String && ((String) value).contains("soccerball"))
+                {
+                    SimsparkSceneBall ball = new SimsparkSceneBall(
+                            i,
+                            Float.parseFloat((String) listAccessor(nd, 2, 13)),
+                            Float.parseFloat((String) listAccessor(nd, 2, 14)),
+                            Float.parseFloat((String) listAccessor(nd, 2, 15)));
+                    scene.add(ball);
+                    sceneHasBeenUpdated = true;
+
+                    continue;
+                }
+
+                // check if node is an agent
+                value = listAccessor(nd, 3, 3, 3, 3, 1);
+                if (value instanceof String && ((String) value).contains("naobody"))
+                {
+                    List<Object> pos = (List<Object>) listAccessor(nd, 3, 2);
+
+                    String team = ((String) listAccessor(nd, 3, 3, 3, 5, 2)).substring(3);
+                    int number = Integer.parseInt(((String) listAccessor(nd, 3, 3, 3, 5, 1)).substring(6));
+
+                    SimsparkSceneAgent robot = new SimsparkSceneAgent(
+                            i,
+                            team,
+                            number,
+                            Float.parseFloat((String) pos.get(13)),
+                            Float.parseFloat((String) pos.get(14)),
+                            Float.parseFloat((String) pos.get(15)),
+                            (float) calculateRotation(Float.parseFloat((String) pos.get(5)), Float.parseFloat((String) pos.get(6))));
+                    scene.add(robot);
+                    sceneHasBeenUpdated = true;
+
+                    continue;
+                }
+            }
+        }
+
+        private void parseRubyDiffScene(List<Object> nodes)
+        {
+            for (SimsparkSceneObject object : scene.data)
+            {
+                if (object instanceof SimsparkSceneBall)
+                {
+                    List<Object> ballNode = (List<Object>) listAccessor(nodes, object.sceneIndex, 1);
+                    if (ballNode.size() >= 16)
+                    {
+                        ((SimsparkSceneBall) object).update(
+                                Float.parseFloat((String) ballNode.get(13)),
+                                Float.parseFloat((String) ballNode.get(14)),
+                                Float.parseFloat((String) ballNode.get(15))
+                        );
+                        sceneHasBeenUpdated = true;
                     }
                 }
-        } // end parseMessages()
+                else if (object instanceof SimsparkSceneAgent)
+                {
+                    List<Object> agentNode = (List<Object>) listAccessor(nodes, object.sceneIndex, 1, 1);
+                    if (agentNode.size() >= 16)
+                    {
+                        SimsparkSceneAgent robot = (SimsparkSceneAgent) object;
+                        robot.update(
+                                Float.parseFloat((String) agentNode.get(13)),
+                                Float.parseFloat((String) agentNode.get(14)),
+                                Float.parseFloat((String) agentNode.get(15)),
+                                (float) calculateRotation(Float.parseFloat((String) agentNode.get(5)), Float.parseFloat((String) agentNode.get(6)))
+                        );
+                        sceneHasBeenUpdated = true;
+                    }
+                }
+            }
+        }
+
+        private double calculateRotation(float r1, float r2)
+        {
+            return Math.acos(r1 / Math.sqrt(r1 * r1 + r2 * r2)) * (r2 < 0 ? -1 : 1);
+        }
+
+        private Object listAccessor(List<Object> l, int... i)
+        {
+            Object current = l;
+            for (int idx : i)
+            {
+                if (current instanceof List && ((List<Object>) current).size() > idx)
+                {
+                    current = ((List<Object>) current).get(idx);
+                }
+                else
+                {
+                    return null;
+                }
+            }
+
+            return current;
+        }
         
-        private void updateSimsparkState(String attribute, List<Object> value) {
-            if(value.isEmpty()) {
+        private void updateSimsparkState(String attribute, List<Object> value)
+        {
+            if (value.isEmpty())
+            {
                 // if there's no value, attribute is handled as boolean and set to true
                 state.set(attribute, true);
             } else if(value.size() == 1) {
@@ -117,6 +277,11 @@ public class SimsparkMonitor extends Simspark {
             } else {
                 // otherwise it's a list of values ...
                 state.set(attribute, value);
+                // if it's a list of message, broadcast them
+                if (attribute.equals("messages"))
+                {
+                    broadcastTeamCommMessages(value);
+                }
             }
         }
         
