@@ -1,5 +1,7 @@
 package de.naoth.rc.components.simspark.scene;
 
+import de.naoth.rc.drawings.DrawingCollection;
+
 /**
  * Abstract simspark scene object. The object is identified by the scene index.
  *
@@ -13,4 +15,6 @@ public abstract class SimsparkSceneObject
     {
         this.sceneIndex = sceneIndex;
     }
+
+    public abstract void draw(DrawingCollection drawings);
 }
