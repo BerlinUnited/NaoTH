@@ -1,5 +1,5 @@
 
-package de.naoth.rc.dataformats;
+package de.naoth.rc.components.simspark;
 
 import java.util.Collections;
 import java.util.List;

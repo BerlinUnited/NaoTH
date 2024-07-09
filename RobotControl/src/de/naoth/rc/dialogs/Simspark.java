@@ -5,7 +5,7 @@ import de.naoth.rc.components.simspark.SimsparkManager;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.core.dialog.RCDialog;
-import de.naoth.rc.dataformats.SimsparkState;
+import de.naoth.rc.components.simspark.SimsparkState;
 import javax.swing.table.TableModel;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;

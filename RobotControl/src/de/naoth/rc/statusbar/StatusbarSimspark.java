@@ -3,7 +3,7 @@ package de.naoth.rc.statusbar;
 import de.naoth.rc.RobotControlImpl;
 import de.naoth.rc.components.simspark.SimsparkStateListener;
 import de.naoth.rc.components.simspark.SimsparkManager;
-import de.naoth.rc.dataformats.SimsparkState;
+import de.naoth.rc.components.simspark.SimsparkState;
 import java.awt.event.KeyEvent;
 import javafx.beans.property.BooleanProperty;
 import javax.swing.JButton;
