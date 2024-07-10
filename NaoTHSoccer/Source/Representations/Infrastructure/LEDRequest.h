@@ -5,8 +5,8 @@
  * Created on 22. April 2009, 16:44
  */
 
-#ifndef _LEDREQUEST_H
-#define _LEDREQUEST_H
+#ifndef LED_REQUEST_H
+#define LED_REQUEST_H
 
 #include "Representations/Infrastructure/LEDData.h"
 #include "Tools/DataStructures/Printable.h"
@@ -15,24 +15,14 @@ class LEDRequest : public naoth::Printable
 {
 
 public:
+  LEDRequest() {}
+  virtual ~LEDRequest(){}
 
-  LEDRequest()
-  {
-
-  }
-
-  virtual void print(std::ostream& stream) const
-  {
+  virtual void print(std::ostream& stream) const {
     request.print(stream);
   }
 
-  virtual ~LEDRequest()
-  {
-    
-  }
-
   naoth::LEDData request;
-
 };
 
 class BehaviorLEDRequest : public LEDRequest
@@ -40,7 +30,6 @@ class BehaviorLEDRequest : public LEDRequest
 public:
   virtual ~BehaviorLEDRequest() {}
 };
-
 
 class GameControllerLEDRequest : public LEDRequest
 {
@@ -64,7 +53,5 @@ public:
   bool ignore;
 };
 
-
-
-#endif  /* _LEDREQUEST_H */
+#endif  /* LED_REQUEST_H */
 

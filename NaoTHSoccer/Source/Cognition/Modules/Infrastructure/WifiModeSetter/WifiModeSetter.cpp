@@ -30,12 +30,11 @@ void WifiModeSetter::execute()
             frameWhenColorChanged = getFrameInfo().getFrameNumber();
             
             // invert the previous chest button request
-            getWifiModeSetterLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::RED] = 
-                1.0 - getLEDData().theMultiLED[LEDData::ChestButton][LEDData::RED];
-            getWifiModeSetterLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::GREEN] = 
-                1.0 - getLEDData().theMultiLED[LEDData::ChestButton][LEDData::GREEN];
-            getWifiModeSetterLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::BLUE] =
-                1.0 - getLEDData().theMultiLED[LEDData::ChestButton][LEDData::BLUE];
+            getWifiModeSetterLEDRequest().request.setChestButton(
+              1.0 - getLEDData().theMultiLED[LEDData::ChestButton][LEDData::RED],
+              1.0 - getLEDData().theMultiLED[LEDData::ChestButton][LEDData::GREEN],
+              1.0 - getLEDData().theMultiLED[LEDData::ChestButton][LEDData::BLUE]
+            );
         }
 
         if(currentFrame >= frameWhenColorChanged && currentFrame < frameWhenColorChanged + 5) {

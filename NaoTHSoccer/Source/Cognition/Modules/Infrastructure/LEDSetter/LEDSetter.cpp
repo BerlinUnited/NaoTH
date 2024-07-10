@@ -7,73 +7,67 @@
 
 #include "LEDSetter.h"
 
-LEDSetter::LEDSetter()
-{
-
-}
-
 void LEDSetter::execute()
 {
   getLEDData().change = false;
 
-  if(!getFrameRateCheckLEDRequest().ignore && (getFrameInfo().getFrameNumber() / 4) % 2 == 0)
-  {
-    // get all head LEDs from frame rate check
-    copyMonoLEDData(getFrameRateCheckLEDRequest(), LEDData::EarRight0, LEDData::EarLeft324);
-    copyMultiLEDData(getFrameRateCheckLEDRequest(), LEDData::FaceRight0, LEDData::FaceLeft315);
-  }
-  else
-  {
-    // head LEDs from behavior
-    copyMonoLEDData(getBehaviorLEDRequest(), LEDData::EarRight0, LEDData::HeadRearRight2);
-    copyMultiLEDData(getBehaviorLEDRequest(), LEDData::FaceRight0, LEDData::FaceLeft315);
-  }
-  // feet and chest button and head from GameController
-  copyMultiLEDData(getGameControllerLEDRequest(), LEDData::FootLeft, LEDData::ChestButton);
+  // 1. Behavior
+  //   - ears
+  //   - head
+  //   - eyes
+  copyMonoLEDData(getBehaviorLEDRequest(), LEDData::EarRight0, LEDData::EarLeft324);
+  copyMonoLEDData(getBehaviorLEDRequest(), LEDData::HeadFrontLeft0, LEDData::HeadRearRight2);
+  copyMultiLEDData(getBehaviorLEDRequest(), LEDData::FaceRight0, LEDData::FaceLeft315);
 
+  // 2. GameController: feet and chest button and head from GameController
+  //  - chest button
+  //  - head
+  copyMultiLEDData(getGameControllerLEDRequest(), LEDData::FootLeft, LEDData::ChestButton);
+  // NOTE: GameController shows kickoff state in initial, ready and set
+  // TODO: Behavior uses the head to visualize striker and charging state, which colides with this.
+  //copyMonoLEDData(getGameControllerLEDRequest(), LEDData::HeadFrontLeft0, LEDData::HeadRearRight2);
+
+  // 3. WifiModeSetter
+  //  - chest button
   if(!getWifiModeSetterLEDRequest().ignore) {
     // Wifi status can override chest button from GameController
     copyMultiLEDData(getWifiModeSetterLEDRequest(), LEDData::ChestButton, LEDData::ChestButton);
   }
-  //copyMonoLEDData(getGameControllerLEDRequest(), LEDData::HeadFrontLeft0, LEDData::HeadRearRight2);
+
+  // 4. FrameRateCheck
+  //   - ears
+  //   - head
+  //   - eyes
+  // NOTE: FrameRateCheck requests all LEDs to be set to white, but only ears, head and eyes are copied here
+  if(!getFrameRateCheckLEDRequest().ignore)
+  {
+    // get all head LEDs from frame rate check
+    copyMonoLEDData(getFrameRateCheckLEDRequest(), LEDData::EarRight0, LEDData::EarLeft324);
+    copyMonoLEDData(getFrameRateCheckLEDRequest(), LEDData::HeadFrontLeft0, LEDData::HeadRearRight2);
+
+    // copy both eyes
+    copyMultiLEDData(getFrameRateCheckLEDRequest(), LEDData::FaceRight0, LEDData::FaceLeft315);
+  }
 
 } // end execute
 
-void LEDSetter::copyMultiLEDData(const LEDRequest &data, int from, int to)
+void LEDSetter::copyMultiLEDData(const LEDRequest& data, int from, int to)
 {
-  for(int i=from; i <= to; i++)
+  for(int i = from; i <= to; i++)
   {
-    if(data.request.theMultiLED[i][LEDData::RED]
-      != getLEDData().theMultiLED[i][LEDData::RED])
-    {
-      getLEDData().theMultiLED[i][LEDData::RED] =
-       data.request.theMultiLED[i][LEDData::RED];
-      getLEDData().change = true;
-    }
-
-    if(data.request.theMultiLED[i][LEDData::BLUE]
-      != getLEDData().theMultiLED[i][LEDData::BLUE])
-    {
-      getLEDData().theMultiLED[i][LEDData::BLUE] =
-        data.request.theMultiLED[i][LEDData::BLUE];
-      getLEDData().change = true;
-    }
-
-    if(data.request.theMultiLED[i][LEDData::GREEN]
-      != getLEDData().theMultiLED[i][LEDData::GREEN])
-    {
-      getLEDData().theMultiLED[i][LEDData::GREEN] =
-        data.request.theMultiLED[i][LEDData::GREEN];
-      getLEDData().change = true;
+    for(int c = LEDData::RED; c < LEDData::numOfLEDColor; ++c) {
+      // check for all colors
+      if(data.request.theMultiLED[i][c] != getLEDData().theMultiLED[i][c])
+      {
+        getLEDData().theMultiLED[i][c] = data.request.theMultiLED[i][c];
+        getLEDData().change = true;
+      }
     }
   }
-
 }
 
-void LEDSetter::copyMonoLEDData(const LEDRequest &data, int from, int to)
+void LEDSetter::copyMonoLEDData(const LEDRequest& data, int from, int to)
 {
-  // head LEDs from behavior
-
   for(int i=from; i <= to; i++)
   {
     if(data.request.theMonoLED[i] != getLEDData().theMonoLED[i])
@@ -82,9 +76,4 @@ void LEDSetter::copyMonoLEDData(const LEDRequest &data, int from, int to)
       getLEDData().change = true;
     }
   }
-
 }//end copyData
-
-LEDSetter::~LEDSetter()
-{
-}
