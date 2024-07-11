@@ -16,8 +16,8 @@ option battery {
         stay;
     }
     action {
-      set_left_ear = min(value0=10.0,value1=platform.battery*10);
-      set_right_ear = min(value0=10.0,value1=platform.battery*10);
+      set_left_ear  = min(value0=10.0, value1=platform.battery*10);
+      set_right_ear = min(value0=10.0, value1=platform.battery*10);
     }
   }
 
@@ -51,9 +51,8 @@ option battery {
     action
     {
       //Fast flashing blinking
-      set_left_ear = (platform.frameNumber % 8 < 4) ? 9 : 0;
-      set_right_ear = (platform.frameNumber % 8 < 4) ? 9 : 0;
-
+      set_left_ear  = (platform.frameNumber % 8 < 4) ? 10 : 0;
+      set_right_ear = (platform.frameNumber % 8 < 4) ? 10 : 0;
     }
   }
 
@@ -70,8 +69,8 @@ option battery {
     }
     action
     {
-      set_left_ear = (platform.frameNumber % 30 < 15) ? 9 : 0;
-      set_right_ear = (platform.frameNumber % 30 < 15) ? 9 : 0;
+      set_left_ear  = (platform.frameNumber % 30 < 15) ? 10 : 0;
+      set_right_ear = (platform.frameNumber % 30 < 15) ? 10 : 0;
       set_head = (platform.frameNumber % 30 < 15) ? ((robot_pose.x < 0) ? 3 : 6) : 0;
     }
   }

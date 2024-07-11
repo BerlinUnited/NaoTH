@@ -122,6 +122,8 @@ std::map<string, std::shared_ptr<AbstractCNNFinder> > CNNBallDetector::createCNN
    if(location != cnnMap.end()){
      currentCNNClose = location->second;
    }
+
+   ASSERT(currentCNNClose != nullptr);
  }
 
  void CNNBallDetector::setDetector(const std::string& name, const std::string& nameClose) 
@@ -135,6 +137,8 @@ std::map<string, std::shared_ptr<AbstractCNNFinder> > CNNBallDetector::createCNN
    if(location != cnnMap.end()) {
      currentCNNClose_detector = location->second;
    }
+
+   ASSERT(currentCNNClose_detector != nullptr);
  }
 
 void CNNBallDetector::calculateCandidates()

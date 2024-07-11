@@ -14,12 +14,20 @@ void FieldSymbols::registerSymbols(xabsl::Engine& engine)
 {
   engine.registerDecimalInputSymbol("field.xPosOwnGroundline", &fieldInfo.xPosOwnGroundline);
   engine.registerDecimalInputSymbol("field.xPosOpponentGroundline", &fieldInfo.xPosOpponentGroundline);
+  
   engine.registerDecimalInputSymbol("field.yPosLeftGoal", &fieldInfo.yPosLeftGoalpost);
   engine.registerDecimalInputSymbol("field.yPosRightGoal", &fieldInfo.yPosRightGoalpost );
+
+  engine.registerDecimalInputSymbol("field.xPosOwnGoalBoxArea", &fieldInfo.xPosOwnGoalboxArea );
+  engine.registerDecimalInputSymbol("field.xPosOppGoalBoxArea", &fieldInfo.xPosOpponentGoalboxArea );
+  engine.registerDecimalInputSymbol("field.yPosLeftGoalBoxArea", &fieldInfo.yPosLeftGoalboxArea );
+  engine.registerDecimalInputSymbol("field.yPosRightGoalBoxArea", &fieldInfo.yPosRightGoalboxArea );
+
   engine.registerDecimalInputSymbol("field.xPosOwnPenaltyArea", &fieldInfo.xPosOwnPenaltyArea );
   engine.registerDecimalInputSymbol("field.xPosOppPenaltyArea", &fieldInfo.xPosOpponentPenaltyArea );
   engine.registerDecimalInputSymbol("field.yPosLeftPenaltyArea", &fieldInfo.yPosLeftPenaltyArea );
   engine.registerDecimalInputSymbol("field.yPosRightPenaltyArea", &fieldInfo.yPosRightPenaltyArea );
+
   engine.registerDecimalInputSymbol("field.centerCircleRadius", &fieldInfo.centerCircleRadius );
 
   engine.registerDecimalInputSymbol("field.xPosFirstDefenseline", &xPosFirstDefenseline);
@@ -32,7 +40,7 @@ void FieldSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("field.yPosLeftSideline", &fieldInfo.yPosLeftSideline);
   engine.registerDecimalInputSymbol("field.yPosRightSideline", &fieldInfo.yPosRightSideline);
 
-  engine.registerDecimalInputSymbol("field.xenaltyMarkDistance", &fieldInfo.xPenaltyMarkDistance);
+  engine.registerDecimalInputSymbol("field.xPenaltyMarkDistance", &fieldInfo.xPenaltyMarkDistance);
   engine.registerDecimalInputSymbol("field.xPosOwnPenaltyMark", &xPosOwnPenaltyMark);
   engine.registerDecimalInputSymbol("field.xPosOppPenaltyMark", &xPosOppPenaltyMark);
 }//end registerSymbols
