@@ -50,7 +50,6 @@
 #include "Tools/Debug/DebugPlot.h"
 
 #include <memory>
-#include <Representations.pb.h>
 
 BEGIN_DECLARE_MODULE(CNNBallDetector)
   PROVIDE(DebugRequest)
