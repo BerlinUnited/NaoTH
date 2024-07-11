@@ -17,6 +17,7 @@
 // representations
 #include "Representations/Infrastructure/LEDRequest.h"
 #include "Tools/Debug/Color.h"
+#include <array>
 
 BEGIN_DECLARE_MODULE(LedSymbols)
   PROVIDE(BehaviorLEDRequest)
@@ -54,8 +55,8 @@ private:
   }};
 
   const Color& getEyeColor(int i) {
-    ASSERT(0 <= i && i < colors.size());
-    return colors[i];
+    // use at() to make sure the index 'i' is within the bounds
+    return colors.at(i);
   }
 
   // setter and getter
