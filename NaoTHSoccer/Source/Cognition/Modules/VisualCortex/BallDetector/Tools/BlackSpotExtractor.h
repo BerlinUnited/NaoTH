@@ -8,7 +8,7 @@
 #define _BlackSpotExtractor_H_
 
 #include "Representations/Perception/MultiChannelIntegralImage.h"
-#include "BestPatchList.h"
+#include "Representations/Perception/BestPatchList.h"
 
 class BlackSpotExtractor
 {

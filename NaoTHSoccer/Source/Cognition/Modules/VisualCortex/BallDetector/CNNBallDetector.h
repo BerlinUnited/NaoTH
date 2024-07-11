@@ -24,6 +24,8 @@
 #include "Representations/Perception/FieldColorPercept.h"
 #include "Representations/Infrastructure/FieldInfo.h"
 #include "Representations/Modeling/BallModel.h"
+#include "Representations/Perception/BestPatchList.h"
+
 
 #include "Representations/Perception/MultiChannelIntegralImage.h"
 #include "Representations/Perception/BallCandidates.h"
@@ -33,8 +35,6 @@
 #include "Tools/DoubleCamHelpers.h"
 
 // local tools
-#include "Tools/BestPatchList.h"
-#include "Tools/BallKeyPointExtractor.h"
 #include "Tools/BlackSpotExtractor.h"
 #include "Tools/DataStructures/RingBufferWithSum.h"
 
@@ -71,6 +71,9 @@ BEGIN_DECLARE_MODULE(CNNBallDetector)
 
   REQUIRE(BallDetectorIntegralImage)
   REQUIRE(BallDetectorIntegralImageTop)
+
+  REQUIRE(BestPatchList)
+  REQUIRE(BestPatchListTop)
 
   REQUIRE(FieldColorPercept)
   REQUIRE(FieldColorPerceptTop)
@@ -132,11 +135,7 @@ private:
   struct Parameters: public ParameterList
   {
     Parameters() : ParameterList("CNNBallDetector")
-    {
-      PARAMETER_REGISTER(keyDetector.borderRadiusFactorClose) = 0.5;
-      PARAMETER_REGISTER(keyDetector.borderRadiusFactorFar) = 0.8;
-      PARAMETER_REGISTER(keyDetector.maxInnerGreenDensitiy) = 0.5;
-      
+    {      
       PARAMETER_REGISTER(cnn.threshold) = 0.4;
       PARAMETER_REGISTER(cnn.thresholdClose) = 0.45;
       // Constant offset added to the input of the CNN. < 0 darker, > 0 brighter. T
@@ -168,8 +167,6 @@ private:
       
       syncWithConfig();
     }
-
-    BallKeyPointExtractor::Parameter keyDetector;
 
     struct CNN {
       double threshold;
@@ -213,9 +210,8 @@ private:
   std::string currentCNNCloseName;
 
   std::map<std::string, std::shared_ptr<AbstractCNNFinder> > cnnMap;
-
-  ModuleCreator<BallKeyPointExtractor>* theBallKeyPointExtractor;
-  BestPatchList best;
+ 
+  BestPatchList::PatchList patches;
 
 private:
   void calculateCandidates();
@@ -247,6 +243,7 @@ private:
   //DOUBLE_CAM_REQUIRE(CNNBallDetector, BodyContour);
   DOUBLE_CAM_REQUIRE(CNNBallDetector, BallDetectorIntegralImage);
   DOUBLE_CAM_REQUIRE(CNNBallDetector, FieldColorPercept);
+  DOUBLE_CAM_REQUIRE(CNNBallDetector, BestPatchList);
 
   DOUBLE_CAM_PROVIDE(CNNBallDetector, BallCandidates);
 };//end class CNNBallDetector
