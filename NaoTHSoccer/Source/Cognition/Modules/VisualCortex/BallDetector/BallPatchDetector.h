@@ -30,9 +30,6 @@
 #include "Tools/Debug/DebugDrawings.h"
 
 BEGIN_DECLARE_MODULE(BallPatchDetector)
-  PROVIDE(BestPatchList)
-  PROVIDE(BestPatchListTop)
-
   PROVIDE(DebugRequest)
   PROVIDE(DebugImageDrawings)
   PROVIDE(DebugImageDrawingsTop)
@@ -61,6 +58,9 @@ BEGIN_DECLARE_MODULE(BallPatchDetector)
 
   REQUIRE(FieldPercept)
   REQUIRE(FieldPerceptTop)
+
+  PROVIDE(BestPatchList)
+  PROVIDE(BestPatchListTop)
 END_DECLARE_MODULE(BallPatchDetector)
 
 /**
