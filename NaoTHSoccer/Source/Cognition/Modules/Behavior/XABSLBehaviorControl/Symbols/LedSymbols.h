@@ -8,6 +8,8 @@
 #ifndef LED_SYMBOLS_H
 #define LED_SYMBOLS_H
 
+#include <array>
+
 #include <ModuleFramework/Module.h>
 #include <XabslEngine/XabslEngine.h>
 
