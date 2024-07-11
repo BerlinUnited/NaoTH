@@ -74,7 +74,7 @@ void IntegralSubsamplingTest::execute(CameraInfo::CameraID id)
         Color color(v,v,v,0.8);
         PEN(color, 1);
         FILLBOX(cell.min.x, cell.min.y, cell.max.x, cell.max.y);
-        PEN(Color::black, 2);
+        PEN(Color::ColorID::black, 2);
 
         int percent = ((int)(cell_green_density*100 + 0.5));
         TEXT_DRAWING2( (cell.max.x + cell.min.x)/2, (cell.max.y + cell.min.y)/2, 0.025, percent );

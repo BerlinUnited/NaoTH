@@ -47,69 +47,71 @@ Color::Color(const char* color)
   (*this)[Red]   = static_cast<double>(16*hexCharToInt(color[0]) + hexCharToInt(color[1]))/255.0;
   (*this)[Green] = static_cast<double>(16*hexCharToInt(color[2]) + hexCharToInt(color[3]))/255.0;
   (*this)[Blue]  = static_cast<double>(16*hexCharToInt(color[4]) + hexCharToInt(color[5]))/255.0;
-  if(strlen(color) == 8)
+  if(strlen(color) == 8) {
     (*this)[Alpha] = static_cast<double>(16*hexCharToInt(color[6]) + hexCharToInt(color[7]))/255.0;
-  else
+  } else {
     (*this)[Alpha] = 1.0;
+  }
 }
 
-Color::Color(ColorPalett c) {
+Color::Color(ColorID c) 
+{
     switch(c){
-        case white:
+      case ColorID::white:
             (*this)[Red]   = 1.0;
             (*this)[Green] = 1.0;
             (*this)[Blue]  = 1.0;
             (*this)[Alpha] = 1.0;
             break;
-        case gray:
+        case ColorID::gray:
             (*this)[Red]   = 0.5;
             (*this)[Green] = 0.5;
             (*this)[Blue]  = 0.5;
             (*this)[Alpha] = 1.0;
             break;
-        case black:
+        case ColorID::black:
             (*this)[Red]   = 0.0;
             (*this)[Green] = 0.0;
             (*this)[Blue]  = 0.0;
             (*this)[Alpha] = 1.0;
             break;
-        case pink:
+        case ColorID::pink:
             (*this)[Red]   = 1.0;
             (*this)[Green] = 0.0;
             (*this)[Blue]  = 1.0;
             (*this)[Alpha] = 1.0;
             break;
-        case red:
+        case ColorID::red:
             (*this)[Red]   = 1.0;
             (*this)[Green] = 0.0;
             (*this)[Blue]  = 0.0;
             (*this)[Alpha] = 1.0;
             break;
-        case orange:
+        case ColorID::orange:
             (*this)[Red]   = 1.0;
             (*this)[Green] = 200.0/255.0;
             (*this)[Blue]  = 0.0;
             (*this)[Alpha] = 1.0;
             break;
-        case yellow:
+        case ColorID::yellow:
             (*this)[Red]   = 1.0;
             (*this)[Green] = 1.0;
             (*this)[Blue]  = 0.0;
             (*this)[Alpha] = 1.0;
             break;
-        case green:
+        case ColorID::green:
             (*this)[Red]   = 0.0;
             (*this)[Green] = 1.0;
             (*this)[Blue]  = 0.0;
             (*this)[Alpha] = 1.0;
             break;
-        case skyblue:
+        case ColorID::skyblue:
             (*this)[Red]   = 128.0/255.0;
             (*this)[Green] = 128.0/255.0;
             (*this)[Blue]  = 1.0;
             (*this)[Alpha] = 1.0;
             break;
-        case blue:
+        case ColorID::blue:
             (*this)[Red]   = 0.0;
             (*this)[Green] = 0.0;
             (*this)[Blue]  = 1.0;
@@ -176,7 +178,7 @@ std::string Color::toString() const
   result.append(charToHexString(getBlue()));
   result.append(charToHexString(getAlpha()));
   return result;
-}//end toString
+}
 
 std::string Color::charToHexString(unsigned char c)
 {
@@ -193,48 +195,48 @@ int Color::hexCharToInt(char c)
 {
   switch(c)
   {
-  case '0': return 0;
-  case '1': return 1;
-  case '2': return 2;
-  case '3': return 3;
-  case '4': return 4;
-  case '5': return 5;
-  case '6': return 6;
-  case '7': return 7;
-  case '8': return 8;
-  case '9': return 9;
-  case 'A': return 10;
-  case 'B': return 11;
-  case 'C': return 12;
-  case 'D': return 13;
-  case 'E': return 14;
-  case 'F': return 15;
-  default: return -1;
-  }//end switch
+    case '0': return 0;
+    case '1': return 1;
+    case '2': return 2;
+    case '3': return 3;
+    case '4': return 4;
+    case '5': return 5;
+    case '6': return 6;
+    case '7': return 7;
+    case '8': return 8;
+    case '9': return 9;
+    case 'A': return 10;
+    case 'B': return 11;
+    case 'C': return 12;
+    case 'D': return 13;
+    case 'E': return 14;
+    case 'F': return 15;
+    default: return -1;
+  }
 }//end intToHexChar
 
 char Color::intToHexChar(int n)
 {
   switch(n)
   {
-  case 0: return '0';
-  case 1: return '1';
-  case 2: return '2';
-  case 3: return '3';
-  case 4: return '4';
-  case 5: return '5';
-  case 6: return '6';
-  case 7: return '7';
-  case 8: return '8';
-  case 9: return '9';
-  case 10: return 'A';
-  case 11: return 'B';
-  case 12: return 'C';
-  case 13: return 'D';
-  case 14: return 'E';
-  case 15: return 'F';
-  default: return 'X';
-  }//end switch
+    case 0: return '0';
+    case 1: return '1';
+    case 2: return '2';
+    case 3: return '3';
+    case 4: return '4';
+    case 5: return '5';
+    case 6: return '6';
+    case 7: return '7';
+    case 8: return '8';
+    case 9: return '9';
+    case 10: return 'A';
+    case 11: return 'B';
+    case 12: return 'C';
+    case 13: return 'D';
+    case 14: return 'E';
+    case 15: return 'F';
+    default: return 'X';
+  }
 
   return 'X';
 }//end intToHexChar
