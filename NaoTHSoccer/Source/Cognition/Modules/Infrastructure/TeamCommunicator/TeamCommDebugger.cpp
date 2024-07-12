@@ -3,6 +3,9 @@
 
 void TeamCommDebugger::execute()
 {
+  getTeamMessageDebug().host = parameters.host;
+  getTeamMessageDebug().port = parameters.port;
+
   // only send data in the given interval
   if(getWifiMode().wifiEnabled && (unsigned int)getFrameInfo().getTimeSince(lastSentTimestamp) > parameters.send_interval)
   {

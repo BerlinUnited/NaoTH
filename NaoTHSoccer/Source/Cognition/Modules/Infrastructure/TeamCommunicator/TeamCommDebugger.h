@@ -54,12 +54,16 @@ private:
   public: 
     Parameters(): ParameterList("TeamCommDebugger")
     {
+      PARAMETER_REGISTER(host) = "10.0.4.200";
+      PARAMETER_REGISTER(port) = 10704;
       PARAMETER_REGISTER(send_interval) = 2000;
       
       // load from the file after registering all parameters
       syncWithConfig();
     }
 
+    std::string host;
+    unsigned int port;
     unsigned int send_interval;
     
     virtual ~Parameters() {}
