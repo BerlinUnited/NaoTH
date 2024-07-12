@@ -1,16 +1,10 @@
 #include "Fy1500_Conf.h"
+#include "Tools/SIMD/SIMD.h"
 
 #if WIN32
 #define alignas(x) __declspec(align(x))
 #endif
 
-// disable on macos and aarch64, i.e apple silicon
-// where emmintrin.h is not available
-#if defined(__APPLE__) && defined(__aarch64__)
-void Fy1500_Conf::cnn(float x0[16][16][1]){}
-#else
-
-#include <emmintrin.h>
 
 void Fy1500_Conf::cnn(float x0[16][16][1])
 {
@@ -2560,8 +2554,6 @@ void Fy1500_Conf::cnn(float x0[16][16][1])
 	scores[3] = scores[3] > 0.0f ? scores[3] : 0.0f;
 
 }
-
-#endif
 
 
 void Fy1500_Conf::predict(const BallCandidates::PatchYUVClassified& patch, double meanBrightness) {
