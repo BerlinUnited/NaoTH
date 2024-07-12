@@ -1,6 +1,8 @@
 #ifndef TEAMCOMMDEBUGGER_H
 #define TEAMCOMMDEBUGGER_H
 
+#include <arpa/inet.h>
+
 #include <ModuleFramework/Module.h>
 #include <MessagesSPL/SPLStandardMessage.h>
 #include <Representations/Infrastructure/FrameInfo.h>
@@ -54,7 +56,7 @@ private:
   public: 
     Parameters(): ParameterList("TeamCommDebugger")
     {
-      PARAMETER_REGISTER(host) = "10.0.4.200";
+      PARAMETER_REGISTER(host, &Parameters::setHost) = "127.0.0.1";
       PARAMETER_REGISTER(port) = 10704;
       PARAMETER_REGISTER(send_interval) = 2000;
       
@@ -66,6 +68,12 @@ private:
     unsigned int port;
     unsigned int send_interval;
     
+    // the host is set, if the host is a correct ip address
+    bool setHost(std::string h) {
+      struct sockaddr_in sa;
+      return inet_pton(AF_INET, h.c_str(), &(sa.sin_addr)) == 1;
+    }
+
     virtual ~Parameters() {}
   } parameters;
 
