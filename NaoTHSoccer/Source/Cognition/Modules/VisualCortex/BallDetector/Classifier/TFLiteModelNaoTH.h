@@ -1,12 +1,15 @@
-#ifndef _TFLITEMODEL_NAOTH_H
-#define _TFLITEMODEL_NAOTH_H
+#ifndef TFLITEMODEL_NAOTH_H
+#define TFLITEMODEL_NAOTH_H
 
 #include "tensorflow/lite/c/c_api.h"
 #include "tensorflow/lite/delegates/xnnpack/xnnpack_delegate.h"
 
 #include "AbstractCNNClassifier.h"
 
-static void error_reporter(void* user_data, const char* format, va_list args) {
+// TFlite C API based on HTWK Implementation
+// https://github.com/NaoHTWK/HTWKVision/
+
+static void error_reporter(void* /*user_data*/, const char* format, va_list args) {
     vfprintf(stderr, format, args);
     fprintf(stderr, "\n");
 }
