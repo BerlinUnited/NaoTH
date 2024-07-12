@@ -107,6 +107,20 @@ protected:
     virtual void set(T v) { (parent->*callback)(v); DefaultParameter<T>::set(v); }
   };
 
+  template<class T, class P>
+  class CallbackConditionalMemberParameter : public DefaultParameter<T> {
+  protected:
+      P* parent;
+      bool (P::*callback)(T v);
+  public:
+    CallbackConditionalMemberParameter(const std::string& name, T* value, bool (P::*callback)(T v),  P* parent)
+      : DefaultParameter<T>(name, value), 
+        parent(parent),
+        callback(callback)
+    {}
+    virtual void set(T v) { if ((parent->*callback)(v)) { DefaultParameter<T>::set(v); } }
+  };
+
 protected:
   // ACHTUNG: never copy the content of the parameter list
   ParameterList(const ParameterList& /*obj*/) {}
@@ -137,6 +151,14 @@ protected:
   Parameter<N>& registerParameter(const std::string& parameterName, N& parameter, void (P::*callback)(N))
   {
     CallbackMemberParameter<N,P>* parameterWrapper = new CallbackMemberParameter<N,P>(parameterName, &parameter, callback, reinterpret_cast<P*> (this) );
+    parameters.push_back(parameterWrapper);
+    return *parameterWrapper;
+  }
+
+  template<typename N, class P>
+  Parameter<N>& registerParameter(const std::string& parameterName, N& parameter, bool (P::*callback)(N))
+  {
+    CallbackConditionalMemberParameter<N,P>* parameterWrapper = new CallbackConditionalMemberParameter<N,P>(parameterName, &parameter, callback, reinterpret_cast<P*> (this) );
     parameters.push_back(parameterWrapper);
     return *parameterWrapper;
   }
@@ -206,6 +228,15 @@ public:
 
   int intParameterWithCallback;
   inline void setIntParameter(int v) { std::cout << "old: " << intParameterWithCallback << " new: " << v << std::endl; }
+  inline bool setStringParameter(std::string v) {
+    // the value is only set, if it is equal to "foo"
+    if (string == "foo") {
+      return true;
+    } else {
+      stringParameter = "Bar"; // make sure to set a default value, otherwise the parameter will be empty!
+    }
+    return false;
+  }
 
 } myExampleParameters;
 };
