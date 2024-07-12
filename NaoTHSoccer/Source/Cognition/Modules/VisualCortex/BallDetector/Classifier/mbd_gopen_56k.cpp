@@ -3,18 +3,12 @@
 *          DO NOT MODIFY BY HAND!
 */
 #include "mbd_gopen_56k.h"
+#include "Tools/SIMD/SIMD.h"
+
 
 #if WIN32
 	#define alignas(x) __declspec(align(x))
 #endif
-
-// disable on macos and aarch64, i.e apple silicon
-// where emmintrin.h is not available
-#if defined(__APPLE__) && defined(__aarch64__)
-void mbd_gopen_56k::cnn(float x0[16][16][1]){}
-#else
-
-#include <emmintrin.h>
 
 void mbd_gopen_56k::cnn(float x0[16][16][1])
 {
@@ -28242,8 +28236,6 @@ void mbd_gopen_56k::cnn(float x0[16][16][1])
 	 - 0.075438f * x6[28] + 0.208542f * x6[29] + 0.388651f * x6[30] - 0.153217f * x6[31];
 
 }
-
-#endif
 
 void mbd_gopen_56k::predict(const BallCandidates::PatchYUVClassified& patch, double meanBrightnessOffset)
 {

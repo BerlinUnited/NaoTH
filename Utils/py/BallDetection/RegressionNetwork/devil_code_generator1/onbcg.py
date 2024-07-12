@@ -236,7 +236,7 @@ class NaoTHCompiler:
             print("#ifndef _{}_H".format(class_name.upper()), file=fp)
             print("#define _{}_H".format(class_name.upper()), file=fp)
             print("", file=fp)
-            print("#include <emmintrin.h>", file=fp)
+            print('#include "Tools/SIMD/SIMD.h', file=fp)
             print("", file=fp)
             print("class {} {{".format(class_name), file=fp)
             print("public:", file=fp)
@@ -263,18 +263,11 @@ class NaoTHCompiler:
         
         self.c_inf["f"].write('#include \"{}.h\"\n\n'.format(class_name))
         self.c_inf["f"].write("""#if WIN32\n\t#define alignas(x) __declspec(align(x))\n#endif\n\n""")
-        
-        self.c_inf["f"].write('// disable on MacOS ARM, i.e, apple silicon\n')
-        self.c_inf["f"].write('// where emmintrin.h is not available\n')
-        self.c_inf["f"].write('#if defined(__APPLE__) && defined(__aarch64__)\n')
-        self.c_inf["f"].write('    void {}::cnn(float x0[16][16][1]){{}}\n'.format(class_name))
-        self.c_inf["f"].write('#else\n')
-        self.c_inf["f"].write('\n')
-        
+                
         # TODO: is this check necessary?
         # the destinction was probably necessary for older NAO versions <5
         if arch == 'sse3':
-            self.c_inf["f"].write('#include <emmintrin.h>\n\n')
+            self.c_inf["f"].write('#include "Tools/SIMD/SIMD.h"\n\n')
 
         self.c_inf["f"].write('void {}::cnn(float x0[{:d}][{:d}][{:d}])\n'.format(
             class_name,
@@ -336,9 +329,6 @@ void {}::predict(const BallCandidates::PatchYUVClassified& patch, double meanBri
             # todo: why is this here?
             # close cnn()
             self.c_inf["f"].write('}\n')
-            
-            # close the macro for "...defined(__APPLE__)..."
-            self.c_inf["f"].write('#endif\n')
             
             self.write_predict_function(class_name)
             self.write_get_radius_function(class_name)
