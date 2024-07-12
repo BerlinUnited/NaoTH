@@ -127,7 +127,8 @@ public: // a dummy robot simulator
   // team debug stuff
   void set(const TeamMessageDebug& data)
   {
-    if (theTeamCommDebugger->getIp() != data.host || theTeamCommDebugger->getPort() != data.port)
+    // make sure we got something (eg. if the module is deactivated, the parameter are empty!)
+    if (!data.host.empty() && data.port > 0 && (theTeamCommDebugger->getIp() != data.host || theTeamCommDebugger->getPort() != data.port))
     {
       std::cout << "[TeamCommDebugger] " << "Change debug teamcom to " << data.host << ":" << data.port << std::endl;
       if (theTeamCommDebugger != nullptr) { delete theTeamCommDebugger; }
