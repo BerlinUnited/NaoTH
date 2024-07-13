@@ -2,6 +2,7 @@ package de.naoth.rc.components.teamcommviewer;
 
 import de.naoth.rc.components.teamcomm.TeamCommManager;
 import de.naoth.rc.components.teamcomm.TeamCommMessage;
+import de.naoth.rc.core.messages.TeamMessageOuterClass;
 import de.naoth.rc.dataformats.SPLMessage;
 import de.naoth.rc.dialogs.TeamCommViewer;
 import java.io.IOException;
@@ -36,7 +37,9 @@ public class RobotTeamCommListener implements Runnable {
         
         private Thread trigger;
 
-        private final ByteBuffer readBuffer;
+    private final ByteBuffer readBuffer;
+    private final static ByteBuffer splHeader = ByteBuffer.wrap("SPL ".getBytes());
+    private final static ByteBuffer dbgHeader = ByteBuffer.wrap("DBG ".getBytes());
 
         private final boolean isOpponent;
 
@@ -83,13 +86,25 @@ public class RobotTeamCommListener implements Runnable {
 
                     try {
                         long timestamp = System.currentTimeMillis();
-                        SPLMessage spl_msg = SPLMessage.parseFrom(this.readBuffer);
-                        TeamCommMessage tc_msg = new TeamCommMessage(timestamp, ((InetSocketAddress) address).getHostString(), spl_msg, this.isOpponent);
 
-                        if (address instanceof InetSocketAddress && Plugin.teamcommManager != null) {
-                            Plugin.teamcommManager.receivedMessages(Collections.singletonList(tc_msg));
+                        if (readBuffer.slice(0, 4).equals(dbgHeader))
+                        {
+                            // we must copy the data from the buffer, otherwise errors are thrown!
+                            byte[] data = new byte[readBuffer.limit() - 4];
+                            readBuffer.get(4, data);
+
+                            TeamMessageOuterClass.TeamMessageDebug user = TeamMessageOuterClass.TeamMessageDebug.parseFrom(data);
                         }
+                        else if (readBuffer.slice(0, 4).equals(splHeader))
+                        {
+                            SPLMessage spl_msg = SPLMessage.parseFrom(this.readBuffer);
+                            TeamCommMessage tc_msg = new TeamCommMessage(timestamp, ((InetSocketAddress) address).getHostString(), spl_msg, this.isOpponent);
 
+                            if (address instanceof InetSocketAddress && Plugin.teamcommManager != null)
+                            {
+                                Plugin.teamcommManager.receivedMessages(Collections.singletonList(tc_msg));
+                            }
+                        }
                     } catch (Exception ex) {
                         Logger.getLogger(TeamCommViewer.class.getName()).log(Level.INFO, null, ex);
                     }
