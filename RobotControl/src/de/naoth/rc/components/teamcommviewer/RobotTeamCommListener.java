@@ -87,15 +87,19 @@ public class RobotTeamCommListener implements Runnable {
                     try {
                         long timestamp = System.currentTimeMillis();
 
-                        if (readBuffer.slice(0, 4).equals(dbgHeader))
+                        ByteBuffer headBuffer = readBuffer.slice().limit(4);
+                        if (headBuffer.equals(dbgHeader))
                         {
                             // we must copy the data from the buffer, otherwise errors are thrown!
                             byte[] data = new byte[readBuffer.limit() - 4];
-                            readBuffer.get(4, data);
+                            readBuffer.position(4);
+                            readBuffer.get(data);
+
 
                             TeamMessageOuterClass.TeamMessageDebug user = TeamMessageOuterClass.TeamMessageDebug.parseFrom(data);
+                            System.out.println(user.getTimestamp());
                         }
-                        else if (readBuffer.slice(0, 4).equals(splHeader))
+                        else if (headBuffer.equals(splHeader))
                         {
                             SPLMessage spl_msg = SPLMessage.parseFrom(this.readBuffer);
                             TeamCommMessage tc_msg = new TeamCommMessage(timestamp, ((InetSocketAddress) address).getHostString(), spl_msg, this.isOpponent);
