@@ -95,9 +95,49 @@ public class RobotTeamCommListener implements Runnable {
                             readBuffer.position(4);
                             readBuffer.get(data);
 
-
+                            // TOOD: use the actual debug message!
+                            // create a dummy teammessage, so we have something to show
                             TeamMessageOuterClass.TeamMessageDebug user = TeamMessageOuterClass.TeamMessageDebug.parseFrom(data);
-                            System.out.println(user.getTimestamp());
+                            SPLMessage spl_msg = new SPLMessage();
+                            spl_msg.playerNum = (byte) user.getPlayerNumber();
+                            spl_msg.teamNum = (byte) user.getTeamNumber();
+                            spl_msg.fallen = (byte) (user.getFallen() ? 1 : 0);
+                            spl_msg.pose_x = (float) user.getPose().getTranslation().getX();
+                            spl_msg.pose_y = (float) user.getPose().getTranslation().getY();
+                            spl_msg.ballAge = user.getBallAge();
+                            spl_msg.ball_x = (float) user.getBallPosition().getX();
+                            spl_msg.ball_y = (float) user.getBallPosition().getY();
+                            spl_msg.ballVel_x = (float) user.getBallVelocity().getX();
+                            spl_msg.ballVel_y = (float) user.getBallVelocity().getY();
+
+                            TeamMessageOuterClass.BUUserTeamMessage.Builder b = TeamMessageOuterClass.BUUserTeamMessage.newBuilder()
+                                    .setBodyID(user.getBodyID())
+                                    .setTimeToBall(user.getTimeToBall())
+                                    //.setWasStriker()
+                                    //.setIsPenalized()
+                                    //.addOpponents()
+                                    .setTeamNumber(user.getTeamNumber())
+                                    .setBatteryCharge(user.getBatteryCharge())
+                                    .setTemperature(user.getTemperature())
+                                    .setTimestamp(user.getTimestamp())
+                                    //.setWantsToBeStriker()
+                                    .setCpuTemperature(user.getCpuTemperature())
+                                    .setWhistleDetected(user.getWhistleDetected())
+                                    .setWhistleCount(user.getWhistleCount())
+                                    .setTeamBall(user.getTeamBall())
+                                    //.addNtpRequest()
+                                    .setBallVelocity(user.getBallVelocity())
+                                    .setRobotState(user.getRobotState())
+                                    .setRobotRole(user.getRobotRole())
+                                    .setReadyToWalk(user.getReadyToWalk())
+                                    .setKey("naoth");
+                            spl_msg.user = b.build();
+                            TeamCommMessage tc_msg = new TeamCommMessage(timestamp, ((InetSocketAddress) address).getHostString(), spl_msg, this.isOpponent);
+
+                            if (address instanceof InetSocketAddress && Plugin.teamcommManager != null)
+                            {
+                                Plugin.teamcommManager.receivedMessages(Collections.singletonList(tc_msg));
+                            }
                         }
                         else if (headBuffer.equals(splHeader))
                         {
