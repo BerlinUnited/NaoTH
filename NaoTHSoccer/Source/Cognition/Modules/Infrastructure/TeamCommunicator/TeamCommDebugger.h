@@ -1,7 +1,13 @@
 #ifndef TEAMCOMMDEBUGGER_H
 #define TEAMCOMMDEBUGGER_H
 
-#include <arpa/inet.h>
+#ifdef WIN32
+  #include <winsock2.h>
+  #include <ws2tcpip.h> 
+#else // Linux/MACOS
+  #include <arpa/inet.h>
+#endif // undef WIN32
+
 
 #include <ModuleFramework/Module.h>
 #include <MessagesSPL/SPLStandardMessage.h>
