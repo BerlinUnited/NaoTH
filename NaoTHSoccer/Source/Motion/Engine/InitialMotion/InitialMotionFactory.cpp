@@ -11,6 +11,7 @@
 #include "DeadMotion.h"
 #include "FallMotion.h"
 #include "InitialMotion.h"
+#include "ComplyMotion.h"
 #include "Sit.h"
 
 InitialMotionFactory::InitialMotionFactory()
@@ -35,6 +36,7 @@ Module* InitialMotionFactory::createMotion(const MotionRequest& motionRequest)
   static ModuleCreator<FallMotion>* creatorFallMotion = registerModule<FallMotion>("FallMotion");
   static ModuleCreator<InitialMotion>* creatorInitialMotion = registerModule<InitialMotion>("InitialMotion");
   static ModuleCreator<Sit>* creatorSit = registerModule<Sit>("Sit");
+  static ModuleCreator<ComplyMotion>* creatorComplyMotion = registerModule<ComplyMotion>("ComplyMotion");
   
   switch(motionRequest.id)
   {
@@ -42,6 +44,7 @@ Module* InitialMotionFactory::createMotion(const MotionRequest& motionRequest)
   case motion::falling: currentCreator = creatorFallMotion; break;
   case motion::init: currentCreator = creatorInitialMotion; break;
   case motion::sit: currentCreator = creatorSit; break;
+  case motion::comply: currentCreator = creatorComplyMotion; break;
   default: currentCreator = NULL;
   }//end switch
 

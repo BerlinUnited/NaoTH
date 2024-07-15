@@ -24,6 +24,7 @@ namespace motion
     dead,
     falling,
     sit,
+    comply,
 
     /* inverse kinematic */
     stand,
