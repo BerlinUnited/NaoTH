@@ -14,7 +14,7 @@ import numpy as np
 from tensorflow.keras import backend as K
 from tensorflow.keras.layers import (BatchNormalization, Convolution2D, Dense,
                                      Dropout, Flatten, LeakyReLU, MaxPooling2D,
-                                     ReLU)
+                                     ReLU, InputLayer)
 
 sse_conv = '''
 {indent}w = _mm_set_ps({w3}f, {w2}f, {w1}f, {w0}f);
@@ -131,6 +131,7 @@ class NaoTHCompiler:
                 self.write_cpp('\n \t// Convolution Layer\n')
                 w = K.eval(layer.weights[0])
                 b = K.eval(layer.bias)
+                
                 if self.conv_mode == 0:
                     _x, self.c_inf = self.convolution(_x, w, b, layer.strides, layer.padding)
                 elif self.conv_mode == 1:
@@ -139,16 +140,18 @@ class NaoTHCompiler:
                     _x, self.c_inf = self.convolution_3(_x, w, b, layer.strides, layer.padding)
                 else:
                     raise NotImplementedError
+                    
                 if layer.activation.__name__ == 'relu':
                     _x, self.c_inf = self.rectified_linear_unit(_x, 0)
-                if layer.activation.__name__ == 'softmax':
+                elif layer.activation.__name__ == 'softmax':
                     _x, self.c_inf = self.softmax(_x)
+                    
             elif type(layer) == MaxPooling2D:
                 self.write_cpp('\n \t// Maxpool Layer \n')
                 _x, self.c_inf = self.max_pool(_x, layer.pool_size, layer.strides)
             elif type(layer) == LeakyReLU:
                 self.write_cpp('\n \t// Leaky ReLu Layer\n')
-                _x, self.c_inf = self.rectified_linear_unit(_x, float(layer.alpha))
+                _x, self.c_inf = self.rectified_linear_unit(_x, float(layer.negative_slope))
             elif type(layer) == ReLU:
                 self.write_cpp('\n \t// ReLu Layer\n')
                 _x, self.c_inf = self.rectified_linear_unit(_x, 0)
@@ -156,8 +159,22 @@ class NaoTHCompiler:
                 pass
             elif type(layer) == Dropout:
                 pass
+            elif type(layer) == InputLayer:
+                pass
             elif type(layer) == BatchNormalization:
-                print("Warning: BatchNormalization not implemented")
+                # preliminary work fo rintegrating BatchNormalization
+                #https://www.tensorflow.org/api_docs/python/tf/nn/batch_normalization
+                #print(layer)
+                #print(dir(layer))
+                #print("moving_mean: ", layer.moving_mean)
+                #print("moving_variance: ", layer.moving_variance)
+                #print("beta: ", layer.beta[:])
+                #print("gamma: ", layer.gamma)
+                #print("axis: ", layer.axis)
+                #print("epsilon: ", layer.epsilon)
+                #print(_x.shape)
+                
+                print("Warning: BatchNormalization not implemented yet.")
                 pass
             elif type(layer) == Dense:
                 self.write_cpp('\n \t// Dense Layer\n')
@@ -166,9 +183,17 @@ class NaoTHCompiler:
 
                 if layer.activation.__name__ == 'relu':
                     print("use dense layer argument for activation")
-                    _x, self.c_inf = self.dense(_x, w, b, relu=True, is_output_layer=output_layer)
+                    _x, self.c_inf = self.dense(_x, w, b, relu=True, is_output_layer=False)
                 else:
-                    _x, self.c_inf = self.dense(_x, w, b, relu=False, is_output_layer=output_layer)
+                    _x, self.c_inf = self.dense(_x, w, b, relu=False, is_output_layer=False)
+                    
+                    if layer.activation.__name__ == 'softmax':
+                        _x, self.c_inf = self.softmax_output(_x)
+                    elif layer.activation.__name__ == 'leaky_relu':
+                        negative_slope = (-1)*layer.activation(-1)
+                        _x, self.c_inf = self.rectified_linear_unit(_x, float(negative_slope))
+                    else:
+                        print(f"Unsupported activation function: {layer.activation}")
 
             else:
                 print("ERROR: Unknown layer: {}".format(type(layer)))
@@ -297,7 +322,7 @@ class NaoTHCompiler:
             self.write_cpp('\t}\n')
 
     def write_predict_function(self, class_name):
-        normalization_part = """
+        normalization_part = '''
 void {}::predict(const BallCandidates::PatchYUVClassified& patch, double meanBrightnessOffset)
 {{
 \tASSERT(patch.size() == 16);
@@ -305,11 +330,11 @@ void {}::predict(const BallCandidates::PatchYUVClassified& patch, double meanBri
 \tfor(size_t x=0; x < patch.size(); x++) {{
 \t\tfor(size_t y=0; y < patch.size(); y++) {{
 \t\t\t// Add a custom brightness offset that depends on the dataset, if zero centering was used
-\t\t\tfloat value = (static_cast<float>((patch.data[patch.size() * x + y].pixel.y)) / 255.0f) - %ff + static_cast<float>(meanBrightnessOffset);
+\t\t\tfloat value = (static_cast<float>((patch.data[patch.size() * x + y].pixel.y)) / 255.0f) + static_cast<float>(meanBrightnessOffset);
 \t\t\tin_step[y][x][0] = value;
 \t\t}}
 \t}}
-""" % self.dataset_mean
+'''
 
         # TODO how to write strings
         cnn_part = '''
@@ -361,10 +386,11 @@ void {}::predict(float in_step[16][16][1], double meanBrightnessOffset)
 {{
 \tfor(size_t x=0; x < 16; x++) {{
 \t\tfor(size_t y=0; y < 16; y++) {{
-\t\t\tin_step[y][x][0] = (in_step[y][x][0] / 255.0f) - %ff + static_cast<float>(meanBrightnessOffset);
+\t\t\tin_step[y][x][0] = (in_step[y][x][0] / 255.0f) + static_cast<float>(meanBrightnessOffset);
 \t\t}}
 \t}}
-''' % self.dataset_mean
+'''
+
         cnn_part = '''
 \tcnn(in_step);
 }\n
@@ -1144,12 +1170,15 @@ void {}::predict(float in_step[16][16][1], double meanBrightnessOffset)
             self.write_cpp('\t}\n')
         return x_out, self.c_inf
 
+
     def dense(self, _x, weights, b, relu, is_output_layer = False):
         x_dim = _x.shape[0]
         y_dim = _x.shape[1]
         channels = _x.shape[2]
         
         output_dim = weights.shape[1]
+        
+        print(x_dim, y_dim, channels, output_dim)
         
         str_data = {
             'prev_layer': self.c_inf["layer"] - 1,
@@ -1160,7 +1189,7 @@ void {}::predict(float in_step[16][16][1], double meanBrightnessOffset)
         }
         
         if not is_output_layer:
-            self.write_cpp('\tstatic float x{layer}[{dim}] = {{}};\n'.format(**str_data))
+            self.write_cpp('\talignas(16) static float x{layer}[{dim}] = {{}};\n'.format(**str_data))
 
         for output in range(output_dim):
             if is_output_layer:
@@ -1186,12 +1215,12 @@ void {}::predict(float in_step[16][16][1], double meanBrightnessOffset)
 
                         # check if last layer is a dense layer
                         if y_dim == 1 and channels == 1:
-                            self.c_inf["f"].write('{:f}f * x{:d}[{:d}]'.format(
+                            self.c_inf["f"].write('{}f * x{:d}[{:d}]'.format(
                                 abs(weights[idx, output]),
                                 self.c_inf["layer"] - 1, x
                             ))
                         else:
-                            self.c_inf["f"].write('{:f}f * x{:d}[{:d}][{:d}][{:d}]'.format(
+                            self.c_inf["f"].write('{}f * x{:d}[{:d}][{:d}][{:d}]'.format(
                                 abs(weights[idx, output]),
                                 self.c_inf["layer"] - 1, x, y, c
                             ))
@@ -1201,7 +1230,7 @@ void {}::predict(float in_step[16][16][1], double meanBrightnessOffset)
 
             # ReLU
             if relu:
-                self.c_inf["f"].write(';\n\n')
+                self.c_inf["f"].write('\n\n')
                 self.c_inf["f"].write("\t// Apply ReLU\n")
                 if is_output_layer:
                     self.c_inf["f"].write("\tscores[{:d}] = scores[{:d}] > 0.0f ? scores[{:d}] : 0.0f;\n".format(output, output, output))
@@ -1219,6 +1248,42 @@ void {}::predict(float in_step[16][16][1], double meanBrightnessOffset)
         x_out = np.zeros(shape=(output_dim, 1, 1)).astype('float32')
 
         return x_out, self.c_inf
+
+
+    # not done yet
+    def softmax_output(self, _x):
+        print(_x.shape)
+        x_dim = _x.shape[0]
+        y_dim = _x.shape[1]
+        channels = _x.shape[2]
+        
+        # check if last layer is a dense layer
+        if y_dim != 1 or channels != 1:
+            raise("softmax_output is was not implemented for non dence layer yet")
+
+        x_out = np.zeros(_x.shape).astype('float32')
+        
+        
+        self.write_cpp(f'\talignas(16) static float ex[{x_dim}] = {{}};\n')
+        
+        # apply exp
+        for x in range(x_dim):
+            self.c_inf["f"].write('\tex[{:d}] = exp(x{:d}[{:d}]);\n'.format(x, self.c_inf["layer"] - 1, x))
+        self.write_cpp('\n')
+        
+        # compute sum
+        self.write_cpp(f'\tfloat sum = \n')
+        for x in range(x_dim):
+            self.write_cpp(f'\t\t + ex[{x}]\n')
+        self.write_cpp('\t;\n')
+
+        # compute the output
+        self.write_cpp('\n')
+        for x in range(x_dim):
+            self.write_cpp(f"\tscores[{x}] = ex[{x}] / sum;\n")
+        
+        return x_out, self.c_inf
+        
 
     def softmax(self, x):
         assert (x.shape[2] == 2)  # Sorry, only for depth 2 at the moment
