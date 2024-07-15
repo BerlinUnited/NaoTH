@@ -1,6 +1,7 @@
 package de.naoth.rc.statusbar;
 
 import de.naoth.rc.RobotControlImpl;
+import de.naoth.rc.components.simspark.SimsparkCommandParser;
 import de.naoth.rc.components.simspark.SimsparkManager;
 import de.naoth.rc.components.simspark.SimsparkState;
 import de.naoth.rc.components.simspark.SimsparkStateListener;
@@ -274,15 +275,24 @@ public class StatusbarSimspark extends StatusbarPluginImpl implements SimsparkSt
             btnSendCommand.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
             btnSendCommand.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
             btnSendCommand.addActionListener((java.awt.event.ActionEvent evt) -> {
-                if (((String) cmd.getSelectedItem()).isEmpty()) {
+                SimsparkCommand command = SimsparkCommandParser.parseCommand(((String) cmd.getEditor().getItem()).trim());
+                if (command == null)
+                {
                     JOptionPane.showMessageDialog(this, "Please enter a (valid) command.", "Empty command", JOptionPane.WARNING_MESSAGE);
                 } else {
-                    //sendCommand(((String) cmd.getEditor().getItem()).trim());
+                    sendCommand(command);
                 }
             });
 
             cmd.setEditable(true);
-            cmd.setModel(new javax.swing.DefaultComboBoxModel<>(new String[]{"(ball (pos 0 0 0))", "(ball (pos 0 0 0)(vel 0 0 0))", "(dropBall)", "(playMode )", "(agent (unum <num>) (team <team>) (pos <x> <y> <z>))", "(agent (unum <num>) (team <team>) (move <x> <y> <z> <rot>))", "(agent (unum <num>) (team <team>) (battery <batterylevel>))", "(agent (unum <num>) (team <team>) (temperature <temperature>))", "(agent (unum <num>) (team <team>) (pos <x> <y> <z>)(move <x> <y> <z> <rot>)(battery <batterylevel>)(temperature <temperature>))", "(kickOff <team>)", "(select (unum <num>) (team <team>))", "(kill)", "(kill (unum <num>) (team <team>))", "(repos)", "(repos (unum <num>) (team <team>))", "(time <time>)", "(score (left <score>) (right <score>))", "(reqfullstate)"}));
+            cmd.setModel(new javax.swing.DefaultComboBoxModel<>(new String[]
+            {
+                "ball drop",
+                "ball 0 0 0",
+                "ball 0 0 0 0 0 0",
+                "pos left 3 0 0 90",
+                "pos right 3 0 0 90"
+            }));
             cmd.addActionListener((java.awt.event.ActionEvent evt) -> {
                 if (evt.getActionCommand().equals("comboBoxEdited")) {
                     // "click the send button"

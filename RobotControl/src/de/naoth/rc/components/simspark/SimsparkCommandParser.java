@@ -14,6 +14,28 @@ import java.util.regex.Pattern;
  */
 public class SimsparkCommandParser
 {
+    /*
+       Possible commands:
+        "(ball (pos 0 0 0))",
+        "(ball (pos 0 0 0)(vel 0 0 0))",
+        "(dropBall)",
+        "(playMode )",
+        "(agent (unum <num>) (team <team>) (pos <x> <y> <z>))",
+        "(agent (unum <num>) (team <team>) (move <x> <y> <z> <rot>))",
+        "(agent (unum <num>) (team <team>) (battery <batterylevel>))",
+        "(agent (unum <num>) (team <team>) (temperature <temperature>))",
+        "(agent (unum <num>) (team <team>) (pos <x> <y> <z>)(move <x> <y> <z> <rot>)(battery <batterylevel>)(temperature <temperature>))",
+        "(kickOff <team>)",
+        "(select (unum <num>) (team <team>))",
+        "(kill)",
+        "(kill (unum <num>) (team <team>))",
+        "(repos)",
+        "(repos (unum <num>) (team <team>))",
+        "(time <time>)",
+        "(score (left <score>) (right <score>))",
+        "(reqfullstate)"
+     */
+
     public static SimsparkCommand parseCommand(String command)
     {
         String[] commandParts = command.split("\\s+");
