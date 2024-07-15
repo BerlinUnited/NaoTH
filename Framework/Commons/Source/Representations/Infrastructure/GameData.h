@@ -87,6 +87,7 @@ public:
     set       = STATE_SET,
     playing   = STATE_PLAYING,
     finished  = STATE_FINISHED,
+    standby   = STATE_STANDBY,
     unknown_game_state
   };
 
@@ -119,7 +120,7 @@ public:
     
     illegal_position_in_set   = PENALTY_SPL_ILLEGAL_POSITION_IN_SET,
     player_stance             = PENALTY_SPL_PLAYER_STANCE,
-    illegal_motion_in_initial = PENALTY_SPL_ILLEGAL_MOTION_IN_INITIAL,
+    illegal_motion_in_standby = PENALTY_SPL_ILLEGAL_MOTION_IN_STANDBY,
 
     substitute                = PENALTY_SUBSTITUTE,
     manual                    = PENALTY_MANUAL,
