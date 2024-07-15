@@ -15,6 +15,7 @@ GameController::GameController()
   DEBUG_REQUEST_REGISTER("gamecontroller:game_state:set", "force the set state", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:game_state:finished", "force the finished state", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:game_state:unstiff", "force the unstiff state", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:game_state:standby", "force the standby state", false);
 
   DEBUG_REQUEST_REGISTER("gamecontroller:set_play:none", "force the setPlay state to none", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:set_play:goal_kick", "force the setPlay state to goal free kick", false);
@@ -208,6 +209,9 @@ void GameController::handleDebugRequest()
   );
   DEBUG_REQUEST("gamecontroller:game_state:unstiff",
     debugState = PlayerInfo::unstiff;
+  );
+  DEBUG_REQUEST("gamecontroller:game_state:standby",
+    debugState = PlayerInfo::standby;
   );
 
   // DebugRequests for the set play state (free kicks)
