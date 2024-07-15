@@ -348,6 +348,8 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_ATTRIBUTE_SECTION
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessageDebug, ballvelocity_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessageDebug, timetoball_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessageDebug, teamball_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessageDebug, wasstriker_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessageDebug, wantstobestriker_),
   0,
   7,
   8,
@@ -356,18 +358,20 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_ATTRIBUTE_SECTION
   10,
   2,
   3,
+  13,
+  14,
+  20,
   11,
   12,
-  18,
-  14,
   15,
-  13,
-  16,
-  19,
+  17,
+  21,
   4,
   5,
-  17,
+  18,
   6,
+  16,
+  19,
 };
 static const ::google::protobuf::internal::MigrationSchema schemas[] GOOGLE_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
   { 0, 7, sizeof(RobotRole)},
@@ -380,7 +384,7 @@ static const ::google::protobuf::internal::MigrationSchema schemas[] GOOGLE_ATTR
   { 123, 139, sizeof(TeamMessageDecision)},
   { 150, 181, sizeof(TeamState_Player)},
   { 207, 213, sizeof(TeamState)},
-  { 214, 239, sizeof(TeamMessageDebug)},
+  { 214, 241, sizeof(TeamMessageDebug)},
 };
 
 static ::google::protobuf::Message const * const file_default_instances[] = {
@@ -581,7 +585,7 @@ void AddDescriptorsImpl() {
       "oBeStrikerUpdate\030\026 \001(\004\022\031\n\nwasStriker\030\027 \001"
       "(\010:\005false\022\030\n\020wasStrikerUpdate\030\030 \001(\004\022+\n\tr"
       "obotRole\030\031 \001(\0132\030.naothmessages.RobotRole"
-      "\022\027\n\017robotRoleUpdate\030\032 \001(\004\"\233\005\n\020TeamMessag"
+      "\022\027\n\017robotRoleUpdate\030\032 \001(\004\"\327\005\n\020TeamMessag"
       "eDebug\022\027\n\006bodyID\030\001 \002(\t:\007unknown\022\025\n\nteamN"
       "umber\030\002 \002(\r:\0010\022\027\n\014playerNumber\030\003 \002(\r:\0010\022"
       "\024\n\ttimestamp\030\004 \002(\004:\0010\022+\n\tframeInfo\030\005 \001(\013"
@@ -598,27 +602,29 @@ void AddDescriptorsImpl() {
       "s.DoubleVector2\0222\n\014ballVelocity\030\022 \001(\0132\034."
       "naothmessages.DoubleVector2\022\022\n\ntimeToBal"
       "l\030\023 \001(\r\022.\n\010teamBall\030\024 \001(\0132\034.naothmessage"
-      "s.DoubleVector2*\262\001\n\tTeamColor\022\014\n\010blueTea"
-      "m\020\000\022\013\n\007redTeam\020\001\022\016\n\nyellowTeam\020\002\022\r\n\tblac"
-      "kTeam\020\003\022\r\n\twhiteTeam\020\004\022\r\n\tgreenTeam\020\005\022\016\n"
-      "\norangeTeam\020\006\022\016\n\npurpleTeam\020\007\022\r\n\tbrownTe"
-      "am\020\010\022\014\n\010grayTeam\020\t\022\020\n\013invalidTeam\020\377\001*d\n\n"
-      "RobotState\022\013\n\007initial\020\000\022\t\n\005ready\020\001\022\007\n\003se"
-      "t\020\002\022\013\n\007playing\020\003\022\014\n\010finished\020\004\022\r\n\tpenali"
-      "zed\020\005\022\013\n\007unstiff\020\006*\230\002\n\017RobotRoleStatic\022\026"
-      "\n\022role_defender_left\020\000\022\030\n\024role_defender_"
-      "center\020\001\022\027\n\023role_defender_right\020\002\022\030\n\024rol"
-      "e_midfielder_left\020\003\022\032\n\026role_midfielder_c"
-      "enter\020\004\022\031\n\025role_midfielder_right\020\005\022\025\n\021ro"
-      "le_forward_left\020\006\022\027\n\023role_forward_center"
-      "\020\007\022\026\n\022role_forward_right\020\010\022\017\n\013role_goali"
-      "e\020\t\022\020\n\014role_unknown\020\n*b\n\020RobotRoleDynami"
-      "c\022\r\n\trole_none\020\000\022\022\n\016role_supporter\020\001\022\031\n\025"
-      "role_goalie_supporter\020\002\022\020\n\014role_striker\020"
-      "\003B\033\n\031de.naoth.rc.core.messages"
+      "s.DoubleVector2\022\031\n\nwasStriker\030\025 \001(\010:\005fal"
+      "se\022\037\n\020wantsToBeStriker\030\026 \001(\010:\005false*\262\001\n\t"
+      "TeamColor\022\014\n\010blueTeam\020\000\022\013\n\007redTeam\020\001\022\016\n\n"
+      "yellowTeam\020\002\022\r\n\tblackTeam\020\003\022\r\n\twhiteTeam"
+      "\020\004\022\r\n\tgreenTeam\020\005\022\016\n\norangeTeam\020\006\022\016\n\npur"
+      "pleTeam\020\007\022\r\n\tbrownTeam\020\010\022\014\n\010grayTeam\020\t\022\020"
+      "\n\013invalidTeam\020\377\001*d\n\nRobotState\022\013\n\007initia"
+      "l\020\000\022\t\n\005ready\020\001\022\007\n\003set\020\002\022\013\n\007playing\020\003\022\014\n\010"
+      "finished\020\004\022\r\n\tpenalized\020\005\022\013\n\007unstiff\020\006*\230"
+      "\002\n\017RobotRoleStatic\022\026\n\022role_defender_left"
+      "\020\000\022\030\n\024role_defender_center\020\001\022\027\n\023role_def"
+      "ender_right\020\002\022\030\n\024role_midfielder_left\020\003\022"
+      "\032\n\026role_midfielder_center\020\004\022\031\n\025role_midf"
+      "ielder_right\020\005\022\025\n\021role_forward_left\020\006\022\027\n"
+      "\023role_forward_center\020\007\022\026\n\022role_forward_r"
+      "ight\020\010\022\017\n\013role_goalie\020\t\022\020\n\014role_unknown\020"
+      "\n*b\n\020RobotRoleDynamic\022\r\n\trole_none\020\000\022\022\n\016"
+      "role_supporter\020\001\022\031\n\025role_goalie_supporte"
+      "r\020\002\022\020\n\014role_striker\020\003B\033\n\031de.naoth.rc.cor"
+      "e.messages"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 4270);
+      descriptor, 4330);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "TeamMessage.proto", &protobuf_RegisterTypes);
   ::naothmessages::protobuf_CommonTypes_2eproto::AddDescriptors();
@@ -8673,6 +8679,8 @@ const int TeamMessageDebug::kBallPositionFieldNumber;
 const int TeamMessageDebug::kBallVelocityFieldNumber;
 const int TeamMessageDebug::kTimeToBallFieldNumber;
 const int TeamMessageDebug::kTeamBallFieldNumber;
+const int TeamMessageDebug::kWasStrikerFieldNumber;
+const int TeamMessageDebug::kWantsToBeStrikerFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 TeamMessageDebug::TeamMessageDebug()
@@ -8733,8 +8741,8 @@ void TeamMessageDebug::SharedCtor() {
   _cached_size_ = 0;
   bodyid_.UnsafeSetDefault(&TeamMessageDebug::_default_bodyid_.get());
   ::memset(&frameinfo_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&timetoball_) -
-      reinterpret_cast<char*>(&frameinfo_)) + sizeof(timetoball_));
+      reinterpret_cast<char*>(&wantstobestriker_) -
+      reinterpret_cast<char*>(&frameinfo_)) + sizeof(wantstobestriker_));
   batterycharge_ = 1;
   ballage_ = -1;
 }
@@ -8817,13 +8825,13 @@ void TeamMessageDebug::Clear() {
   teamnumber_ = 0u;
   if (cached_has_bits & 65280u) {
     ::memset(&playernumber_, 0, static_cast<size_t>(
-        reinterpret_cast<char*>(&cputemperature_) -
-        reinterpret_cast<char*>(&playernumber_)) + sizeof(cputemperature_));
+        reinterpret_cast<char*>(&whistledetected_) -
+        reinterpret_cast<char*>(&playernumber_)) + sizeof(whistledetected_));
   }
-  if (cached_has_bits & 983040u) {
-    ::memset(&whistlecount_, 0, static_cast<size_t>(
-        reinterpret_cast<char*>(&timetoball_) -
-        reinterpret_cast<char*>(&whistlecount_)) + sizeof(timetoball_));
+  if (cached_has_bits & 4128768u) {
+    ::memset(&wasstriker_, 0, static_cast<size_t>(
+        reinterpret_cast<char*>(&wantstobestriker_) -
+        reinterpret_cast<char*>(&wasstriker_)) + sizeof(wantstobestriker_));
     batterycharge_ = 1;
     ballage_ = -1;
   }
@@ -9117,6 +9125,34 @@ bool TeamMessageDebug::MergePartialFromCodedStream(
         break;
       }
 
+      // optional bool wasStriker = 21 [default = false];
+      case 21: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(168u /* 168 & 0xFF */)) {
+          set_has_wasstriker();
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
+                 input, &wasstriker_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // optional bool wantsToBeStriker = 22 [default = false];
+      case 22: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(176u /* 176 & 0xFF */)) {
+          set_has_wantstobestriker();
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
+                 input, &wantstobestriker_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
       default: {
       handle_unusual:
         if (tag == 0) {
@@ -9194,42 +9230,42 @@ void TeamMessageDebug::SerializeWithCachedSizes(
   }
 
   // optional bool fallen = 9 [default = false];
-  if (cached_has_bits & 0x00000800u) {
+  if (cached_has_bits & 0x00002000u) {
     ::google::protobuf::internal::WireFormatLite::WriteBool(9, this->fallen(), output);
   }
 
   // optional bool readyToWalk = 10;
-  if (cached_has_bits & 0x00001000u) {
+  if (cached_has_bits & 0x00004000u) {
     ::google::protobuf::internal::WireFormatLite::WriteBool(10, this->readytowalk(), output);
   }
 
   // optional float batteryCharge = 11 [default = 1];
-  if (cached_has_bits & 0x00040000u) {
+  if (cached_has_bits & 0x00100000u) {
     ::google::protobuf::internal::WireFormatLite::WriteFloat(11, this->batterycharge(), output);
   }
 
   // optional float temperature = 12 [default = 0];
-  if (cached_has_bits & 0x00004000u) {
+  if (cached_has_bits & 0x00000800u) {
     ::google::protobuf::internal::WireFormatLite::WriteFloat(12, this->temperature(), output);
   }
 
   // optional float cpuTemperature = 13 [default = 0];
-  if (cached_has_bits & 0x00008000u) {
+  if (cached_has_bits & 0x00001000u) {
     ::google::protobuf::internal::WireFormatLite::WriteFloat(13, this->cputemperature(), output);
   }
 
   // optional bool whistleDetected = 14 [default = false];
-  if (cached_has_bits & 0x00002000u) {
+  if (cached_has_bits & 0x00008000u) {
     ::google::protobuf::internal::WireFormatLite::WriteBool(14, this->whistledetected(), output);
   }
 
   // optional int32 whistleCount = 15 [default = 0];
-  if (cached_has_bits & 0x00010000u) {
+  if (cached_has_bits & 0x00020000u) {
     ::google::protobuf::internal::WireFormatLite::WriteInt32(15, this->whistlecount(), output);
   }
 
   // optional int32 ballAge = 16 [default = -1];
-  if (cached_has_bits & 0x00080000u) {
+  if (cached_has_bits & 0x00200000u) {
     ::google::protobuf::internal::WireFormatLite::WriteInt32(16, this->ballage(), output);
   }
 
@@ -9246,7 +9282,7 @@ void TeamMessageDebug::SerializeWithCachedSizes(
   }
 
   // optional uint32 timeToBall = 19;
-  if (cached_has_bits & 0x00020000u) {
+  if (cached_has_bits & 0x00040000u) {
     ::google::protobuf::internal::WireFormatLite::WriteUInt32(19, this->timetoball(), output);
   }
 
@@ -9254,6 +9290,16 @@ void TeamMessageDebug::SerializeWithCachedSizes(
   if (cached_has_bits & 0x00000040u) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       20, *this->teamball_, output);
+  }
+
+  // optional bool wasStriker = 21 [default = false];
+  if (cached_has_bits & 0x00010000u) {
+    ::google::protobuf::internal::WireFormatLite::WriteBool(21, this->wasstriker(), output);
+  }
+
+  // optional bool wantsToBeStriker = 22 [default = false];
+  if (cached_has_bits & 0x00080000u) {
+    ::google::protobuf::internal::WireFormatLite::WriteBool(22, this->wantstobestriker(), output);
   }
 
   if (_internal_metadata_.have_unknown_fields()) {
@@ -9325,42 +9371,42 @@ void TeamMessageDebug::SerializeWithCachedSizes(
   }
 
   // optional bool fallen = 9 [default = false];
-  if (cached_has_bits & 0x00000800u) {
+  if (cached_has_bits & 0x00002000u) {
     target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(9, this->fallen(), target);
   }
 
   // optional bool readyToWalk = 10;
-  if (cached_has_bits & 0x00001000u) {
+  if (cached_has_bits & 0x00004000u) {
     target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(10, this->readytowalk(), target);
   }
 
   // optional float batteryCharge = 11 [default = 1];
-  if (cached_has_bits & 0x00040000u) {
+  if (cached_has_bits & 0x00100000u) {
     target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(11, this->batterycharge(), target);
   }
 
   // optional float temperature = 12 [default = 0];
-  if (cached_has_bits & 0x00004000u) {
+  if (cached_has_bits & 0x00000800u) {
     target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(12, this->temperature(), target);
   }
 
   // optional float cpuTemperature = 13 [default = 0];
-  if (cached_has_bits & 0x00008000u) {
+  if (cached_has_bits & 0x00001000u) {
     target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(13, this->cputemperature(), target);
   }
 
   // optional bool whistleDetected = 14 [default = false];
-  if (cached_has_bits & 0x00002000u) {
+  if (cached_has_bits & 0x00008000u) {
     target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(14, this->whistledetected(), target);
   }
 
   // optional int32 whistleCount = 15 [default = 0];
-  if (cached_has_bits & 0x00010000u) {
+  if (cached_has_bits & 0x00020000u) {
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(15, this->whistlecount(), target);
   }
 
   // optional int32 ballAge = 16 [default = -1];
-  if (cached_has_bits & 0x00080000u) {
+  if (cached_has_bits & 0x00200000u) {
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(16, this->ballage(), target);
   }
 
@@ -9379,7 +9425,7 @@ void TeamMessageDebug::SerializeWithCachedSizes(
   }
 
   // optional uint32 timeToBall = 19;
-  if (cached_has_bits & 0x00020000u) {
+  if (cached_has_bits & 0x00040000u) {
     target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(19, this->timetoball(), target);
   }
 
@@ -9388,6 +9434,16 @@ void TeamMessageDebug::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageNoVirtualToArray(
         20, *this->teamball_, deterministic, target);
+  }
+
+  // optional bool wasStriker = 21 [default = false];
+  if (cached_has_bits & 0x00010000u) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(21, this->wasstriker(), target);
+  }
+
+  // optional bool wantsToBeStriker = 22 [default = false];
+  if (cached_has_bits & 0x00080000u) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(22, this->wantstobestriker(), target);
   }
 
   if (_internal_metadata_.have_unknown_fields()) {
@@ -9516,6 +9572,16 @@ size_t TeamMessageDebug::ByteSizeLong() const {
         ::google::protobuf::internal::WireFormatLite::EnumSize(this->robotstate());
     }
 
+    // optional float temperature = 12 [default = 0];
+    if (has_temperature()) {
+      total_size += 1 + 4;
+    }
+
+    // optional float cpuTemperature = 13 [default = 0];
+    if (has_cputemperature()) {
+      total_size += 1 + 4;
+    }
+
     // optional bool fallen = 9 [default = false];
     if (has_fallen()) {
       total_size += 1 + 1;
@@ -9531,18 +9597,13 @@ size_t TeamMessageDebug::ByteSizeLong() const {
       total_size += 1 + 1;
     }
 
-    // optional float temperature = 12 [default = 0];
-    if (has_temperature()) {
-      total_size += 1 + 4;
-    }
-
-    // optional float cpuTemperature = 13 [default = 0];
-    if (has_cputemperature()) {
-      total_size += 1 + 4;
-    }
-
   }
-  if (_has_bits_[16 / 32] & 983040u) {
+  if (_has_bits_[16 / 32] & 4128768u) {
+    // optional bool wasStriker = 21 [default = false];
+    if (has_wasstriker()) {
+      total_size += 2 + 1;
+    }
+
     // optional int32 whistleCount = 15 [default = 0];
     if (has_whistlecount()) {
       total_size += 1 +
@@ -9555,6 +9616,11 @@ size_t TeamMessageDebug::ByteSizeLong() const {
       total_size += 2 +
         ::google::protobuf::internal::WireFormatLite::UInt32Size(
           this->timetoball());
+    }
+
+    // optional bool wantsToBeStriker = 22 [default = false];
+    if (has_wantstobestriker()) {
+      total_size += 2 + 1;
     }
 
     // optional float batteryCharge = 11 [default = 1];
@@ -9639,33 +9705,39 @@ void TeamMessageDebug::MergeFrom(const TeamMessageDebug& from) {
       robotstate_ = from.robotstate_;
     }
     if (cached_has_bits & 0x00000800u) {
-      fallen_ = from.fallen_;
-    }
-    if (cached_has_bits & 0x00001000u) {
-      readytowalk_ = from.readytowalk_;
-    }
-    if (cached_has_bits & 0x00002000u) {
-      whistledetected_ = from.whistledetected_;
-    }
-    if (cached_has_bits & 0x00004000u) {
       temperature_ = from.temperature_;
     }
-    if (cached_has_bits & 0x00008000u) {
+    if (cached_has_bits & 0x00001000u) {
       cputemperature_ = from.cputemperature_;
+    }
+    if (cached_has_bits & 0x00002000u) {
+      fallen_ = from.fallen_;
+    }
+    if (cached_has_bits & 0x00004000u) {
+      readytowalk_ = from.readytowalk_;
+    }
+    if (cached_has_bits & 0x00008000u) {
+      whistledetected_ = from.whistledetected_;
     }
     _has_bits_[0] |= cached_has_bits;
   }
-  if (cached_has_bits & 983040u) {
+  if (cached_has_bits & 4128768u) {
     if (cached_has_bits & 0x00010000u) {
-      whistlecount_ = from.whistlecount_;
+      wasstriker_ = from.wasstriker_;
     }
     if (cached_has_bits & 0x00020000u) {
-      timetoball_ = from.timetoball_;
+      whistlecount_ = from.whistlecount_;
     }
     if (cached_has_bits & 0x00040000u) {
-      batterycharge_ = from.batterycharge_;
+      timetoball_ = from.timetoball_;
     }
     if (cached_has_bits & 0x00080000u) {
+      wantstobestriker_ = from.wantstobestriker_;
+    }
+    if (cached_has_bits & 0x00100000u) {
+      batterycharge_ = from.batterycharge_;
+    }
+    if (cached_has_bits & 0x00200000u) {
       ballage_ = from.ballage_;
     }
     _has_bits_[0] |= cached_has_bits;
@@ -9726,13 +9798,15 @@ void TeamMessageDebug::InternalSwap(TeamMessageDebug* other) {
   swap(playernumber_, other->playernumber_);
   swap(timestamp_, other->timestamp_);
   swap(robotstate_, other->robotstate_);
+  swap(temperature_, other->temperature_);
+  swap(cputemperature_, other->cputemperature_);
   swap(fallen_, other->fallen_);
   swap(readytowalk_, other->readytowalk_);
   swap(whistledetected_, other->whistledetected_);
-  swap(temperature_, other->temperature_);
-  swap(cputemperature_, other->cputemperature_);
+  swap(wasstriker_, other->wasstriker_);
   swap(whistlecount_, other->whistlecount_);
   swap(timetoball_, other->timetoball_);
+  swap(wantstobestriker_, other->wantstobestriker_);
   swap(batterycharge_, other->batterycharge_);
   swap(ballage_, other->ballage_);
   swap(_has_bits_[0], other->_has_bits_[0]);
@@ -10048,13 +10122,13 @@ void TeamMessageDebug::set_allocated_pose(::naothmessages::Pose2D* pose) {
 
 // optional bool fallen = 9 [default = false];
 bool TeamMessageDebug::has_fallen() const {
-  return (_has_bits_[0] & 0x00000800u) != 0;
+  return (_has_bits_[0] & 0x00002000u) != 0;
 }
 void TeamMessageDebug::set_has_fallen() {
-  _has_bits_[0] |= 0x00000800u;
+  _has_bits_[0] |= 0x00002000u;
 }
 void TeamMessageDebug::clear_has_fallen() {
-  _has_bits_[0] &= ~0x00000800u;
+  _has_bits_[0] &= ~0x00002000u;
 }
 void TeamMessageDebug::clear_fallen() {
   fallen_ = false;
@@ -10072,13 +10146,13 @@ void TeamMessageDebug::set_fallen(bool value) {
 
 // optional bool readyToWalk = 10;
 bool TeamMessageDebug::has_readytowalk() const {
-  return (_has_bits_[0] & 0x00001000u) != 0;
+  return (_has_bits_[0] & 0x00004000u) != 0;
 }
 void TeamMessageDebug::set_has_readytowalk() {
-  _has_bits_[0] |= 0x00001000u;
+  _has_bits_[0] |= 0x00004000u;
 }
 void TeamMessageDebug::clear_has_readytowalk() {
-  _has_bits_[0] &= ~0x00001000u;
+  _has_bits_[0] &= ~0x00004000u;
 }
 void TeamMessageDebug::clear_readytowalk() {
   readytowalk_ = false;
@@ -10096,13 +10170,13 @@ void TeamMessageDebug::set_readytowalk(bool value) {
 
 // optional float batteryCharge = 11 [default = 1];
 bool TeamMessageDebug::has_batterycharge() const {
-  return (_has_bits_[0] & 0x00040000u) != 0;
+  return (_has_bits_[0] & 0x00100000u) != 0;
 }
 void TeamMessageDebug::set_has_batterycharge() {
-  _has_bits_[0] |= 0x00040000u;
+  _has_bits_[0] |= 0x00100000u;
 }
 void TeamMessageDebug::clear_has_batterycharge() {
-  _has_bits_[0] &= ~0x00040000u;
+  _has_bits_[0] &= ~0x00100000u;
 }
 void TeamMessageDebug::clear_batterycharge() {
   batterycharge_ = 1;
@@ -10120,13 +10194,13 @@ void TeamMessageDebug::set_batterycharge(float value) {
 
 // optional float temperature = 12 [default = 0];
 bool TeamMessageDebug::has_temperature() const {
-  return (_has_bits_[0] & 0x00004000u) != 0;
+  return (_has_bits_[0] & 0x00000800u) != 0;
 }
 void TeamMessageDebug::set_has_temperature() {
-  _has_bits_[0] |= 0x00004000u;
+  _has_bits_[0] |= 0x00000800u;
 }
 void TeamMessageDebug::clear_has_temperature() {
-  _has_bits_[0] &= ~0x00004000u;
+  _has_bits_[0] &= ~0x00000800u;
 }
 void TeamMessageDebug::clear_temperature() {
   temperature_ = 0;
@@ -10144,13 +10218,13 @@ void TeamMessageDebug::set_temperature(float value) {
 
 // optional float cpuTemperature = 13 [default = 0];
 bool TeamMessageDebug::has_cputemperature() const {
-  return (_has_bits_[0] & 0x00008000u) != 0;
+  return (_has_bits_[0] & 0x00001000u) != 0;
 }
 void TeamMessageDebug::set_has_cputemperature() {
-  _has_bits_[0] |= 0x00008000u;
+  _has_bits_[0] |= 0x00001000u;
 }
 void TeamMessageDebug::clear_has_cputemperature() {
-  _has_bits_[0] &= ~0x00008000u;
+  _has_bits_[0] &= ~0x00001000u;
 }
 void TeamMessageDebug::clear_cputemperature() {
   cputemperature_ = 0;
@@ -10168,13 +10242,13 @@ void TeamMessageDebug::set_cputemperature(float value) {
 
 // optional bool whistleDetected = 14 [default = false];
 bool TeamMessageDebug::has_whistledetected() const {
-  return (_has_bits_[0] & 0x00002000u) != 0;
+  return (_has_bits_[0] & 0x00008000u) != 0;
 }
 void TeamMessageDebug::set_has_whistledetected() {
-  _has_bits_[0] |= 0x00002000u;
+  _has_bits_[0] |= 0x00008000u;
 }
 void TeamMessageDebug::clear_has_whistledetected() {
-  _has_bits_[0] &= ~0x00002000u;
+  _has_bits_[0] &= ~0x00008000u;
 }
 void TeamMessageDebug::clear_whistledetected() {
   whistledetected_ = false;
@@ -10192,13 +10266,13 @@ void TeamMessageDebug::set_whistledetected(bool value) {
 
 // optional int32 whistleCount = 15 [default = 0];
 bool TeamMessageDebug::has_whistlecount() const {
-  return (_has_bits_[0] & 0x00010000u) != 0;
+  return (_has_bits_[0] & 0x00020000u) != 0;
 }
 void TeamMessageDebug::set_has_whistlecount() {
-  _has_bits_[0] |= 0x00010000u;
+  _has_bits_[0] |= 0x00020000u;
 }
 void TeamMessageDebug::clear_has_whistlecount() {
-  _has_bits_[0] &= ~0x00010000u;
+  _has_bits_[0] &= ~0x00020000u;
 }
 void TeamMessageDebug::clear_whistlecount() {
   whistlecount_ = 0;
@@ -10216,13 +10290,13 @@ void TeamMessageDebug::set_whistlecount(::google::protobuf::int32 value) {
 
 // optional int32 ballAge = 16 [default = -1];
 bool TeamMessageDebug::has_ballage() const {
-  return (_has_bits_[0] & 0x00080000u) != 0;
+  return (_has_bits_[0] & 0x00200000u) != 0;
 }
 void TeamMessageDebug::set_has_ballage() {
-  _has_bits_[0] |= 0x00080000u;
+  _has_bits_[0] |= 0x00200000u;
 }
 void TeamMessageDebug::clear_has_ballage() {
-  _has_bits_[0] &= ~0x00080000u;
+  _has_bits_[0] &= ~0x00200000u;
 }
 void TeamMessageDebug::clear_ballage() {
   ballage_ = -1;
@@ -10332,13 +10406,13 @@ void TeamMessageDebug::set_allocated_ballvelocity(::naothmessages::DoubleVector2
 
 // optional uint32 timeToBall = 19;
 bool TeamMessageDebug::has_timetoball() const {
-  return (_has_bits_[0] & 0x00020000u) != 0;
+  return (_has_bits_[0] & 0x00040000u) != 0;
 }
 void TeamMessageDebug::set_has_timetoball() {
-  _has_bits_[0] |= 0x00020000u;
+  _has_bits_[0] |= 0x00040000u;
 }
 void TeamMessageDebug::clear_has_timetoball() {
-  _has_bits_[0] &= ~0x00020000u;
+  _has_bits_[0] &= ~0x00040000u;
 }
 void TeamMessageDebug::clear_timetoball() {
   timetoball_ = 0u;
@@ -10398,6 +10472,54 @@ void TeamMessageDebug::set_allocated_teamball(::naothmessages::DoubleVector2* te
     clear_has_teamball();
   }
   // @@protoc_insertion_point(field_set_allocated:naothmessages.TeamMessageDebug.teamBall)
+}
+
+// optional bool wasStriker = 21 [default = false];
+bool TeamMessageDebug::has_wasstriker() const {
+  return (_has_bits_[0] & 0x00010000u) != 0;
+}
+void TeamMessageDebug::set_has_wasstriker() {
+  _has_bits_[0] |= 0x00010000u;
+}
+void TeamMessageDebug::clear_has_wasstriker() {
+  _has_bits_[0] &= ~0x00010000u;
+}
+void TeamMessageDebug::clear_wasstriker() {
+  wasstriker_ = false;
+  clear_has_wasstriker();
+}
+bool TeamMessageDebug::wasstriker() const {
+  // @@protoc_insertion_point(field_get:naothmessages.TeamMessageDebug.wasStriker)
+  return wasstriker_;
+}
+void TeamMessageDebug::set_wasstriker(bool value) {
+  set_has_wasstriker();
+  wasstriker_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.TeamMessageDebug.wasStriker)
+}
+
+// optional bool wantsToBeStriker = 22 [default = false];
+bool TeamMessageDebug::has_wantstobestriker() const {
+  return (_has_bits_[0] & 0x00080000u) != 0;
+}
+void TeamMessageDebug::set_has_wantstobestriker() {
+  _has_bits_[0] |= 0x00080000u;
+}
+void TeamMessageDebug::clear_has_wantstobestriker() {
+  _has_bits_[0] &= ~0x00080000u;
+}
+void TeamMessageDebug::clear_wantstobestriker() {
+  wantstobestriker_ = false;
+  clear_has_wantstobestriker();
+}
+bool TeamMessageDebug::wantstobestriker() const {
+  // @@protoc_insertion_point(field_get:naothmessages.TeamMessageDebug.wantsToBeStriker)
+  return wantstobestriker_;
+}
+void TeamMessageDebug::set_wantstobestriker(bool value) {
+  set_has_wantstobestriker();
+  wantstobestriker_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.TeamMessageDebug.wantsToBeStriker)
 }
 
 #endif  // PROTOBUF_INLINE_NOT_IN_HEADERS

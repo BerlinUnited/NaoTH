@@ -33,6 +33,8 @@ void TeamCommDebugger::execute()
       DataConversion::toMessage(state.ballPosition(), *(debugMessage.mutable_ballposition()));
       DataConversion::toMessage(getBallModel().knows ? getBallModel().speed : Vector2d{0, 0}, *(debugMessage.mutable_ballvelocity()));
       //debugMessage.set_timetoball();
+      debugMessage.set_wasstriker(getRoleDecisionModel().isStriker(getPlayerInfo().playerNumber));
+      debugMessage.set_wantstobestriker(getRoleDecisionModel().wantsToBeStriker);
 
       Vector2d teamBall;
       if (getTeamBallModel().valid) {

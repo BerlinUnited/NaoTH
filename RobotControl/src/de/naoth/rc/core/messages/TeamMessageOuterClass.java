@@ -15485,6 +15485,24 @@ public final class TeamMessageOuterClass {
      * <code>optional .naothmessages.DoubleVector2 teamBall = 20;</code>
      */
     de.naoth.rc.core.messages.CommonTypes.DoubleVector2OrBuilder getTeamBallOrBuilder();
+
+    /**
+     * <code>optional bool wasStriker = 21 [default = false];</code>
+     */
+    boolean hasWasStriker();
+    /**
+     * <code>optional bool wasStriker = 21 [default = false];</code>
+     */
+    boolean getWasStriker();
+
+    /**
+     * <code>optional bool wantsToBeStriker = 22 [default = false];</code>
+     */
+    boolean hasWantsToBeStriker();
+    /**
+     * <code>optional bool wantsToBeStriker = 22 [default = false];</code>
+     */
+    boolean getWantsToBeStriker();
   }
   /**
    * Protobuf type {@code naothmessages.TeamMessageDebug}
@@ -15513,6 +15531,8 @@ public final class TeamMessageOuterClass {
       whistleCount_ = 0;
       ballAge_ = -1;
       timeToBall_ = 0;
+      wasStriker_ = false;
+      wantsToBeStriker_ = false;
     }
 
     @java.lang.Override
@@ -15696,6 +15716,16 @@ public final class TeamMessageOuterClass {
                 teamBall_ = subBuilder.buildPartial();
               }
               bitField0_ |= 0x00080000;
+              break;
+            }
+            case 168: {
+              bitField0_ |= 0x00100000;
+              wasStriker_ = input.readBool();
+              break;
+            }
+            case 176: {
+              bitField0_ |= 0x00200000;
+              wantsToBeStriker_ = input.readBool();
               break;
             }
           }
@@ -16087,6 +16117,36 @@ public final class TeamMessageOuterClass {
       return teamBall_ == null ? de.naoth.rc.core.messages.CommonTypes.DoubleVector2.getDefaultInstance() : teamBall_;
     }
 
+    public static final int WASSTRIKER_FIELD_NUMBER = 21;
+    private boolean wasStriker_;
+    /**
+     * <code>optional bool wasStriker = 21 [default = false];</code>
+     */
+    public boolean hasWasStriker() {
+      return ((bitField0_ & 0x00100000) == 0x00100000);
+    }
+    /**
+     * <code>optional bool wasStriker = 21 [default = false];</code>
+     */
+    public boolean getWasStriker() {
+      return wasStriker_;
+    }
+
+    public static final int WANTSTOBESTRIKER_FIELD_NUMBER = 22;
+    private boolean wantsToBeStriker_;
+    /**
+     * <code>optional bool wantsToBeStriker = 22 [default = false];</code>
+     */
+    public boolean hasWantsToBeStriker() {
+      return ((bitField0_ & 0x00200000) == 0x00200000);
+    }
+    /**
+     * <code>optional bool wantsToBeStriker = 22 [default = false];</code>
+     */
+    public boolean getWantsToBeStriker() {
+      return wantsToBeStriker_;
+    }
+
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
@@ -16211,6 +16271,12 @@ public final class TeamMessageOuterClass {
       if (((bitField0_ & 0x00080000) == 0x00080000)) {
         output.writeMessage(20, getTeamBall());
       }
+      if (((bitField0_ & 0x00100000) == 0x00100000)) {
+        output.writeBool(21, wasStriker_);
+      }
+      if (((bitField0_ & 0x00200000) == 0x00200000)) {
+        output.writeBool(22, wantsToBeStriker_);
+      }
       unknownFields.writeTo(output);
     }
 
@@ -16297,6 +16363,14 @@ public final class TeamMessageOuterClass {
       if (((bitField0_ & 0x00080000) == 0x00080000)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(20, getTeamBall());
+      }
+      if (((bitField0_ & 0x00100000) == 0x00100000)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(21, wasStriker_);
+      }
+      if (((bitField0_ & 0x00200000) == 0x00200000)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(22, wantsToBeStriker_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -16419,6 +16493,16 @@ public final class TeamMessageOuterClass {
         result = result && getTeamBall()
             .equals(other.getTeamBall());
       }
+      result = result && (hasWasStriker() == other.hasWasStriker());
+      if (hasWasStriker()) {
+        result = result && (getWasStriker()
+            == other.getWasStriker());
+      }
+      result = result && (hasWantsToBeStriker() == other.hasWantsToBeStriker());
+      if (hasWantsToBeStriker()) {
+        result = result && (getWantsToBeStriker()
+            == other.getWantsToBeStriker());
+      }
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -16516,6 +16600,16 @@ public final class TeamMessageOuterClass {
       if (hasTeamBall()) {
         hash = (37 * hash) + TEAMBALL_FIELD_NUMBER;
         hash = (53 * hash) + getTeamBall().hashCode();
+      }
+      if (hasWasStriker()) {
+        hash = (37 * hash) + WASSTRIKER_FIELD_NUMBER;
+        hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+            getWasStriker());
+      }
+      if (hasWantsToBeStriker()) {
+        hash = (37 * hash) + WANTSTOBESTRIKER_FIELD_NUMBER;
+        hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+            getWantsToBeStriker());
       }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
@@ -16716,6 +16810,10 @@ public final class TeamMessageOuterClass {
           teamBallBuilder_.clear();
         }
         bitField0_ = (bitField0_ & ~0x00080000);
+        wasStriker_ = false;
+        bitField0_ = (bitField0_ & ~0x00100000);
+        wantsToBeStriker_ = false;
+        bitField0_ = (bitField0_ & ~0x00200000);
         return this;
       }
 
@@ -16844,6 +16942,14 @@ public final class TeamMessageOuterClass {
         } else {
           result.teamBall_ = teamBallBuilder_.build();
         }
+        if (((from_bitField0_ & 0x00100000) == 0x00100000)) {
+          to_bitField0_ |= 0x00100000;
+        }
+        result.wasStriker_ = wasStriker_;
+        if (((from_bitField0_ & 0x00200000) == 0x00200000)) {
+          to_bitField0_ |= 0x00200000;
+        }
+        result.wantsToBeStriker_ = wantsToBeStriker_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -16947,6 +17053,12 @@ public final class TeamMessageOuterClass {
         }
         if (other.hasTeamBall()) {
           mergeTeamBall(other.getTeamBall());
+        }
+        if (other.hasWasStriker()) {
+          setWasStriker(other.getWasStriker());
+        }
+        if (other.hasWantsToBeStriker()) {
+          setWantsToBeStriker(other.getWantsToBeStriker());
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -18221,6 +18333,70 @@ public final class TeamMessageOuterClass {
         }
         return teamBallBuilder_;
       }
+
+      private boolean wasStriker_ ;
+      /**
+       * <code>optional bool wasStriker = 21 [default = false];</code>
+       */
+      public boolean hasWasStriker() {
+        return ((bitField0_ & 0x00100000) == 0x00100000);
+      }
+      /**
+       * <code>optional bool wasStriker = 21 [default = false];</code>
+       */
+      public boolean getWasStriker() {
+        return wasStriker_;
+      }
+      /**
+       * <code>optional bool wasStriker = 21 [default = false];</code>
+       */
+      public Builder setWasStriker(boolean value) {
+        bitField0_ |= 0x00100000;
+        wasStriker_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional bool wasStriker = 21 [default = false];</code>
+       */
+      public Builder clearWasStriker() {
+        bitField0_ = (bitField0_ & ~0x00100000);
+        wasStriker_ = false;
+        onChanged();
+        return this;
+      }
+
+      private boolean wantsToBeStriker_ ;
+      /**
+       * <code>optional bool wantsToBeStriker = 22 [default = false];</code>
+       */
+      public boolean hasWantsToBeStriker() {
+        return ((bitField0_ & 0x00200000) == 0x00200000);
+      }
+      /**
+       * <code>optional bool wantsToBeStriker = 22 [default = false];</code>
+       */
+      public boolean getWantsToBeStriker() {
+        return wantsToBeStriker_;
+      }
+      /**
+       * <code>optional bool wantsToBeStriker = 22 [default = false];</code>
+       */
+      public Builder setWantsToBeStriker(boolean value) {
+        bitField0_ |= 0x00200000;
+        wantsToBeStriker_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional bool wantsToBeStriker = 22 [default = false];</code>
+       */
+      public Builder clearWantsToBeStriker() {
+        bitField0_ = (bitField0_ & ~0x00200000);
+        wantsToBeStriker_ = false;
+        onChanged();
+        return this;
+      }
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.setUnknownFields(unknownFields);
@@ -18406,7 +18582,7 @@ public final class TeamMessageOuterClass {
       "oBeStrikerUpdate\030\026 \001(\004\022\031\n\nwasStriker\030\027 \001",
       "(\010:\005false\022\030\n\020wasStrikerUpdate\030\030 \001(\004\022+\n\tr" +
       "obotRole\030\031 \001(\0132\030.naothmessages.RobotRole" +
-      "\022\027\n\017robotRoleUpdate\030\032 \001(\004\"\233\005\n\020TeamMessag" +
+      "\022\027\n\017robotRoleUpdate\030\032 \001(\004\"\327\005\n\020TeamMessag" +
       "eDebug\022\027\n\006bodyID\030\001 \002(\t:\007unknown\022\025\n\nteamN" +
       "umber\030\002 \002(\r:\0010\022\027\n\014playerNumber\030\003 \002(\r:\0010\022" +
       "\024\n\ttimestamp\030\004 \002(\004:\0010\022+\n\tframeInfo\030\005 \001(\013" +
@@ -18423,24 +18599,26 @@ public final class TeamMessageOuterClass {
       "s.DoubleVector2\0222\n\014ballVelocity\030\022 \001(\0132\034." +
       "naothmessages.DoubleVector2\022\022\n\ntimeToBal" +
       "l\030\023 \001(\r\022.\n\010teamBall\030\024 \001(\0132\034.naothmessage" +
-      "s.DoubleVector2*\262\001\n\tTeamColor\022\014\n\010blueTea",
-      "m\020\000\022\013\n\007redTeam\020\001\022\016\n\nyellowTeam\020\002\022\r\n\tblac" +
-      "kTeam\020\003\022\r\n\twhiteTeam\020\004\022\r\n\tgreenTeam\020\005\022\016\n" +
-      "\norangeTeam\020\006\022\016\n\npurpleTeam\020\007\022\r\n\tbrownTe" +
-      "am\020\010\022\014\n\010grayTeam\020\t\022\020\n\013invalidTeam\020\377\001*d\n\n" +
-      "RobotState\022\013\n\007initial\020\000\022\t\n\005ready\020\001\022\007\n\003se" +
-      "t\020\002\022\013\n\007playing\020\003\022\014\n\010finished\020\004\022\r\n\tpenali" +
-      "zed\020\005\022\013\n\007unstiff\020\006*\230\002\n\017RobotRoleStatic\022\026" +
-      "\n\022role_defender_left\020\000\022\030\n\024role_defender_" +
-      "center\020\001\022\027\n\023role_defender_right\020\002\022\030\n\024rol" +
-      "e_midfielder_left\020\003\022\032\n\026role_midfielder_c",
-      "enter\020\004\022\031\n\025role_midfielder_right\020\005\022\025\n\021ro" +
-      "le_forward_left\020\006\022\027\n\023role_forward_center" +
-      "\020\007\022\026\n\022role_forward_right\020\010\022\017\n\013role_goali" +
-      "e\020\t\022\020\n\014role_unknown\020\n*b\n\020RobotRoleDynami" +
-      "c\022\r\n\trole_none\020\000\022\022\n\016role_supporter\020\001\022\031\n\025" +
-      "role_goalie_supporter\020\002\022\020\n\014role_striker\020" +
-      "\003B\033\n\031de.naoth.rc.core.messages"
+      "s.DoubleVector2\022\031\n\nwasStriker\030\025 \001(\010:\005fal",
+      "se\022\037\n\020wantsToBeStriker\030\026 \001(\010:\005false*\262\001\n\t" +
+      "TeamColor\022\014\n\010blueTeam\020\000\022\013\n\007redTeam\020\001\022\016\n\n" +
+      "yellowTeam\020\002\022\r\n\tblackTeam\020\003\022\r\n\twhiteTeam" +
+      "\020\004\022\r\n\tgreenTeam\020\005\022\016\n\norangeTeam\020\006\022\016\n\npur" +
+      "pleTeam\020\007\022\r\n\tbrownTeam\020\010\022\014\n\010grayTeam\020\t\022\020" +
+      "\n\013invalidTeam\020\377\001*d\n\nRobotState\022\013\n\007initia" +
+      "l\020\000\022\t\n\005ready\020\001\022\007\n\003set\020\002\022\013\n\007playing\020\003\022\014\n\010" +
+      "finished\020\004\022\r\n\tpenalized\020\005\022\013\n\007unstiff\020\006*\230" +
+      "\002\n\017RobotRoleStatic\022\026\n\022role_defender_left" +
+      "\020\000\022\030\n\024role_defender_center\020\001\022\027\n\023role_def",
+      "ender_right\020\002\022\030\n\024role_midfielder_left\020\003\022" +
+      "\032\n\026role_midfielder_center\020\004\022\031\n\025role_midf" +
+      "ielder_right\020\005\022\025\n\021role_forward_left\020\006\022\027\n" +
+      "\023role_forward_center\020\007\022\026\n\022role_forward_r" +
+      "ight\020\010\022\017\n\013role_goalie\020\t\022\020\n\014role_unknown\020" +
+      "\n*b\n\020RobotRoleDynamic\022\r\n\trole_none\020\000\022\022\n\016" +
+      "role_supporter\020\001\022\031\n\025role_goalie_supporte" +
+      "r\020\002\022\020\n\014role_striker\020\003B\033\n\031de.naoth.rc.cor" +
+      "e.messages"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -18521,7 +18699,7 @@ public final class TeamMessageOuterClass {
     internal_static_naothmessages_TeamMessageDebug_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_naothmessages_TeamMessageDebug_descriptor,
-        new java.lang.String[] { "BodyID", "TeamNumber", "PlayerNumber", "Timestamp", "FrameInfo", "RobotState", "RobotRole", "Pose", "Fallen", "ReadyToWalk", "BatteryCharge", "Temperature", "CpuTemperature", "WhistleDetected", "WhistleCount", "BallAge", "BallPosition", "BallVelocity", "TimeToBall", "TeamBall", });
+        new java.lang.String[] { "BodyID", "TeamNumber", "PlayerNumber", "Timestamp", "FrameInfo", "RobotState", "RobotRole", "Pose", "Fallen", "ReadyToWalk", "BatteryCharge", "Temperature", "CpuTemperature", "WhistleDetected", "WhistleCount", "BallAge", "BallPosition", "BallVelocity", "TimeToBall", "TeamBall", "WasStriker", "WantsToBeStriker", });
     de.naoth.rc.core.messages.CommonTypes.getDescriptor();
     de.naoth.rc.core.messages.FrameworkRepresentations.getDescriptor();
   }

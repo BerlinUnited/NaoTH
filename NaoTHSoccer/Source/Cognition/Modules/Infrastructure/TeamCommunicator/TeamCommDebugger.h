@@ -20,6 +20,7 @@
 #include "Representations/Modeling/BallModel.h"
 #include "Representations/Modeling/TeamState.h"
 #include "Representations/Modeling/BodyState.h"
+#include "Representations/Modeling/RoleDecisionModel.h"
 #include "Representations/Modeling/TeamBallModel.h"
 #include "Representations/Infrastructure/WifiMode.h"
 #include "Representations/Perception/WhistlePercept.h"
@@ -44,6 +45,7 @@ BEGIN_DECLARE_MODULE(TeamCommDebugger)
   REQUIRE(BallModel)
   REQUIRE(TeamBallModel)
   REQUIRE(TeamState)
+  REQUIRE(RoleDecisionModel)
 
   PROVIDE(TeamMessageDebug)
 END_DECLARE_MODULE(TeamCommDebugger)

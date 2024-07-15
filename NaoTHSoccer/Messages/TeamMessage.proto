@@ -211,4 +211,7 @@ message TeamMessageDebug
   optional DoubleVector2 ballVelocity = 18;
   optional uint32 timeToBall = 19;
   optional DoubleVector2 teamBall = 20;
+
+  optional bool wasStriker = 21 [default=false];
+  optional bool wantsToBeStriker = 22 [default=false];
 }
