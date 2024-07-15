@@ -134,8 +134,9 @@ private:
     Parameters() : ParameterList("MultiPassBallDetector")
     {      
       PARAMETER_REGISTER(cnn.threshold) = 0.4;
-      // Constant offset added to the input of the CNN. < 0 darker, > 0 brighter. T
-      PARAMETER_REGISTER(cnn.meanBrightnessOffset) = 0.0; 
+      // Constant offset added to the input of the CNN. < 0 darker, > 0 brighter.
+      PARAMETER_REGISTER(cnn.classifierMeanBrightnessOffset) = 0.0; 
+      PARAMETER_REGISTER(cnn.detectorMeanBrightnessOffset) = 0.0; 
       
 
       PARAMETER_REGISTER(maxNumberOfKeys) = 12;
@@ -167,7 +168,8 @@ private:
       double threshold;
       double thresholdClose;
 
-      double meanBrightnessOffset;
+      double classifierMeanBrightnessOffset;
+      double detectorMeanBrightnessOffset;
     } cnn;
 
     int maxNumberOfKeys;
