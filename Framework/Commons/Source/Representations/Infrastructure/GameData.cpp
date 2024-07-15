@@ -107,6 +107,7 @@ std::string GameData::toString(GameState value)
     RETURN_VALUE_TO_STR(set);
     RETURN_VALUE_TO_STR(playing);
     RETURN_VALUE_TO_STR(finished);
+    RETURN_VALUE_TO_STR(standby);
     RETURN_VALUE_TO_STR(unknown_game_state);
   }
   
