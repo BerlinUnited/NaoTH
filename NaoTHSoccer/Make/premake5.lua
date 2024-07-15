@@ -285,6 +285,9 @@ workspace "NaoTHSoccer"
         dofile ("../Test/Make/AudioRecorder.lua")
           kind "ConsoleApp"
           vpaths { ["*"] = "../Test/Source/AudioRecorder" }
+        dofile ("../Test/Make/TfliteBenchmark.lua")
+          kind "ConsoleApp"
+          vpaths { ["*"] = "../Test/Source/TfliteBenchmark" }
     end
 
     

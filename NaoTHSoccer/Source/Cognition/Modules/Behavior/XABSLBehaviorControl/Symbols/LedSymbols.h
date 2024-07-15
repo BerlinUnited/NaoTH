@@ -5,8 +5,10 @@
 * Definition of class LedSymbols
 */
 
-#ifndef _LedSymbols_H_
-#define _LedSymbols_H_
+#ifndef LED_SYMBOLS_H
+#define LED_SYMBOLS_H
+
+#include <array>
 
 #include <ModuleFramework/Module.h>
 #include <XabslEngine/XabslEngine.h>
@@ -14,6 +16,8 @@
 
 // representations
 #include "Representations/Infrastructure/LEDRequest.h"
+#include "Tools/Debug/Color.h"
+#include <array>
 
 BEGIN_DECLARE_MODULE(LedSymbols)
   PROVIDE(BehaviorLEDRequest)
@@ -38,12 +42,22 @@ public:
   void registerSymbols(xabsl::Engine& engine);
 
   virtual void execute();
+
 private:
 
   static LedSymbols* theInstance;
 
-  // helper
-  void setEye(naoth::LEDData::MultiLEDID from, naoth::LEDData::MultiLEDID to, int value);
+  const std::array<Color, 4> colors = {{
+    {0.0, 0.0, 0.0}, // off
+    {1.0, 0.0, 0.0}, // red 
+    {0.0, 1.0, 0.0}, // green
+    {0.0, 0.0, 1.0}  // blue
+  }};
+
+  const Color& getEyeColor(int i) {
+    // use at() to make sure the index 'i' is within the bounds
+    return colors.at(i);
+  }
 
   // setter and getter
 

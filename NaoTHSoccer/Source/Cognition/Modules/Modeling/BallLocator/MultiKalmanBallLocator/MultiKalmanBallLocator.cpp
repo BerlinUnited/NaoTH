@@ -598,7 +598,7 @@ void MultiKalmanBallLocator::provideBallModel(const BallHypothesis& model)
 
       DEBUG_REQUEST("MultiKalmanBallLocator:draw_final_ball_postion_at_rest",
           FIELD_DRAWING_CONTEXT;
-          PEN(Color(Color::black), 20);
+          PEN(Color(Color::ColorID::black), 20);
           CIRCLE(modelCopy.getState()(0), modelCopy.getState()(2), getFieldInfo().ballRadius-10);
       );
   }

@@ -24,6 +24,8 @@
 #include "Representations/Perception/FieldColorPercept.h"
 #include "Representations/Infrastructure/FieldInfo.h"
 #include "Representations/Modeling/BallModel.h"
+#include "Representations/Perception/BestPatchList.h"
+
 
 #include "Representations/Perception/MultiChannelIntegralImage.h"
 #include "Representations/Perception/BallCandidates.h"
@@ -33,8 +35,6 @@
 #include "Tools/DoubleCamHelpers.h"
 
 // local tools
-#include "Tools/BestPatchList.h"
-#include "Tools/BallKeyPointExtractor.h"
 #include "Tools/BlackSpotExtractor.h"
 #include "Tools/DataStructures/RingBufferWithSum.h"
 
@@ -71,6 +71,9 @@ BEGIN_DECLARE_MODULE(CNNBallDetector)
 
   REQUIRE(BallDetectorIntegralImage)
   REQUIRE(BallDetectorIntegralImageTop)
+
+  REQUIRE(BestPatchList)
+  REQUIRE(BestPatchListTop)
 
   REQUIRE(FieldColorPercept)
   REQUIRE(FieldColorPerceptTop)
@@ -167,12 +170,8 @@ private:
       PARAMETER_REGISTER(brightnessMultiplierTop) = 1.0;
       PARAMETER_REGISTER(brightnessMultiplierTopDark) = 1.0;
       
-      
-      syncWithConfig();
       syncWithConfig();
     }
-
-    BallKeyPointExtractor::Parameter keyDetector;
 
     struct CNN {
       double threshold;
@@ -217,9 +216,8 @@ private:
   std::string currentCNNCloseName;
 
   std::map<std::string, std::shared_ptr<AbstractCNNFinder> > cnnMap;
-
-  ModuleCreator<BallKeyPointExtractor>* theBallKeyPointExtractor;
-  BestPatchList best;
+ 
+  BestPatchList::PatchList patches;
 
 private:
   void calculateCandidates();
@@ -251,6 +249,7 @@ private:
   //DOUBLE_CAM_REQUIRE(CNNBallDetector, BodyContour);
   DOUBLE_CAM_REQUIRE(CNNBallDetector, BallDetectorIntegralImage);
   DOUBLE_CAM_REQUIRE(CNNBallDetector, FieldColorPercept);
+  DOUBLE_CAM_REQUIRE(CNNBallDetector, BestPatchList);
 
   DOUBLE_CAM_PROVIDE(CNNBallDetector, BallCandidates);
 };//end class CNNBallDetector

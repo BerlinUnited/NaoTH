@@ -23,6 +23,7 @@
 #include "Representations/Perception/FieldColorPercept.h"
 #include "Representations/Infrastructure/FieldInfo.h"
 #include "Representations/Modeling/BallModel.h"
+#include "Representations/Perception/BestPatchList.h"
 
 #include "Representations/Perception/MultiChannelIntegralImage.h"
 #include "Representations/Perception/BallCandidates.h"
@@ -32,8 +33,6 @@
 #include "Tools/DoubleCamHelpers.h"
 
 // local tools
-#include "Tools/BestPatchList.h"
-#include "Tools/BallKeyPointExtractor.h"
 #include "Tools/BlackSpotExtractor.h"
 #include "Tools/DataStructures/RingBufferWithSum.h"
 
@@ -67,6 +66,9 @@ BEGIN_DECLARE_MODULE(MultiPassBallDetector)
 
   REQUIRE(Image)
   REQUIRE(ImageTop)
+
+  REQUIRE(BestPatchList)
+  REQUIRE(BestPatchListTop)
 
   REQUIRE(BallDetectorIntegralImage)
   REQUIRE(BallDetectorIntegralImageTop)
@@ -130,11 +132,7 @@ private:
   struct Parameters: public ParameterList
   {
     Parameters() : ParameterList("MultiPassBallDetector")
-    {
-      PARAMETER_REGISTER(keyDetector.borderRadiusFactorClose) = 0.5;
-      PARAMETER_REGISTER(keyDetector.borderRadiusFactorFar) = 0.8;
-      PARAMETER_REGISTER(keyDetector.maxInnerGreenDensitiy) = 0.5;
-      
+    {      
       PARAMETER_REGISTER(cnn.threshold) = 0.4;
       // Constant offset added to the input of the CNN. < 0 darker, > 0 brighter.
       PARAMETER_REGISTER(cnn.classifierMeanBrightnessOffset) = 0.0; 
@@ -165,7 +163,6 @@ private:
       syncWithConfig();
     }
 
-    BallKeyPointExtractor::Parameter keyDetector;
 
     struct CNN {
       double threshold;
@@ -206,8 +203,6 @@ private:
   std::string currentCNNCloseName;
 
   std::map<std::string, std::shared_ptr<AbstractCNNFinder> > cnnMap;
-
-  ModuleCreator<BallKeyPointExtractor>* theBallKeyPointExtractor;
   
 private:
   MultiBallPercept::BallPercept createBallPercept(const Vector2d& center, double radius);
@@ -248,6 +243,7 @@ private:
   //DOUBLE_CAM_REQUIRE(MultiPassBallDetector, BodyContour);
   DOUBLE_CAM_REQUIRE(MultiPassBallDetector, BallDetectorIntegralImage);
   DOUBLE_CAM_REQUIRE(MultiPassBallDetector, FieldColorPercept);
+  DOUBLE_CAM_REQUIRE(MultiPassBallDetector, BestPatchList);
 
   DOUBLE_CAM_PROVIDE(MultiPassBallDetector, BallCandidates);
 };//end class MultiPassBallDetector

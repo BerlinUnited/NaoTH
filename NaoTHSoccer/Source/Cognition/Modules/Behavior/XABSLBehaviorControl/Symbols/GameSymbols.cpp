@@ -21,12 +21,12 @@ void GameSymbols::registerSymbols(xabsl::Engine& engine)
 
   // enum type for game state (spl)
   engine.registerEnumElement("game.state","game.state._initial_", PlayerInfo::initial);
-  engine.registerEnumElement("game.state","game.state.ready", PlayerInfo::ready);
-  engine.registerEnumElement("game.state","game.state.set", PlayerInfo::set);
-  engine.registerEnumElement("game.state","game.state.playing", PlayerInfo::playing);
+  engine.registerEnumElement("game.state","game.state.ready",     PlayerInfo::ready);
+  engine.registerEnumElement("game.state","game.state.set",       PlayerInfo::set);
+  engine.registerEnumElement("game.state","game.state.playing",   PlayerInfo::playing);
   engine.registerEnumElement("game.state","game.state.penalized", PlayerInfo::penalized);
-  engine.registerEnumElement("game.state","game.state.finished", PlayerInfo::finished);
-  engine.registerEnumElement("game.state","game.state.unstiff", PlayerInfo::unstiff);
+  engine.registerEnumElement("game.state","game.state.finished",  PlayerInfo::finished);
+  engine.registerEnumElement("game.state","game.state.unstiff",   PlayerInfo::unstiff);
 
   // current game state
   engine.registerEnumeratedInputSymbol("game.state", "game.state", &getGameState);
@@ -43,19 +43,20 @@ void GameSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerBooleanInputSymbol("game.state.playing_is_set_by_game_controller", &getPlayingIsSetByGameController);
 
 
-  engine.registerEnumElement("game.set_play","game.set_play.none", PlayerInfo::set_none);
-  engine.registerEnumElement("game.set_play","game.set_play.goal_free_kick", PlayerInfo::goal_free_kick);
+  engine.registerEnumElement("game.set_play","game.set_play.none",              PlayerInfo::set_none);
+  engine.registerEnumElement("game.set_play","game.set_play.goal_kick",         PlayerInfo::goal_kick);
   engine.registerEnumElement("game.set_play","game.set_play.pushing_free_kick", PlayerInfo::pushing_free_kick);
-  engine.registerEnumElement("game.set_play","game.set_play.corner_kick", PlayerInfo::corner_kick);
-  engine.registerEnumElement("game.set_play","game.set_play.kick_in", PlayerInfo::kick_in);
+  engine.registerEnumElement("game.set_play","game.set_play.corner_kick",       PlayerInfo::corner_kick);
+  engine.registerEnumElement("game.set_play","game.set_play.kick_in",           PlayerInfo::kick_in);
+  engine.registerEnumElement("game.set_play","game.set_play.penalty_kick",      PlayerInfo::penalty_kick);
 
   engine.registerEnumeratedInputSymbol("game.set_play", "game.set_play", &getSetPlay);
 
   // enum type for game phase
-  engine.registerEnumElement("game.phase", "game.phase.normal", PlayerInfo::normal);
+  engine.registerEnumElement("game.phase", "game.phase.normal",       PlayerInfo::normal);
   engine.registerEnumElement("game.phase", "game.phase.penaltyshoot", PlayerInfo::penaltyshoot);
-  engine.registerEnumElement("game.phase", "game.phase.overtime", PlayerInfo::overtime);
-  engine.registerEnumElement("game.phase", "game.phase.timeout", PlayerInfo::timeout);
+  engine.registerEnumElement("game.phase", "game.phase.overtime",     PlayerInfo::overtime);
+  engine.registerEnumElement("game.phase", "game.phase.timeout",      PlayerInfo::timeout);
 
   // current game phase
   engine.registerEnumeratedInputSymbol("game.phase", "game.phase", &getGamePhase);

@@ -4,6 +4,8 @@
 package de.naoth.rc.components.behaviorviewer;
 
 import de.naoth.rc.components.behaviorviewer.model.Symbol;
+import java.awt.Dimension;
+import java.awt.Point;
 import java.util.Enumeration;
 import java.util.HashMap;
 import javax.swing.JTree;
@@ -21,38 +23,57 @@ public class BehaviorTreePanel extends javax.swing.JScrollPane {
 
     private boolean showOptionsOnly = false;
     
+    // two trees for "double buffering" on update
+    private final JTree treeOne = new JTree();
+    private final JTree treeTwo = new JTree();
+    
+    // currently shown tree
+    private JTree currentTree   = treeOne;
+    
+    private final TreeExpansionRecorder treeExpansionRecorder = new TreeExpansionRecorder();
+    
+    
     /**
      * Creates new form BehaviorTreePanel
      */
     public BehaviorTreePanel() {
         initComponents();
         
-        this.setViewportView(newTree);
-        createNewTree(null);
+        treeOne.setDoubleBuffered(false);
+        treeOne.setCellRenderer(new XABSLActionSparseTreeCellRenderer(getFont().getSize()));
+        
+        treeTwo.setDoubleBuffered(false);
+        treeTwo.setCellRenderer(new XABSLActionSparseTreeCellRenderer(getFont().getSize()));
+        
+        updateTreeView(null);
     }
     
     public void setFrame(XABSLBehaviorFrame frame, XABSLBehavior behavior)
     {
-        if(frame == null || behavior == null
-                || behavior.agents == null ||behavior.agents.isEmpty())
+        if( frame == null || behavior == null ||
+            behavior.agents == null || behavior.agents.isEmpty())
         {
             return;
         }
+        
         DefaultMutableTreeNode treeRoot 
                 = new DefaultMutableTreeNode("Behavior (" + behavior.agents.get(0).name + ")");
+        
         for (XABSLAction a : frame.actions) {
             treeRoot.add(actionToNode(a));
         }
-        createNewTree(treeRoot);
+        updateTreeView(treeRoot);
     }
     
-    public DefaultMutableTreeNode actionToNode(XABSLAction a) {
+    public DefaultMutableTreeNode actionToNode(XABSLAction a) 
+    {
         DefaultMutableTreeNode result = new DefaultMutableTreeNode(a);
 
-        if (a instanceof XABSLAction.OptionExecution) {
+        if (a instanceof XABSLAction.OptionExecution) 
+        {
             XABSLAction.OptionExecution oe = (XABSLAction.OptionExecution)a;
 
-            // add parameters
+            // add option parameters
             if(!showOptionsOnly) {
                 for (Symbol p : oe.option.parameters) {
                     result.add(new DefaultMutableTreeNode(p));
@@ -61,7 +82,9 @@ public class BehaviorTreePanel extends javax.swing.JScrollPane {
             
             for (XABSLAction sub: oe.activeSubActions) {
                 // skip symbols if only options should be shown
-                if(showOptionsOnly && sub instanceof XABSLAction.SymbolAssignment) { continue; }
+                if(showOptionsOnly && sub instanceof XABSLAction.SymbolAssignment) { 
+                    continue; 
+                }
                 result.add(actionToNode(sub));
             }
         }
@@ -69,24 +92,41 @@ public class BehaviorTreePanel extends javax.swing.JScrollPane {
         return result;
     }//end actionToNode
     
-    private final JTree newTree = new JTree();
-    private final TreeExpansionRecorder treeExpansionRecorder = new TreeExpansionRecorder();
+    private void expandAllNodes(JTree tree, int startingIndex, int rowCount){
+        for(int i = startingIndex; i < rowCount; ++i) {
+            tree.expandRow(i);
+        }
+
+        if(tree.getRowCount()!=rowCount){
+            expandAllNodes(tree, rowCount, tree.getRowCount());
+        }
+    }
     
-    private void createNewTree(DefaultMutableTreeNode root) {
+    private void expandAllNodes(JTree tree) {
+        expandAllNodes(tree, 0, tree.getRowCount());
+    }
+    
+    private void updateTreeView(DefaultMutableTreeNode root) 
+    {
         if (root == null) {
             root = new DefaultMutableTreeNode("Behavior");
         }
         
-        DefaultTreeModel model = new DefaultTreeModel(root);
-        newTree.setModel(model);
+        // the expansion listener is only attached to the currently visible tree
+        currentTree.removeTreeExpansionListener(treeExpansionRecorder);
+        
+        // switch between buffers and update the not visible tree in the background
+        if(currentTree == treeOne) {
+            currentTree = treeTwo;
+        } else {
+            currentTree = treeOne;
+        }
+        
+        currentTree.setModel(new DefaultTreeModel(root));
+        
+        expandAllNodes(currentTree);
         
         // restore collapsed paths
-        newTree.removeTreeExpansionListener(treeExpansionRecorder);
-        
-        // expand all by default
-        for (int i = 0; i < newTree.getRowCount(); i++) {
-            newTree.expandRow(i);
-        }
         // collapse all requested
         Enumeration e = root.depthFirstEnumeration();
         while (e.hasMoreElements()) {
@@ -97,17 +137,20 @@ public class BehaviorTreePanel extends javax.swing.JScrollPane {
                 if(n.getUserObject() instanceof XABSLAction.OptionExecution) {
                     XABSLAction.OptionExecution oe = (XABSLAction.OptionExecution) n.getUserObject();
                     if (treeExpansionRecorder.isCollapsed(oe.option.name)) {
-                        newTree.collapsePath(new TreePath(n.getPath()));
+                        currentTree.collapsePath(new TreePath(n.getPath()));
                     }
                 }
             }
         }//end while
-        newTree.addTreeExpansionListener(treeExpansionRecorder);
+
+        currentTree.addTreeExpansionListener(treeExpansionRecorder);
         
         
-        newTree.setDoubleBuffered(false);
-        newTree.setCellRenderer(new XABSLActionSparseTreeCellRenderer(getFont().getSize()));
-        newTree.setVisible(true);
+        Point p = this.getViewport().getViewPosition();
+        this.setViewportView(currentTree);
+        currentTree.setVisible(true);
+        this.getViewport().setViewPosition(p);
+        
         
         //TODO: this are preparation for jumping to the sourse, when an option is clicked
         /*
@@ -135,9 +178,6 @@ public class BehaviorTreePanel extends javax.swing.JScrollPane {
             }
         });*/
 
-        //scrollTree.setViewportView(newTree);
-        //this.removeAll();
-        //this.setViewportView(newTree);
         this.validate();
     }//end createNewTree
 
@@ -164,7 +204,7 @@ public class BehaviorTreePanel extends javax.swing.JScrollPane {
         @Override
         public void treeCollapsed(TreeExpansionEvent event) 
         {
-                if (event.getPath().getLastPathComponent() instanceof DefaultMutableTreeNode) {
+            if (event.getPath().getLastPathComponent() instanceof DefaultMutableTreeNode) {
                 DefaultMutableTreeNode n = (DefaultMutableTreeNode) event.getPath().getLastPathComponent();
                 if(n.getUserObject() instanceof XABSLAction.OptionExecution) {
                     actionExpanded.put(((XABSLAction.OptionExecution) n.getUserObject()).option.name,

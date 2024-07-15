@@ -15,18 +15,25 @@ import java.util.Map;
  */
 public class XABSLBehaviorFrame 
 {
-
+    public final XABSLBehavior behavior;
+            
     public enum SymbolIOType {input, output, unknown}
     
-    private Map<String, Symbol> inputSymbols = new LinkedHashMap<>();
-    private Map<String, Symbol> outputSymbols = new LinkedHashMap<>();
+    private final Map<String, Symbol> inputSymbols = new LinkedHashMap<>();
+    private final Map<String, Symbol> outputSymbols = new LinkedHashMap<>();
     public ArrayList<XABSLAction> actions = new ArrayList<>();
     
     public final int frameNumber;
     
     public XABSLBehaviorFrame(int frameNumber)
     {
+        this(frameNumber, null);
+    }
+    
+    public XABSLBehaviorFrame(int frameNumber, XABSLBehavior behavior)
+    {
         this.frameNumber = frameNumber;
+        this.behavior = behavior;
     }
     
     public void addInputSymbol(Symbol symbol)
@@ -47,17 +54,18 @@ public class XABSLBehaviorFrame
     
     public Symbol getSymbolByName(String name)
     {
-        Symbol result;
-        result = outputSymbols.get(name);
+        Symbol result = outputSymbols.get(name);
+        
         if(result == null)
         {
             result = inputSymbols.get(name);
         }
         
         // get the default value from the behavior
-        if(result == null)
+        // TODO: at the moment 
+        if(result == null && behavior != null)
         {
-            
+            // TODO:???
         }
         
         return result;

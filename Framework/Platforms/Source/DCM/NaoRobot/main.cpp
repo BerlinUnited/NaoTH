@@ -6,7 +6,9 @@
  */
 
 #include "NaoController.h"
-#include <Tools/ThreadUtil.h>
+
+#include "Tools/ThreadUtil.h"
+#include "Tools/FileUtils.h"
 
 #include <glib.h>
 #include <glib-object.h>
@@ -160,16 +162,10 @@ void* motionThreadCallback(void* ref)
 }//end motionThreadCallback
 
 
-// used to determine the NAO version
-bool fileExists(const std::string& filename) {
-  struct stat buffer;
-  return (stat(filename.c_str(), &buffer) == 0);
-}
-
 // determine if it's NAO 6
 bool isNAO6() {
-    return fileExists("/usr/bin/lola") ||
-           fileExists("/opt/aldebaran/bin/lola");
+    return FileUtils::fileExists("/usr/bin/lola") ||
+           FileUtils::fileExists("/opt/aldebaran/bin/lola");
 }
 
 #define TO_STRING_INT(x) #x

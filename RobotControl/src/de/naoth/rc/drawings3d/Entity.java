@@ -3,7 +3,7 @@
  */
 package de.naoth.rc.drawings3d;
 
-import com.sun.j3d.loaders.Loader;
+
 import de.naoth.rc.Helper;
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -11,10 +11,17 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.DataFormatException;
-import javax.media.j3d.BranchGroup;
-import javax.media.j3d.Node;
-import javax.media.j3d.Transform3D;
+
+import org.jogamp.java3d.loaders.Loader;
+import org.jogamp.java3d.loaders.Scene;
 import org.jdesktop.j3d.loaders.vrml97.VrmlLoader;
+
+
+import org.jogamp.java3d.BranchGroup;
+import org.jogamp.java3d.Node;
+import org.jogamp.java3d.Transform3D;
+
+
 
 public class Entity extends Drawable
 {
@@ -68,7 +75,7 @@ public class Entity extends Drawable
     try
     {
       loader.setBaseUrl(getClass().getResource(vrmlDir));
-      com.sun.j3d.loaders.Scene vrmlScene = loader.load(reader);
+      Scene vrmlScene = loader.load(reader);
       e = vrmlScene.getSceneGroup();
     } catch (Exception ex)
     {

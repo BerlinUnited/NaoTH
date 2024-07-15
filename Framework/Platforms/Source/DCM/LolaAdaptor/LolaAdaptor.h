@@ -1,5 +1,6 @@
-#ifndef _LolaAdaptor_h_
-#define _LolaAdaptor_h_
+
+#ifndef LOLA_ADAPTOR_H
+#define LOLA_ADAPTOR_H
 
 // data representations
 #include "Tools/LolaData.h"
@@ -9,7 +10,7 @@
 // lola unix socket client
 #include "Tools/Lola.h"
 
-#include <Tools/ThreadUtil.h>
+#include "Tools/ThreadUtil.h"
 #include "Tools/SharedMemoryIO.h"
 #include "Tools/BasicMotion.h"
 
@@ -42,9 +43,7 @@ private:
   /**
    * @brief Writes the nao bodyId and the nickname to the "Config/nao.info" file.
    */
-  void writeNaoInfo(const std::string& theBodyID, const std::string& /*theHeadID*/) const;
-
-  static bool fileExists (const std::string& filename);
+  void writeNaoInfo(const std::string& theBodyID, const std::string& theHeadID) const;
 
   void run();
 
@@ -82,7 +81,9 @@ private:
   {
     DISCONNECTED,
     CONNECTED
-  } state = DISCONNECTED;
+  }; 
+  
+  State state = DISCONNECTED;
 
   // sitdown motion in case the Controller dies
   bool command_data_available = false;
@@ -106,4 +107,4 @@ private:
 
 }
 
-#endif //_LolaAdaptor_h_
+#endif //LOLA_ADAPTOR_H

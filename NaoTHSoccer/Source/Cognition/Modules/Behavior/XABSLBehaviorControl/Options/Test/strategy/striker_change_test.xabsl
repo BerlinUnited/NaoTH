@@ -39,7 +39,7 @@ option striker_change_test
       // show striker
       motion.type = stand;
       head.control_mode = search_for_ball;
-      set_left_ear = platform.frameNumber % 10;
+      set_left_ear  = platform.frameNumber % 10;
       set_right_ear = platform.frameNumber % 10;
     }
   }

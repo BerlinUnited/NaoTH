@@ -1,7 +1,6 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+*
+*/
 
 /*
  * ExceptionDialog.java
@@ -10,13 +9,22 @@
  */
 package de.naoth.rc.components;
 
+import java.awt.Color;
+import java.awt.Component;
+import javax.swing.SwingUtilities;
+
 /**
  *
  * @author thomas
  */
 public class ExceptionDialog extends javax.swing.JDialog
 {
-
+  public ExceptionDialog(Component parent, String message, Exception exception)
+  {
+      this((java.awt.Frame)SwingUtilities.windowForComponent(parent), message, exception);
+      this.setLocationRelativeTo(parent);
+  }
+    
   public ExceptionDialog(java.awt.Frame parent, Exception exception)
   {
     this(parent, null, exception);
@@ -27,7 +35,14 @@ public class ExceptionDialog extends javax.swing.JDialog
   {
     super(parent, true);
     initComponents();
+    
+    // hide details by default
+    spDetails.setVisible(false);
+    pack();
+    validate();
 
+    this.setLocationRelativeTo(parent);
+    
     if(exception != null)
     {
       String msgToShow = exception.getLocalizedMessage();
@@ -37,24 +52,31 @@ public class ExceptionDialog extends javax.swing.JDialog
       }
       txtMessage.setText(msgToShow);
       txtMessage.setCaretPosition(0);
-      StringBuffer details = new StringBuffer();
-      details.append(exception.getLocalizedMessage());
-      details.append("\nat\n");
-      StackTraceElement[] st = exception.getStackTrace();
-      for(int i=0; i < st.length; i++)
-      {
-        details.append(st[i].toString());
-        details.append("\n");
+      
+      // assemble the stacktrace
+      StringBuilder details = new StringBuilder();
+      details.append(exception.getLocalizedMessage()).append("\nat\n");
+      for(StackTraceElement el: exception.getStackTrace()) {
+        details.append(el.toString()).append("\n");
       }
       txtDetails.setText(details.toString());
     }
-    else if (message !=null)
+    else if (message != null)
     {
       txtMessage.setText(message);
       txtMessage.setCaretPosition(0);
     }
   }
 
+  public static void show(Component parent, String message, Exception exception) {
+      new ExceptionDialog(parent, message, exception).setVisible(true);
+  }
+  
+  public static void show(Component parent, String title, String message, Exception exception) {
+      ExceptionDialog dialog = new ExceptionDialog(parent, message, exception);
+      dialog.setTitle(title);
+      dialog.setVisible(true);
+  }
 
   /** This method is called from within the constructor to
    * initialize the form.
@@ -64,28 +86,71 @@ public class ExceptionDialog extends javax.swing.JDialog
   @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+        java.awt.GridBagConstraints gridBagConstraints;
 
         lblIcon = new javax.swing.JLabel();
-        lblCaption = new javax.swing.JLabel();
-        btClose = new javax.swing.JButton();
-        spDetails = new javax.swing.JScrollPane();
-        txtDetails = new javax.swing.JTextArea();
-        btDetails = new javax.swing.JToggleButton();
         spMessage = new javax.swing.JScrollPane();
         txtMessage = new javax.swing.JTextArea();
+        spDetails = new javax.swing.JScrollPane();
+        txtDetails = new javax.swing.JTextArea();
+        btClose = new javax.swing.JButton();
+        btDetails = new javax.swing.JToggleButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Exception thrown");
-        addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowOpened(java.awt.event.WindowEvent evt) {
-                formWindowOpened(evt);
-            }
-        });
+        setAlwaysOnTop(true);
+        setLocationByPlatform(true);
+        setModal(true);
+        getContentPane().setLayout(new java.awt.GridBagLayout());
 
         lblIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/warning32.png"))); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(6, 6, 6, 6);
+        getContentPane().add(lblIcon, gridBagConstraints);
 
-        lblCaption.setFont(new java.awt.Font("DejaVu Sans", 1, 13)); // NOI18N
-        lblCaption.setText("Exception thrown:");
+        spMessage.setPreferredSize(new java.awt.Dimension(454, 126));
+
+        txtMessage.setEditable(false);
+        txtMessage.setColumns(20);
+        txtMessage.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        txtMessage.setLineWrap(true);
+        txtMessage.setRows(4);
+        txtMessage.setText("<no message>");
+        txtMessage.setWrapStyleWord(true);
+        txtMessage.setPreferredSize(new java.awt.Dimension(252, 104));
+        spMessage.setViewportView(txtMessage);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.gridheight = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(6, 0, 6, 6);
+        getContentPane().add(spMessage, gridBagConstraints);
+
+        spDetails.setPreferredSize(new java.awt.Dimension(234, 250));
+
+        txtDetails.setColumns(20);
+        txtDetails.setRows(5);
+        txtDetails.setText("<no details>");
+        spDetails.setViewportView(txtDetails);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 6);
+        getContentPane().add(spDetails, gridBagConstraints);
 
         btClose.setMnemonic('C');
         btClose.setText("Close");
@@ -94,11 +159,13 @@ public class ExceptionDialog extends javax.swing.JDialog
                 btCloseActionPerformed(evt);
             }
         });
-
-        txtDetails.setColumns(20);
-        txtDetails.setRows(5);
-        txtDetails.setText("<no details>");
-        spDetails.setViewportView(txtDetails);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHEAST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(6, 6, 6, 6);
+        getContentPane().add(btClose, gridBagConstraints);
 
         btDetails.setMnemonic('D');
         btDetails.setText("Details");
@@ -107,51 +174,13 @@ public class ExceptionDialog extends javax.swing.JDialog
                 btDetailsActionPerformed(evt);
             }
         });
-
-        txtMessage.setColumns(20);
-        txtMessage.setEditable(false);
-        txtMessage.setLineWrap(true);
-        txtMessage.setRows(5);
-        txtMessage.setText("<no message>");
-        txtMessage.setWrapStyleWord(true);
-        spMessage.setViewportView(txtMessage);
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(lblIcon)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(spDetails, javax.swing.GroupLayout.DEFAULT_SIZE, 452, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(btDetails)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 341, Short.MAX_VALUE)
-                        .addComponent(btClose))
-                    .addComponent(lblCaption, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 452, Short.MAX_VALUE)
-                    .addComponent(spMessage, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 452, Short.MAX_VALUE))
-                .addContainerGap())
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lblIcon)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(lblCaption)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(spMessage, javax.swing.GroupLayout.DEFAULT_SIZE, 74, Short.MAX_VALUE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 12, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addComponent(spDetails, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btClose)
-                    .addComponent(btDetails))
-                .addContainerGap())
-        );
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(6, 6, 6, 6);
+        getContentPane().add(btDetails, gridBagConstraints);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -166,20 +195,9 @@ public class ExceptionDialog extends javax.swing.JDialog
 
   private void btCloseActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btCloseActionPerformed
   {//GEN-HEADEREND:event_btCloseActionPerformed
-    
     this.setVisible(false);
     this.dispose();
-
   }//GEN-LAST:event_btCloseActionPerformed
-
-  private void formWindowOpened(java.awt.event.WindowEvent evt)//GEN-FIRST:event_formWindowOpened
-  {//GEN-HEADEREND:event_formWindowOpened
-
-      spDetails.setVisible(false);
-      pack();
-      validate();
-
-  }//GEN-LAST:event_formWindowOpened
 
   /**
    * @param args the command line arguments
@@ -209,7 +227,6 @@ public class ExceptionDialog extends javax.swing.JDialog
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btClose;
     private javax.swing.JToggleButton btDetails;
-    private javax.swing.JLabel lblCaption;
     private javax.swing.JLabel lblIcon;
     private javax.swing.JScrollPane spDetails;
     private javax.swing.JScrollPane spMessage;

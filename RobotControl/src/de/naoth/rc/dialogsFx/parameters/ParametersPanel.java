@@ -436,23 +436,36 @@ public class ParametersPanel
      * Prepares the the parameter configuration for saving and/or sending to the nao.
      * @return the "prepared" parameter configuration
      */
-    private Map<String,String> parseText() {
+    private Map<String, String> parseText()
+    {
+        String text = values.getText().replaceAll("( |\t)+", "");
+        String prevKey = null;
+
         TreeMap<String, String> result = new TreeMap();
-        String text = values.getText();
-        text = text.replaceAll("( |\t)+", "");
-        String[] lines = text.split("(\n)+");
-        for (String l : lines) {
-            String[] splitted = l.split("=");
-            if (splitted.length == 2) {
+        for (String line : text.split("(\n)+"))
+        {
+            String[] splitted = line.split("=");
+            if (splitted.length == 2)
+            {
                 String key = splitted[0].trim();
                 String value = splitted[1].trim();
-                // remove the last ;
-                if (value.charAt(value.length() - 1) == ';') {
-                    value = value.substring(0, value.length() - 1);
-                }
+
                 result.put(key, value);
+                prevKey = key;
             }
-        }//end for
+            else
+            {
+                // probably continuation from the previous line; append it
+                if (prevKey != null)
+                {
+                    result.put(prevKey, result.get(prevKey) + line);
+                }
+            }
+        }
+
+        // remove the last ';' on all entries
+        result.replaceAll((k, v) -> v.charAt(v.length() - 1) == ';' ? v.substring(0, v.length() - 1) : v);
+
         return result;
     }
     

@@ -7,13 +7,12 @@
  *
  */
 
-#ifndef _NaoController_H_
-#define _NaoController_H_
+#ifndef NAO_CONTROLLER_H
+#define NAO_CONTROLLER_H
 
 #include <string>
 #include <fstream>
 #include <iostream>
-#include <sys/stat.h>
 
 //
 #include "PlatformInterface/PlatformInterface.h"
@@ -49,6 +48,7 @@
 #include "Tools/DCMData.h"
 #include "Tools/NaoTime.h"
 #include "Tools/SharedMemoryIO.h"
+#include "Tools/FileUtils.h"
 
 namespace naoth
 {
@@ -61,18 +61,18 @@ public:
 
   // platform info
   const bool nao6;
-  virtual std::string getBodyID() const { return theBodyID; }
-  virtual std::string getBodyNickName() const { return theBodyNickName; }
-  virtual std::string getHeadNickName() const { return theHeadNickName; }
-  virtual std::string getRobotName() const { return theRobotName; }
-  virtual std::string getPlatformName() const { return nao6 ? "Nao6" : "Nao"; }
-  virtual unsigned int getBasicTimeStep() const { return nao6 ? 12 : 10; }
+  virtual std::string getBodyID() const         { return theBodyID;             } // body serial number: AL...XXXX
+  virtual std::string getBodyNickName() const   { return theBodyNickName;       } // NaoXXXX
+  virtual std::string getHeadNickName() const   { return theHeadNickName;       } // mac of the eth0
+  virtual std::string getRobotName() const      { return theRobotName;          } // e.g., nao12
+  virtual std::string getPlatformName() const   { return nao6 ? "Nao6" : "Nao"; }
+  virtual unsigned int getBasicTimeStep() const { return nao6 ? 12 : 10;        }
   
   // camera stuff
-  void get(Image& data){ 
+  void get(Image& data) { 
     theBottomCameraHandler.get(data); 
   } // blocking
-  void get(ImageTop& data){ 
+  void get(ImageTop& data) { 
     theTopCameraHandler.get(data); 
   } // non blocking
   
@@ -83,13 +83,21 @@ public:
     theTopCameraHandler.getCameraSettings(data);
   }
   
-  void set(const CameraSettingsRequest& data);
-  void set(const CameraSettingsRequestTop& data);
+  void set(const CameraSettingsRequest &request) {
+    // FIXME: CameraSettings are assembled and copied in every frame 
+    CameraSettings settings = request.getCameraSettings();
+    theBottomCameraHandler.setAllCameraParams(settings);
+  }
+
+  void set(const CameraSettingsRequestTop &request) {
+    // FIXME: CameraSettings are assembled and copied in every frame
+    CameraSettings settings = request.getCameraSettings();
+    theTopCameraHandler.setAllCameraParams(settings);
+  }
 
   // sound
-  void set(const SoundPlayData& data)
-  {
-    theSoundHandler->setSoundData(data);
+  void set(const SoundPlayData& data) {
+    theSoundHandler.setSoundData(data);
   }
 
   // teamcomm stuff
@@ -139,6 +147,7 @@ public:
 
   void set(const AudioControl& data) { theAudioRecorder.set(data); }
 
+
   virtual void getMotionInput()
   {
     //STOPWATCH_START("getMotionInput");
@@ -175,6 +184,8 @@ public:
     //STOPWATCH_STOP("setCognitionOutput");
   }
 
+private:
+  void readNaoInfo();
 
 protected:
   virtual MessageQueue* createMessageQueue(const std::string& /*name*/)
@@ -187,8 +198,6 @@ protected:
   std::string theBodyNickName;
   std::string theHeadNickName;
   std::string theRobotName;
-
-  bool lolaAvailable;
 
   // -- begin -- shared memory access --
   // DCM --> NaoController
@@ -205,20 +214,21 @@ protected:
   V4lCameraHandler theBottomCameraHandler;
   V4lCameraHandler theTopCameraHandler;
   
-  SoundControl *theSoundHandler;
+  SoundControl theSoundHandler;
+  AudioRecorder theAudioRecorder;
+  
+  CPUTemperatureReader theCPUTemperatureReader;
+  
+  // communication
   UDPSender* theTeamCommDebugger;
   BroadCaster* theTeamCommSender;
   UDPReceiver* theTeamCommListener;
   UDPReceiver* theRemoteCommandListener;
   SPLGameController* theGameController;
   DebugServer* theDebugServer;
-  CPUTemperatureReader theCPUTemperatureReader;
-  AudioRecorder theAudioRecorder;
 
-private:
-  static bool fileExists (const std::string& filename);
 };
 
 } // end namespace naoth
 
-#endif // _NAO_CONTROLLER_BASE_H_
+#endif // NAO_CONTROLLER_H

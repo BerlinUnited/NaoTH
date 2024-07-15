@@ -4,10 +4,10 @@
 package de.naoth.rc.drawings3d;
 
 import java.util.zip.DataFormatException;
-import javax.media.j3d.Appearance;
-import javax.media.j3d.LineArray;
-import javax.media.j3d.Shape3D;
-import javax.vecmath.Point3f;
+import org.jogamp.java3d.Appearance;
+import org.jogamp.java3d.LineArray;
+import org.jogamp.java3d.Shape3D;
+import org.jogamp.vecmath.Point3f;
 
 public class Line extends Drawable
 {

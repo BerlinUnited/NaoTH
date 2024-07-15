@@ -96,8 +96,13 @@ public class DebugRequestsTree implements ResponseListener
         TreeNodeItem<String> root = new TreeNodeItem<>();
         root.setExpanded(true);
         root.predicateProperty().bind(Bindings.createObjectBinding(() -> {
-            if (search.getText() == null || search.getText().isEmpty()) { return null; }
-            return TreeItemPredicate.create(item -> item.toLowerCase().contains(search.getText().toLowerCase()));
+            if (search.getText() == null || search.getText().isEmpty()) { 
+                return null; 
+            }
+            return TreeItemPredicate.create(item -> { 
+                //System.out.println(item);
+                return item.toLowerCase().contains(search.getText().toLowerCase()); 
+            } );
         }, search.textProperty()));
         
         debugTree.setCellFactory((p) -> new TreeNodeCell<>());
@@ -272,7 +277,7 @@ public class DebugRequestsTree implements ResponseListener
             }
             
             // add this item to the module tree
-            TreeNodeItem item = new TreeNodeItem(name, tooltip);
+            TreeNodeItem item = new TreeNodeItem(name, tooltip, r.getName());
             current_root.getSourceChildren().add(item);
 
             // set the selected state AFTER adding it to its parent

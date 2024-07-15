@@ -1,11 +1,8 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+*
+*/
 package de.naoth.rc.dataformats;
 
-import de.naoth.rc.components.ExceptionDialog;
 import de.naoth.rc.tools.BasicReader;
 import de.naoth.rc.logmanager.LogDataFrame;
 import de.naoth.rc.tools.MemoryMapReader;
@@ -17,6 +14,8 @@ import java.io.Serializable;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -25,54 +24,91 @@ import java.util.HashMap;
  */
 public class LogFile implements Serializable
 {
-
+  private final Logger logger;
+  private Logger getLogger() { return logger; }
+  
   private final File originalFile;
   private final ArrayList<Frame> frameList = new ArrayList<>();
   private transient BasicReader reader = null;
 
-  public LogFile(String originalFile) throws IOException
+  private ProgressMonitor progressMonitor;
+  
+  public LogFile(String path) throws IOException
   {
-    this.originalFile = new File(originalFile);
-    getReader();
+    this(path, null, null);
   }
   
   public LogFile(File originalFile) throws IOException
   {
+    this(originalFile, null, null);
+  }
+  
+  public LogFile(String path, Logger logger, ProgressMonitor progressMonitor) throws IOException
+  {
+    this(new File(path), logger, progressMonitor);
+  }
+  
+  public LogFile(File originalFile, Logger logger, ProgressMonitor progressMonitor) throws IOException
+  {
+    if(logger == null) {
+        this.logger = Logger.getLogger(LogFile.class.getName());
+    } else {
+        this.logger = logger;
+    }
+    
+    if(progressMonitor != null) {
+        this.progressMonitor = progressMonitor;
+    } else {
+        // defualt progress monitor = print to logger
+        this.progressMonitor = new ProgressMonitor() {
+            @Override
+            public void setMaximum(int v) { }
+            @Override
+            public void setValue(int v) {
+                getLogger().info("" + v);
+            }
+        };
+    }
+    
     this.originalFile = originalFile;
     getReader();
   }
+  
+  public interface ProgressMonitor {
+      public abstract void setMaximum(int v);
+      public abstract void setValue(int v);
+  }
+  
 
   private void scan(BasicReader data_in) throws IOException
   {
     int currentFrameNumber = -1;
-    int currentFrameSize = 0;
-    int currentFramePos = 0;
+    long currentFrameSize = 0;
+    long currentFramePos = 0;
     
     // needed for progress report
     long numberOfBytesRead = 0;
     int lastReportedProgress = 0;
     final long logfielSize = this.originalFile.length();
     Frame currentFrame = null;
+    this.progressMonitor.setMaximum(100);
     
     try
     {
       while (true)
       {
-        int fragmentFrameSize = 0;
+        long fragmentFrameSize = 0;
         int frameNumber = data_in.readInt();
         fragmentFrameSize += 4;
         
         // plausibility check
-        if (frameNumber < currentFrameNumber || frameNumber < 0)
-        {
-          ExceptionDialog dlg = new ExceptionDialog(null, new IOException("corrupt frame number: " + frameNumber + " after " + currentFrameNumber));
-          dlg.setVisible(true);
-          break;
+        if (frameNumber < currentFrameNumber || frameNumber < 0) {
+            throw new IOException("corrupt frame number: " + frameNumber + " after " + currentFrameNumber);
         }
         
-        if (currentFrameNumber >= 0 && frameNumber - currentFrameNumber > 30)
-        {
-          System.out.println("frame jump: " + currentFrameNumber + " -> " + frameNumber);
+        // warning
+        if (currentFrameNumber >= 0 && frameNumber - currentFrameNumber > 30) {
+          getLogger().warning("frame jump: " + currentFrameNumber + " -> " + frameNumber);
         }
         
         String currentName = data_in.readString();
@@ -84,10 +120,12 @@ public class LogFile implements Serializable
 
         if (currentFrameNumber != frameNumber && currentFrameNumber != -1)
         {
+          // store completely scanned frame in the list
           if(currentFrame != null) {
               frameList.add(currentFrame);
           }
           
+          // create new frame
           currentFrame = new Frame(currentFrameNumber, currentFrameSize, currentFramePos);
           currentFramePos += currentFrameSize;
           currentFrameSize = 0;
@@ -103,21 +141,20 @@ public class LogFile implements Serializable
         int progress = (int)((numberOfBytesRead*100)/logfielSize);
         if(progress > lastReportedProgress) {
             lastReportedProgress = progress;
-            System.out.println("" + progress);
+            this.progressMonitor.setValue(progress);
         }
       } //end while
     } 
     catch (EOFException eof) {
-      System.out.println("End of File");
+      getLogger().info("End of File");
     } catch(IllegalArgumentException ex) {
-      ex.printStackTrace(System.err);
+      getLogger().log(Level.SEVERE, "Error while scanning " + originalFile.getName(), ex);
     }
   } //end parseLogFile
 
   public HashMap<String, LogDataFrame> readFrame(int frameId) throws IOException
   {
-    if (frameId < 0 || frameId >= this.frameList.size())
-    {
+    if (frameId < 0 || frameId >= this.frameList.size()) {
       return null;
     }
 
@@ -136,8 +173,8 @@ public class LogFile implements Serializable
       int frameNumber = getReader().readInt();
       numberOfReadBytes += 4;
       
-      if (frameNumber != frame.number)
-      {
+      // integrity check
+      if (frameNumber != frame.number) {
         throw new IOException("corrupt frame number: " + frameNumber + " expected " + frame.number);
       }
       
@@ -150,6 +187,11 @@ public class LogFile implements Serializable
       byte[] buffer = new byte[currentSize];
       numberOfReadBytes += getReader().read(buffer);
       
+      // integrity check: check and warn if a representation is logged several times in the same frame
+      if(currentFrame.containsKey(currentName)) {
+        getLogger().warning("Frame " + frameNumber + " contains several instaces of " + currentName);
+      }
+      
       LogDataFrame logDataFrame = new LogDataFrame(frameNumber, currentName, buffer);
       currentFrame.put(currentName, logDataFrame);
     } //end while
@@ -159,12 +201,15 @@ public class LogFile implements Serializable
 
   class Frame implements Serializable
   {
-
     final int number;
-    final int size;
-    final int position;
+    
+    // size of the frame
+    final long size;
+    
+    // starting position within the logfile
+    final long position;
 
-    public Frame(int number, int size, int position)
+    public Frame(int number, long size, long position)
     {
       this.number = number;
       this.size = size;
@@ -187,7 +232,7 @@ public class LogFile implements Serializable
           try {
             this.reader.close();
           } catch(IOException ex) {
-            ex.printStackTrace(System.err); 
+            getLogger().log(Level.SEVERE, "Error closing reader.", ex);
           }
       }
   }
@@ -205,8 +250,7 @@ public class LogFile implements Serializable
       }
       scan(reader);
       return reader;
-    } else
-    {
+    } else {
       return reader;
     }
   }

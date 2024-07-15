@@ -16,7 +16,7 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="jToolBar" alignment="0" pref="400" max="32767" attributes="0"/>
+          <Component id="jToolBar" alignment="0" max="32767" attributes="0"/>
           <Component id="jPanelCanvas" alignment="1" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
@@ -33,22 +33,10 @@
   <SubComponents>
     <Container class="javax.swing.JPanel" name="jPanelCanvas">
 
-      <Layout>
-        <DimensionLayout dim="0">
-          <Group type="103" groupAlignment="0" attributes="0">
-              <EmptySpace min="0" pref="400" max="32767" attributes="0"/>
-          </Group>
-        </DimensionLayout>
-        <DimensionLayout dim="1">
-          <Group type="103" groupAlignment="0" attributes="0">
-              <EmptySpace min="0" pref="269" max="32767" attributes="0"/>
-          </Group>
-        </DimensionLayout>
-      </Layout>
+      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
     </Container>
     <Container class="javax.swing.JToolBar" name="jToolBar">
       <Properties>
-        <Property name="floatable" type="boolean" value="false"/>
         <Property name="rollover" type="boolean" value="true"/>
       </Properties>
 
@@ -85,8 +73,8 @@
         <Component class="javax.swing.JCheckBox" name="jCheckBoxField">
           <Properties>
             <Property name="selected" type="boolean" value="true"/>
-            <Property name="text" type="java.lang.String" value="Field"/>
-            <Property name="toolTipText" type="java.lang.String" value="Show the soccer field."/>
+            <Property name="text" type="java.lang.String" value="RC Field"/>
+            <Property name="toolTipText" type="java.lang.String" value="Show the RC soccer field."/>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="horizontalTextPosition" type="int" value="4"/>
           </Properties>
@@ -94,10 +82,22 @@
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jCheckBoxFieldActionPerformed"/>
           </Events>
         </Component>
+        <Component class="javax.swing.JCheckBox" name="jCheckBoxFieldLab">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Lab Field"/>
+            <Property name="toolTipText" type="java.lang.String" value="Show the lab soccer field."/>
+            <Property name="focusable" type="boolean" value="false"/>
+            <Property name="horizontalTextPosition" type="int" value="4"/>
+            <Property name="verticalTextPosition" type="int" value="3"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jCheckBoxFieldLabActionPerformed"/>
+          </Events>
+        </Component>
         <Component class="javax.swing.JCheckBox" name="jCheckBoxGrid">
           <Properties>
             <Property name="text" type="java.lang.String" value="Grid"/>
-            <Property name="toolTipText" type="java.lang.String" value="Show the soccer field."/>
+            <Property name="toolTipText" type="java.lang.String" value="Show grid (coordinates: 0.5m)."/>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="verticalTextPosition" type="int" value="3"/>
           </Properties>

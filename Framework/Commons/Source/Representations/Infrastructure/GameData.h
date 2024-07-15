@@ -17,7 +17,6 @@
 #include "Tools/Math/Pose2D.h"
 
 #include "Tools/DataStructures/Printable.h"
-#include "Representations/Infrastructure/Configuration.h"
 #include <MessagesSPL/RoboCupGameControlData.h>
 #include <Tools/Debug/NaoTHAssert.h>
 
@@ -31,17 +30,17 @@ public:
 
   enum TeamColor
   {
-    blue   = TEAM_BLUE,
-    red    = TEAM_RED,
-    yellow = TEAM_YELLOW,
-    black  = TEAM_BLACK,
+    blue   = TEAM_BLUE,   // blue, cyan
+    red    = TEAM_RED,    // red, magenta, pink
+    yellow = TEAM_YELLOW, // yellow
+    black  = TEAM_BLACK,  // black, dark gray
 
-    white  = TEAM_WHITE,
-    green  = TEAM_GREEN,
-    orange = TEAM_ORANGE,
-    purple = TEAM_PURPLE,
-    brown  = TEAM_BROWN,
-    gray   = TEAM_GRAY,
+    white  = TEAM_WHITE,  // white
+    green  = TEAM_GREEN,  // green
+    orange = TEAM_ORANGE, // orange
+    purple = TEAM_PURPLE, // purple, violet
+    brown  = TEAM_BROWN,  // brown
+    gray   = TEAM_GRAY,   // lighter gray
     
     // invalide team color value
     unknown_team_color = 255
@@ -94,32 +93,36 @@ public:
   enum SetPlay 
   {
     set_none          = SET_PLAY_NONE,
-    goal_free_kick    = 99, //SET_PLAY_GOAL_FREE_KICK, // Deprecated since 2021
+    goal_kick         = SET_PLAY_GOAL_KICK,
     pushing_free_kick = SET_PLAY_PUSHING_FREE_KICK,
     corner_kick       = SET_PLAY_CORNER_KICK,
-    kick_in           = SET_PLAY_KICK_IN
+    kick_in           = SET_PLAY_KICK_IN,
+    penalty_kick      = SET_PLAY_PENALTY_KICK
   };
 
   enum Penalty
   {
-    penalty_none            = PENALTY_NONE,
+    penalty_none              = PENALTY_NONE,
+                              
+    illegal_ball_contact      = PENALTY_SPL_ILLEGAL_BALL_CONTACT,
+    player_pushing            = PENALTY_SPL_PLAYER_PUSHING,
+    illegal_motion_in_set     = PENALTY_SPL_ILLEGAL_MOTION_IN_SET,
+    inactive_player           = PENALTY_SPL_INACTIVE_PLAYER,
+    illegal_position          = PENALTY_SPL_ILLEGAL_POSITION,
+    leaving_the_field         = PENALTY_SPL_LEAVING_THE_FIELD,
+    request_for_pickup        = PENALTY_SPL_REQUEST_FOR_PICKUP,
+    local_game_stuck          = PENALTY_SPL_LOCAL_GAME_STUCK,
 
-    illegal_ball_contact    = PENALTY_SPL_ILLEGAL_BALL_CONTACT,
-    player_pushing          = PENALTY_SPL_PLAYER_PUSHING,
-    illegal_motion_in_set   = PENALTY_SPL_ILLEGAL_MOTION_IN_SET,
-    inactive_player         = PENALTY_SPL_INACTIVE_PLAYER,
-    illegal_defender        = 97, //PENALTY_SPL_ILLEGAL_DEFENDER, // Deprecated since 2021
-    leaving_the_field       = PENALTY_SPL_LEAVING_THE_FIELD,
-    kick_off_goal           = 98, //PENALTY_SPL_KICK_OFF_GOAL, // Deprecated since 2021
-    request_for_pickup      = PENALTY_SPL_REQUEST_FOR_PICKUP,
-    local_game_stuck        = PENALTY_SPL_LOCAL_GAME_STUCK,
-    illegal_positioning     = 99, //PENALTY_SPL_ILLEGAL_POSITIONING, // Deprecated since 2021
-    illegal_position        = PENALTY_SPL_ILLEGAL_POSITION,
-    illegal_position_in_set = PENALTY_SPL_ILLEGAL_POSITION_IN_SET,
-    player_stance           = PENALTY_SPL_PLAYER_STANCE,
-    illegal_motion_in_initial =  PENALTY_SPL_ILLEGAL_MOTION_IN_INITIAL,
-    substitute              = PENALTY_SUBSTITUTE,
-    manual                  = PENALTY_MANUAL,
+    //kick_off_goal             = 98, //PENALTY_SPL_KICK_OFF_GOAL, // Deprecated since 2021
+    //illegal_defender          = 97, //PENALTY_SPL_ILLEGAL_DEFENDER, // Deprecated since 2021
+    //illegal_positioning       = 99, //PENALTY_SPL_ILLEGAL_POSITIONING, // Deprecated since 2021
+    
+    illegal_position_in_set   = PENALTY_SPL_ILLEGAL_POSITION_IN_SET,
+    player_stance             = PENALTY_SPL_PLAYER_STANCE,
+    illegal_motion_in_initial = PENALTY_SPL_ILLEGAL_MOTION_IN_INITIAL,
+
+    substitute                = PENALTY_SUBSTITUTE,
+    manual                    = PENALTY_MANUAL,
   };
 
 
@@ -213,7 +216,8 @@ public:
     :
     playerNum(0),
     teamNum(0),
-    fallen(ROBOT_CAN_PLAY)
+    fallen(ROBOT_CAN_PLAY),
+    ballAge(-1)
   {}
 
   enum FallenState
@@ -227,39 +231,23 @@ public:
   int playerNum;
   int teamNum;
   
-  FallenState fallen;  // 1 means that the robot is fallen, 0 means that the robot can play
+  FallenState fallen;    // 1 means that the robot is fallen, 0 means that the robot can play
 
-  // copy from team message
-  Pose2D pose;                // robot pose
-  double ballAge;             // milliseconds since this robot last saw the ball. -1 if we haven't seen it
-  Vector2d ballPosition;      // position of ball relative to the robot coordinates in millimeters; 0,0 is in centre of the robot
+  Pose2D pose;           // robot pose
+  double ballAge;        // milliseconds since this robot last saw the ball. -1 if we haven't seen it
+  Vector2d ballPosition; // position of ball relative to the robot coordinates in millimeters
 
-  /*
-  // NOT YET implemented
-  // position and orientation of robot
-  // coordinates in millimeters
-  // 0,0 is in center of field
-  // +ve x-axis points towards the goal we are attempting to score on
-  // +ve y-axis is 90 degrees counter clockwise from the +ve x-axis
-  // angle in radians, 0 along the +x axis, increasing counter clockwise
-  float pose[3];         // x,y,theta
-
-  // ball information
-  float ballAge;         // seconds since this robot last saw the ball. -1.f if we haven't seen it
-
-  // position of ball relative to the robot
-  // coordinates in millimeters
-  // 0,0 is in center of the robot
-  // +ve x-axis points forward from the robot
-  // +ve y-axis is 90 degrees counter clockwise from the +ve x-axis
-  float ball[2];
-  */
+  // wrote the values to the standard SPL message
+  void writeTo(spl::RoboCupGameControlReturnData& data) const;
 
   virtual void print(std::ostream& stream) const
   {
-    stream << "player:\t"   << playerNum << std::endl;
-    stream << "team:\t"     << teamNum << std::endl;
-    stream << "message:\t"  << toString(fallen) << std::endl;
+    stream << "player:  " << playerNum << std::endl;
+    stream << "team:    " << teamNum << std::endl;
+    stream << "fallen:  " << toString(fallen) << std::endl;
+    stream << "pose:    " << pose << std::endl;
+    stream << "ballAge: " << ballAge << std::endl;
+    stream << "ball:    " << ballPosition << std::endl;
   }
 };
 

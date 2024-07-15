@@ -13,8 +13,9 @@ import java.util.TreeMap;
  *
  * @author thomas
  */
-public class EnumType extends SymbolType{
-
+public class EnumType extends SymbolType
+{
+    // Named values of the enumerated type
     public static class Element {
         public final int value;
         public final String name;

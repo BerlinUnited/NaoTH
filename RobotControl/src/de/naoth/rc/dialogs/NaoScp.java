@@ -6,7 +6,6 @@ import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.core.dialog.RCDialog;
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -32,6 +31,9 @@ public class NaoScp extends AbstractDialog
     private static final String CONFIG_KEY = "NaoSCP";
     private final MouseAdapter labelMouseListener;
     
+    // reference to the externally loaded NaoScp component
+    private JPanel naoScpPanel = null;
+    
     @RCDialog(category = RCDialog.Category.Tools, name = "NaoSCP")
     @PluginImplementation
     public static class Plugin extends DialogPlugin<NaoScp> {
@@ -42,7 +44,8 @@ public class NaoScp extends AbstractDialog
     /**
      * Creates new form NaoScp
      */
-    public NaoScp() {
+    public NaoScp() 
+    {
         // reusable mouse listener
         labelMouseListener = new java.awt.event.MouseAdapter() {
             @Override
@@ -87,13 +90,15 @@ public class NaoScp extends AbstractDialog
     
     @Override
     public void dispose() {
-        Component c = ((BorderLayout)getLayout()).getLayoutComponent(BorderLayout.CENTER);
-        
-        try {
-          Method formWindowClosing = c.getClass().getMethod("formWindowClosing", (Class<?>[]) null);
-          formWindowClosing.invoke(c, (Object[]) null);
-        } catch (Exception ex) {
-          Logger.getLogger(NaoScp.class.getName()).log(Level.SEVERE, null, ex);
+        // notify the embedded NaoScp panel
+        if(this.naoScpPanel != null) {
+            try {
+                // NOTE: NaoSCP has the method 'formWindowClosing'
+                Method formWindowClosing = this.naoScpPanel.getClass().getMethod("formWindowClosing", (Class<?>[]) null);
+                formWindowClosing.invoke(this.naoScpPanel, (Object[]) null);
+            } catch (Exception ex) {
+                Logger.getLogger(NaoScp.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
     
@@ -126,12 +131,12 @@ public class NaoScp extends AbstractDialog
             URLClassLoader loader = new URLClassLoader (new URL[] {file.toURI().toURL()}, this.getClass().getClassLoader());
             // load the panel class
             Class panelClass = Class.forName ("naoscp.NaoSCP", true, loader);
-            JPanel panel = (JPanel) panelClass.getConstructor().newInstance();
+            this.naoScpPanel = (JPanel) panelClass.getConstructor().newInstance();
             // set the parent frame to the RC frame
             Method setParentFrame = panelClass.getDeclaredMethod ("setParentFrame", java.awt.Frame.class);
-            setParentFrame.invoke(panel, Plugin.parent);
+            setParentFrame.invoke(this.naoScpPanel, Plugin.parent);
             // retrieve and add naoscp panel
-            replaceCenterComponent(panel);
+            replaceCenterComponent(this.naoScpPanel);
             // remove file drop - don't need it any more
             FileDrop.remove(this);
             // successfully loaded naoscp panel

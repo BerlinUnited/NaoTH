@@ -1,6 +1,6 @@
+
 #include "GameController.h"
 
-#include "Tools/Debug/DebugRequest.h"
 #include <PlatformInterface/Platform.h>
 
 GameController::GameController()
@@ -17,10 +17,11 @@ GameController::GameController()
   DEBUG_REQUEST_REGISTER("gamecontroller:game_state:unstiff", "force the unstiff state", false);
 
   DEBUG_REQUEST_REGISTER("gamecontroller:set_play:none", "force the setPlay state to none", false);
-  DEBUG_REQUEST_REGISTER("gamecontroller:set_play:goal_free_kick", "force the setPlay state to goal free kick", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:set_play:goal_kick", "force the setPlay state to goal free kick", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:set_play:pushing_free_kick", "force the setPlay state to pushing free kick", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:set_play:corner_kick", "force the setPlay state to corner kick", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:set_play:kick_in", "force the setPlay state to kick-in", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:set_play:penalty_kick", "force the setPlay state to penalty kick", false);
 
   DEBUG_REQUEST_REGISTER("gamecontroller:gamephase:normal", "force the gamephase", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:gamephase:penaltyshoot", "force the gamephase", false);
@@ -41,12 +42,6 @@ GameController::GameController()
   // load values from config
   const Configuration& config = naoth::Platform::getInstance().theConfiguration;
 
-  if (config.hasKey("player", "NumOfPlayer")) {
-    getPlayerInfo().playersPerTeam = config.getInt("player", "NumOfPlayer");
-  } else {
-    std::cerr << "[GameData] " << "No number of players (NumOfPlayers) given" << std::endl;
-  }
-
   if (config.hasKey("player", "PlayerNumber")) {
     getPlayerInfo().playerNumber = config.getInt("player", "PlayerNumber");
   } else {
@@ -61,11 +56,19 @@ GameController::GameController()
     getPlayerInfo().teamNumber = 0;
   }
 
+  // following values can be set by the config, but are also set by the game controller.
+  // The config can be used to configute the values for the simulation, e.g., SimSpark
   if (config.hasKey("player", "TeamName")) {
     getPlayerInfo().teamName = config.getString("player", "TeamName");
   } else {
     std::cerr << "[PlayerInfo] " << "No team name (TeamName) given" << std::endl;
     getPlayerInfo().teamName = "unknown";
+  }
+
+  if (config.hasKey("player", "NumOfPlayer")) {
+    getPlayerInfo().playersPerTeam = config.getInt("player", "NumOfPlayer");
+  } else {
+    std::cerr << "[GameData] " << "No number of players (NumOfPlayers) given" << std::endl;
   }
 
   // NOTE: default team color is red
@@ -148,6 +151,7 @@ void GameController::execute()
     }
   }
 
+  // TODO: when to show / update led states?
   if(  oldRobotState != getPlayerInfo().robotState
     || oldTeamColor  != getPlayerInfo().teamColor
     || getPlayerInfo().robotState == PlayerInfo::initial
@@ -156,17 +160,24 @@ void GameController::execute()
     updateLEDs();
   }
 
-  // provide the return message
-  getGameReturnData().teamNum = getPlayerInfo().teamNumber;
-  getGameReturnData().playerNum = getPlayerInfo().playerNumber;
-  // TODO: this is not correctly set
-  getGameReturnData().fallen = getWifiMode().wifiEnabled ? GameReturnData::ROBOT_CAN_PLAY : GameReturnData::ROBOT_FALLEN;
 
-  getGameReturnData().pose = getRobotPose();
+  // provide the return message for the game controller
+  getGameReturnData().teamNum        = getPlayerInfo().teamNumber;
+  getGameReturnData().playerNum      = getPlayerInfo().playerNumber;
 
-  // here in milliseconds (conversion to seconds is in TeamMessageData::createSplMessage())
-  getGameReturnData().ballAge = getFrameInfo().getTimeSince(getBallModel().getFrameInfoWhenBallWasSeen().getTime());
-  getGameReturnData().ballPosition = getBallModel().position;
+  if(getBodyState().fall_down_state == BodyState::State::upright) {
+    getGameReturnData().fallen = GameReturnData::ROBOT_CAN_PLAY;
+  } else {
+    getGameReturnData().fallen = GameReturnData::ROBOT_FALLEN;
+  }
+
+  getGameReturnData().pose           = getRobotPose();
+
+  // ball was seen at least once
+  if(getBallModel().getFrameInfoWhenBallWasSeen().getFrameNumber() > 0) {
+    getGameReturnData().ballAge      = getFrameInfo().getTimeSince(getBallModel().getFrameInfoWhenBallWasSeen().getTime());
+    getGameReturnData().ballPosition = getBallModel().position;
+  }
 } // end execute
 
 
@@ -203,8 +214,8 @@ void GameController::handleDebugRequest()
   DEBUG_REQUEST("gamecontroller:set_play:none",
     getPlayerInfo().robotSetPlay = PlayerInfo::set_none;
   );
-  DEBUG_REQUEST("gamecontroller:set_play:goal_free_kick",
-    getPlayerInfo().robotSetPlay = PlayerInfo::goal_free_kick;
+  DEBUG_REQUEST("gamecontroller:set_play:goal_kick",
+    getPlayerInfo().robotSetPlay = PlayerInfo::goal_kick;
   );
   DEBUG_REQUEST("gamecontroller:set_play:pushing_free_kick",
     getPlayerInfo().robotSetPlay = PlayerInfo::pushing_free_kick;
@@ -214,6 +225,9 @@ void GameController::handleDebugRequest()
   );
   DEBUG_REQUEST("gamecontroller:set_play:kick_in",
     getPlayerInfo().robotSetPlay = PlayerInfo::kick_in;
+  );
+  DEBUG_REQUEST("gamecontroller:set_play:penalty_kick",
+    getPlayerInfo().robotSetPlay = PlayerInfo::penalty_kick;
   );
 
   DEBUG_REQUEST("gamecontroller:gamephase:normal",
@@ -297,13 +311,13 @@ void GameController::handleButtons()
     if (getButtonState()[ButtonState::LeftFootLeft]  == ButtonEvent::CLICKED ||
         getButtonState()[ButtonState::LeftFootRight] == ButtonEvent::CLICKED)
     {
-      // switch team color
+      // manualy switch team color between the ones that we actively use
       GameData::TeamColor oldColor = getPlayerInfo().teamColor;
       if (oldColor == GameData::blue) {
         getPlayerInfo().teamColor = GameData::red;
       } else if (oldColor == GameData::red) {
-        getPlayerInfo().teamColor = GameData::yellow;
-      } else if (oldColor == GameData::yellow) {
+        getPlayerInfo().teamColor = GameData::white;
+      } else if (oldColor == GameData::white) {
         getPlayerInfo().teamColor = GameData::black;
       } else if (oldColor == GameData::black) {
         getPlayerInfo().teamColor = GameData::blue;
@@ -332,8 +346,10 @@ void GameController::handleButtons()
 void GameController::handleHeadButtons()
 {
   if( getButtonState().buttons[ButtonState::HeadMiddle] == ButtonEvent::CLICKED
-    && (getPlayerInfo().robotState == PlayerInfo::initial || getPlayerInfo().robotState == PlayerInfo::unstiff || getPlayerInfo().robotState == PlayerInfo::finished))
-  {
+    && ( getPlayerInfo().robotState == PlayerInfo::initial || 
+         getPlayerInfo().robotState == PlayerInfo::unstiff || 
+         getPlayerInfo().robotState == PlayerInfo::finished )
+  ) {
     int playerNumber = getPlayerInfo().playerNumber;
     if(playerNumber <= 9)
     {
@@ -352,70 +368,47 @@ void GameController::handleHeadButtons()
 
 void GameController::updateLEDs()
 {
-  // reset
-  getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::RED]   = 0.0;
-  getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::GREEN] = 0.0;
-  getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::BLUE]  = 0.0;
+  // reset: turn off the LEDs
+  getGameControllerLEDRequest().request.setChestButton(0.0, 0.0, 0.0);
+  getGameControllerLEDRequest().request.setFootLeft(0.0, 0.0, 0.0);
+  getGameControllerLEDRequest().request.setFootRight(0.0, 0.0, 0.0);
+  getGameControllerLEDRequest().request.setHead(0.0);
 
-  getGameControllerLEDRequest().request.theMultiLED[LEDData::FootLeft][LEDData::RED]   = 0.0;
-  getGameControllerLEDRequest().request.theMultiLED[LEDData::FootLeft][LEDData::GREEN] = 0.0;
-  getGameControllerLEDRequest().request.theMultiLED[LEDData::FootLeft][LEDData::BLUE]  = 0.0;
-
-  getGameControllerLEDRequest().request.theMultiLED[LEDData::FootRight][LEDData::RED]   = 0.0;
-  getGameControllerLEDRequest().request.theMultiLED[LEDData::FootRight][LEDData::GREEN] = 0.0;
-  getGameControllerLEDRequest().request.theMultiLED[LEDData::FootRight][LEDData::BLUE]  = 0.0;
-
-  for(unsigned int i=LEDData::HeadFrontLeft0; i <= LEDData::HeadRearRight2; i++)
-  {
-    getGameControllerLEDRequest().request.theMonoLED[i] = 0.0;
-  }
-
-  // show game state in torso
+  // show game state on the chest button
   switch (getPlayerInfo().robotState)
   {
-    case PlayerInfo::ready:
-        getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::BLUE] = 1.0;
-      break;
-    case PlayerInfo::set:
-        getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::GREEN] = 1.0;
-        getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::RED] = 1.0;
-      break;
-    case PlayerInfo::playing:
-        getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::GREEN] = 1.0;
-      break;
-    case PlayerInfo::penalized:
-        getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::RED] = 1.0;
-      break;
-    case PlayerInfo::unstiff:
-      // handle blinking chest button for unstiff state
+    case PlayerInfo::initial:   getGameControllerLEDRequest().request.setChestButton(0.0, 0.0, 0.0); break; // OFF
+    case PlayerInfo::ready:     getGameControllerLEDRequest().request.setChestButton(0.0, 0.0, 1.0); break; // BLUE
+    case PlayerInfo::set:       getGameControllerLEDRequest().request.setChestButton(1.0, 1.0, 0.0); break; // YELLOW
+    case PlayerInfo::playing:   getGameControllerLEDRequest().request.setChestButton(0.0, 1.0, 0.0); break; // GREEN
+    case PlayerInfo::finished:  getGameControllerLEDRequest().request.setChestButton(0.0, 0.0, 0.0); break; // OFF
+    case PlayerInfo::penalized: getGameControllerLEDRequest().request.setChestButton(1.0, 0.0, 0.0); break; // RED
+    case PlayerInfo::unstiff:   
+      // blinking chest button for unstiff state: blue <-> off
       if (getFrameInfo().getFrameNumber() % 8 < 4) {
-        getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::BLUE] = 1.0;
+        getGameControllerLEDRequest().request.setChestButton(0.0, 0.0, 1.0); // BLUE
       } else {
-        getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::BLUE] = 0.0;
+        getGameControllerLEDRequest().request.setChestButton(0.0, 0.0, 0.0); // OFF
       }
       break;
     default:
       break;
   }
 
-  // show team color on left foot
-  if (getPlayerInfo().teamColor == GameData::red)
+  // offer all avaliable colors of jerseys :)
+  switch (getPlayerInfo().teamColor)
   {
-    getGameControllerLEDRequest().request.theMultiLED[LEDData::FootLeft][LEDData::RED]   = 0.3;
-    getGameControllerLEDRequest().request.theMultiLED[LEDData::FootLeft][LEDData::BLUE]  = 0.1;
-  }
-  else if (getPlayerInfo().teamColor == GameData::blue)
-  {
-    getGameControllerLEDRequest().request.theMultiLED[LEDData::FootLeft][LEDData::BLUE]  = 1.0;
-  }
-  else if(getPlayerInfo().teamColor == GameData::yellow)
-  {
-    getGameControllerLEDRequest().request.theMultiLED[LEDData::FootLeft][LEDData::RED]   = 1.0;
-    getGameControllerLEDRequest().request.theMultiLED[LEDData::FootLeft][LEDData::GREEN] = 1.0;
-  }
-  else if(getPlayerInfo().teamColor == GameData::black)
-  {
-      // LED off
+  case GameData::red:    getGameControllerLEDRequest().request.setFootLeft(1.0, 0.0, 0.0); break;
+  case GameData::blue:   getGameControllerLEDRequest().request.setFootLeft(0.0, 0.0, 1.0); break;
+  case GameData::yellow: getGameControllerLEDRequest().request.setFootLeft(1.0, 1.0, 0.0); break;
+  case GameData::black:  getGameControllerLEDRequest().request.setFootLeft(0.0, 0.0, 0.0); break;
+  case GameData::white:  getGameControllerLEDRequest().request.setFootLeft(1.0, 1.0, 1.0); break;
+  case GameData::green:  getGameControllerLEDRequest().request.setFootLeft(0.0, 1.0, 0.0); break;
+  case GameData::orange: getGameControllerLEDRequest().request.setFootLeft(1.0, 0.5, 0.0); break;
+  case GameData::purple: getGameControllerLEDRequest().request.setFootLeft(1.0, 0.0, 1.0); break;
+  case GameData::brown:  getGameControllerLEDRequest().request.setFootLeft(0.5, 0.25, 1.0); break;
+  case GameData::gray:   getGameControllerLEDRequest().request.setFootLeft(0.5, 0.5, 0.5); break;
+  default:               getGameControllerLEDRequest().request.setFootLeft(0.0, 0.0, 0.0); break;
   }
 
   // show kickoff state on right foot and head in initial, ready and set
@@ -423,20 +416,9 @@ void GameController::updateLEDs()
     || getPlayerInfo().robotState == PlayerInfo::ready
     || getPlayerInfo().robotState == PlayerInfo::set)
   {
-    if (getPlayerInfo().kickoff)
-    {
-      getGameControllerLEDRequest().request.theMultiLED[LEDData::FootRight][LEDData::RED]   = 0.7;
-      getGameControllerLEDRequest().request.theMultiLED[LEDData::FootRight][LEDData::GREEN] = 1.0;
-      getGameControllerLEDRequest().request.theMultiLED[LEDData::FootRight][LEDData::BLUE]  = 1.0;
-
-      for(unsigned int i=LEDData::HeadFrontLeft0; i <= LEDData::HeadRearRight2; i++)
-      {
-        getGameControllerLEDRequest().request.theMonoLED[i] = 1.0;
-      }
+    if (getPlayerInfo().kickoff) {
+      getGameControllerLEDRequest().request.setFootRight(1.0, 1.0, 1.0);
+      getGameControllerLEDRequest().request.setHead(1.0);
     }
   }
 } // end updateLEDs
-
-GameController::~GameController()
-{
-}

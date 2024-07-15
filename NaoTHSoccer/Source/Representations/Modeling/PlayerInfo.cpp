@@ -12,23 +12,22 @@ using namespace std;
 
 PlayerInfo::PlayerInfo() 
 :
-  playersPerTeam(0),
   playerNumber(0),
   teamNumber(0),
+
   teamColor(naoth::GameData::unknown_team_color),
-  kickoff(false),
+  playersPerTeam(0),
+  
   robotState(unstiff), // this was changed in 2021 from initial to unstiff
   robotSetPlay(set_none),
   gamePhase(normal),
+  kickoff(false),
+
   isPlayingStriker(false),
+  // HACK: this should be somewhere else
   scheme(Platform::getInstance().theScheme)
 {
 }
-
-PlayerInfo::~PlayerInfo()
-{
-}
-
 
 #define RETURN_VALUE_TO_STR(v) case v: return #v
 std::string PlayerInfo::toString(RobotState value)
@@ -53,10 +52,11 @@ std::string PlayerInfo::toString(RobotSetPlay value)
   switch (value)
   {
     RETURN_VALUE_TO_STR(set_none);
-    RETURN_VALUE_TO_STR(goal_free_kick);
+    RETURN_VALUE_TO_STR(goal_kick);
     RETURN_VALUE_TO_STR(pushing_free_kick);
     RETURN_VALUE_TO_STR(corner_kick);
     RETURN_VALUE_TO_STR(kick_in);
+    RETURN_VALUE_TO_STR(penalty_kick);
   }
 
   ASSERT(false);
@@ -80,15 +80,15 @@ std::string PlayerInfo::toString(GamePhase value)
 
 void PlayerInfo::print(ostream& stream) const
 {
-  stream << "playerNumber = " << playerNumber << endl;
-  stream << "teamNumber = " << teamNumber << endl;
-  stream << "teamName = " << teamName << endl;
-  stream << "teamColor = " << naoth::GameData::toString(teamColor) << endl;
-  stream << "kickoff = " << (kickoff?"yes":"no") << endl;
-  stream << "robotState = " << toString(robotState) << endl;
-  stream << "robotSetPlay = " << toString(robotSetPlay) << endl;
-  stream << "gamephase = " << toString(gamePhase) << endl;
-  stream << "isPlayingStriker = " << (isPlayingStriker?"yes":"no") << endl;
-  stream << "active scheme = " << (scheme.empty()?"-":scheme) << std::endl;
+  stream << "playerNumber:     " << playerNumber << endl;
+  stream << "teamNumber:       " << teamNumber << endl;
+  stream << "teamName:         " << teamName << endl;
+  stream << "teamColor:        " << naoth::GameData::toString(teamColor) << endl;
+  stream << "kickoff:          " << (kickoff?"yes":"no") << endl;
+  stream << "robotState:       " << toString(robotState) << endl;
+  stream << "robotSetPlay:     " << toString(robotSetPlay) << endl;
+  stream << "gamephase:        " << toString(gamePhase) << endl;
+  stream << "isPlayingStriker: " << (isPlayingStriker?"yes":"no") << endl;
+  stream << "active scheme:    " << (scheme.empty()?"-":scheme) << std::endl;
 }
 

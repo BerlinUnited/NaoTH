@@ -1,7 +1,7 @@
 filter "configurations:Debug"
   -- FatalWarnings treats compiler/linker warnings as errors
   -- in premake4 linker warnings are not enabled
-  flags { "FatalCompileWarnings"}
+  -- flags { "FatalCompileWarnings"}
 
 filter "configurations:OptDebug"
   -- FatalWarnings treats compiler/linker warnings as errors

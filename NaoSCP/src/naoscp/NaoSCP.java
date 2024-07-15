@@ -15,6 +15,8 @@ import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -123,7 +125,8 @@ public class NaoSCP extends javax.swing.JPanel {
      */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents() {
+    private void initComponents()
+    {
         java.awt.GridBagConstraints gridBagConstraints;
 
         popupMenu = new javax.swing.JPopupMenu();
@@ -136,6 +139,8 @@ public class NaoSCP extends javax.swing.JPanel {
         miUnmute = new javax.swing.JMenuItem();
         miSetVolume80 = new javax.swing.JMenuItem();
         miSetVolume40 = new javax.swing.JMenuItem();
+        jSeparator3 = new javax.swing.JPopupMenu.Separator();
+        miSyncTime = new javax.swing.JMenuItem();
         netwokPanel = new naoscp.components.NetwokPanel();
         naoTHPanel = new naoscp.components.NaoTHPanel();
         statusBarPanel = new javax.swing.JPanel();
@@ -150,20 +155,26 @@ public class NaoSCP extends javax.swing.JPanel {
         logTextPanel = new naoscp.components.LogTextPanel();
         jProgressBar = new javax.swing.JProgressBar();
 
-        popupMenu.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
-            public void popupMenuCanceled(javax.swing.event.PopupMenuEvent evt) {
+        popupMenu.addPopupMenuListener(new javax.swing.event.PopupMenuListener()
+        {
+            public void popupMenuCanceled(javax.swing.event.PopupMenuEvent evt)
+            {
             }
-            public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {
+            public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt)
+            {
                 popupMenuPopupMenuWillBecomeInvisible(evt);
             }
-            public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {
+            public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt)
+            {
             }
         });
 
         miShutdown.setText("Shutdown nao");
         miShutdown.setToolTipText("Shutdown the full nao system");
-        miShutdown.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        miShutdown.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
                 miShutdownActionPerformed(evt);
             }
         });
@@ -171,8 +182,10 @@ public class NaoSCP extends javax.swing.JPanel {
 
         miRestartNao.setText("Restart nao");
         miRestartNao.setToolTipText("Restarts the full nao system");
-        miRestartNao.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        miRestartNao.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
                 miRestartNaoActionPerformed(evt);
             }
         });
@@ -181,8 +194,10 @@ public class NaoSCP extends javax.swing.JPanel {
 
         miRestartNaoth.setText("Restart naoth");
         miRestartNaoth.setToolTipText("Restart the naoth process");
-        miRestartNaoth.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        miRestartNaoth.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
                 miRestartNaothActionPerformed(evt);
             }
         });
@@ -191,8 +206,10 @@ public class NaoSCP extends javax.swing.JPanel {
 
         miMute.setText("Mute");
         miMute.setToolTipText("Muting the nao");
-        miMute.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        miMute.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
                 miMuteActionPerformed(evt);
             }
         });
@@ -200,8 +217,10 @@ public class NaoSCP extends javax.swing.JPanel {
 
         miUnmute.setText("Un-Mute");
         miUnmute.setToolTipText("Un-muting the nao");
-        miUnmute.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        miUnmute.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
                 miUnmuteActionPerformed(evt);
             }
         });
@@ -209,8 +228,10 @@ public class NaoSCP extends javax.swing.JPanel {
 
         miSetVolume80.setText("Volume: 80%");
         miSetVolume80.setToolTipText("Sets the speaker volume to 80%");
-        miSetVolume80.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        miSetVolume80.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
                 miSetVolume80ActionPerformed(evt);
             }
         });
@@ -218,15 +239,31 @@ public class NaoSCP extends javax.swing.JPanel {
 
         miSetVolume40.setText("Volume: 40%");
         miSetVolume40.setToolTipText("Sets the speaker volume to 40%");
-        miSetVolume40.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        miSetVolume40.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
                 miSetVolume40ActionPerformed(evt);
             }
         });
         popupMenu.add(miSetVolume40);
+        popupMenu.add(jSeparator3);
 
-        addComponentListener(new java.awt.event.ComponentAdapter() {
-            public void componentResized(java.awt.event.ComponentEvent evt) {
+        miSyncTime.setText("Sync Time");
+        miSyncTime.setToolTipText("Syncs system time and enables NTP");
+        miSyncTime.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                miSyncTimeActionPerformed(evt);
+            }
+        });
+        popupMenu.add(miSyncTime);
+
+        addComponentListener(new java.awt.event.ComponentAdapter()
+        {
+            public void componentResized(java.awt.event.ComponentEvent evt)
+            {
                 formComponentResized(evt);
             }
         });
@@ -266,8 +303,10 @@ public class NaoSCP extends javax.swing.JPanel {
 
         btDeploy.setText("Send to Robot");
         btDeploy.setToolTipText("Send binaries and NaoTH Configs to Robot if checked above. No Network Configs on the robot will be changed.");
-        btDeploy.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        btDeploy.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
                 btDeployActionPerformed(evt);
             }
         });
@@ -280,8 +319,10 @@ public class NaoSCP extends javax.swing.JPanel {
 
         btWriteToStick.setText("Write to Stick");
         btWriteToStick.setToolTipText("Copy binaries and NaoTH Configs to a USB Stick if checked above. No Network Configs will be copied.");
-        btWriteToStick.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        btWriteToStick.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
                 btWriteToStickActionPerformed(evt);
             }
         });
@@ -289,8 +330,10 @@ public class NaoSCP extends javax.swing.JPanel {
 
         btSetNetwork.setText("Set Network");
         btSetNetwork.setToolTipText("Set Network");
-        btSetNetwork.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        btSetNetwork.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
                 btSetNetworkActionPerformed(evt);
             }
         });
@@ -298,8 +341,10 @@ public class NaoSCP extends javax.swing.JPanel {
 
         btInintRobot.setText("Initialize Robot");
         btInintRobot.setToolTipText("Initialize Robot");
-        btInintRobot.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        btInintRobot.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
                 btInintRobotActionPerformed(evt);
             }
         });
@@ -307,8 +352,10 @@ public class NaoSCP extends javax.swing.JPanel {
 
         btnActions.setText("\u25B2"); // Black Up-Pointing Triangle
         btnActions.setMargin(new java.awt.Insets(2, -4, 2, -4));
-        btnActions.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        btnActions.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
                 btnActionsActionPerformed(evt);
             }
         });
@@ -848,6 +895,18 @@ public class NaoSCP extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_miShutdownActionPerformed
 
+    private void miSyncTimeActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_miSyncTimeActionPerformed
+    {//GEN-HEADEREND:event_miSyncTimeActionPerformed
+        // first, disable the NTP sync, set the time manually and re-enable NTP sync
+        LocalDateTime ldt = LocalDateTime.now();
+        String cmd = "timedatectl set-ntp false "
+                + "&& timedatectl set-timezone 'Europe/Berlin' "
+                + "&& timedatectl set-time \"" + DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(ldt) + "\" "
+                + "&& timedatectl set-ntp true";
+
+        singleShellCommand(cmd, null, "Sync time", null, true);
+    }//GEN-LAST:event_miSyncTimeActionPerformed
+
     /**
      * Executes a single command on the robot.
      * 
@@ -856,7 +915,22 @@ public class NaoSCP extends javax.swing.JPanel {
      * @param logBeforeCmd the log message, which should be shown before the command execution. It can be 'null'.
      * @param logAfterCmd the log message, which should be shown after the command execution. It can be 'null'.
      */
-    private void singleShellCommand(String cmd, String expectedOutputPattern, String logBeforeCmd, String logAfterCmd) {
+    private void singleShellCommand(String cmd, String expectedOutputPattern, String logBeforeCmd, String logAfterCmd)
+    {
+        singleShellCommand(cmd, expectedOutputPattern, logBeforeCmd, logAfterCmd, false);
+    }
+
+    /**
+     * Executes a single command on the robot.
+     *
+     * @param cmd the command to execute
+     * @param expectedOutputPattern the expected output from the command. It can be 'null'.
+     * @param logBeforeCmd the log message, which should be shown before the command execution. It can be 'null'.
+     * @param logAfterCmd the log message, which should be shown after the command execution. It can be 'null'.
+     * @param root whether to run this command as root.
+     */
+    private void singleShellCommand(String cmd, String expectedOutputPattern, String logBeforeCmd, String logAfterCmd, boolean root)
+    {
         this.logTextPanel.clear();
 
         if(!txtRobotNumber.getText().trim().isEmpty()) {
@@ -870,6 +944,12 @@ public class NaoSCP extends javax.swing.JPanel {
 
                     if(logBeforeCmd != null) {
                         Logger.getGlobal().log(Level.INFO, logBeforeCmd);
+                    }
+
+                    if (root)
+                    {
+                        shell.run("su", "Password:");
+                        shell.run("root");
                     }
 
                     // HACK: see above
@@ -894,7 +974,7 @@ public class NaoSCP extends javax.swing.JPanel {
             Logger.getGlobal().log(Level.WARNING, "Missing robot number!");
         }
     }
-    
+
     public void formWindowClosing() {
         try {
             // save configuration to file
@@ -945,6 +1025,7 @@ public class NaoSCP extends javax.swing.JPanel {
     private javax.swing.JProgressBar jProgressBar;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator2;
+    private javax.swing.JPopupMenu.Separator jSeparator3;
     private javax.swing.JPanel logPanel;
     private naoscp.components.LogTextPanel logTextPanel;
     private javax.swing.JMenuItem miMute;
@@ -953,6 +1034,7 @@ public class NaoSCP extends javax.swing.JPanel {
     private javax.swing.JMenuItem miSetVolume40;
     private javax.swing.JMenuItem miSetVolume80;
     private javax.swing.JMenuItem miShutdown;
+    private javax.swing.JMenuItem miSyncTime;
     private javax.swing.JMenuItem miUnmute;
     private naoscp.components.NaoTHPanel naoTHPanel;
     private naoscp.components.NetwokPanel netwokPanel;
