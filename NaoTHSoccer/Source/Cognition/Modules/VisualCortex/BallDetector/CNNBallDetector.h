@@ -136,13 +136,13 @@ private:
   {
     Parameters() : ParameterList("CNNBallDetector")
     {
-      PARAMETER_REGISTER(cnn.threshold) = 0.99;
-      PARAMETER_REGISTER(cnn.thresholdClose) = 0.99;
+      PARAMETER_REGISTER(cnn.threshold) = 0.4;
+      PARAMETER_REGISTER(cnn.thresholdClose) = 0.45;
+
       // Constant offset added to the input of the CNN. < 0 darker, > 0 brighter
       PARAMETER_REGISTER(cnn.classifierMeanBrightnessOffset) = 0.0; 
       PARAMETER_REGISTER(cnn.detectorMeanBrightnessOffset) = 0.0; 
       
-
       PARAMETER_REGISTER(maxNumberOfKeys) = 12;
       PARAMETER_REGISTER(numberOfExportBestPatches) = 2;
       PARAMETER_REGISTER(providePatches) = false;
@@ -156,11 +156,11 @@ private:
       PARAMETER_REGISTER(contrastMinimumClose) = 50;
 
 
-      PARAMETER_REGISTER(classifier) = "bc_36k_go24_f32";
-      PARAMETER_REGISTER(classifierClose) = "bc_36k_go24_f32";
+      PARAMETER_REGISTER(classifier) = "fy1500_conf";
+      PARAMETER_REGISTER(classifierClose) = "fy1500_conf";
 
-      PARAMETER_REGISTER(detector) = "mbd_gopen_56k";
-      PARAMETER_REGISTER(detectorClose) = "mbd_gopen_56k";
+      PARAMETER_REGISTER(detector) = "fy1500_conf";
+      PARAMETER_REGISTER(detectorClose) = "fy1500_conf";
 
       PARAMETER_REGISTER(brightnessMultiplierBottom) = 1.0;
       PARAMETER_REGISTER(brightnessMultiplierTop) = 1.0;

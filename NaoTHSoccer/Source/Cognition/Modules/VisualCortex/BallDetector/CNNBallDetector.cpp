@@ -102,8 +102,14 @@ std::map<string, std::shared_ptr<AbstractCNNFinder> > CNNBallDetector::createCNN
   // register classifiers
 
   // devils compiled models
+
+  // Do not use a brightness offset for fy1500_conf, its baked into the first layer of the model cpp 
   result.insert({ "fy1500_conf", std::make_shared<Fy1500_Conf>() });
+
+  // Ball Classifier from German Open 2024, we used a brightness offset of -0.59 at GO (Train Dataset mean brightness is -0.5130)
   result.insert({ "mbc_36k", std::make_shared<mbc_36k>() }); // mbc: max ball classifier
+  
+  // Ball Detector from German Open 2024, we did not use a brightness offset at GO, was trained on dataset without brightness normalization
   result.insert({ "mbd_gopen_56k", std::make_shared<mbd_gopen_56k>() }); // mbd: max ball detector
 
   // frugally deep models
