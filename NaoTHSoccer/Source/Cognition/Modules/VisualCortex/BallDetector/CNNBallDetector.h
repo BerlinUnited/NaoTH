@@ -136,10 +136,6 @@ private:
   {
     Parameters() : ParameterList("CNNBallDetector")
     {
-      PARAMETER_REGISTER(keyDetector.borderRadiusFactorClose) = 0.5;
-      PARAMETER_REGISTER(keyDetector.borderRadiusFactorFar) = 0.8;
-      PARAMETER_REGISTER(keyDetector.maxInnerGreenDensitiy) = 0.5;
-      
       PARAMETER_REGISTER(cnn.threshold) = 0.99;
       PARAMETER_REGISTER(cnn.thresholdClose) = 0.99;
       // Constant offset added to the input of the CNN. < 0 darker, > 0 brighter
