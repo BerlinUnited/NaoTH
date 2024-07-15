@@ -245,7 +245,7 @@ public class SimsparkMonitor extends Simspark {
 
         private double calculateRotation(float r1, float r2)
         {
-            return Math.acos(r1 / Math.sqrt(r1 * r1 + r2 * r2)) * (r2 < 0 ? -1 : 1);
+            return Math.acos(Math.max(-1.0, Math.min(1.0, r1 / Math.sqrt(r1 * r1 + r2 * r2)))) * (r2 < 0 ? -1 : 1);
         }
 
         private Object listAccessor(List<Object> l, int... i)
