@@ -1,17 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" stylesheets="@../../res/style.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <ToolBar prefHeight="40.0" prefWidth="200.0">
         <items>
@@ -33,6 +41,42 @@
             <CheckBox fx:id="fieldDrawings" contentDisplay="TEXT_ONLY" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" text="Field drawings" />
         </items>
       </ToolBar>
-      <fx:include fx:id="simsparkPanel" source="SimsparkPanel.fxml" VBox.vgrow="ALWAYS" />
+      <SplitPane dividerPositions="0.3" orientation="VERTICAL" VBox.vgrow="ALWAYS">
+        <items>
+           <TableView fx:id="stateData" prefHeight="200.0" prefWidth="200.0">
+              <columns>
+                 <TableColumn prefWidth="75.0" text="Name" />
+                 <TableColumn prefWidth="75.0" text="Data" />
+              </columns>
+              <columnResizePolicy>
+                 <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+              </columnResizePolicy>
+           </TableView>
+           <BorderPane prefHeight="200.0" prefWidth="200.0">
+              <center>
+                 <ListView fx:id="commandHistory" onMouseClicked="#fxCommandHistoryClicked" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+              </center>
+              <bottom>
+                 <HBox BorderPane.alignment="CENTER">
+                    <children>
+                       <TextField fx:id="commandBox" onAction="#fxCommandBox" onKeyPressed="#fxKeyPressed" promptText="Enter a command" HBox.hgrow="ALWAYS" />
+                       <MenuButton fx:id="commandHelp" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" popupSide="TOP">
+                          <items>
+                             <MenuItem mnemonicParsing="false" onAction="#fxCommandHelp" text="ball drop" />
+                             <MenuItem mnemonicParsing="false" onAction="#fxCommandHelp" text="ball 0 0 0.2" />
+                             <MenuItem mnemonicParsing="false" onAction="#fxCommandHelp" text="ball 0 0 0.2 0 0 0" />
+                             <SeparatorMenuItem mnemonicParsing="false" />
+                             <MenuItem mnemonicParsing="false" onAction="#fxCommandHelp" text="pos Left 1 0 0 90" />
+                             <MenuItem mnemonicParsing="false" onAction="#fxCommandHelp" text="pos Right 3 0 0 90" />
+                             <MenuItem mnemonicParsing="false" onAction="#fxCommandHelp" text="left 3 0 0 90" />
+                             <MenuItem mnemonicParsing="false" onAction="#fxCommandHelp" text="right 3 0 0 90" />
+                          </items>
+                       </MenuButton>
+                    </children>
+                 </HBox>
+              </bottom>
+           </BorderPane>
+        </items>
+     </SplitPane>
    </children>
 </VBox>
