@@ -1,13 +1,11 @@
 package de.naoth.rc.dialogsFx.simspark;
 
 import de.naoth.rc.RobotControl;
+import de.naoth.rc.components.simspark.SimsparkCommandParser;
 import de.naoth.rc.components.simspark.SimsparkManager;
 import de.naoth.rc.components.simspark.SimsparkSceneListener;
 import de.naoth.rc.components.simspark.SimsparkState;
 import de.naoth.rc.components.simspark.SimsparkStateListener;
-import de.naoth.rc.components.simspark.commands.AgentCommand;
-import de.naoth.rc.components.simspark.commands.BallCommand;
-import de.naoth.rc.components.simspark.commands.DropBallCommand;
 import de.naoth.rc.components.simspark.commands.SimsparkCommand;
 import de.naoth.rc.components.simspark.scene.SimsparkScene;
 import de.naoth.rc.core.dialog.AbstractJFXDialog;
@@ -19,10 +17,6 @@ import java.net.URL;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -327,100 +321,16 @@ public class SimsparkDialog extends AbstractJFXDialog implements SimsparkStateLi
 
     private boolean handleCommand(String command)
     {
-        String[] commandParts = command.split("\\s+");
-
-        System.out.println("Command (" + commandParts.length + "): " + command);
-
-        if (commandParts.length == 0)
+        SimsparkCommand cmd = SimsparkCommandParser.parseCommand(command);
+        if (cmd != null)
         {
-            Logger.getLogger(SimsparkDialog.class.getName()).log(Level.INFO, "Empty command");
-            return false;
+            System.out.println("Send: " + cmd.getCommand());
+            commandBox.clear();
+            commandHistory.itemsProperty().get().add(command);
+            Plugin.simsparkManager.sendCommand(cmd);
+            return true;
         }
-
-        SimsparkCommand cmd = null;
-        switch (commandParts[0])
-        {
-            case "b":
-            case "ball":
-                cmd = handleCommandBall(command);
-                break;
-            case "p":
-            case "pos":
-                cmd = handleCommandAgent(command, null);
-                break;
-            case "l":
-            case "left":
-                cmd = handleCommandAgent(command, "Left");
-                break;
-            case "r":
-            case "right":
-                cmd = handleCommandAgent(command, "Right");
-                break;
-        }
-
-        if (cmd == null)
-        {
-            Logger.getLogger(SimsparkDialog.class.getName()).log(Level.INFO, "Invalid or unknown command: {0}", command);
-            return false;
-        }
-
-        System.out.println("Send: " + cmd.getCommand());
-        commandBox.clear();
-        commandHistory.itemsProperty().get().add(command);
-        Plugin.simsparkManager.sendCommand(cmd);
-
-        return true;
-    }
-
-    private SimsparkCommand handleCommandBall(String command)
-    {
-        String[] commandParts = command.split("\\s+");
-        Pattern ballPattern = Pattern.compile("(b|ball)(\\s+drop|(\\s+[+-]?(\\d*\\.\\d+|\\d+(\\.\\d+)?)){3,6})");
-        Matcher ballMatcher = ballPattern.matcher(command);
-        if (ballMatcher.matches())
-        {
-            switch (commandParts.length)
-            {
-                case 2:
-                    return new DropBallCommand();
-                case 4:
-                    return new BallCommand(
-                            Float.parseFloat(commandParts[1]),
-                            Float.parseFloat(commandParts[2]),
-                            Float.parseFloat(commandParts[3]));
-                case 7:
-                    return new BallCommand(
-                            Float.parseFloat(commandParts[1]),
-                            Float.parseFloat(commandParts[2]),
-                            Float.parseFloat(commandParts[3]),
-                            Float.parseFloat(commandParts[4]),
-                            Float.parseFloat(commandParts[5]),
-                            Float.parseFloat(commandParts[6]));
-            }
-        }
-
-        return null;
-    }
-
-    private SimsparkCommand handleCommandAgent(String command, String team)
-    {
-        String[] commandParts = command.split("\\s+");
-        String pattern = (team == null ? "(p|pos)\\s+(Left|Right)" : "(l|left|r|right)") + "\\s+(\\d+)(\\s+[+-]?(\\d*\\.\\d+|\\d+(\\.\\d+)?)){3}";
-        System.out.println(pattern);
-        Pattern posPattern = Pattern.compile(pattern);
-        Matcher posMatcher = posPattern.matcher(command);
-        if (posMatcher.matches())
-        {
-            int i = 0;
-            return new AgentCommand(
-                    team != null ? team : commandParts[++i],
-                    Integer.parseInt(commandParts[++i]),
-                    Float.parseFloat(commandParts[++i]),
-                    Float.parseFloat(commandParts[++i]),
-                    Float.parseFloat(commandParts[++i]));
-        }
-
-        return null;
+        return false;
     }
 
     private void playErrorAnimation(TextField textField)
