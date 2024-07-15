@@ -29,6 +29,7 @@ public:
     set       = naoth::GameData::set,
     playing   = naoth::GameData::playing,
     finished  = naoth::GameData::finished,
+    standby   = naoth::GameData::standby,
     penalized,  // <== GameState doesn't have this :)
     unstiff     // <== GameState doesn't have this :)
   };
