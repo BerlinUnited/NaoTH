@@ -1,12 +1,9 @@
 /**
-* @file DeadMotion.h
-*
 * @author <a href="mailto:schlottb@informatik.hu-berlin.de">Schlotter, Stella Alice</a>
-* fall motion disable all the motor joints, i.e set the hardness to 0, except the head joints
 */
 
-#ifndef _FALLMOTION_H
-#define _FALLMOTION_H
+#ifndef FALLMOTION_H // todo: is it ok to remove the underscore?
+#define FALLMOTION_H
 
 #include "Motion/Engine/AbstractMotion.h"
 #include <ModuleFramework/Module.h>
@@ -32,28 +29,76 @@ BEGIN_DECLARE_MODULE(FallMotion)
   PROVIDE(MotorJointData)
 END_DECLARE_MODULE(FallMotion)
 
-class FallMotion : private FallMotionBase, public AbstractMotion
+class FallMotion final: private FallMotionBase, public AbstractMotion
 {
 public:
   FallMotion();
 
-  virtual ~FallMotion(){}
+  ~FallMotion() override = default;
 
-  void execute();
+  void execute() override;
 
 private:
   FrameInfo startTime;
 
   struct keyFrame {
-      std::array<double, 22> jointValues;
-      std::array<double, 22> stiffnessValues;
+      std::vector<double> jointValues; // todo: use std::array<double, 22> here?
+      std::vector<double> stiffnessValues;
       double triggerMs;
       double altTriggerGrad;
   };
 
+  const std::vector<keyFrame> forwards = {
+    {
+      {-38,0,-10,10,90,90, 0,  0,-100,100,0,0,-24,-24,0,0,105,105,-75,-75,0,0},
+      {100,100,  100,100,100,100,  100,100,100,100, 30,30,30,30,30,30, 30,30,30,30},
+      100,
+      30
+    },{
+        {-38,0,-10,10, 5, 5,60,-60,-100,100,0,0,-24,-24,0,0,105,105,-75,-75,0,0},
+        {100,100,  100,100,100,100,  100,100,100,100, 30,30,30,30,30,30, 30,30,30,30},
+        250,
+        55
+    },{
+        {-38,0,-10,10, 5, 5,60,-60,-100,100,0,0,-24,-24,0,0,105,105,-75,-75,0,0},
+        {15,15,  15,15,15,15,  15,15,15,15, 5,5,5,5,5,5, 5,5,5,5},
+        600,
+        70
+    },{
+        {-38,0,-10,10, 5, 5,60,-60,-100,100,0,0,-24,-24,0,0,105,105,-75,-75,0,0},
+        {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+        1500,
+        999
+    }
+  };
+
+  const std::vector<keyFrame> backwards = {
+    {
+          {29,0,-12,12,123,123, 0,  0,-17,17,0,0,-90,-90,0,0,105,105,-45,-45,0,0},
+          {100,100,  100,100,100,100,  100,100,100,100, 30,30,30,30,30,30, 30,30,30,30},
+          150,
+          28
+      },{
+          {29,0,-12,12,123,123,78,-78,-17,17,0,0,-90,-90,0,0,105,105,-45,-45,0,0},
+          {100,100,  100,100,100,100,  100,100,100,100, 30,30,30,30,30,30, 30,30,30,30},
+          300,
+          55
+      },{
+          {29,0,-12,12,123,123,78,-78,-17,17,0,0,-90,-90,0,0,105,105,-45,-45,0,0},
+          {15,15,  15,15,15,15,  15,15,15,15, 5,5,5,5,5,5, 5,5,5,5},
+          600,
+          70
+      },{
+          {29,0,-12,12,123,123,78,-78,-17,17,0,0,-90,-90,0,0,105,105,-45,-45,0,0},
+          {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+          1500,
+          999
+      }
+  };
+
   double stiffness_increase;
-  double oldStiffness[naoth::JointData::numOfJoint]{};
+  double oldStiffness[JointData::numOfJoint]{};
 //  double oldJoints[naoth::JointData::numOfJoint]{};
 };
 
-#endif  /* _FALLMOTION_H */
+#endif  /* FALLMOTION_H */

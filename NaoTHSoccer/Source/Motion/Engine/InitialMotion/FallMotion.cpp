@@ -15,9 +15,9 @@ FallMotion::FallMotion()
 
 
 void FallMotion::execute() {
-    if ( getMotionRequest().id != getId() )
+    if (getMotionRequest().id != getId())
     {
-        if ( setStiffness(getMotorJointData(), getSensorJointData(), oldStiffness, stiffness_increase) ) {
+        if (setStiffness(getMotorJointData(), getSensorJointData(), oldStiffness, stiffness_increase)) {
             setCurrentState(motion::stopped);
         }
         for (size_t i = 0; i < JointData::numOfJoint; i++) {
@@ -25,7 +25,7 @@ void FallMotion::execute() {
         }
         return;
     }
-    else if( isStopped() ) // runs once on start
+    if (isStopped()) // runs once on start
     {
       startTime = getFrameInfo();
       for (size_t i = 0; i < JointData::numOfJoint; i++) { // store joint data
@@ -37,10 +37,11 @@ void FallMotion::execute() {
 
     int t = getFrameInfo().getTimeSince(startTime); // in ms
     if(abs(getInertialSensorData().data.y) > 20 || t < 1500) { // assure motion lasts 2s max
-        /*    HeadPitch,
-                                                                   HeadYaw,
+        /*
+            HeadPitch,
+            HeadYaw,
 
-        RShoulderRoll,
+            RShoulderRoll,
             LShoulderRoll,
             RShoulderPitch,
             LShoulderPitch,
@@ -66,60 +67,12 @@ void FallMotion::execute() {
             LWristYaw,
             RWristYaw,
             LHand,
-            RHand*/
-        bool fallingForward = (Math::toDegrees(getInertialSensorData().data.y) > 0);
+            RHand
+        */
+        const bool falling_forwards = Math::toDegrees(getInertialSensorData().data.y) > 0;
+        const std::vector<keyFrame>& key_frames = falling_forwards ? forwards : backwards;
 
-        std::vector<keyFrame> forwards = {
-            {
-                {-38,0,-10,10,90,90, 0,  0,-100,100,0,0,-24,-24,0,0,105,105,-75,-75,0,0},
-                {100,100,  100,100,100,100,  100,100,100,100, 30,30,30,30,30,30, 30,30,30,30},
-                100,
-                30
-            },{
-                {-38,0,-10,10, 5, 5,60,-60,-100,100,0,0,-24,-24,0,0,105,105,-75,-75,0,0},
-                {100,100,  100,100,100,100,  100,100,100,100, 30,30,30,30,30,30, 30,30,30,30},
-                250,
-                55
-            },{
-                {-38,0,-10,10, 5, 5,60,-60,-100,100,0,0,-24,-24,0,0,105,105,-75,-75,0,0},
-                {15,15,  15,15,15,15,  15,15,15,15, 5,5,5,5,5,5, 5,5,5,5},
-                600,
-                70
-            },{
-                {-38,0,-10,10, 5, 5,60,-60,-100,100,0,0,-24,-24,0,0,105,105,-75,-75,0,0},
-                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                1500,
-                999
-            }
-        };
-
-        std::vector<keyFrame> backwards = {
-            {
-                {29,0,-12,12,123,123, 0,  0,-17,17,0,0,-90,-90,0,0,105,105,-45,-45,0,0},
-                {100,100,  100,100,100,100,  100,100,100,100, 30,30,30,30,30,30, 30,30,30,30},
-                150,
-                28
-            },{
-                {29,0,-12,12,123,123,78,-78,-17,17,0,0,-90,-90,0,0,105,105,-45,-45,0,0},
-                {100,100,  100,100,100,100,  100,100,100,100, 30,30,30,30,30,30, 30,30,30,30},
-                300,
-                55
-            },{
-                {29,0,-12,12,123,123,78,-78,-17,17,0,0,-90,-90,0,0,105,105,-45,-45,0,0},
-                {15,15,  15,15,15,15,  15,15,15,15, 5,5,5,5,5,5, 5,5,5,5},
-                600,
-                70
-            },{
-                {29,0,-12,12,123,123,78,-78,-17,17,0,0,-90,-90,0,0,105,105,-45,-45,0,0},
-                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                1500,
-                999
-            }
-        };
-
-        std::vector<keyFrame>& currKf = fallingForward ? forwards : backwards;
-
-        for (keyFrame kf : currKf) {
+        for (keyFrame kf : key_frames) {
             if (t > kf.triggerMs || Math::toDegrees(getInertialSensorData().data.y) > kf.altTriggerGrad) {
                 continue;
             }
