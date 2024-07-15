@@ -8,6 +8,7 @@
 #include "Classifier/FrugallyDeep.h"
 #include "Classifier/mbc_36k.h"
 #include "Classifier/mbd_gopen_56k.h"
+#include "Classifier/TFLiteModelNaoTH.h"
 
 using namespace std;
 
@@ -98,15 +99,39 @@ void CNNBallDetector::execute(CameraInfo::CameraID id)
 std::map<string, std::shared_ptr<AbstractCNNFinder> > CNNBallDetector::createCNNMap()
 {
   std::map<string, std::shared_ptr<AbstractCNNFinder> > result;
-
   // register classifiers
-  result.insert({ "fy1500_conf", std::make_shared<Fy1500_Conf>() });
-  result.insert({ "mbc_36k", std::make_shared<mbc_36k>() });
-  result.insert({ "mbd_gopen_56k", std::make_shared<mbd_gopen_56k>() });
 
+  // devils compiled models
+
+  // Do not use a brightness offset for fy1500_conf, its baked into the first layer of the model cpp 
+  result.insert({ "fy1500_conf", std::make_shared<Fy1500_Conf>() });
+
+  // Ball Classifier from German Open 2024, we used a brightness offset of -0.59 at GO (Train Dataset mean brightness is -0.5130)
+  result.insert({ "mbc_36k", std::make_shared<mbc_36k>() }); // mbc: max ball classifier
+  
+  // Ball Detector from German Open 2024, we did not use a brightness offset at GO, was trained on dataset without brightness normalization
+  result.insert({ "mbd_gopen_56k", std::make_shared<mbd_gopen_56k>() }); // mbd: max ball detector
+
+  // frugally deep models
   result.insert({ "fdeep_fy1300", std::make_shared<FrugallyDeep>("fy1300.json", true, true, true)});
   result.insert({ "fdeep_fy1500", std::make_shared<FrugallyDeep>("fy1500.json", true, true, true)});
+
+  // tflite models 
+
+  // trained on naodevils data + GO24
+  // dataset path: naoth/datasets/classification_gopen24_nao_devils_labelstudio_validated_ball_no_ball_X_y.h5
+  // dataset mean brightness offset: -0.5130
+  result.insert({ "bc_36k_go24", std::make_shared<TFLiteModelNaoTH>("ball_classifier_36k_2024-04-21_GO24.tflite", false, false, true)});
+  result.insert({ "bc_36k_go24_f32", std::make_shared<TFLiteModelNaoTH>("ball_classifier_36k_2024-04-21_GO24_float32.tflite", false, false, true)});
+
+  // trained on naodevils data + GO24 + labor tests 2024 up to 2024-05-10
+  // dataset path: naoth/datasets/classification_naodevils_gopen_validated_sampled_labor_testgame_may_X_y.h5
+  // dataset mean brightness offset: -0.5101
+  result.insert({ "bc_36k_labor", std::make_shared<TFLiteModelNaoTH>("ball_classifier_36k_2024-05-17v2.tflite", false, false, true)});
+  result.insert({ "bc_36k_labor_f32", std::make_shared<TFLiteModelNaoTH>("ball_classifier_36k_2024-05-17v2_float32.tflite", false, false, true)});
   
+
+
   return result;
 }
 
@@ -259,10 +284,13 @@ void CNNBallDetector::calculateCandidates()
         cnn_detector = currentCNNClose_detector;
       }
 
-      STOPWATCH_START("CNNBallDetector:predict");
-      cnn->predict(patch, params.cnn.meanBrightnessOffset);
-      cnn_detector->predict(patch, params.cnn.meanBrightnessOffset);
-      STOPWATCH_STOP("CNNBallDetector:predict");
+      STOPWATCH_START("CNNBallDetector:classifierPredict");
+      cnn->predict(patch, params.cnn.classifierMeanBrightnessOffset);
+      STOPWATCH_STOP("CNNBallDetector:classifierPredict");
+
+      STOPWATCH_START("CNNBallDetector:detectorPredict");
+      cnn_detector->predict(patch, params.cnn.detectorMeanBrightnessOffset);
+      STOPWATCH_STOP("CNNBallDetector:detectorPredict");
 
       bool found = false;
       double radius = cnn_detector->getRadius();
