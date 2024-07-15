@@ -63,12 +63,12 @@ public:
 
     if(penaltyInfo.penalty == naoth::GameData::penalty_none) {
       switch(gameData.gameState) {
-        case initial:   robotState = initial; break;
-        case ready:     robotState = ready; break;
-        case set:       robotState = set; break;
-        case playing:   robotState = playing; break;
-        case finished:  robotState = finished; break;
-        case standby:   robotState = standby; break;
+        case naoth::GameData::initial:   robotState = RobotState::initial;  break;
+        case naoth::GameData::ready:     robotState = RobotState::ready;    break;
+        case naoth::GameData::set:       robotState = RobotState::set;      break;
+        case naoth::GameData::playing:   robotState = RobotState::playing;  break;
+        case naoth::GameData::finished:  robotState = RobotState::finished; break;
+        case naoth::GameData::standby:   robotState = RobotState::standby;  break;
         default: ASSERT(false);
       }
     } else {
