@@ -329,7 +329,7 @@ class NaoTHCompiler:
             self.write_cpp('\t}\n')
 
     def write_predict_function(self, class_name):
-        normalization_part = """
+        normalization_part = '''
 void {}::predict(const BallCandidates::PatchYUVClassified& patch, double meanBrightnessOffset)
 {{
 \tASSERT(patch.size() == 16);
@@ -339,11 +339,11 @@ void {}::predict(const BallCandidates::PatchYUVClassified& patch, double meanBri
 \t\t\t// TODO: check
 \t\t\t// .pixel.y accesses the brightness channel of the pixel
 \t\t\t// subtract the mean brightness calculated on the dataset and the offset from the module parameters
-\t\t\tfloat value = (static_cast<float>((patch.data[patch.size() * x + y].pixel.y)) / 255.0f) - %ff - static_cast<float>(meanBrightnessOffset);
+\t\t\tfloat value = (static_cast<float>((patch.data[patch.size() * x + y].pixel.y)) / 255.0f) + static_cast<float>(meanBrightnessOffset);
 \t\t\tin_step[y][x][0] = value;
 \t\t}}
 \t}}
-""" % self.dataset_mean
+'''
 
         # TODO how to write strings
         cnn_part = '''
@@ -398,7 +398,7 @@ void {}::predict(float in_step[16][16][1], double meanBrightnessOffset)
 {{
 \tfor(size_t x=0; x < 16; x++) {{
 \t\tfor(size_t y=0; y < 16; y++) {{
-\t\t\tin_step[y][x][0] = (in_step[y][x][0] / 255.0f) - static_cast<float>(meanBrightnessOffset);
+\t\t\tin_step[y][x][0] = (in_step[y][x][0] / 255.0f) + static_cast<float>(meanBrightnessOffset);
 \t\t}}
 \t}}
 '''
