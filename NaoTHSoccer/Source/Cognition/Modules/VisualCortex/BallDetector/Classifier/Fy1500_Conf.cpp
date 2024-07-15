@@ -2561,8 +2561,8 @@ void Fy1500_Conf::predict(const BallCandidates::PatchYUVClassified& patch, doubl
 
 	for(size_t x=0; x < patch.size(); x++) {
 		for(size_t y=0; y < patch.size(); y++) {
-			// TODO: check
-			float value = (static_cast<float>((patch.data[patch.size() * x + y].pixel.y)) / 255.0f) - static_cast<float>(meanBrightness);
+			// Add a custom brightness offset that depends on the dataset, if zero centering was used
+			float value = (static_cast<float>((patch.data[patch.size() * x + y].pixel.y)) / 255.0f) + static_cast<float>(meanBrightness);
 			in_step[y][x][0] = value;
 		}
 	}
