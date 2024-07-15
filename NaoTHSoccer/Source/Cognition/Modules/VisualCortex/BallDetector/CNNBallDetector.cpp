@@ -58,9 +58,9 @@ void CNNBallDetector::execute(CameraInfo::CameraID id)
   if(!patches.empty()) {
     calculateCandidates();
   }
-
   DEBUG_REQUEST("Vision:CNNBallDetector:drawPercepts",
     for(MultiBallPercept::ConstABPIterator iter = getMultiBallPercept().begin(); iter != getMultiBallPercept().end(); iter++) {
+      
       if((*iter).cameraId == cameraID) {
         CIRCLE_PX(ColorClasses::orange, (int)((*iter).centerInImage.x+0.5), (int)((*iter).centerInImage.y+0.5), (int)((*iter).radiusInImage+0.5));
       }
@@ -301,8 +301,8 @@ void CNNBallDetector::calculateCandidates()
         cnn_detector->predict(patch, params.cnn.detectorMeanBrightnessOffset);
         STOPWATCH_STOP("CNNBallDetector:detectorPredict");
 
-        double radius = cnn_detector->getRadius();
-        Vector2d pos = cnn_detector->getCenter();
+        radius = cnn_detector->getRadius();
+        pos = cnn_detector->getCenter();
 
         // sanity check needed for fy1500_conf CNN, where ball.x and ball.y (and radius)
         // has predicted values < 0 in some cases in the past
@@ -318,7 +318,6 @@ void CNNBallDetector::calculateCandidates()
       if (found) {
         // adjust the center and radius of the patch
         Vector2d ballCenterInPatch(pos.x * patch.width(), pos.y*patch.width());
-       
         addBallPercept(ballCenterInPatch + patch.min, radius*patch.width());
       }
 
