@@ -7,6 +7,7 @@
 #include "Classifier/Fy1500_Conf.h"
 #include "Classifier/FrugallyDeep.h"
 #include "Classifier/mbc_36k.h"
+#include "Classifier/mbc_36ksm.h"
 #include "Classifier/mbd_gopen_56k.h"
 #include "Classifier/TFLiteModelNaoTH.h"
 
@@ -108,6 +109,10 @@ std::map<string, std::shared_ptr<AbstractCNNFinder> > CNNBallDetector::createCNN
 
   // Ball Classifier from German Open 2024, we used a brightness offset of -0.59 at GO (Train Dataset mean brightness is -0.5130)
   result.insert({ "mbc_36k", std::make_shared<mbc_36k>() }); // mbc: max ball classifier
+
+  // threshold 0.98 works good on the RC24 Monday Outdoor Test Log
+  // same as mbc_36k, but with softmax activation function implemented in the model
+  result.insert({ "mbc_36ksm", std::make_shared<mbc_36ksm>() }); 
   
   // Ball Detector from German Open 2024, we did not use a brightness offset at GO, was trained on dataset without brightness normalization
   result.insert({ "mbd_gopen_56k", std::make_shared<mbd_gopen_56k>() }); // mbd: max ball detector
