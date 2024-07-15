@@ -367,7 +367,7 @@ public class SimsparkDialog extends AbstractJFXDialog implements SimsparkStateLi
         System.out.println("Send: " + cmd.getCommand());
         commandBox.clear();
         commandHistory.itemsProperty().get().add(command);
-        Plugin.simsparkManager.sendCommand(cmd.getCommand());
+        Plugin.simsparkManager.sendCommand(cmd);
 
         return true;
     }

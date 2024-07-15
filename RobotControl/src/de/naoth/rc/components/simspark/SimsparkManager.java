@@ -1,5 +1,6 @@
 package de.naoth.rc.components.simspark;
 
+import de.naoth.rc.components.simspark.commands.SimsparkCommand;
 import de.naoth.rc.components.simspark.scene.SimsparkScene;
 import javafx.beans.property.BooleanProperty;
 import net.xeoh.plugins.base.Plugin;
@@ -44,7 +45,7 @@ public interface SimsparkManager extends Plugin
      * @param command the command to send
      * @return true, if sending was successful, false otherwise
      */
-    public boolean sendCommand(String command);
+    public boolean sendCommand(SimsparkCommand command);
     
     /**
      * Removes a simspark listener from the active listener list.

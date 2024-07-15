@@ -1,5 +1,6 @@
 package de.naoth.rc.components.simspark;
 
+import de.naoth.rc.components.simspark.commands.SimsparkCommand;
 import de.naoth.rc.components.simspark.scene.SimsparkScene;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -107,7 +108,7 @@ public class SimsparkManagerImpl implements SimsparkManager
      * {@inheritDoc}
      */
     @Override
-    public boolean sendCommand(String command)
+    public boolean sendCommand(SimsparkCommand command)
     {
         if (simsparkMonitor != null)
         {
