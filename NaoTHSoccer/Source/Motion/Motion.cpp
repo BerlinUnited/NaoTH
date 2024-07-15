@@ -12,6 +12,8 @@
 
 #include "Tools/CameraGeometry.h"
 
+ // needed for sleep_for in debug kill 
+#include "Tools/ThreadUtil.h"
 
 using namespace naoth;
 
@@ -24,6 +26,8 @@ Motion::Motion()
   registerLogableRepresentationList();
 
   DEBUG_REQUEST_REGISTER("Motion:KinematicChain:orientation_test", "", false);
+
+  DEBUG_REQUEST_REGISTER("Motion:delay_1000", "Sleep for 100ms in each cycle to simulate slow processing.", false);
 
   DEBUG_REQUEST_REGISTER("Motion:KinematicChain:drawMotor3D", "", false);
   DEBUG_REQUEST_REGISTER("Motion:KinematicChain:drawSensor3D", "", false);
@@ -164,6 +168,9 @@ void Motion::call()
   postProcess();
   STOPWATCH_STOP("Motion:postProcess");
 
+  // for testing of motion freeze
+  DEBUG_REQUEST("Motion:delay_1000", ThreadUtil::sleep(1000); );
+
   DEBUG_REQUEST("Motion:KinematicChain:drawSensor3D",  drawRobot3D(getKinematicChainSensor()); );
   DEBUG_REQUEST("Motion:KinematicChain:drawMotor3D",  drawRobot3D(getKinematicChainMotor()); );
 
@@ -179,7 +186,6 @@ void Motion::call()
     getDebugCommandManager().handleCommand(iter->command, iter->arguments, debug_answer_stream);
     getDebugMessageOut().addResponse(iter->id, debug_answer_stream);
   }
-
 
   // HACK: reset all the debug stuff before executing the modules
   STOPWATCH_START("Motion.Debug.Init");
