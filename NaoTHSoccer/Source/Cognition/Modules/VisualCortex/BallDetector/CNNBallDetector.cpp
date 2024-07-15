@@ -284,18 +284,14 @@ void CNNBallDetector::calculateCandidates()
         cnn_detector = currentCNNClose_detector;
       }
 
-      STOPWATCH_START("CNNBallDetector:predict");
-      cnn->predict(patch, params.cnn.meanBrightnessOffset);
-      cnn_detector->predict(patch, params.cnn.meanBrightnessOffset);
-      STOPWATCH_STOP("CNNBallDetector:predict");
+      STOPWATCH_START("CNNBallDetector:classifierPredict");
+      cnn->predict(patch, params.cnn.classifierMeanBrightnessOffset);
+      STOPWATCH_STOP("CNNBallDetector:classifierPredict");
 
       bool found = false;
       Vector2d pos = Vector2d(0.0, 0.0);
       double radius = 0.0;
 
-      STOPWATCH_START("CNNBallDetector:classifierPredict");
-      cnn->predict(patch, params.cnn.classifierMeanBrightnessOffset);
-      STOPWATCH_STOP("CNNBallDetector:classifierPredict");
 
       // only run the detector if the classifier predicted a ball in the patch
       if (cnn->getBallConfidence() >= selectedCNNThreshold) 
