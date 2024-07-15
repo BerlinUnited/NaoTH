@@ -309,7 +309,7 @@ void CNNBallDetector::calculateCandidates()
         Vector2d pos = cnn_detector->getCenter();
 
         // sanity check needed for fy1500_conf CNN, where ball.x and ball.y (and radius)
-        // was set to 0 for patches that didn't contain a ball
+        // has predicted values < 0 in some cases in the past
         if (pos.x >= 0.0 && pos.y >= 0.0) {
           found = true;
         }
