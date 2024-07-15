@@ -1,5 +1,9 @@
 package de.naoth.rc.components.simspark;
 
+import de.naoth.rc.components.simspark.commands.AgentInitCommand;
+import de.naoth.rc.components.simspark.commands.AgentSceneCommand;
+import de.naoth.rc.components.simspark.commands.AgentSyncCommand;
+import de.naoth.rc.components.simspark.commands.SimsparkCommand;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -13,6 +17,9 @@ import java.util.logging.Logger;
  */
 public class SimsparkAgent extends Simspark
 {
+    private SimsparkCommand scene = new AgentSceneCommand();
+    private SimsparkCommand init = new AgentInitCommand();
+    private SimsparkCommand sync = new AgentSyncCommand();
     /**
      * Main method of the simspark agent thread.
      */
@@ -23,9 +30,9 @@ public class SimsparkAgent extends Simspark
         }
         try {
             // init simspark communication
-            sendMessage("(scene rsg/agent/nao/nao.rsg 0)(syn)");
+            sendMessage(scene);
             System.out.println(receiveMessage());
-            sendMessage("(init (unum 0)(teamname NaoTH))(syn)");
+            sendMessage(init);
             System.out.println(receiveMessage());
             
             System.out.println("listening");
@@ -33,7 +40,7 @@ public class SimsparkAgent extends Simspark
             while (isConnected.get()) {
                 try {
                     // Simspark in "sync" mode ...
-                    sendMessage("(syn)");
+                    sendMessage(sync);
                     String msg = receiveMessage();
                     if (msg != null) {
                         // TODO: where should the received agent messages go?!

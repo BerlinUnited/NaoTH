@@ -1,14 +1,16 @@
 package de.naoth.rc.statusbar;
 
 import de.naoth.rc.RobotControlImpl;
-import de.naoth.rc.components.simspark.SimsparkListener;
+import de.naoth.rc.components.simspark.SimsparkCommandParser;
 import de.naoth.rc.components.simspark.SimsparkManager;
-import de.naoth.rc.components.simspark.SimsparkMonitor;
-import de.naoth.rc.dataformats.SimsparkState;
+import de.naoth.rc.components.simspark.SimsparkState;
+import de.naoth.rc.components.simspark.SimsparkStateListener;
+import de.naoth.rc.components.simspark.commands.BallCommand;
+import de.naoth.rc.components.simspark.commands.DropBallCommand;
+import de.naoth.rc.components.simspark.commands.KickOffCommand;
+import de.naoth.rc.components.simspark.commands.KillCommand;
+import de.naoth.rc.components.simspark.commands.SimsparkCommand;
 import java.awt.event.KeyEvent;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.beans.property.BooleanProperty;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -27,23 +29,24 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  * @author Philipp Strobel <philippstrobel@posteo.de>
  */
 @PluginImplementation
-public class StatusbarSimspark extends StatusbarPluginImpl implements SimsparkListener
+public class StatusbarSimspark extends StatusbarPluginImpl implements SimsparkStateListener
 {
     @InjectPlugin
-    public SimsparkManager simsparkManger;
+    public SimsparkManager simsparkManager;
 
     /* some vars */
     private ConnectionDialog connectionDialog;
     private CommandDialog commandDialog;
-    private SimsparkMonitor simspark_comm;
     
     private final String defaultTooltip = "Not connected to simspark.";
     
     @Override
-    protected void init() {
+    protected void init()
+    {
         // create connection dialog
         this.connectionDialog = new ConnectionDialog((RobotControlImpl)rc);
-        this.connectionDialog.setLocationRelativeTo((RobotControlImpl)rc);
+        this.connectionDialog.setLocationRelativeTo((RobotControlImpl) rc);
+
         // create command dialog
         commandDialog = new CommandDialog((RobotControlImpl)rc);
         commandDialog.setLocationRelativeTo((RobotControlImpl)rc);
@@ -73,6 +76,16 @@ public class StatusbarSimspark extends StatusbarPluginImpl implements SimsparkLi
                 }
             }
         });
+        
+        // register connection listener
+        simsparkManager.isConnected().addListener((o) -> {
+            if(((BooleanProperty)o).get()) {
+                this.onConnect();
+            } else {
+                disconnect();
+                onDisconnect();
+            }
+        });
     }
 
     @Override
@@ -80,53 +93,30 @@ public class StatusbarSimspark extends StatusbarPluginImpl implements SimsparkLi
         disconnect();
     }
 
-    private void connect(String host, String port) {
-        try {
-            if(simspark_comm != null) {
-                simspark_comm.disconnect();
-            }
-            simspark_comm = new SimsparkMonitor();
-            // register connection listener
-            simspark_comm.isConnected.addListener((o) -> {
-                if(((BooleanProperty)o).get()) {
-                    this.onConnect();
-                } else {
-                    disconnect();
-                    onDisconnect();
-                }
-            });
-            simspark_comm.connect(host.trim(), Integer.parseInt(port.trim()));
-            connectionDialog.setVisible(false);
-        } catch (IOException | InterruptedException ex) {
-            JOptionPane.showMessageDialog(null, "Couldn't connect!", "Couldn't connect", JOptionPane.WARNING_MESSAGE);
-        }
+    private void connect(String host, String port)
+    {
+        simsparkManager.connect(host.trim(), Integer.parseInt(port.trim()));
+        connectionDialog.setVisible(false);
     }
     
-    private void disconnect() {
-        try {
-            if(simspark_comm != null) {
-                simspark_comm.disconnect();
-            }
-            simspark_comm = null;
-        } catch (IOException | InterruptedException ex) {
-            Logger.getLogger(StatusbarSimspark.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    private void disconnect()
+    {
+        simsparkManager.disconnect();
     }
     
-    private void onConnect() {
-        if(simsparkManger != null) {
-            simsparkManger.addSimsparkListener(this);
-        }
+    private void onConnect()
+    {
+        simsparkManager.addSimsparkStateListener(this);
 
         // update UI
         setEnabled(true);
-        setToolTipText("Connected to simspark ("+simspark_comm.getHost()+":"+simspark_comm.getPort()+")");
+        setToolTipText("Connected to simspark ("+simsparkManager.getHost()+":"+simsparkManager.getPort()+")");
     }
     
-    private void onDisconnect() {
-        if(simsparkManger != null) {
-            simsparkManger.removeSimsparkListener(this);
-        }
+    private void onDisconnect()
+    {
+        simsparkManager.removeSimsparkStateListener(this);
+        
         setEnabled(false);
         setToolTipText(defaultTooltip);
         setTooltipHeight(1, 0);
@@ -144,20 +134,24 @@ public class StatusbarSimspark extends StatusbarPluginImpl implements SimsparkLi
         setTooltipHeight(state.data.size(), 6);
         setToolTipText("<html>" + "<table border=\"0\">" + ttt + "</table>" + "</html>");
     }
-    
-    private void sendCommand(String cmd) {
-        if(simspark_comm == null || !simspark_comm.isAlive()) {
-            JOptionPane.showMessageDialog(this, "Not connected to simspark!", "Not connected", JOptionPane.ERROR_MESSAGE);
-        } else {
-            try {
-                System.out.println(cmd);
-                commandDialog.lastSendCommand.setText(" Last command: "+cmd);
-                simspark_comm.sendMessage(cmd);
-            } catch (IOException ex) {
-                if(!simspark_comm.checkConnection()) {
+
+    private void sendCommand(SimsparkCommand cmd)
+    {
+        if (simsparkManager.isConnected().get())
+        {
+            if (cmd != null)
+            {
+                System.out.println(cmd.getCommand());
+                commandDialog.lastSendCommand.setText(" Last command: " + cmd.getCommand());
+                if (!simsparkManager.sendCommand(cmd))
+                {
                     JOptionPane.showMessageDialog(null, "Connection to server lost!\nStill running?", "Lost connection", JOptionPane.WARNING_MESSAGE);
                 }
             }
+        }
+        else
+        {
+            JOptionPane.showMessageDialog(this, "Not connected to simspark!", "Not connected", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -281,15 +275,24 @@ public class StatusbarSimspark extends StatusbarPluginImpl implements SimsparkLi
             btnSendCommand.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
             btnSendCommand.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
             btnSendCommand.addActionListener((java.awt.event.ActionEvent evt) -> {
-                if (((String) cmd.getSelectedItem()).isEmpty()) {
+                SimsparkCommand command = SimsparkCommandParser.parseCommand(((String) cmd.getEditor().getItem()).trim());
+                if (command == null)
+                {
                     JOptionPane.showMessageDialog(this, "Please enter a (valid) command.", "Empty command", JOptionPane.WARNING_MESSAGE);
                 } else {
-                    sendCommand(((String) cmd.getEditor().getItem()).trim());
+                    sendCommand(command);
                 }
             });
 
             cmd.setEditable(true);
-            cmd.setModel(new javax.swing.DefaultComboBoxModel<>(new String[]{"(ball (pos 0 0 0))", "(ball (pos 0 0 0)(vel 0 0 0))", "(dropBall)", "(playMode )", "(agent (unum <num>) (team <team>) (pos <x> <y> <z>))", "(agent (unum <num>) (team <team>) (move <x> <y> <z> <rot>))", "(agent (unum <num>) (team <team>) (battery <batterylevel>))", "(agent (unum <num>) (team <team>) (temperature <temperature>))", "(agent (unum <num>) (team <team>) (pos <x> <y> <z>)(move <x> <y> <z> <rot>)(battery <batterylevel>)(temperature <temperature>))", "(kickOff <team>)", "(select (unum <num>) (team <team>))", "(kill)", "(kill (unum <num>) (team <team>))", "(repos)", "(repos (unum <num>) (team <team>))", "(time <time>)", "(score (left <score>) (right <score>))", "(reqfullstate)"}));
+            cmd.setModel(new javax.swing.DefaultComboBoxModel<>(new String[]
+            {
+                "ball drop",
+                "ball 0 0 0",
+                "ball 0 0 0 0 0 0",
+                "pos left 3 0 0 90",
+                "pos right 3 0 0 90"
+            }));
             cmd.addActionListener((java.awt.event.ActionEvent evt) -> {
                 if (evt.getActionCommand().equals("comboBoxEdited")) {
                     // "click the send button"
@@ -315,18 +318,18 @@ public class StatusbarSimspark extends StatusbarPluginImpl implements SimsparkLi
             getContentPane().add(jPanel6);
 
             cmdPredefined.setModel(new javax.swing.DefaultComboBoxModel<>(new Command[]{
-                new Command("--- Predefined commands ---","---"),
-                new Command("DropBall",               "(dropBall)"),
-                new Command("KickOff",                "(kickOff None)"),
-                new Command("KickOff Left",           "(kickOff Left)"),
-                new Command("KickOff Right",          "(kickOff Right)"),
-                new Command("Ball Center Circle",     "(ball (pos 0 0 0))"),
-                new Command("Ball Right Lower Corner","(ball (pos 4.5 -3 0))"),
-                new Command("Ball Right Upper Corner","(ball (pos 4.5 3 0))"),
-                new Command("Ball Left Lower Corner", "(ball (pos -4.5 -3 0))"),
-                new Command("Ball Left Upper Corner", "(ball (pos -4.5 3 0))"),
-                new Command("---",                    "---"),
-                new Command("Close Simspark",         "(killsim)"),
+                new Command("--- Predefined commands ---", null),
+                new Command("DropBall", new DropBallCommand()),
+                new Command("KickOff", new KickOffCommand(null)),
+                new Command("KickOff Left", KickOffCommand.kickOffLeft()),
+                new Command("KickOff Right", KickOffCommand.kickOffRight()),
+                new Command("Ball Center Circle", BallCommand.centerCircle()),
+                new Command("Ball Right Lower Corner", BallCommand.rightLowerCorner()),
+                new Command("Ball Right Upper Corner", BallCommand.rightUpperCorner()),
+                new Command("Ball Left Lower Corner", BallCommand.leftLowerCorner()),
+                new Command("Ball Left Upper Corner", BallCommand.leftUpperCorner()),
+                new Command("---", null),
+                new Command("Close Simspark", new KillCommand())
             }));
             cmdPredefined.addActionListener((java.awt.event.ActionEvent evt) -> {
                 Command item = (Command) cmdPredefined.getSelectedItem();
@@ -344,8 +347,10 @@ public class StatusbarSimspark extends StatusbarPluginImpl implements SimsparkLi
         /* Helper class for predefined commands */
         class Command {
             public String name;
-            public String cmd;
-            public Command(String name, String cmd) {
+            public SimsparkCommand cmd;
+
+            public Command(String name, SimsparkCommand cmd)
+            {
                 this.name = name;
                 this.cmd = cmd;
             }
