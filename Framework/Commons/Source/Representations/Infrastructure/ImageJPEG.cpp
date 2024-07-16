@@ -185,7 +185,7 @@ void Serializer<ImageJPEG>::serialize(const ImageJPEG& parent, std::ostream& str
 
   img.set_format(naothmessages::Image_Format_JPEG);
 
-  parent.compressYUYV();
+  //parent.compressYUYV();
 
   // NOTE: we might want to use .set_allocated_data
   img.set_data(parent.getJPEG(), parent.getJPEGSize());
