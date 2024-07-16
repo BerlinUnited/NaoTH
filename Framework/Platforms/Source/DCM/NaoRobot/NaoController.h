@@ -111,7 +111,18 @@ public:
   void set(const GameReturnData& data) { theGameController->set(data); }
 
   // team debug stuff
-  void set(const TeamMessageDebug& data) { theTeamCommDebugger->send(data.data); }
+  void set(const TeamMessageDebug& data)
+  {
+      // make sure we got something (eg. if the module is deactivated, the parameter are empty!)
+      if (!data.host.empty() && data.port > 0 && (theTeamCommDebugger->getIp() != data.host || theTeamCommDebugger->getPort() != data.port))
+      {
+        std::cout << "[TeamCommDebugger] " << "Change debug teamcom to " << data.host << ":" << data.port << std::endl;
+        if (theTeamCommDebugger != nullptr) { delete theTeamCommDebugger; }
+        theTeamCommDebugger = new UDPSender(data.host, data.port, "TeamCommDebugger");
+      }
+
+      theTeamCommDebugger->send(data.data);
+  }
 
   // debug comm
   void get(DebugMessageInCognition& data) { theDebugServer->getDebugMessageInCognition(data); }

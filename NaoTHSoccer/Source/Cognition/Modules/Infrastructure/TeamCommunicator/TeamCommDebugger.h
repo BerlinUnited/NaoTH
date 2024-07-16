@@ -1,6 +1,14 @@
 #ifndef TEAMCOMMDEBUGGER_H
 #define TEAMCOMMDEBUGGER_H
 
+#ifdef WIN32
+  #include <winsock2.h>
+  #include <ws2tcpip.h> 
+#else // Linux/MACOS
+  #include <arpa/inet.h>
+#endif // undef WIN32
+
+
 #include <ModuleFramework/Module.h>
 #include <MessagesSPL/SPLStandardMessage.h>
 #include <Representations/Infrastructure/FrameInfo.h>
@@ -12,6 +20,7 @@
 #include "Representations/Modeling/BallModel.h"
 #include "Representations/Modeling/TeamState.h"
 #include "Representations/Modeling/BodyState.h"
+#include "Representations/Modeling/RoleDecisionModel.h"
 #include "Representations/Modeling/TeamBallModel.h"
 #include "Representations/Infrastructure/WifiMode.h"
 #include "Representations/Perception/WhistlePercept.h"
@@ -36,6 +45,7 @@ BEGIN_DECLARE_MODULE(TeamCommDebugger)
   REQUIRE(BallModel)
   REQUIRE(TeamBallModel)
   REQUIRE(TeamState)
+  REQUIRE(RoleDecisionModel)
 
   PROVIDE(TeamMessageDebug)
 END_DECLARE_MODULE(TeamCommDebugger)
@@ -54,14 +64,24 @@ private:
   public: 
     Parameters(): ParameterList("TeamCommDebugger")
     {
+      PARAMETER_REGISTER(host, &Parameters::setHost) = "127.0.0.1";
+      PARAMETER_REGISTER(port) = 10704;
       PARAMETER_REGISTER(send_interval) = 2000;
       
       // load from the file after registering all parameters
       syncWithConfig();
     }
 
+    std::string host;
+    unsigned int port;
     unsigned int send_interval;
     
+    // the host is set, if the host is a correct ip address
+    bool setHost(std::string h) {
+      struct sockaddr_in sa;
+      return inet_pton(AF_INET, h.c_str(), &(sa.sin_addr)) == 1;
+    }
+
     virtual ~Parameters() {}
   } parameters;
 

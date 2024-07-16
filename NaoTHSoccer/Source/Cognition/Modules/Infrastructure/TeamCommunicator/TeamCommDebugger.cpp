@@ -3,40 +3,38 @@
 
 void TeamCommDebugger::execute()
 {
+  getTeamMessageDebug().host = parameters.host;
+  getTeamMessageDebug().port = parameters.port;
+
   // only send data in the given interval
   if(getWifiMode().wifiEnabled && (unsigned int)getFrameInfo().getTimeSince(lastSentTimestamp) > parameters.send_interval)
   {
       const auto& state = getTeamState().getPlayer(getPlayerInfo().playerNumber);
 
-      // create the old SPL message
-      SPLStandardMessage spl;
-
-      spl.playerNum = (uint8_t) getPlayerInfo().playerNumber;
-      spl.teamNum = (uint8_t) getPlayerInfo().teamNumber;
-
-      spl.pose[0] = (float) state.pose().translation.x;
-      spl.pose[1] = (float) state.pose().translation.y;
-      spl.pose[2] = (float) state.pose().rotation;
-
-      // in seconds (only if positive)!
-      spl.ballAge = (float) state.ballAge();
-      spl.ball[0] = (float) state.ballPosition().x;
-      spl.ball[1] = (float) state.ballPosition().y;
-
-      spl.fallen = (uint8_t) state.fallen();
-
-      // user defined data
-      naothmessages::BUUserTeamMessage userMsg;
-      userMsg.set_bodyid(getRobotInfo().bodyID);
-      userMsg.set_wasstriker(state.wasStriker());
-      userMsg.set_wantstobestriker(state.wantsToBeStriker());
-      userMsg.set_timestamp(state.messageTimestamp);
-      userMsg.set_timetoball(state.timeToBall());
-      userMsg.set_batterycharge((float)getBatteryData().charge);
-      userMsg.set_temperature((float)std::max(getBodyState().temperatureLeftLeg, getBodyState().temperatureRightLeg));
-      userMsg.set_cputemperature((float)getCpuData().temperature);
-      userMsg.set_whistledetected(getWhistlePercept().whistleDetected);
-      userMsg.set_whistlecount(getWhistlePercept().recognizedWhistles.size());
+      naothmessages::TeamMessageDebug debugMessage;
+      debugMessage.set_bodyid(getRobotInfo().bodyID);
+      debugMessage.set_teamnumber(getPlayerInfo().teamNumber);
+      debugMessage.set_playernumber(getPlayerInfo().playerNumber);
+      debugMessage.set_timestamp(state.messageTimestamp);
+      debugMessage.mutable_frameinfo()->set_framenumber(getFrameInfo().getFrameNumber());
+      debugMessage.mutable_frameinfo()->set_time(getFrameInfo().getTime());
+      debugMessage.set_robotstate((naothmessages::RobotState)state.state());
+      debugMessage.mutable_robotrole()->set_role_static((naothmessages::RobotRoleStatic)state.robotRole().role);
+      debugMessage.mutable_robotrole()->set_role_dynamic((naothmessages::RobotRoleDynamic)state.robotRole().dynamic);
+      DataConversion::toMessage(state.pose(), *(debugMessage.mutable_pose()));
+      debugMessage.set_fallen(state.fallen());
+      debugMessage.set_readytowalk(state.readyToWalk());
+      debugMessage.set_batterycharge((float)getBatteryData().charge);
+      debugMessage.set_temperature((float)std::max(getBodyState().temperatureLeftLeg, getBodyState().temperatureRightLeg));
+      debugMessage.set_cputemperature((float)getCpuData().temperature);
+      debugMessage.set_whistledetected(getWhistlePercept().whistleDetected);
+      debugMessage.set_whistlecount(getWhistlePercept().recognizedWhistles.size());
+      debugMessage.set_ballage(state.ballAge());
+      DataConversion::toMessage(state.ballPosition(), *(debugMessage.mutable_ballposition()));
+      DataConversion::toMessage(getBallModel().knows ? getBallModel().speed : Vector2d{0, 0}, *(debugMessage.mutable_ballvelocity()));
+      //debugMessage.set_timetoball();
+      debugMessage.set_wasstriker(getRoleDecisionModel().isStriker(getPlayerInfo().playerNumber));
+      debugMessage.set_wantstobestriker(getRoleDecisionModel().wantsToBeStriker);
 
       Vector2d teamBall;
       if (getTeamBallModel().valid) {
@@ -46,27 +44,10 @@ void TeamCommDebugger::execute()
           teamBall.x = std::numeric_limits<double>::infinity();
           teamBall.y = std::numeric_limits<double>::infinity();
       }
-      DataConversion::toMessage(teamBall, *(userMsg.mutable_teamball()));
+      DataConversion::toMessage(teamBall, *(debugMessage.mutable_teamball()));
 
-      Vector2d ballVelocity;
-      if (getBallModel().knows) {
-          ballVelocity = getBallModel().speed;
-      } else {
-          ballVelocity = {0, 0};
-      }
-
-      DataConversion::toMessage(ballVelocity, *(userMsg.mutable_ballvelocity()));
-      userMsg.set_robotstate((naothmessages::RobotState)state.state());
-      userMsg.mutable_robotrole()->set_role_static((naothmessages::RobotRoleStatic)state.robotRole().role);
-      userMsg.mutable_robotrole()->set_role_dynamic((naothmessages::RobotRoleDynamic)state.robotRole().dynamic);
-      userMsg.set_readytowalk(state.readyToWalk());
-    
-      size_t userSize = userMsg.ByteSize();
-      spl.numOfDataBytes = static_cast<uint16_t>(userSize);
-      userMsg.SerializeToArray(spl.data, static_cast<int>(userSize));
-      
-      // copy only the part of the message which is actually used
-      getTeamMessageDebug().data.assign((char*)&spl, sizeof(SPLStandardMessage) - SPL_STANDARD_MESSAGE_DATA_SIZE + spl.numOfDataBytes);
+      // add prefix for easier identification
+      getTeamMessageDebug().data = "DBG " + debugMessage.SerializeAsString();
 
       // remember the last sending time
       lastSentTimestamp = getFrameInfo().getTime();

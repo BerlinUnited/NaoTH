@@ -11,6 +11,8 @@ namespace naoth
 class TeamMessageDebug: public Printable
 {
 public:
+  std::string host;
+  unsigned int port;
   std::string data;
 
   virtual void print(std::ostream& stream) const

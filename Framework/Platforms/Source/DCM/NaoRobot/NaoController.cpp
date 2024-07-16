@@ -123,13 +123,13 @@ NaoController::NaoController(bool nao6)
   
   string debugIp = "127.0.0.1";
   unsigned int debugPort = 10704;
-  if(config.hasKey("teamcomm", "debug_ip"))
+  if(config.hasKey("TeamCommDebugger", "host"))
   {
-    debugIp = config.getString("teamcomm", "debug_ip");
+    debugIp = config.getString("TeamCommDebugger", "host");
   }
-  if(config.hasKey("teamcomm", "debug_port") && config.getInt("teamcomm", "debug_port") > 0)
+  if(config.hasKey("TeamCommDebugger", "port") && config.getInt("TeamCommDebugger", "port") > 0)
   {
-    debugPort = (unsigned int) config.getInt("teamcomm", "debug_port");
+    debugPort = (unsigned int) config.getInt("TeamCommDebugger", "port");
   }
   theTeamCommDebugger = new UDPSender(debugIp, debugPort, "TeamCommDebugger");
 

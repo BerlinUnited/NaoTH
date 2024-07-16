@@ -17,6 +17,10 @@ public:
 
   void send(const std::string& data);
 
+  std::string getIp() const { return ip; };
+  unsigned int getPort() const { return port; };
+  std::string getName() const { return name; };
+
 private:
   std::string ip;
   unsigned int port;
