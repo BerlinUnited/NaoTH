@@ -8,6 +8,9 @@ using namespace std::chrono_literals;
 #include <ModuleFramework/Module.h>
 #include <Tools/Logfile/LogfileManager.h>
 
+#include <Representations/Modeling/PlayerInfo.h>
+#include "Representations/Motion/MotionStatus.h"
+
 #include <Representations/Infrastructure/FrameInfo.h>
 #include <Representations/Infrastructure/Image.h>
 #include <Representations/Infrastructure/ImageJPEG.h>
@@ -21,6 +24,9 @@ BEGIN_DECLARE_MODULE(GameImageLogger)
   PROVIDE(DebugParameterList)
 
   REQUIRE(FrameInfo)
+
+  REQUIRE(PlayerInfo)
+  REQUIRE(MotionStatus)
 
   REQUIRE(Image)
   REQUIRE(ImageTop)
@@ -67,7 +73,14 @@ public:
       }
     }
 
-    if(params.logJPEGImages) 
+    // ignore some states
+    bool log_this_frame = true;
+    log_this_frame = log_this_frame && getPlayerInfo().robotState != PlayerInfo::initial;
+    log_this_frame = log_this_frame && getPlayerInfo().robotState != PlayerInfo::finished;
+    log_this_frame = log_this_frame && getPlayerInfo().robotState != PlayerInfo::unstiff;
+    log_this_frame = log_this_frame && getMotionStatus().currentMotion != motion::init;
+
+    if(params.logJPEGImages && log_this_frame) 
     {
       process = std::async([&] 
       {
@@ -104,14 +117,12 @@ private:
     Parameters() : ParameterList("GameImageLogger")
     {
       PARAMETER_REGISTER(logJPEGImages) = false;
-      PARAMETER_REGISTER(logPlainImages) = true;
-      PARAMETER_REGISTER(logPlainImagesDelay) = 2000; // ms
+      //PARAMETER_REGISTER(logImagesDelay) = 2000; // ms
       syncWithConfig();
     }
 
     bool logJPEGImages;
-    bool logPlainImages;
-    int logPlainImagesDelay;
+    //int ImagesDelay;
   } params;
 
 private:
