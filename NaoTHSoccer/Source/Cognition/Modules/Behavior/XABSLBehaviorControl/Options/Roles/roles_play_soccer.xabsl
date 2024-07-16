@@ -6,7 +6,8 @@ option roles_play_soccer
       goto idle;
     else if(game.current_mode != playing &&
             game.current_mode != ready &&
-            game.current_mode != set)
+            game.current_mode != set &&
+            game.current_mode != standby)
       goto idle;
   }
   
@@ -15,7 +16,10 @@ option roles_play_soccer
     decision {
       else if ( game.current_mode == playing ||
                 game.current_mode == ready || 
-                game.current_mode == set )
+                game.current_mode == set)
+        goto calibrate_inertial;
+      else if (game.current_mode == standby)
+        // some players might wach the referee here in the future
         goto calibrate_inertial;
       else
         stay;
