@@ -2,7 +2,7 @@
 * @author <a href="mailto:schlottb@informatik.hu-berlin.de">Schlotter, Stella Alice</a>
 */
 
-#ifndef FALLMOTION_H // todo: is it ok to remove the underscore?
+#ifndef FALLMOTION_H
 #define FALLMOTION_H
 
 #include "Motion/Engine/AbstractMotion.h"
@@ -42,10 +42,10 @@ private:
   FrameInfo startTime;
 
   struct keyFrame {
-      std::vector<double> jointValues; // todo: use std::array<double, 22> here?
-      std::vector<double> stiffnessValues;
+      std::array<double, 22> jointValues;
+      std::array<double, 22> stiffnessValues;
       double triggerMs;
-      double altTriggerGrad;
+      double altTriggerDegrees;
   };
 
   const std::vector<keyFrame> forwards = {
@@ -96,9 +96,40 @@ private:
       }
   };
 
-  double stiffness_increase;
   double oldStiffness[JointData::numOfJoint]{};
-//  double oldJoints[naoth::JointData::numOfJoint]{};
 };
+
+/*
+    HeadPitch,
+    HeadYaw,
+
+    RShoulderRoll,
+    LShoulderRoll,
+    RShoulderPitch,
+    LShoulderPitch,
+
+    RElbowRoll,
+    LElbowRoll,
+    RElbowYaw,
+    LElbowYaw,
+
+    RHipYawPitch, // doesn't exist on Nao
+    LHipYawPitch,
+    RHipPitch,
+    LHipPitch,
+    RHipRoll,
+    LHipRoll,
+    RKneePitch,
+    LKneePitch,
+    RAnklePitch,
+    LAnklePitch,
+    RAnkleRoll,
+    LAnkleRoll,
+
+    LWristYaw,
+    RWristYaw,
+    LHand,
+    RHand
+*/
 
 #endif  /* FALLMOTION_H */
