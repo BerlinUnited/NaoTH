@@ -24,13 +24,14 @@ public:
   // TODO: maybe rename to RobotGameState
   enum RobotState 
   {
-    initial   = naoth::GameData::initial,
-    ready     = naoth::GameData::ready,
-    set       = naoth::GameData::set,
-    playing   = naoth::GameData::playing,
-    finished  = naoth::GameData::finished,
+    initial,
+    ready,
+    set,
+    playing,
+    finished,
     penalized,  // <== GameState doesn't have this :)
-    unstiff     // <== GameState doesn't have this :)
+    unstiff,     // <== GameState doesn't have this :)
+    standby
   };
 
   // Same as SetPlay of the GameData, but can be different for each robot and set (e.g.) via DebugRequest
@@ -61,7 +62,15 @@ public:
     naoth::GameData::RobotInfo penaltyInfo = gameData.getOwnRobotInfo(playerNumber);
 
     if(penaltyInfo.penalty == naoth::GameData::penalty_none) {
-      robotState = (RobotState)gameData.gameState;
+      switch(gameData.gameState) {
+        case naoth::GameData::initial:   robotState = RobotState::initial;  break;
+        case naoth::GameData::ready:     robotState = RobotState::ready;    break;
+        case naoth::GameData::set:       robotState = RobotState::set;      break;
+        case naoth::GameData::playing:   robotState = RobotState::playing;  break;
+        case naoth::GameData::finished:  robotState = RobotState::finished; break;
+        case naoth::GameData::standby:   robotState = RobotState::standby;  break;
+        default: ASSERT(false);
+      }
     } else {
       robotState = RobotState::penalized;
     }

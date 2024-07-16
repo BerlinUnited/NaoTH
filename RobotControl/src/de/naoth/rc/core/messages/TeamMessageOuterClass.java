@@ -218,6 +218,10 @@ public final class TeamMessageOuterClass {
      * <code>unstiff = 6;</code>
      */
     unstiff(6),
+    /**
+     * <code>standby = 7;</code>
+     */
+    standby(7),
     ;
 
     /**
@@ -248,6 +252,10 @@ public final class TeamMessageOuterClass {
      * <code>unstiff = 6;</code>
      */
     public static final int unstiff_VALUE = 6;
+    /**
+     * <code>standby = 7;</code>
+     */
+    public static final int standby_VALUE = 7;
 
 
     public final int getNumber() {
@@ -271,6 +279,7 @@ public final class TeamMessageOuterClass {
         case 4: return finished;
         case 5: return penalized;
         case 6: return unstiff;
+        case 7: return standby;
         default: return null;
       }
     }
@@ -15409,19 +15418,20 @@ public final class TeamMessageOuterClass {
       "\020\002\022\r\n\tblackTeam\020\003\022\r\n\twhiteTeam\020\004\022\r\n\tgree" +
       "nTeam\020\005\022\016\n\norangeTeam\020\006\022\016\n\npurpleTeam\020\007\022" +
       "\r\n\tbrownTeam\020\010\022\014\n\010grayTeam\020\t\022\020\n\013invalidT" +
-      "eam\020\377\001*d\n\nRobotState\022\013\n\007initial\020\000\022\t\n\005rea" +
+      "eam\020\377\001*q\n\nRobotState\022\013\n\007initial\020\000\022\t\n\005rea" +
       "dy\020\001\022\007\n\003set\020\002\022\013\n\007playing\020\003\022\014\n\010finished\020\004" +
-      "\022\r\n\tpenalized\020\005\022\013\n\007unstiff\020\006*\230\002\n\017RobotRo",
-      "leStatic\022\026\n\022role_defender_left\020\000\022\030\n\024role" +
-      "_defender_center\020\001\022\027\n\023role_defender_righ" +
-      "t\020\002\022\030\n\024role_midfielder_left\020\003\022\032\n\026role_mi" +
-      "dfielder_center\020\004\022\031\n\025role_midfielder_rig" +
-      "ht\020\005\022\025\n\021role_forward_left\020\006\022\027\n\023role_forw" +
-      "ard_center\020\007\022\026\n\022role_forward_right\020\010\022\017\n\013" +
-      "role_goalie\020\t\022\020\n\014role_unknown\020\n*b\n\020Robot" +
-      "RoleDynamic\022\r\n\trole_none\020\000\022\022\n\016role_suppo" +
-      "rter\020\001\022\031\n\025role_goalie_supporter\020\002\022\020\n\014rol" +
-      "e_striker\020\003B\033\n\031de.naoth.rc.core.messages"
+      "\022\r\n\tpenalized\020\005\022\013\n\007unstiff\020\006\022\013\n\007standby\020",
+      "\007*\230\002\n\017RobotRoleStatic\022\026\n\022role_defender_l" +
+      "eft\020\000\022\030\n\024role_defender_center\020\001\022\027\n\023role_" +
+      "defender_right\020\002\022\030\n\024role_midfielder_left" +
+      "\020\003\022\032\n\026role_midfielder_center\020\004\022\031\n\025role_m" +
+      "idfielder_right\020\005\022\025\n\021role_forward_left\020\006" +
+      "\022\027\n\023role_forward_center\020\007\022\026\n\022role_forwar" +
+      "d_right\020\010\022\017\n\013role_goalie\020\t\022\020\n\014role_unkno" +
+      "wn\020\n*b\n\020RobotRoleDynamic\022\r\n\trole_none\020\000\022" +
+      "\022\n\016role_supporter\020\001\022\031\n\025role_goalie_suppo" +
+      "rter\020\002\022\020\n\014role_striker\020\003B\033\n\031de.naoth.rc.",
+      "core.messages"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {

@@ -19,6 +19,7 @@ namespace game_symbols("Game Control Symbols")
     playing,
     penalized,
     finished,
+    standby,
     unstiff
   };
 

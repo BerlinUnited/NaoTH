@@ -107,6 +107,7 @@ std::string GameData::toString(GameState value)
     RETURN_VALUE_TO_STR(set);
     RETURN_VALUE_TO_STR(playing);
     RETURN_VALUE_TO_STR(finished);
+    RETURN_VALUE_TO_STR(standby);
     RETURN_VALUE_TO_STR(unknown_game_state);
   }
   
@@ -146,7 +147,7 @@ std::string GameData::toString(Penalty value)
     RETURN_VALUE_TO_STR(local_game_stuck);
     RETURN_VALUE_TO_STR(illegal_position_in_set);
     RETURN_VALUE_TO_STR(player_stance);
-    RETURN_VALUE_TO_STR(illegal_motion_in_initial);
+    RETURN_VALUE_TO_STR(illegal_motion_in_standby);
     RETURN_VALUE_TO_STR(substitute);
     RETURN_VALUE_TO_STR(manual);
   }
@@ -197,7 +198,7 @@ GameData::Penalty GameData::penaltyFromString(const std::string& str)
   RETURN_STING_TO_VALUE(local_game_stuck, str);
   RETURN_STING_TO_VALUE(illegal_position_in_set, str);
   RETURN_STING_TO_VALUE(player_stance, str);
-  RETURN_STING_TO_VALUE(illegal_motion_in_initial, str);
+  RETURN_STING_TO_VALUE(illegal_motion_in_standby, str);
   RETURN_STING_TO_VALUE(substitute, str);
   RETURN_STING_TO_VALUE(manual, str);
 

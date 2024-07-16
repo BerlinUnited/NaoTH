@@ -31,6 +31,7 @@ enum RobotState
   finished = 4;
   penalized = 5;
   unstiff = 6;
+  standby = 7;
 };
 
 enum RobotRoleStatic
