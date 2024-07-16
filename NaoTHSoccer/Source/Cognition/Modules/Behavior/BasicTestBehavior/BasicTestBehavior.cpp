@@ -69,6 +69,8 @@ BasicTestBehavior::BasicTestBehavior()
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:init", "Set the robot init.", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:dance", "Let's dance", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:protect_falling", "Don't hurt me!", false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:save_fall_front", "Don't hurt me!", false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:save_fall_back", "Don't hurt me!", false);
   // needed by the motion editor
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:play_editor_motionnet", "play the motion editor motion", false);
 
@@ -371,6 +373,14 @@ void BasicTestBehavior::testMotion()
 
   DEBUG_REQUEST("BasicTestBehavior:motion:id:protect_falling",
     getMotionRequest().id = motion::protect_falling;
+  );
+
+  DEBUG_REQUEST("BasicTestBehavior:motion:id:save_fall_front",
+    getMotionRequest().id = motion::save_fall_front;
+  );
+
+  DEBUG_REQUEST("BasicTestBehavior:motion:id:save_fall_back",
+    getMotionRequest().id = motion::save_fall_back;
   );
 
   DEBUG_REQUEST("BasicTestBehavior:motion:id:play_editor_motionnet",

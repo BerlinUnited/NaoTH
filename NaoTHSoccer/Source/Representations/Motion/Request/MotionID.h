@@ -51,6 +51,8 @@ namespace motion
 
     fall_left,
     fall_right,
+    save_fall_front,
+    save_fall_back,
 
     kick_right,
 
@@ -102,6 +104,8 @@ namespace motion
 
       case fall_left: return "fall_left";
       case fall_right: return "fall_right";
+      case save_fall_front: return "save_fall_front";
+      case save_fall_back: return "save_fall_back";
 
       case kick_right: return "kick_right";
 

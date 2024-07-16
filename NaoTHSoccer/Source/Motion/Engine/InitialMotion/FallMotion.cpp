@@ -52,7 +52,9 @@ void FallMotion::execute()
     }
   }
 
-  if (getIMUData().rotation.y > Math::fromDegrees(10)) // backwards
+  // these blocks are called roughly 63 times, so they run for about 5,3 seconds
+  // note: sometimes due to jumpy rotation sensor values we switch between the blocks
+  if (getIMUData().rotation.y > Math::fromDegrees(10)) // forwards todo: more aggressive detection
   {
     freeStiffness[JointData::HeadYaw] = 0.3;
     freeStiffness[JointData::HeadPitch] = 0.3;
