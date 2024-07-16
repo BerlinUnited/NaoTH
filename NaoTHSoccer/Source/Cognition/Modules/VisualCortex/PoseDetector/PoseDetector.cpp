@@ -2,8 +2,10 @@
 
 PoseDetector::PoseDetector()
 {
+  DEBUG_REQUEST_REGISTER("Vision:PoseDetector:drawJoints", "draw detected human joints", false);
   getDebugParameterList().add(&params);
-  TfLiteModel* model = TfLiteModelCreateFromFileWithErrorReporter(("Config/" + params.tflite_model_file).c_str(), error_reporter, nullptr);
+  //TfLiteModel* model = TfLiteModelCreateFromFileWithErrorReporter(("Config/" + params.tflite_model_file).c_str(), error_reporter, nullptr);
+  TfLiteModel* model = TfLiteModelCreateFromFileWithErrorReporter("Config/movenet_lightning.tflite", error_reporter, nullptr);
   MY_ASSERT_NE(model, nullptr);
 
   #ifndef WIN32
@@ -24,20 +26,17 @@ PoseDetector::PoseDetector()
   interpreter = TfLiteInterpreterCreate(model, options);
   MY_ASSERT_NE(interpreter, nullptr);
 
-  inputTensor = TfLiteInterpreterGetInputTensor(interpreter, 0);
-  MY_ASSERT_NE(inputTensor, nullptr);
-  MY_ASSERT_EQ(TfLiteTensorType(inputTensor), kTfLiteFloat32);
-
   // Free options and model now that the interpreter is created
   TfLiteInterpreterOptionsDelete(options);
   TfLiteModelDelete(model);
 
   // Resize input tensor and allocate tensors
-  MY_ASSERT_EQ(TfLiteInterpreterResizeInputTensor(interpreter, 0, input_dims.data(), input_dims.size()), kTfLiteOk);
+  MY_ASSERT_EQ(TfLiteInterpreterResizeInputTensor(interpreter, 0, input_dims.data(), static_cast<int32_t>(input_dims.size())), kTfLiteOk);
   MY_ASSERT_EQ(TfLiteInterpreterAllocateTensors(interpreter), kTfLiteOk);
 
+  inputTensor = TfLiteInterpreterGetInputTensor(interpreter, 0);
   MY_ASSERT_NE(inputTensor, nullptr);
-  MY_ASSERT_EQ(TfLiteTensorType(inputTensor), kTfLiteFloat32);
+  MY_ASSERT_EQ(TfLiteTensorType(inputTensor), kTfLiteUInt8);
 
   const TfLiteTensor* outputTensor = TfLiteInterpreterGetOutputTensor(interpreter, 0);
   MY_ASSERT_NE(outputTensor, nullptr);
@@ -79,11 +78,48 @@ void PoseDetector::execute(){
   float* inputImg_ptr = image.ptr<float>(0);
   memcpy(inputTensor->data.f, image.ptr<float>(0), 192 * 192 * 3 * sizeof(float));
    
-  std::cout << image.at<cv::Vec3f>(0, 0) << std::endl;
-  std::cout << inputTensor->data.f[0] << std::endl;
+  //std::cout << image.at<cv::Vec3f>(0, 0) << std::endl;
+  //std::cout << inputTensor->data.f[0] << std::endl;
 
   STOPWATCH_START("PoseDetector:predict");
   MY_ASSERT_EQ(TfLiteInterpreterInvoke(interpreter), kTfLiteOk);
   STOPWATCH_STOP("PoseDetector:predict");
 
+  const float* outputData = TfLiteInterpreterGetOutputTensor(interpreter, 0)->data.f;
+  int numOutputElements = TfLiteTensorByteSize(TfLiteInterpreterGetOutputTensor(interpreter, 0)) / sizeof(float);
+  result = std::vector<float>(outputData, outputData + numOutputElements);
+
+  std::cout << TfLiteInterpreterGetOutputTensor(interpreter, 0)->dims->size << " " << std::endl;
+  std::cout << TfLiteInterpreterGetOutputTensor(interpreter, 0)->dims->data[0] << " " << std::endl;
+  std::cout << TfLiteInterpreterGetOutputTensor(interpreter, 0)->dims->data[1] << " " << std::endl;
+  std::cout << TfLiteInterpreterGetOutputTensor(interpreter, 0)->dims->data[2] << " " << std::endl;
+  std::cout << TfLiteInterpreterGetOutputTensor(interpreter, 0)->dims->data[3] << " " << std::endl;
+  // dims are batch = 1, height = 1, width = 17, channels 3
+  // channels: y,x,scores
+  int batch_size = 1;
+  int height = 1;
+  int width = 17;
+  int channels = 3;
+  // int index = b * (height * width * channels) + h * (width * channels) + w * channels;
+  int nose_index = 0 * (height * width * channels) + 0 * (width * channels) + 0 * channels;
+  int left_eye_index = 0 * (height * width * channels) + 0 * (width * channels) + 1 * channels;
+  int right_eye_index = 0 * (height * width * channels) + 0 * (width * channels) + 2 * channels;
+  int left_wrist_index = 0 * (height * width * channels) + 0 * (width * channels) + 9 * channels;
+  int right_wrist_index = 0 * (height * width * channels) + 0 * (width * channels) + 10 * channels;
+  //std::vector<float> a = std::vector<float>(outputData[nose_index],outputData[nose_index+1],outputData[nose_index+2]);
+
+  std::vector<float> nose_data {outputData[nose_index],outputData[nose_index+1],outputData[nose_index+2]};
+  std::vector<float> left_eye_data {outputData[left_eye_index],outputData[left_eye_index+1],outputData[left_eye_index+2]};
+  std::vector<float> right_eye_data {outputData[right_eye_index],outputData[right_eye_index+1],outputData[right_eye_index+2]};
+  std::vector<float> left_wrist_data {outputData[left_wrist_index],outputData[left_wrist_index+1],outputData[left_wrist_index+2]};
+  std::vector<float> right_wrist_data {outputData[right_wrist_index],outputData[right_wrist_index+1],outputData[right_wrist_index+2]};
+  std::cout << right_eye_data[0] << right_eye_data[1] << right_eye_data[2] << " " << std::endl;
+
+  DEBUG_REQUEST("Vision:PoseDetector:drawJoints",
+    CIRCLE_PX(ColorClasses::orange, (int)(nose_data[1]+0.5), (int)(nose_data[0]+0.5), 5);
+    CIRCLE_PX(ColorClasses::orange, (int)(left_eye_data[1]+0.5), (int)(left_eye_data[0]+0.5), 5);
+    CIRCLE_PX(ColorClasses::orange, (int)(right_eye_data[1]+0.5), (int)(right_eye_data[0]+0.5), 5);
+    CIRCLE_PX(ColorClasses::orange, (int)(left_wrist_data[1]+0.5), (int)(left_wrist_data[0]+0.5), 5);
+    CIRCLE_PX(ColorClasses::orange, (int)(right_wrist_data[1]+0.5), (int)(right_wrist_data[0]+0.5), 5);
+  );
 }

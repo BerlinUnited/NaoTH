@@ -21,6 +21,7 @@
 #include <Tools/ImageProcessing/ImagePrimitives.h>
 #include <Tools/ImageProcessing/ColorModelConversions.h>
 #include "Tools/naoth_opencv.h"
+#include "Tools/Debug/DebugImageDrawings.h"
 
 #include "tensorflow/lite/c/c_api.h"
 #include "tensorflow/lite/delegates/xnnpack/xnnpack_delegate.h"
@@ -31,9 +32,10 @@ BEGIN_DECLARE_MODULE(PoseDetector)
 
   PROVIDE(DebugRequest)
   PROVIDE(DebugModify)
-  PROVIDE(DebugDrawings)
   PROVIDE(StopwatchManager)
   PROVIDE(DebugParameterList)
+  PROVIDE(DebugImageDrawings)
+  PROVIDE(DebugImageDrawingsTop)
 END_DECLARE_MODULE(PoseDetector)
 
 // TFlite C API based on HTWK Implementation
@@ -79,7 +81,7 @@ public:
   public:
     Parameters() : ParameterList("PoseDetector")
     {
-      PARAMETER_REGISTER(tflite_model_file) = "posenet-mobilenet.tflite";
+      PARAMETER_REGISTER(tflite_model_file) = "movenet_lightning.tflite";
       syncWithConfig();
     }
     std::string tflite_model_file;
