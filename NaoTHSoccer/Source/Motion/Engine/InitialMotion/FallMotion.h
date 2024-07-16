@@ -29,7 +29,7 @@ BEGIN_DECLARE_MODULE(FallMotion)
   PROVIDE(MotorJointData)
 END_DECLARE_MODULE(FallMotion)
 
-class FallMotion final: private FallMotionBase, public AbstractMotion
+class FallMotion : private FallMotionBase, public AbstractMotion
 {
 public:
   FallMotion();
