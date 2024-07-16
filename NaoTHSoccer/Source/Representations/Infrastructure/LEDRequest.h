@@ -53,5 +53,13 @@ public:
   bool ignore;
 };
 
+class DebugLEDRequest : public LEDRequest
+{
+public:
+  DebugLEDRequest() : enabled(false) {}
+  virtual ~DebugLEDRequest() {}
+  bool enabled;
+};
+
 #endif  /* LED_REQUEST_H */
 
