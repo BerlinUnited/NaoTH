@@ -40,6 +40,7 @@
 #include "Modules/Infrastructure/Debug/CameraDebug.h"
 #include "Modules/Infrastructure/Camera/AdaptiveAutoExposure.h"
 #include "Modules/Infrastructure/GameLogger/GameLogger.h"
+#include "Modules/Infrastructure/GameLogger/GameImageLogger.h"
 
 // perception
 #include "Modules/SelfAwareness/CameraMatrixFinder/CameraMatrixFinder.h"
@@ -169,6 +170,9 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(TeamCommEventReceiver);
   REGISTER_MODULE(SimpleNetworkTimeProtocol);
   
+  // start asynchroneous image logging
+  REGISTER_MODULE(GameImageLogger);
+
   REGISTER_MODULE(CameraDebug);
   REGISTER_MODULE(AdaptiveAutoExposure);
 
