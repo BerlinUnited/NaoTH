@@ -7,6 +7,11 @@
 
 #include "LEDSetter.h"
 
+LEDSetter::LEDSetter() {
+  DEBUG_REQUEST_REGISTER("LEDSetter:showDebugLEDRequest", "show DebugLEDRequest", false);
+}
+
+
 void LEDSetter::execute()
 {
   getLEDData().change = false;
@@ -48,6 +53,18 @@ void LEDSetter::execute()
     // copy both eyes
     copyMultiLEDData(getFrameRateCheckLEDRequest(), LEDData::FaceRight0, LEDData::FaceLeft315);
   }
+
+  // 5. Debug
+  //   - ears
+  //   - head
+  //   - eyes
+  DEBUG_REQUEST("LEDSetter:showDebugLEDRequest",
+    if(getDebugLEDRequest().enabled) {
+      copyMonoLEDData(getDebugLEDRequest(), LEDData::EarRight0, LEDData::EarLeft324);
+      copyMonoLEDData(getDebugLEDRequest(), LEDData::HeadFrontLeft0, LEDData::HeadRearRight2);
+      copyMultiLEDData(getDebugLEDRequest(), LEDData::FaceRight0, LEDData::FaceLeft315);
+    }
+  );
 
 } // end execute
 

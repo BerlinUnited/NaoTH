@@ -85,6 +85,8 @@ BasicTestBehavior::BasicTestBehavior()
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:led:HeadRearRight2", "it is what it is...", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:led:all", "it is what it is...", false);
 
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:led:debug_eye_blue_green", "set the left eye blue", false);
+
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:arms:arms_back", "set arms request to back", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:arms:arms_down", "set arms request to down", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:arms:arms_none", "set arms request to none", false);
@@ -450,6 +452,13 @@ void BasicTestBehavior::testLED() {
     for (int i = LEDData::HeadFrontLeft0; i <= LEDData::HeadRearRight2; i++) {
       getBehaviorLEDRequest().request.theMonoLED[i] = 1.0;
     }
+  );
+
+  getDebugLEDRequest().enabled = false;
+  DEBUG_REQUEST("BasicTestBehavior:led:debug_eye_blue_green",
+    getDebugLEDRequest().enabled = true;
+    getDebugLEDRequest().request.setEyeLeft(0,0,1);
+    getDebugLEDRequest().request.setEyeRight(0,1,0);
   );
 
 } //testLED
