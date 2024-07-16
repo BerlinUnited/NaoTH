@@ -65,6 +65,7 @@
 #include "Modules/VisualCortex/BallDetector/RedBallDetector.h"
 #include "Modules/VisualCortex/BallDetector/CNNBallDetector.h"
 #include "Modules/VisualCortex/BallDetector/MultiPassBallDetector.h"
+#include "Modules/VisualCortex/ReadyPoseDetector/ReadyPoseDetector.h"
 #include "Modules/VisualCortex/IntegralImageProvider.h"
 #include "Modules/VisualCortex/IntegralSubsamplingTest/IntegralSubsamplingTest.h"
 
@@ -211,6 +212,8 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(MultiPassBallDetector);
   REGISTER_MODULE(FakeCameraMatrixFinder);
   REGISTER_MODULE(FakeBallDetector);
+
+  REGISTER_MODULE(ReadyPoseDetector);
 
   REGISTER_MODULE(VirtualVisionProcessor);
   REGISTER_MODULE(PerceptionsVisualizer);
