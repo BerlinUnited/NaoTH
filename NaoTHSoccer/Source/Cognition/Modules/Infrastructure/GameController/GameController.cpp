@@ -387,6 +387,7 @@ void GameController::updateLEDs()
     case PlayerInfo::playing:   getGameControllerLEDRequest().request.setChestButton(0.0, 1.0, 0.0); break; // GREEN
     case PlayerInfo::finished:  getGameControllerLEDRequest().request.setChestButton(0.0, 0.0, 0.0); break; // OFF
     case PlayerInfo::penalized: getGameControllerLEDRequest().request.setChestButton(1.0, 0.0, 0.0); break; // RED
+    case PlayerInfo::standby:   getGameControllerLEDRequest().request.setChestButton(0.0, 1.0, 1.0); break; // CYAN
     case PlayerInfo::unstiff:   
       // blinking chest button for unstiff state: blue <-> off
       if (getFrameInfo().getFrameNumber() % 8 < 4) {
