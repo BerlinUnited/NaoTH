@@ -13,7 +13,8 @@
 
 using namespace std;
 
-CNNBallDetector::CNNBallDetector()
+CNNBallDetector::CNNBallDetector():
+  last_percept_valid(false)
 {
   DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:drawCandidates", "draw ball candidates", false);
   DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:drawCandidatesResizes", "draw ball candidates (resized)", false);
@@ -55,7 +56,9 @@ void CNNBallDetector::execute(CameraInfo::CameraID id)
     patches.push_back(*i);
   }
   addPatchByLastBall();
+  addPatchByLastPercept();
 
+  last_percept_valid = false;
   if(!patches.empty()) {
     calculateCandidates();
   }
@@ -306,10 +309,9 @@ void CNNBallDetector::calculateCandidates()
       cnn->predict(patch, params.cnn.classifierMeanBrightnessOffset);
       STOPWATCH_STOP("CNNBallDetector:classifierPredict");
 
-      bool found = false;
       Vector2d pos = Vector2d(0.0, 0.0);
       double radius = 0.0;
-
+      bool found = false;
 
       // only run the detector if the classifier predicted a ball in the patch
       if (cnn->getBallConfidence() >= selectedCNNThreshold) 
@@ -326,8 +328,7 @@ void CNNBallDetector::calculateCandidates()
         // has predicted values < 0 in some cases in the past
         if (pos.x >= 0.0 && pos.y >= 0.0) {
           found = true;
-        }
-        
+        }        
       }
 
       stopwatch.stop();
@@ -337,6 +338,11 @@ void CNNBallDetector::calculateCandidates()
         // adjust the center and radius of the patch
         Vector2d ballCenterInPatch(pos.x * patch.width(), pos.y*patch.width());
         addBallPercept(ballCenterInPatch + patch.min, radius*patch.width());
+        if (last_percept_valid == false){
+          last_percept_min = patch.min;
+          last_percept_max = patch.max;
+          last_percept_valid = true;
+        }
       }
 
       DEBUG_REQUEST("Vision:CNNBallDetector:drawCandidates",
@@ -421,6 +427,7 @@ void CNNBallDetector::addBallPercept(const Vector2d& center, double radius)
 
 void CNNBallDetector::addPatchByLastBall()
 {
+  // last effort if we detect nothing we check the position of the current ball model if it is valid
   if (getBallModel().valid)
   {
     Vector3d ballInField;
@@ -469,5 +476,16 @@ void CNNBallDetector::addPatchByLastBall()
         }
       }
     }
+  }
+}
+
+void CNNBallDetector::addPatchByLastPercept(){
+  if (last_percept_valid){
+    BestPatchList::Patch ballPatch  = BestPatchList::Patch(last_percept_min.x,
+              last_percept_min.y,
+              last_percept_max.x,
+              last_percept_max.y,
+              99);
+    patches.insert(patches.end(), ballPatch);
   }
 }
