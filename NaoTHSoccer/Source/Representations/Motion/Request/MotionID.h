@@ -81,6 +81,7 @@ namespace motion
       case dead: return "dead";
       case falling: return "falling";
       case sit: return "sit";
+      case comply: return "comply";
 
       case stand: return "stand";
       case walk: return "walk";
