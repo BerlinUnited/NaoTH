@@ -36,7 +36,7 @@ option search_ball_turning
       motion.type = walk;
       motion.walk_speed.x = 0; // mm
       motion.walk_speed.y = 0; // mm
-      motion.walk_speed.rot = 20; //deg
+      motion.walk_speed.rot = 30; //deg
       motion.walk.coordinate = hip;
     }
   }
@@ -58,7 +58,7 @@ option search_ball_turning
       motion.type = walk;
       motion.walk_speed.x = 0; // mm
       motion.walk_speed.y = 0; // mm
-      motion.walk_speed.rot = -20; //deg
+      motion.walk_speed.rot = -30; //deg
       motion.walk.coordinate = hip;
     }
   }
