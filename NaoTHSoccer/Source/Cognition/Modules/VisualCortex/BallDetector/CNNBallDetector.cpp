@@ -121,9 +121,6 @@ std::map<string, std::shared_ptr<AbstractCNNFinder> > CNNBallDetector::createCNN
   // mean: -0.5714, 
   // mbc_36ksm finetuned on devils + naoth data + manual verfied patches from RC24 SQPR testgame
   result.insert({ "mbc_36ksm_finetuned", std::make_shared<mbc_36ksm_finetuned>() });
-  result.insert({ "mbc_36ksm_finetuned_tflite", std::make_shared<TFLiteModelNaoTH>("mbc_36ksm_finetuned.tflite", false, false, true)});
-
-
   
   // Ball Detector from German Open 2024, we did not use a brightness offset at GO, was trained on dataset without brightness normalization
   result.insert({ "mbd_gopen_56k", std::make_shared<mbd_gopen_56k>() }); // mbd: max ball detector

@@ -28305,7 +28305,9 @@ void mbc_36ksm_finetuned::predict(const BallCandidates::PatchYUVClassified& patc
 {
 	ASSERT(patch.size() == 16);
 
+	// calulate mean brighntess, so it can be subtracted to normalize the patch
 	double brightness_sum = 0;
+
 	for(unsigned int i = 0; i < patch.data.size(); i++){
 		brightness_sum += patch.data[i].pixel.y;
 	}
