@@ -28310,7 +28310,7 @@ void mbc_36ksm_finetuned::predict(const BallCandidates::PatchYUVClassified& patc
 		brightness_sum += patch.data[i].pixel.y;
 	}
 
-	double brightness_mean = brightness_sum / patch.data.size()
+	double brightness_mean = brightness_sum / patch.data.size();
 
 	for(size_t x=0; x < patch.size(); x++) {
 		for(size_t y=0; y < patch.size(); y++) {
