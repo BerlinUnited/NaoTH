@@ -135,7 +135,8 @@ private:
   struct Parameters: public ParameterList
   {
     Parameters() : ParameterList("CNNBallDetector")
-    {
+    { 
+      PARAMETER_REGISTER(closeMeansUseBottomCamera) = false;
       PARAMETER_REGISTER(cnn.threshold) = 0.4;
       PARAMETER_REGISTER(cnn.thresholdClose) = 0.45;
 
@@ -176,6 +177,10 @@ private:
       double classifierMeanBrightnessOffset;
       double detectorMeanBrightnessOffset;
     } cnn;
+
+    // experimental, change meaning of close to use bottom camera
+    // (currently the patch size is used to determine the closeness condition)
+    bool closeMeansUseBottomCamera;
 
     int maxNumberOfKeys;
     int numberOfExportBestPatches;

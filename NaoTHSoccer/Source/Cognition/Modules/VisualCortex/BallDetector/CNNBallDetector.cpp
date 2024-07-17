@@ -198,7 +198,14 @@ void CNNBallDetector::calculateCandidates()
       // add an additional border as post-processing
       int postBorder = (int)(patch.radius()*params.postBorderFactorFar);
       double selectedCNNThreshold = params.cnn.threshold;
-      if(patch.width() >= params.postMaxCloseSize) // HACK: use patch size as estimate if close or far away
+
+      if (params.closeMeansUseBottomCamera && cameraID == CameraInfo::Bottom)
+      {
+        postBorder = (int)(patch.radius()*params.postBorderFactorClose);
+        selectedCNNThreshold = params.cnn.thresholdClose;
+      }
+      
+      else if(!params.closeMeansUseBottomCamera && patch.width() >= params.postMaxCloseSize) // HACK: use patch size as estimate if close or far away
       {
         postBorder = (int)(patch.radius()*params.postBorderFactorClose);
         selectedCNNThreshold = params.cnn.thresholdClose;
@@ -284,7 +291,13 @@ void CNNBallDetector::calculateCandidates()
 
       std::shared_ptr<AbstractCNNFinder> cnn = currentCNN;
       std::shared_ptr<AbstractCNNFinder> cnn_detector = currentCNN_detector;
-      if(patch.width() >= params.postMaxCloseSize) {
+
+      if (params.closeMeansUseBottomCamera && cameraID == CameraInfo::Bottom)
+      { 
+        cnn = currentCNNClose;
+        cnn_detector = currentCNNClose_detector;
+      }
+      else if(!params.closeMeansUseBottomCamera && patch.width() >= params.postMaxCloseSize) {
         cnn = currentCNNClose;
         cnn_detector = currentCNNClose_detector;
       }
