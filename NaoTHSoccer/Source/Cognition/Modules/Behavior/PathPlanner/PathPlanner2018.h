@@ -100,7 +100,9 @@ private:
 
       // forwardKick()
       PARAMETER_REGISTER(forwardKickAdaptive) = true; // mm
-      PARAMETER_REGISTER(forwardKickTime) = 300;
+      PARAMETER_REGISTER(forwardKickVelocity) = 350;
+      PARAMETER_REGISTER(forwardKickBaseBallDistance) = 100.0; // mm
+
 
       PARAMETER_REGISTER(forwardKickStepType) = 0;
 
@@ -139,8 +141,10 @@ private:
     Vector2d forwardKickThreshold;
     Vector2d forwardKickOffset;
     bool forwardKickAdaptive;
-    int forwardKickTime;
+    int forwardKickVelocity;
+    double forwardKickBaseBallDistance;
     int forwardKickStepType;
+
   } params;
 
   // NONE means hip

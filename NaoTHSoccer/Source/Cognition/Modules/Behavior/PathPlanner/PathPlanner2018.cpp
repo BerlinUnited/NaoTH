@@ -837,6 +837,10 @@ void PathPlanner2018::forwardKick()
         stepTarget = {0, 0, 0};
     }
 
+
+    
+    double kickTime = (kickTarget.translation.abs() / params.forwardKickBaseBallDistance) * params.forwardKickVelocity;
+
     // The kick
     StepBufferElement forward_kick_step("forward_kick");
     forward_kick_step
@@ -851,7 +855,7 @@ void PathPlanner2018::forwardKick()
       .setSpeedDirection(Math::fromDegrees(0.0))
       .setRestriction(RestrictionMode::SOFT)
       .setProtected(true)
-      .setTime(params.forwardKickTime);
+      .setTime(kickTime);
 
     
 
