@@ -35,7 +35,7 @@ option decide_game_state
   state standby {
     action
     {
-      game.current_mode = init;
+      game.current_mode = standby;
       //motion.type = init;
       motion.type = stand;
       arm.control_mode = normal;
