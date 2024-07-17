@@ -310,10 +310,6 @@ void CNNBallDetector::calculateCandidates()
       cnn->predict(patch, params.cnn.classifierMeanBrightnessOffset);
       STOPWATCH_STOP("CNNBallDetector:classifierPredict");
 
-      Vector2d pos = Vector2d(0.0, 0.0);
-      double radius = 0.0;
-      bool found = false;
-
       // only run the detector if the classifier predicted a ball in the patch
       if (cnn->getBallConfidence() >= selectedCNNThreshold) 
       {
@@ -329,29 +325,25 @@ void CNNBallDetector::calculateCandidates()
         cnn_detector->predict(patchForDetector, params.cnn.detectorMeanBrightnessOffset);
         STOPWATCH_STOP("CNNBallDetector:detectorPredict");
 
-        radius = cnn_detector->getRadius();
-        pos = cnn_detector->getCenter();
+        double radius = cnn_detector->getRadius();
+        Vector2d pos = cnn_detector->getCenter();
 
         // sanity check needed for fy1500_conf CNN, where ball.x and ball.y (and radius)
         // has predicted values < 0 in some cases in the past
         if (pos.x >= 0.0 && pos.y >= 0.0) {
-          found = true;
+          // adjust the center and radius of the patch
+          Vector2d ballCenterInPatch(pos.x * patchForDetector.width(), pos.y*patchForDetector.width());
+          addBallPercept(ballCenterInPatch + patchForDetector.min, radius*patchForDetector.width());
+          if (last_percept_valid == false){
+            last_percept_min = patchForDetector.min;
+            last_percept_max = patchForDetector.max;
+            last_percept_valid = true;
+          }
         }        
       }
 
       stopwatch.stop();
       stopwatch_values.push_back(static_cast<double>(stopwatch.lastValue) * 0.001);
-
-      if (found) {
-        // adjust the center and radius of the patch
-        Vector2d ballCenterInPatch(pos.x * patch.width(), pos.y*patch.width());
-        addBallPercept(ballCenterInPatch + patch.min, radius*patch.width());
-        if (last_percept_valid == false){
-          last_percept_min = patch.min;
-          last_percept_max = patch.max;
-          last_percept_valid = true;
-        }
-      }
 
       DEBUG_REQUEST("Vision:CNNBallDetector:drawCandidates",
         // original patch
