@@ -18,12 +18,10 @@ MotionEngine::MotionEngine()
   theIKArmGrasping = registerModule<IKArmGrasping>("IKArmGrasping", true);
   theArmMotionEngine = registerModule<ArmMotionEngine>("ArmMotionEngine", true);
 
-
   theMotionFactories.push_back(registerModule<InitialMotionFactory>("InitialMotionFactory", true)->getModuleT());
   theMotionFactories.push_back(registerModule<InverseKinematicsMotionFactory>("InverseKinematicsMotionFactory", true)->getModuleT());
   theMotionFactories.push_back(registerModule<KeyFrameMotionFactory>("KeyFrameMotionFactory", true)->getModuleT());
   theMotionFactories.push_back(registerModule<ParallelKinematicMotionFactory>("ParallelKinematicMotionFactory", true)->getModuleT());
-
 
   //
   currentlyExecutedMotion = createEmptyMotion();
@@ -31,12 +29,18 @@ MotionEngine::MotionEngine()
   // init internal state
   //selectMotion();// create init motion
   state = initial;
+
+  getDebugParameterList().add(&params);
+}
+
+MotionEngine::~MotionEngine() {
+  getDebugParameterList().remove(&params);
 }
 
 void MotionEngine::execute()
 {
   // catch emergency cases
-  if(getFrameInfo().getTimeSince(last_frame_info) > 100) {
+  if(params.freeze_recovery && getFrameInfo().getTimeSince(last_frame_info) > 100) {
     last_freeze_frame_info = getFrameInfo();
     state = frozen;
     std::cout << "[MotionEngine] ACHTUNG: freeze detected." << std::endl;

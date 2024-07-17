@@ -26,8 +26,12 @@
 #include "Representations/Motion/Request/MotionRequest.h"
 #include "Representations/Motion/MotionStatus.h"
 
+// tools
+#include "Tools/Debug/DebugParameterList.h"
 
 BEGIN_DECLARE_MODULE(MotionEngine)
+  PROVIDE(DebugParameterList)
+
   REQUIRE(FrameInfo)
 
   PROVIDE(MotionLock) // it's unlocked if a motion is forced
@@ -45,11 +49,25 @@ class MotionEngine: private MotionEngineBase, private ModuleManager
 {
 public:
   MotionEngine();
-  virtual ~MotionEngine() {}
+  virtual ~MotionEngine();
 
   void execute();
 
-protected:
+private:
+  class Parameter : public ParameterList
+  {
+  public:
+    Parameter() : ParameterList("MotionEngine")
+    {
+      PARAMETER_REGISTER(freeze_recovery) = false;
+      syncWithConfig();
+    }
+
+    bool freeze_recovery;
+  } params;
+
+
+private:
   
   void selectMotion();
   
