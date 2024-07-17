@@ -190,11 +190,12 @@ void CNNBallDetector::calculateCandidates()
       static BallCandidates::PatchYUVClassified patch((*i).min, (*i).max, patch_size);
       patch.min = (*i).min;
       patch.max = (*i).max;
+
+
       if(!getImage().isInside(patch.min) || !getImage().isInside(patch.max)) {
         continue;
       }
 
-      //
       // add an additional border as post-processing
       int postBorder = (int)(patch.radius()*params.postBorderFactorFar);
       double selectedCNNThreshold = params.cnn.threshold;
@@ -314,9 +315,16 @@ void CNNBallDetector::calculateCandidates()
       // only run the detector if the classifier predicted a ball in the patch
       if (cnn->getBallConfidence() >= selectedCNNThreshold) 
       {
-
+        
+        // HACK: resizing the patch with postBorder helps the classifier
+        // but worsens the detector, so keep a copy of the original patch
+        static BallCandidates::PatchYUVClassified patchForDetector((*i).min, (*i).max, patch_size);
+        patchForDetector.min = (*i).min;
+        patchForDetector.max = (*i).max;
+        PatchWork::subsampling(getImage(), getFieldColorPercept(), patchForDetector);
+        
         STOPWATCH_START("CNNBallDetector:detectorPredict");
-        cnn_detector->predict(patch, params.cnn.detectorMeanBrightnessOffset);
+        cnn_detector->predict(patchForDetector, params.cnn.detectorMeanBrightnessOffset);
         STOPWATCH_STOP("CNNBallDetector:detectorPredict");
 
         radius = cnn_detector->getRadius();
