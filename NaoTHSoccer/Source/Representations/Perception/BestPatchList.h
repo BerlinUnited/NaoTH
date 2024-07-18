@@ -12,7 +12,7 @@
 /**
  * Sorted list non-overlaping patches which contain possible ball candidates.
  * The list is sorted by a quality criteria defined by the ball patch detector.
- * By iterating over the list, the most "interesting" candidates are emitted
+ * By iterating over the list in reverse, the most "interesting" candidates are emitted
  * first and thus the amount of work for checking the ball patches is reduced.
  */
 class BestPatchList
