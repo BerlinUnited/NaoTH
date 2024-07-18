@@ -60,7 +60,9 @@ option search_ball
         stay;
     }
     action {
-      search_ball_back_rot(distance = 250, max_rotation = 30, search_direction = left);
+      //search_ball_back_rot(distance = 250, max_rotation = 30, search_direction = left);
+      // RC24: it is better to simply turn, instead of walking back
+      search_ball_turning(search_direction = left);
     }
   }
 
@@ -73,7 +75,9 @@ option search_ball
         stay;
     }
     action {
-      search_ball_back_rot(distance = 250, max_rotation = 30, search_direction = right);
+      //search_ball_back_rot(distance = 250, max_rotation = 30, search_direction = right);
+      // RC24: it is better to simply turn, instead of walking back
+      search_ball_turning(search_direction = right);
     }
   }
 
