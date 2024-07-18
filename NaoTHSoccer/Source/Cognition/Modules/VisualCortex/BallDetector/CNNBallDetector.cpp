@@ -8,6 +8,7 @@
 #include "Classifier/FrugallyDeep.h"
 #include "Classifier/mbc_36k.h"
 #include "Classifier/mbc_36ksm.h"
+#include "Classifier/mbc_36ksm_finetuned.h"
 #include "Classifier/mbd_gopen_56k.h"
 #include "Classifier/TFLiteModelNaoTH.h"
 
@@ -116,6 +117,10 @@ std::map<string, std::shared_ptr<AbstractCNNFinder> > CNNBallDetector::createCNN
   // threshold 0.98 works good on the RC24 Monday Outdoor Test Log
   // same as mbc_36k, but with softmax activation function implemented in the model
   result.insert({ "mbc_36ksm", std::make_shared<mbc_36ksm>() }); 
+
+  // mean: -0.5714, 
+  // mbc_36ksm finetuned on devils + naoth data + manual verfied patches from RC24 SQPR testgame
+  result.insert({ "mbc_36ksm_finetuned", std::make_shared<mbc_36ksm_finetuned>() });
   
   // Ball Detector from German Open 2024, we did not use a brightness offset at GO, was trained on dataset without brightness normalization
   result.insert({ "mbd_gopen_56k", std::make_shared<mbd_gopen_56k>() }); // mbd: max ball detector
