@@ -1,5 +1,4 @@
 #include "PoseDetector.h"
-
 PoseDetector::PoseDetector()
 {
   DEBUG_REQUEST_REGISTER("Vision:PoseDetector:drawJoints", "draw detected human joints", false);
@@ -23,7 +22,7 @@ PoseDetector::PoseDetector()
   TfLiteInterpreterOptionsAddDelegate(options, delegate);
   #endif // undef WIN32
 
-  interpreter = TfLiteInterpreterCreate(model, options);
+  interpreter = TfLiteInterpreterCreate(model, options);   
   MY_ASSERT_NE(interpreter, nullptr);
 
   // Free options and model now that the interpreter is created
@@ -62,28 +61,53 @@ void PoseDetector::execute(){
     return;
   }
   Pixel p;
-  //TODO expect input as 1,353,257,3 rgb for posenet or 1x192x192x3 rgb for movenet
-  //int y_value = ((int)getImageTop().getY_direct(0,0));
-  //cv::Mat img = cv::Mat::eye(192,192,CV_32FC3);
-  cv::Mat image(640, 480, CV_32FC3, cv::Scalar(0.0f, 0.0f, 0.0f)); // Create a 192x192 image with 3 channels (RGB) initialized to black
-  for (unsigned int y = 0; y < 480; y+=1) {
-      for (unsigned int x = 0; x < 640; x+=1) {
-          getImageTop().get(x,y,p); 
+  cv::Mat yuv422(480, 640, CV_8UC2, getImageTop().data());
 
-          naoth::ColorModelConversions::fromYCbCrToRGB(
-          p.y, p.u, p.v,
-          p.y, p.u, p.v); 
-          //inputTensor->data.f[320 * (y/2) + (x/2)] = y_value / 255.0f;
-          //std::cout << 240 * (y/2) + (x/2) << std::endl;
-          image.at<cv::Vec3f>(y, x) = cv::Vec3f(p.v / 255.0, p.u / 255.0, p.y / 255.0);     
-      }
-  }
+  // Convert YUV422 to rgb
+  cv::Mat rgb;
+  cv::cvtColor(yuv422, rgb, cv::COLOR_YUV2RGB_YUYV);
+  // new
+  /*
+  cv::Mat result = cv::Mat::zeros(getImageTop().height(), getImageTop().width()/2, CV_8UC(6));
+
+  // wrap the original one in a way that uses 4 columns for two pixels
+  cv::Mat wrappedYUV422((int) getImageTop().height(), (int) getImageTop().width()/2,
+                        CV_8UC4, 
+                        (void*) getImageTop().data());
+
+  // Y1 U Y2 V will be converted to Y1 U V, Y2 U V
+  // Y1=0 -> 0
+  // U=1 -> 1,4
+  // Y2=2 -> 3
+  // V=3 -> 2,5
+  const int fromTo[] = { 0,0, 1,1, 1,4, 2,3, 3,2, 3,5 };
+  cv::mixChannels(&wrappedYUV422, 1, &result, 1, fromTo, 6);
+
+  std::vector<cv::Mat> cool_channels;
+  cv::split(wrappedYUV422, cool_channels);
+  std::vector<cv::Mat> firstThreeChannels(cool_channels.begin(), cool_channels.begin() + 3);
+  cv::Mat dst;
+  cv::merge(firstThreeChannels, dst);
+
+  // we now have a real matrix with correct color values for each pixel,
+  // reshape to a true YUV-color model to make the life easier for users
+  // of this matrix
+  result.reshape(3);
+  std::cout<< "channels after reshape " << result.channels() << std::endl;
+  cv::Mat test = cv::Mat::zeros(getImageTop().height(), getImageTop().width()/2, CV_8UC(3));
+  cv::cvtColor(dst, test, cv::COLOR_YUV2BGR );
+  cv::Mat resized_down(192, 192, CV_8UC3, cv::Scalar(0.0, 0.0, 0.0));
+  cv::resize(result, resized_down, cv::Size(192, 192), cv::INTER_LINEAR);
+  //cv::imwrite("test.png", resized_down);
+  // old
+  */
+
+  cv::Mat resized_down(192, 192, CV_8UC3, cv::Scalar(0.0, 0.0, 0.0));
+  cv::resize(rgb, resized_down, cv::Size(192, 192), cv::INTER_LINEAR);
   
-  cv::cvtColor(image, image, cv::COLOR_BGR2RGB);
-  cv::Mat resized_down(192, 192, CV_32FC3, cv::Scalar(0.0f, 0.0f, 0.0f));
-  cv::resize(image, resized_down, cv::Size(192, 192), cv::INTER_LINEAR);
-  float* inputImg_ptr = image.ptr<float>(0);
-  memcpy(inputTensor->data.f, image.ptr<float>(0), 192 * 192 * 3 * sizeof(float));
+
+  uint8_t* inputImg_ptr = resized_down.ptr<uint8_t>(0);
+  memcpy(inputTensor->data.uint8, resized_down.ptr<uint8_t>(0), 192 * 192 * 3 * sizeof(uint8_t));
    
   //std::cout << image.at<cv::Vec3f>(0, 0) << std::endl;
   //std::cout << inputTensor->data.f[0] << std::endl;
@@ -94,7 +118,7 @@ void PoseDetector::execute(){
 
   const float* outputData = TfLiteInterpreterGetOutputTensor(interpreter, 0)->data.f;
   int numOutputElements = TfLiteTensorByteSize(TfLiteInterpreterGetOutputTensor(interpreter, 0)) / sizeof(float);
-  result = std::vector<float>(outputData, outputData + numOutputElements);
+  model_result = std::vector<float>(outputData, outputData + numOutputElements);
 
   std::cout << TfLiteInterpreterGetOutputTensor(interpreter, 0)->dims->size << " " << std::endl;
   std::cout << TfLiteInterpreterGetOutputTensor(interpreter, 0)->dims->data[0] << " " << std::endl;
@@ -107,6 +131,14 @@ void PoseDetector::execute(){
   int height = 1;
   int width = 17;
   int channels = 3;
+
+  const float (&a)[1][1][17][3] = * static_cast<const float(*)[1][1][17][3]> (static_cast<void*>(&outputData));
+  for (int i=0; i < 17; i++){ 
+    std::cout << a[0][0][0][0] << " " << a[0][0][0][1] << " " << a[0][0][0][2] << std::endl;
+    std::cout << std::endl;
+  }
+
+
   // int index = b * (height * width * channels) + h * (width * channels) + w * channels;
   int nose_index = 0 * (height * width * channels) + 0 * (width * channels) + 0 * channels;
   int left_eye_index = 0 * (height * width * channels) + 0 * (width * channels) + 1 * channels;
@@ -115,18 +147,20 @@ void PoseDetector::execute(){
   int right_wrist_index = 0 * (height * width * channels) + 0 * (width * channels) + 10 * channels;
   //std::vector<float> a = std::vector<float>(outputData[nose_index],outputData[nose_index+1],outputData[nose_index+2]);
 
-  std::vector<float> nose_data {outputData[nose_index],outputData[nose_index+1],outputData[nose_index+2]};
-  std::vector<float> left_eye_data {outputData[left_eye_index],outputData[left_eye_index+1],outputData[left_eye_index+2]};
-  std::vector<float> right_eye_data {outputData[right_eye_index],outputData[right_eye_index+1],outputData[right_eye_index+2]};
-  std::vector<float> left_wrist_data {outputData[left_wrist_index],outputData[left_wrist_index+1],outputData[left_wrist_index+2]};
-  std::vector<float> right_wrist_data {outputData[right_wrist_index],outputData[right_wrist_index+1],outputData[right_wrist_index+2]};
-  std::cout << right_eye_data[0] << right_eye_data[1] << right_eye_data[2] << " " << std::endl;
-
+  //std::vector<float> nose_data {outputData[nose_index],outputData[nose_index+1],outputData[nose_index+2]};
+  //std::vector<float> left_eye_data {outputData[left_eye_index],outputData[left_eye_index+1],outputData[left_eye_index+2]};
+  //std::vector<float> right_eye_data {outputData[right_eye_index],outputData[right_eye_index+1],outputData[right_eye_index+2]};
+  //std::vector<float> left_wrist_data {outputData[left_wrist_index],outputData[left_wrist_index+1],outputData[left_wrist_index+2]};
+  //std::vector<float> right_wrist_data {outputData[right_wrist_index],outputData[right_wrist_index+1],outputData[right_wrist_index+2]};
+  //std::cout << right_eye_data[0] << " " << right_eye_data[1] << " " << right_eye_data[2] << " " << std::endl;
+  /*
   DEBUG_REQUEST("Vision:PoseDetector:drawJoints",
-    CIRCLE_PX(ColorClasses::orange, (int)(nose_data[1]+0.5), (int)(nose_data[0]+0.5), 5);
-    CIRCLE_PX(ColorClasses::orange, (int)(left_eye_data[1]+0.5), (int)(left_eye_data[0]+0.5), 5);
-    CIRCLE_PX(ColorClasses::orange, (int)(right_eye_data[1]+0.5), (int)(right_eye_data[0]+0.5), 5);
-    CIRCLE_PX(ColorClasses::orange, (int)(left_wrist_data[1]+0.5), (int)(left_wrist_data[0]+0.5), 5);
-    CIRCLE_PX(ColorClasses::orange, (int)(right_wrist_data[1]+0.5), (int)(right_wrist_data[0]+0.5), 5);
+
+    getDebugImageDrawingsTop().drawCircleToImage(ColorClasses::orange, (int)(nose_data[1] * 192*2.5), (int)(nose_data[0] * 192*3.3), 5);
+    getDebugImageDrawingsTop().drawCircleToImage(ColorClasses::orange, (int)(left_eye_data[1]* 192*2.5), (int)(left_eye_data[0] * 192*3.3), 5);
+    getDebugImageDrawingsTop().drawCircleToImage(ColorClasses::orange, (int)(right_eye_data[1]* 192*2.5), (int)(right_eye_data[0] * 192*3.3), 5);
+    getDebugImageDrawingsTop().drawCircleToImage(ColorClasses::red, (int)(left_wrist_data[1]* 192*2.5), (int)(left_wrist_data[0] * 192*3.3), 5);
+    getDebugImageDrawingsTop().drawCircleToImage(ColorClasses::skyblue, (int)(right_wrist_data[1]* 192*2.5), (int)(right_wrist_data[0] * 192*3.3), 5);
   );
+  */
 }

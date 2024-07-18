@@ -34,6 +34,7 @@ BEGIN_DECLARE_MODULE(PoseDetector)
 
   PROVIDE(DebugRequest)
   PROVIDE(DebugModify)
+  PROVIDE(DebugDrawings)
   PROVIDE(StopwatchManager)
   PROVIDE(DebugParameterList)
   PROVIDE(DebugImageDrawings)
@@ -92,7 +93,7 @@ public:
     int numThreads = 2;
     std::vector<int> input_dims = {1, 192, 192, 3};
     TfLiteTensor* inputTensor;
-    std::vector<float> result;
+    std::vector<float> model_result;
     TfLiteInterpreter* interpreter = nullptr;
     TfLiteDelegate* delegate = nullptr;
 };
