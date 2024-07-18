@@ -57,13 +57,17 @@ PoseDetector::~PoseDetector() {
 }
 
 void PoseDetector::execute(){
+
+  if (!getSoccerStrategy().run_pose_detection){
+    return;
+  }
   Pixel p;
   //TODO expect input as 1,353,257,3 rgb for posenet or 1x192x192x3 rgb for movenet
   //int y_value = ((int)getImageTop().getY_direct(0,0));
   //cv::Mat img = cv::Mat::eye(192,192,CV_32FC3);
-  cv::Mat image(192, 192, CV_32FC3, cv::Scalar(0.0f, 0.0f, 0.0f)); // Create a 192x192 image with 3 channels (RGB) initialized to black
-  for (unsigned int y = 0; y < 192; y+=1) {
-      for (unsigned int x = 0; x < 192; x+=1) {
+  cv::Mat image(640, 480, CV_32FC3, cv::Scalar(0.0f, 0.0f, 0.0f)); // Create a 192x192 image with 3 channels (RGB) initialized to black
+  for (unsigned int y = 0; y < 480; y+=1) {
+      for (unsigned int x = 0; x < 640; x+=1) {
           getImageTop().get(x,y,p); 
 
           naoth::ColorModelConversions::fromYCbCrToRGB(
@@ -74,7 +78,10 @@ void PoseDetector::execute(){
           image.at<cv::Vec3f>(y, x) = cv::Vec3f(p.v / 255.0, p.u / 255.0, p.y / 255.0);     
       }
   }
+  
   cv::cvtColor(image, image, cv::COLOR_BGR2RGB);
+  cv::Mat resized_down(192, 192, CV_32FC3, cv::Scalar(0.0f, 0.0f, 0.0f));
+  cv::resize(image, resized_down, cv::Size(192, 192), cv::INTER_LINEAR);
   float* inputImg_ptr = image.ptr<float>(0);
   memcpy(inputTensor->data.f, image.ptr<float>(0), 192 * 192 * 3 * sizeof(float));
    

@@ -15,6 +15,7 @@
 // Representations
 #include <Representations/Infrastructure/Image.h>
 #include "Representations/Motion/MotionStatus.h"
+#include "Representations/Modeling/SoccerStrategy.h"
 
 // Tools
 #include "Tools/CameraGeometry.h"
@@ -29,6 +30,7 @@
 
 BEGIN_DECLARE_MODULE(PoseDetector)
   REQUIRE(ImageTop)
+  REQUIRE(SoccerStrategy)
 
   PROVIDE(DebugRequest)
   PROVIDE(DebugModify)

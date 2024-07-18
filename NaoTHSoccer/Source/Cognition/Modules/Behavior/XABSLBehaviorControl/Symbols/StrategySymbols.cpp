@@ -99,6 +99,9 @@ void StrategySymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("strategy.position.opp.x", &getHomePositionOppKickoffX);
   engine.registerDecimalInputSymbol("strategy.position.opp.y", &getHomePositionOppKickoffY);
 
+  engine.registerBooleanOutputSymbol("strategy.run_pose_detection", &getSoccerStrategy().run_pose_detection);
+
+
   DEBUG_REQUEST_REGISTER("XABSL:StrategySymbols:draw_attack_direction","draw the attack direction", false);
   DEBUG_REQUEST_REGISTER("XABSL:StrategySymbols:draw_simpleDefenderPose","draw the position of the defender", false);
   DEBUG_REQUEST_REGISTER("XABSL:StrategySymbols:draw_goalie_defensive_pos","draw the position of the goalie", false);
