@@ -22,11 +22,8 @@ CNNBallDetector::CNNBallDetector():
   DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:drawPercepts", "draw ball percepts", false);
   DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:drawPatchContrast", "draw patch contrast (only when contrast-check is in use!", false);
   DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:draw_projected_ball","", false);
-
   DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:extractPatches", "generate YUVC patches", false);
-
   DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:keyPointsBlack", "draw black key points extracted from integral image", false);
-
   DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:drawPatchInImage", "draw the gray-scale patch like it is passed to the CNN in the image", false);
 
   getDebugParameterList().add(&params);
@@ -56,8 +53,14 @@ void CNNBallDetector::execute(CameraInfo::CameraID id)
   for(BestPatchList::reverse_iterator i = getBestPatchList().rbegin(); i != getBestPatchList().rend(); ++i) {
     patches.push_back(*i);
   }
-  addPatchByLastBall();
+
+  // add the last ball percept at the beginning of the now sorted list, so it gets checked first
   addPatchByLastPercept();
+
+  // add the last ball model at the end of the now sorted list, so we check it last
+  // FIXME: if there are more patches in the list than the maxNumberOfKeys specifies,
+  // the last ball model will not be checked
+  addPatchByLastBall();
 
   last_percept_valid = false;
   if(!patches.empty()) {
@@ -184,7 +187,7 @@ void CNNBallDetector::calculateCandidates()
   // the used patch size
   const int patch_size = 16;
 
-  // NOTE: patches are sorted in the ascending order, so start from the end to get the best patches
+  // NOTE: at this point. the PatchList is already sorted with the most promising patches first
   int index = 0;
   for(BestPatchList::PatchList::iterator i = patches.begin(); i != patches.end(); ++i)
   {
@@ -374,11 +377,13 @@ void CNNBallDetector::calculateCandidates()
 void CNNBallDetector::extractPatches()
 {
   int idx = 0;
+  // at this point, the patches are already sorted with the most promising patches first
   for(BestPatchList::PatchList::iterator i = patches.begin(); i != patches.end(); ++i)
   {
     if(idx >= params.numberOfExportBestPatches) {
       break;
     }
+    
     int offset = ((*i).max.x - (*i).min.x)/4;
     Vector2i min = (*i).min - offset;
     Vector2i max = (*i).max + offset;
@@ -459,7 +464,14 @@ void CNNBallDetector::addPatchByLastBall()
                       RECT_PX(ColorClasses::pink, start.x, start.y, end.x, end.y);
                       CIRCLE_PX(ColorClasses::pink, ballInImage.x, ballInImage.y, static_cast<int>(estimatedRadius));
                       );
+
+        // TODO: Verify this, we might want to check all patches regardless of overlap
+        // 
         // Insert ball patch if there is not already another Patch that overlaps it
+        // Reasoning: Since we can detect multiple balls, we do not want to detect 
+        // the same ball twice at different positions. 
+        // This patch is based on the ball model and therefore likely not the best candidate,
+        // so we prioritize the patches already in the list.
         BestPatchList::Patch ballPatch  = BestPatchList::Patch(start.x,
             start.y,
             end.x,
@@ -477,7 +489,9 @@ void CNNBallDetector::addPatchByLastBall()
           }
         }
         if(overlaps == false) {
-          patches.insert(patches.begin(), ballPatch);
+          // TODO: Add not at the end, but at maxNumberOfKeys - 1 so we always
+          // check this patch last (if there are more than maxNumberOfKeys patches) 
+          patches.insert(patches.end(), ballPatch);
         }
       }
     }
@@ -491,6 +505,8 @@ void CNNBallDetector::addPatchByLastPercept(){
               last_percept_max.x,
               last_percept_max.y,
               99);
-    patches.insert(patches.end(), ballPatch);
+    // TODO: filter out other overlapping Patch(es)  in 'patches' here as,
+    // for the same reason we check overlap in addPatchByLastBall?
+    patches.insert(patches.begin(), ballPatch);
   }
 }
