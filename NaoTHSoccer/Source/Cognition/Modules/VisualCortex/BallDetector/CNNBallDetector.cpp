@@ -9,6 +9,7 @@
 #include "Classifier/mbc_36k.h"
 #include "Classifier/mbc_36ksm.h"
 #include "Classifier/mbc_36ksm_finetuned.h"
+#include "Classifier/mbc_36ksm_finetuned_crop.h"
 #include "Classifier/mbd_gopen_56k.h"
 #include "Classifier/TFLiteModelNaoTH.h"
 
@@ -121,9 +122,14 @@ std::map<string, std::shared_ptr<AbstractCNNFinder> > CNNBallDetector::createCNN
   // same as mbc_36k, but with softmax activation function implemented in the model
   result.insert({ "mbc_36ksm", std::make_shared<mbc_36ksm>() }); 
 
-  // mean: -0.5714, 
+  // mean: -0.5714, now works with dynamic patchwise brightness 
+  // and doesnt need to be subtracted by mean of meanBrightnessOffset parameter
   // mbc_36ksm finetuned on devils + naoth data + manual verfied patches from RC24 SQPR testgame
   result.insert({ "mbc_36ksm_finetuned", std::make_shared<mbc_36ksm_finetuned>() });
+
+  // dynamic patchwise brightness 
+  // trained on devils + devils crop (based on ball_center) + devils gauss blurred
+  result.insert({ "mbc_36ksm_finetuned_crop", std::make_shared<mbc_36ksm_finetuned_crop>() });
   
   // Ball Detector from German Open 2024, we did not use a brightness offset at GO, was trained on dataset without brightness normalization
   result.insert({ "mbd_gopen_56k", std::make_shared<mbd_gopen_56k>() }); // mbd: max ball detector
