@@ -16,6 +16,7 @@ void TeamCommEventSender::execute()
   updateMyself();
   // ... then send the message based on the updated state
   if (shouldSendMessage() && createMessage()) {
+      getTeamMessageDataOut().lastSend = getFrameInfo();
       getTeamMessageDataOut().interval = getFrameInfo().getTime() - lastSentTimestamp;
       // remember the last sending time
       lastSentTimestamp = getFrameInfo().getTime();

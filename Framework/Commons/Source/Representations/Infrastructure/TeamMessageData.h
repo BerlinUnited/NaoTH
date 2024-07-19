@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 #include "Tools/DataStructures/Printable.h"
+#include "Representations/Infrastructure/FrameInfo.h"
 
 namespace naoth
 {
@@ -18,13 +19,17 @@ namespace naoth
 // message to other robots
 class TeamMessageDataOut: public Printable
 {
-public:
+  public:
+  // some infos, mainly for debugging
+  FrameInfo lastSend;
   unsigned int interval = 0;
-  std::string data;
+  // the acutal data to send
+ std::string data;
 
-  virtual void print(std::ostream& stream) const
-  {
-    stream << "size = " << data.size() << std::endl;
+ virtual void print(std::ostream& stream) const {
+     stream << "size = " << data.size() << "\n";
+     stream << "lastSend = " << lastSend.getFrameNumber() << " @ " << lastSend.getTime() << "\n";
+     stream << "interval = " << interval << std::endl;
   }
 };
 
