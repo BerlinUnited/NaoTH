@@ -19,6 +19,7 @@ namespace naoth
 class TeamMessageDataOut: public Printable
 {
 public:
+  unsigned int interval = 0;
   std::string data;
 
   virtual void print(std::ostream& stream) const
