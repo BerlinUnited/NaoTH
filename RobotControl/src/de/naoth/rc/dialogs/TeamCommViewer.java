@@ -184,7 +184,7 @@ public class TeamCommViewer extends AbstractDialog {
 
         portNumberOwn.setColumns(6);
         portNumberOwn.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#"))));
-        portNumberOwn.setText("10004");
+        portNumberOwn.setText("10704");
         portNumberOwn.setToolTipText("Own team port number");
         portNumberOwn.setMinimumSize(new java.awt.Dimension(76, 19));
         portNumberOwn.addActionListener(new java.awt.event.ActionListener() {
