@@ -38,6 +38,8 @@ option search_ball_turning
       motion.walk_speed.y = 0; // mm
       motion.walk_speed.rot = 30; //deg
       motion.walk.coordinate = hip;
+
+      motion.walk.style = fast;
     }
   }
 
@@ -60,6 +62,8 @@ option search_ball_turning
       motion.walk_speed.y = 0; // mm
       motion.walk_speed.rot = -30; //deg
       motion.walk.coordinate = hip;
+
+      motion.walk.style = fast;
     }
   }
 

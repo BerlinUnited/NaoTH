@@ -10,7 +10,8 @@ namespace path_symbols("PathPlanner Symbols") {
     forwardkick,
     sidekick_left,
     sidekick_right,
-    sidestep
+    sidestep,
+    approach_dribble
   };
 
   enum path2018.routine output path2018.routine;
