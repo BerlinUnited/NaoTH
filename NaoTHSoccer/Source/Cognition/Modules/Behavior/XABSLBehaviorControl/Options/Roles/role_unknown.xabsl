@@ -48,7 +48,8 @@ option role_unknown
     action {
       head.control_mode = search_for_ball;
 
-      path_striker2018();
+      //path_striker2018();
+      path_striker2024();
       
       //blinking
       set_left_ear  = (platform.frameNumber % 3 == 0) ? 10 : 0;

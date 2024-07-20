@@ -4,32 +4,10 @@ option path_striker2024
   {
     if(!body.ready_to_walk || game.current_mode != playing)
       goto idle;
-    /*
-    // NOTE: this is only important for the old behavior (2018)
-    else if(!game.state.playing_is_set_by_game_controller &&
-           !game.own_kickoff && game.time_in_play < 10000)
-      // TODO: for the roles, the initial striker isn't neccessary anymore and can be removed! (the behavior must be applied for all roles!)
-      // if we see the ball outside the centercircle, the ball is free!
-      if((ball.know_where_itis && (abs(value=ball.position.field.x) <= (300) && abs(value=ball.position.field.y) <= (300))) || !ball.know_where_itis)
-        goto wait_for_ball_free;
-      else
-        goto goto_ball;
-    */
     else if(situation_abortable && !ball.know_where_itis)
       goto search;
     else if(situation_abortable && vector.abs(x=ball.future.preview.x, y=ball.future.preview.y) > 500)
       goto goto_ball;
-  }
-
-  state wait_for_ball_free {
-    decision {
-      else
-        goto search;
-    }
-    action {
-      motion.type = stand;
-      head.control_mode = search_for_ball;
-    }
   }
 
   initial state idle 
@@ -68,21 +46,12 @@ option path_striker2024
   {
     decision
     {
-      else if(vector.abs(x=ball.future.preview.x, y=ball.future.preview.y) < 300)
-      {
-        if(attack.best_action == kick_short)
-          goto forwardkick;
-        else if(attack.best_action == sidekick_left)
-          //goto sidekick_left;
-          goto turn;
-        else if(attack.best_action == sidekick_right)
-          //goto sidekick_right;
-          goto turn;
-        else
-          goto turn;
-      }
-      else
+      else if(vector.abs(x=ball.future.preview.x, y=ball.future.preview.y) > 300)
         stay;
+      else if(attack.best_action == kick_short)
+        goto forwardkick;
+      else
+        goto approach_close;
     }
     action{
       situation_abortable = true;
@@ -96,25 +65,12 @@ option path_striker2024
     }
   }
 
-  state turn
+  state approach_close
   {
     decision
     {
-      // TODO: Sometimes the turn around ball is finished but there is no best action.
-      //       when and why can this hapen?! Why is there no best action?
-      else if(path.turn_around_ball_2_target_reached)
-        goto forwardkick;
-      // long kick is ignored/not included in action selection
-      //else if(attack.best_action == kick_long)
-      //    goto long_kick;
       else if(attack.best_action == kick_short)
         goto forwardkick;
-      else if(attack.best_action == sidekick_left)
-        //goto sidekick_left;
-        stay;
-      else if(attack.best_action == sidekick_right)
-        //goto sidekick_right;
-        stay;
       else
         stay;
     }
@@ -122,9 +78,11 @@ option path_striker2024
     {
       situation_abortable = true;
       
-      // TODO: path_turn_to_attack_direction() should be moved to a new option
-      // PathPlanner2018 stuff was hacked in there
-      path_turn_to_attack_direction();
+      //path_turn_to_attack_direction();
+      arm.react_to_collision = true;
+      
+      path2018.routine = approach_dribble;
+      head.control_mode = search_for_ball;
     }
   }
 
@@ -139,50 +97,15 @@ option path_striker2024
     }
     action
     {
+      situation_abortable = true;
+      
       arm.react_to_collision = false;
       
       path2018.routine = forwardkick;
-      situation_abortable = true;
       head.control_mode = search_for_ball;
     }
   }
 
-  state sidekick_right
-  {
-    decision
-    {
-      else if (path.kick_executed)
-        goto short_freeze;
-      else
-        stay;
-    }
-    action
-    {
-      arm.react_to_collision = false;
-      path2018.routine = sidekick_right;
-      situation_abortable = true;
-      head.control_mode = search_for_ball;
-    }
-  }
-  
-  state sidekick_left
-  {
-    decision
-    {
-      else if (path.kick_executed)
-        goto short_freeze;
-      else
-        stay;
-    }
-    action
-    {
-      arm.react_to_collision = false;
-      path2018.routine = sidekick_left;
-      situation_abortable = true;
-      head.control_mode = search_for_ball;
-    }
-  }
-  
   state short_freeze
   {
     decision
