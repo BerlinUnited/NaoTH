@@ -20,6 +20,7 @@ public:
      radius(0.0),
      stable(false)
   {}
+
   ~PathRequest() {}
 
   enum class PathID
@@ -31,7 +32,8 @@ public:
     FORWARDKICK,
     SIDEKICK_LEFT,
     SIDEKICK_RIGHT,
-    SIDESTEP
+    SIDESTEP,
+    APPROACH_DRIBBLE
   };
 
   inline static std::string getName(PathID id)
@@ -46,6 +48,7 @@ public:
       case PathID::SIDEKICK_LEFT:         return "sidekick_left";
       case PathID::SIDEKICK_RIGHT:        return "sidekick_right";
       case PathID::SIDESTEP:              return "sidestep";
+      case PathID::APPROACH_DRIBBLE:      return "approach_dribble";
       default: ASSERT(false);             return "unknown_path_id";
     }
   }

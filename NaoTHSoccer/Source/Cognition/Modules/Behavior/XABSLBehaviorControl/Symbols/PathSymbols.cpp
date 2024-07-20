@@ -10,14 +10,16 @@
 void PathSymbols::registerSymbols(xabsl::Engine& engine)
 {
   // PathPlanner2018Routine
-  engine.registerEnumElement("path2018.routine", "path2018.routine.none",              static_cast<int>(PathRequest::PathID::NONE));
-  engine.registerEnumElement("path2018.routine", "path2018.routine.avoid",             static_cast<int>(PathRequest::PathID::AVOID));
+  engine.registerEnumElement("path2018.routine", "path2018.routine.none",                 static_cast<int>(PathRequest::PathID::NONE));
+  engine.registerEnumElement("path2018.routine", "path2018.routine.avoid",                static_cast<int>(PathRequest::PathID::AVOID));
   engine.registerEnumElement("path2018.routine", "path2018.routine.move_around_ball_old", static_cast<int>(PathRequest::PathID::MOVE_AROUND_BALL_OLD));
-  engine.registerEnumElement("path2018.routine", "path2018.routine.move_around_ball2", static_cast<int>(PathRequest::PathID::MOVE_AROUND_BALL2)); 
-  engine.registerEnumElement("path2018.routine", "path2018.routine.forwardkick",       static_cast<int>(PathRequest::PathID::FORWARDKICK));
-  engine.registerEnumElement("path2018.routine", "path2018.routine.sidekick_left",     static_cast<int>(PathRequest::PathID::SIDEKICK_LEFT));
-  engine.registerEnumElement("path2018.routine", "path2018.routine.sidekick_right",    static_cast<int>(PathRequest::PathID::SIDEKICK_RIGHT));
-  engine.registerEnumElement("path2018.routine", "path2018.routine.sidestep",          static_cast<int>(PathRequest::PathID::SIDESTEP));
+  engine.registerEnumElement("path2018.routine", "path2018.routine.move_around_ball2",    static_cast<int>(PathRequest::PathID::MOVE_AROUND_BALL2)); 
+  engine.registerEnumElement("path2018.routine", "path2018.routine.forwardkick",          static_cast<int>(PathRequest::PathID::FORWARDKICK));
+  engine.registerEnumElement("path2018.routine", "path2018.routine.sidekick_left",        static_cast<int>(PathRequest::PathID::SIDEKICK_LEFT));
+  engine.registerEnumElement("path2018.routine", "path2018.routine.sidekick_right",       static_cast<int>(PathRequest::PathID::SIDEKICK_RIGHT));
+  engine.registerEnumElement("path2018.routine", "path2018.routine.sidestep",             static_cast<int>(PathRequest::PathID::SIDESTEP));
+  engine.registerEnumElement("path2018.routine", "path2018.routine.approach_dribble",     static_cast<int>(PathRequest::PathID::APPROACH_DRIBBLE));
+  
 
   engine.registerEnumeratedOutputSymbol("path2018.routine", "path2018.routine", &setPathRoutine2018, &getPathRoutine2018);
 
