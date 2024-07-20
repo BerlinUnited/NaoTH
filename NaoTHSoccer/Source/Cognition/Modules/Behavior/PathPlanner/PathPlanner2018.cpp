@@ -112,12 +112,66 @@ void PathPlanner2018::execute()
     break;
   case PathRequest::PathID::SIDESTEP:
     sidesteps(Foot::RIGHT, getPathRequest().direction);
+    break;
+  case PathRequest::PathID::APPROACH_DRIBBLE:
+    approach_dribble();
+    break;
+
   }//end switch
 
   // Always executed last
   executeStepBuffer();
 
   PLOT("PathPlanner:buffer_size", static_cast<double>(stepBuffer.size()));
+}
+
+
+bool PathPlanner2018::approach_dribble()
+{
+  // Always execute the steps that were planned before planning new steps
+  if (!stepBuffer.empty()) {
+    return false;
+  }
+
+  Vector2d ballPos      = getBallModel().positionPreview;
+  Foot kicking_foot     = Foot::NONE;
+  Foot supporting_foot  = Foot::NONE;
+  Coordinate coordinate = Coordinate::Hip;
+  double approach_character = 1.0;
+
+  // preview in hip
+  double attackDirection = getSoccerStrategy().attackDirection.clone().rotate(-getMotionStatus().plannedMotion.hip.rotation).angle();
+
+  
+  // MAGIC!!!
+  // deviation from the attack direction: [0, 1]
+  double attack_deviation = fabs(  Math::normalize(attackDirection -ballPos.angle()) ) / Math::pi;
+
+  const double a = params.cool_sidestep_direction_factor;
+
+  Pose2D target_pose;
+  target_pose.rotation      = ballPos.abs() > 80 ? ballPos.angle() * params.cool_rotation_factor : 0.0;
+  target_pose.translation.x = ballPos.x - params.cool_dist_min - (params.cool_dist_extra) * (1.0 - Math::sqr(1.0-attack_deviation));
+  target_pose.translation.y = ( -attackDirection * (1.0 - a) + ballPos.angle() * a ) * params.cool_sidestep_factor;
+
+
+  StepBufferElement near_approach_forward_step("approach_dribble_step");
+
+  near_approach_forward_step
+    .setPose(target_pose)
+    .setStepType(StepType::WALKSTEP)
+    .setCharacter(approach_character)
+    .setScale(1.0)
+    .setCoordinate(coordinate)
+    .setFoot(Foot::NONE)
+    .setSpeedDirection(Math::fromDegrees(0.0))
+    .setRestriction(RestrictionMode::HARD)
+    .setProtected(false)
+    .setTime(250);
+
+  addStep(near_approach_forward_step);
+
+  return false;
 }
 
 void PathPlanner2018::moveAroundBall(const double direction, const double radius, const bool stable)

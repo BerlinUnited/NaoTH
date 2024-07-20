@@ -29,6 +29,9 @@
 #include "Representations/Modeling/BallModel.h"
 #include "Representations/Modeling/ObstacleModel.h"
 
+#include "Representations/Modeling/SoccerStrategy.h"
+#include "Representations/Modeling/KickActionModel.h"
+
 #include "Representations/Modeling/PathRequest.h"
 #include "Representations/Modeling/PathStatus.h"
 
@@ -46,6 +49,9 @@ BEGIN_DECLARE_MODULE(PathPlanner2018)
   REQUIRE(BallModel)
   REQUIRE(ObstacleModel)
   REQUIRE(PathRequest)
+
+  REQUIRE(KickActionModel)
+  REQUIRE(SoccerStrategy)
 
   PROVIDE(PathStatus)
   PROVIDE(MotionRequest)
@@ -115,6 +121,12 @@ private:
       PARAMETER_REGISTER(moveAroundBallCharacter) = 1.0;
       PARAMETER_REGISTER(moveAroundBallCharacterStable) = 0.3;
 
+      PARAMETER_REGISTER( cool_rotation_factor ) = 0.2;
+      PARAMETER_REGISTER( cool_sidestep_factor ) = 0.5;
+      PARAMETER_REGISTER( cool_sidestep_direction_factor) = 60;
+
+      PARAMETER_REGISTER( cool_dist_min) = 150;
+      PARAMETER_REGISTER( cool_dist_extra) = 300;
 
       syncWithConfig();
     }
@@ -144,6 +156,14 @@ private:
     int forwardKickVelocity;
     double forwardKickBaseBallDistance;
     int forwardKickStepType;
+
+
+    double cool_rotation_factor;
+    double cool_sidestep_factor;
+    double cool_sidestep_direction_factor;
+
+    double cool_dist_min;
+    double cool_dist_extra;
 
   } params;
 
@@ -183,6 +203,8 @@ private:
   typedef WalkRequest::StepControlRequest::KickStepType KickStepType;
   typedef WalkRequest::StepControlRequest::RestrictionMode RestrictionMode;
   typedef WalkRequest::Coordinate Coordinate;
+
+  bool approach_dribble();
 
   void moveAroundBall(const double direction, const double radius, const bool stable);
 
