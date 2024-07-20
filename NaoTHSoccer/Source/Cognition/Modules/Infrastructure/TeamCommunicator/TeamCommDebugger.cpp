@@ -49,6 +49,8 @@ void TeamCommDebugger::execute()
       // add prefix for easier identification
       getTeamMessageDebug().data = "DBG " + debugMessage.SerializeAsString();
 
+      getTeamMessageDebug().lastSend = getFrameInfo();
+      getTeamMessageDebug().interval = getFrameInfo().getTime() - lastSentTimestamp;
       // remember the last sending time
       lastSentTimestamp = getFrameInfo().getTime();
   } else {
