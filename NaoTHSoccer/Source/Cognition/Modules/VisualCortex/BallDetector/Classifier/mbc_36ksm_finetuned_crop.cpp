@@ -28305,10 +28305,20 @@ void mbc_36ksm_finetuned_crop::predict(const BallCandidates::PatchYUVClassified&
 {
 	ASSERT(patch.size() == 16);
 
+	// calulate mean brighntess, so it can be subtracted to normalize the patch
+	double brightness_sum = 0;
+
+	for(unsigned int i = 0; i < patch.data.size(); i++){
+		brightness_sum += patch.data[i].pixel.y;
+	}
+
+	double brightness_mean = brightness_sum / patch.data.size();
+
 	for(size_t x=0; x < patch.size(); x++) {
 		for(size_t y=0; y < patch.size(); y++) {
-			// Add a custom brightness offset that depends on the dataset, if zero centering was used
-			float value = (static_cast<float>((patch.data[patch.size() * x + y].pixel.y)) / 255.0f) + static_cast<float>(meanBrightnessOffset);
+			// This model was finetuned on a dataset with patchwise brightness normalization
+			// and therefore shouldnt add the meanBrightnessOffset
+			float value = (static_cast<float>((patch.data[patch.size() * x + y].pixel.y - brightness_mean)) / 255.0f);
 			in_step[y][x][0] = value;
 		}
 	}
