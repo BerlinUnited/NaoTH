@@ -46,7 +46,9 @@ option path_striker2024
   {
     decision
     {
-      else if(vector.abs(x=ball.future.preview.x, y=ball.future.preview.y) > 300)
+      else if(strategy.role != goalie && vector.abs(x=ball.future.preview.x, y=ball.future.preview.y) > 300)
+        stay;
+      else if(vector.abs(x=ball.future.preview.x, y=ball.future.preview.y) > 500)
         stay;
       else if(attack.best_action == kick_short)
         goto forwardkick;
