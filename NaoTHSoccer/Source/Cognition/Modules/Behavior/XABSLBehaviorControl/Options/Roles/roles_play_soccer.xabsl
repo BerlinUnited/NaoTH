@@ -180,7 +180,7 @@ option roles_play_soccer
         stay;
     }
     action {
-      free_kick_simple(own=game.own_kickoff);
+      free_kick_simple();
     }
   }
   
