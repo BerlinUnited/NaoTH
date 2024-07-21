@@ -176,7 +176,7 @@ void LolaAdaptor::run()
 
         // save the data for the emergency case
         if(state == DISCONNECTED) {
-            std::cout << "get inertial sensor data" << std::endl;
+            //std::cout << "[LolaAdaptor] DEBUG: get inertial sensor data" << std::endl;
             sensorData->get(theInertialSensorData);
             sensor_data_available = true;
         } else {
