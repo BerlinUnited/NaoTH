@@ -256,7 +256,7 @@ void ScanGridEdgelDetector::scan_vertical(MaxPeakScan& maximumPeak,
         int check_y = (prev_y + y)/2;
         // gradient = next - previous
         //int gradient = getImage().getY(x, y) - getImage().getY(x, prev_y);
-        int gradient = filtred_pixel(x, y) - filtred_pixel(x, prev_y);
+        int gradient = filtred_pixel_value(x, y) - filtred_pixel_value(x, prev_y);
 
         DEBUG_REQUEST("Vision:ScanGridEdgelDetector:plot_gradient_vertical_scan",
           // HACK: Pad x values with 0 so entries are sorted correctly in robot control
@@ -320,7 +320,7 @@ void ScanGridEdgelDetector::scan_vertical(MaxPeakScan& maximumPeak,
           break;
         }
         //int gradient = getImage().getY(x, next_y) - getImage().getY(x, prev_y);
-        int gradient = filtred_pixel(x, next_y) - filtred_pixel(x, prev_y);
+        int gradient = filtred_pixel_value(x, next_y) - filtred_pixel_value(x, prev_y);
 
         DEBUG_REQUEST("Vision:ScanGridEdgelDetector:plot_gradient_vertical_scan",
           // HACK: Pad x values with 0 so entries are sorted correctly in robot control
@@ -390,7 +390,7 @@ inline bool ScanGridEdgelDetector::refine_vertical(MaxPeakScan& maximumPeak, int
   for(int y=start; y>=end; --y) {
     // gradient = next - previous
     //int gradient = getImage().getY(x, y-1) - getImage().getY(x, y+1);
-    int gradient = filtred_pixel(x, y-1) - filtred_pixel(x, y+1);
+    int gradient = filtred_pixel_value(x, y-1) - filtred_pixel_value(x, y+1);
     // HACK: -1, -1 cause interval isn't of interest here
     if(maximumPeak.add(y, -1, -1, gradient)) {
       // we are just looking for one peak here
@@ -540,7 +540,7 @@ void ScanGridEdgelDetector::scan_horizontal(MaxPeakScan& maximumPeak,
 
         // gradient = next - prev
         //int gradient = getImage().getY(x, y) - getImage().getY(prev_x, y);
-        int gradient = filtred_pixel(x, y) -filtred_pixel(prev_x, y);
+        int gradient = filtred_pixel_value(x, y) - filtred_pixel_value(prev_x, y);
 
         // begin
         if(maximumPeak.add(check_x, prev_x, x, gradient)) {
@@ -591,7 +591,7 @@ void ScanGridEdgelDetector::scan_horizontal(MaxPeakScan& maximumPeak,
         // scan every pixel
         // gradient = next - prev
         //int gradient = getImage().getY(x+1, y) - getImage().getY(x-1, y);
-        int gradient = filtred_pixel(x+1, y) - filtred_pixel(x-1, y);
+        int gradient = filtred_pixel_value(x+1, y) - filtred_pixel_value(x-1, y);
 
         // begin
         if(maximumPeak.add(x, x-1, x+1, gradient)) {
@@ -654,7 +654,7 @@ inline bool ScanGridEdgelDetector::refine_horizontal(MaxPeakScan& maximumPeak, i
   for(int x=start; x<=end; ++x) {
     // gradient = next - prev
     //int gradient = getImage().getY(x+1, y) - getImage().getY(x-1, y);
-    int gradient = filtred_pixel(x+1, y) - filtred_pixel(x-1, y);
+    int gradient = filtred_pixel_value(x+1, y) - filtred_pixel_value(x-1, y);
     // HACK: -1, -1 cause interval isn't of interest here
     if(maximumPeak.add(x, -1, -1, gradient)) {
       // we are just looking for one peak here

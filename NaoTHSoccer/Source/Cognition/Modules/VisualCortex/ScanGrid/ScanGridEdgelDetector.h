@@ -275,14 +275,17 @@ private:
     getScanLineEdgelPercept().edgels.push_back(edgel);
   }
 
-  float filtred_pixel(int x, int y) 
+  inline float filtred_pixel_value(int x, int y) 
   {
+
     // no angle at the border (shouldn't happen)
     if( x < 2 || x + 3 > (int)getImage().width() ||
-        y < 2 || y + 3 > (int)getImage().height() ) {
+        y < 2 || y + 3 > (int)getImage().height() ) 
+    {
       return getImage().getY_direct(x,y);
     }
 
+    // TODO: the access to the image can be optimized and accelerated
     return int((
            getImage().getY_direct( x-1, y-1 )      + 2.0f*getImage().getY_direct( x-1, y )   + getImage().getY_direct( x-1, y+1 ) + 
       2.0f*getImage().getY_direct( x,   y-1 ) +      4.0f*getImage().getY_direct( x,   y )     + 2.0f*getImage().getY_direct( x,   y+1 ) + 
