@@ -91,6 +91,8 @@ public:
 
       PARAMETER_REGISTER(full_refinement) = true;
 
+      PARAMETER_REGISTER(use_smooting_filter) = true;
+
       syncWithConfig();
       //DebugParameterList::getInstance().add(this);
     }
@@ -109,6 +111,8 @@ public:
     double double_edgel_angle_threshold;
 
     int gradient_offset;
+
+    bool use_smooting_filter;
   } params;
 
 private:
@@ -277,6 +281,9 @@ private:
 
   inline float filtred_pixel_value(int x, int y) 
   {
+    if(!params.use_smooting_filter) {
+      return getImage().getY(x, y);
+    }
 
     // no angle at the border (shouldn't happen)
     if( x < 2 || x + 3 > (int)getImage().width() ||
