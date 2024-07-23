@@ -227,7 +227,7 @@ public class RobotStatus
             this.isDead.set(false);
             
             // set the robot status to "dead" after a certain time without update
-            timer = executorService.schedule(()->isDead.set(true), MAX_TIME_BEFORE_DEAD, TimeUnit.SECONDS);            
+            timer = executorService.schedule(() -> isDead.set(true), MAX_TIME_BEFORE_DEAD, TimeUnit.MILLISECONDS);
         }
         
         this.msgPerSecond.set(calculateMsgPerSecond());
