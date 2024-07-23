@@ -1,11 +1,11 @@
 package de.naoth.rc.components.teamcommviewer;
 
-import de.naoth.rc.dataformats.SPLMessage;
-import de.naoth.rc.math.Vector2D;
 import de.naoth.rc.core.messages.TeamMessageOuterClass;
 import de.naoth.rc.core.server.ConnectionStatusEvent;
 import de.naoth.rc.core.server.ConnectionStatusListener;
 import de.naoth.rc.core.server.MessageServer;
+import de.naoth.rc.dataformats.SPLMessage;
+import de.naoth.rc.math.Vector2D;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -207,10 +207,8 @@ public class RobotStatus
         if (!timestamps.isEmpty()) {
             lastSeen = timestamps.get(timestamps.size() - 1);
         }
-        // TODO: in which cases does this happen? 
-        //   If timestamp < lastSeen, then it is an old message 
-        //   and we should discard it completely(?)
-        //   Why do we process old messages?
+
+        // this can happen, when navigating in logfiles backwards (game, teamcomm)
         if (lastSeen < timestamp) {
             timestamps.add(timestamp);
             lastSeen = timestamp;
