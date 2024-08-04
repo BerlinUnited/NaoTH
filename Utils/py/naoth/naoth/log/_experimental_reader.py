@@ -186,8 +186,9 @@ class Frame:
         :param size: of payload data in the log file
         """
 
-        # TODO: fix this when recording jpeg logs, probably async related
-        print(f"Frame already contains member {name}: , HACK: ignoring so that jpeg logs can parse")
+        if name in self._fields:
+            # TODO: fix this when recording jpeg logs, probably async related
+            print(f"Frame {self.number} already contains member {name}: , HACK: ignoring so that jpeg logs can parse")
         
         # raise ValueError(
         #     f"Frame already contains member {name}: "
