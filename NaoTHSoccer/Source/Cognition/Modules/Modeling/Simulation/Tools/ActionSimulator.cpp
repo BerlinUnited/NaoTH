@@ -7,6 +7,8 @@
 #include "ActionSimulator.h"
 #include <algorithm>
 
+//#include <random>
+
 using namespace naoth;
 using namespace std;
 
@@ -181,14 +183,14 @@ Vector2d ActionSimulator::Action::predict(const Vector2d& ball, bool noise) cons
 	double gforce = Math::g*1e3; // mm/s^2
 	double distance;
 	double angle;
-	if (noise){
+	if (noise) {
+    // todo: maybe replace by std::normal_distribution (?)
 		double speed = Math::generateGaussianNoise(action_speed, action_speed_std);
-		angle = Math::generateGaussianNoise(Math::fromDegrees(action_angle), Math::fromDegrees(action_angle_std));
+		angle   = Math::generateGaussianNoise(Math::fromDegrees(action_angle), Math::fromDegrees(action_angle_std));
 		distance = speed*speed / friction / gforce / 2.0; // friction*mass*gforce*distance = 1/2*mass*speed*speed
-	}
-	else {
+	} else {
 		distance = action_speed*action_speed / friction / gforce / 2.0; // friction*mass*gforce*distance = 1/2*mass*speed*speed
-		angle = Math::fromDegrees(action_angle);
+		angle    = Math::fromDegrees(action_angle);
 	}  
   Vector2d predictedAction(distance, 0.0);
   predictedAction.rotate(angle);
@@ -201,7 +203,7 @@ double ActionSimulator::evaluateAction(const Vector2d& a) const
 {
   double xPosOpponentGoal = getFieldInfo().xPosOpponentGoal;
   double yPosLeftSideline = getFieldInfo().yPosLeftSideline;
-  double xPosOwnGoal = getFieldInfo().xPosOwnGoal;
+  double xPosOwnGoal      = getFieldInfo().xPosOwnGoal;
 
   double sigmaX = xPosOpponentGoal/2.0;
   double sigmaY = yPosLeftSideline/2.5;
@@ -209,8 +211,8 @@ double ActionSimulator::evaluateAction(const Vector2d& a) const
   
   double f = 0.0;
   f += slope(a.x, a.y, slopeX, 0.0);
-  f -= gaussian(a.x, a.y, xPosOpponentGoal, 0.0, sigmaX, sigmaY);
-  f += gaussian(a.x, a.y, xPosOwnGoal, 0.0, 1.5*sigmaX, sigmaY);
+  f -= gaussian(a.x, a.y, xPosOpponentGoal, 0.0,     sigmaX, sigmaY);
+  f += gaussian(a.x, a.y, xPosOwnGoal,      0.0, 1.5*sigmaX, sigmaY);
   
   return f;
 }
