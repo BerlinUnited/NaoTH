@@ -38,6 +38,7 @@ inline double randomGauss()
   return v1*fac;
 }
 
+// Box–Muller transform
 inline double generateGaussianNoise(double mu, double sigma)
 {
 	const double epsilon = std::numeric_limits<double>::min();
@@ -46,16 +47,17 @@ inline double generateGaussianNoise(double mu, double sigma)
 	static bool generate;
 	generate = !generate;
 
-	if (!generate)
+  // use the second value from the last computation
+	if (!generate) {
 	   return z1 * sigma + mu;
+  }
 
+  //create two random numbers, make sure u1 is greater than zero
 	double u1, u2;
-	do
-	{
+	do {
 	  u1 = rand() * (1.0 / RAND_MAX);
-	  u2 = rand() * (1.0 / RAND_MAX);
-	}
-	while ( u1 <= epsilon );
+	} while ( u1 <= epsilon );
+  u2 = rand() * (1.0 / RAND_MAX);
 
   double logu = sqrt(-2.0 * log(u1));
   z0 = logu * cos(pi2 * u2);
