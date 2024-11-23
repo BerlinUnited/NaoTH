@@ -1,5 +1,7 @@
 
 #include <iostream>
+#include <cmath>
+
 #include <DCM/Tools/Lola.h>
 
 #ifdef NAO
