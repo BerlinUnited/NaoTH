@@ -285,6 +285,7 @@ workspace "NaoTHSoccer"
         dofile ("../Test/Make/AudioRecorder.lua")
           kind "ConsoleApp"
           vpaths { ["*"] = "../Test/Source/AudioRecorder" }
+
         dofile ("../Test/Make/TfliteBenchmark.lua")
           kind "ConsoleApp"
           vpaths { ["*"] = "../Test/Source/TfliteBenchmark" }
@@ -345,6 +346,10 @@ workspace "NaoTHSoccer"
       dofile ("../Test/Make/LoLa.lua")
           kind "ConsoleApp"
           vpaths { ["*"] = "../Test/Source/LoLa" }
+
+      dofile ("../Test/Make/TfliteBenchmark.lua")
+          kind "ConsoleApp"
+          vpaths { ["*"] = "../Test/Source/TfliteBenchmark" }
     end
 
     -- generate LogSimulatorJNI if required
