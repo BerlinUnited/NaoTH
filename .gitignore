@@ -15,6 +15,7 @@ build-impl.xml
 genfiles.properties
 *.class
 NaoSCP/bin
+RobotControl/bin
 
 #python
 *.pyc
