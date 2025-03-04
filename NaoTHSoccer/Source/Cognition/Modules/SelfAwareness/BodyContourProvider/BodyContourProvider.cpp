@@ -112,7 +112,8 @@ void BodyContourProvider::add(const Pose3D& origin, const std::vector<Vector3d>&
 {
   // constants
   const Vector2i frameUpperLeft(0,0);
-  const Vector2i frameLowerRight(getCameraInfo().resolutionWidth-1, getCameraInfo().resolutionHeight-1);
+  const Vector2i frameLowerRight(static_cast<int>(getCameraInfo().resolutionWidth)-1,
+                                 static_cast<int>(getCameraInfo().resolutionHeight)-1);
   
   // estimate the position of contour-point based on current position of the limb
   Vector3d p1 = origin * Vector3d(c[0].x, c[0].y * sign, c[0].z);
@@ -174,8 +175,8 @@ void BodyContourProvider::add(const Pose3D& origin, const std::vector<Vector3d>&
 
 void BodyContourProvider::updateBodyContour(const Vector2i& p1, const Vector2i& p2, BodyContour::BodyPartID id)
 {
-  const Vector2i cellOneCoords = getBodyContour().getCellCoord(p1);
-  const Vector2i cellTwoCoords = getBodyContour().getCellCoord(p2);
+  const Vector2i cellOneCoords = getBodyContour().getCellCoordFromImageCoords(p1);
+  const Vector2i cellTwoCoords = getBodyContour().getCellCoordFromImageCoords(p2);
 
   const BodyContour::Cell& cellOne = getBodyContour().getCell(cellOneCoords);
   const BodyContour::Cell& cellTwo = getBodyContour().getCell(cellTwoCoords);
@@ -191,7 +192,9 @@ void BodyContourProvider::updateBodyContour(const Vector2i& p1, const Vector2i& 
 
     for(int i = 0; i <= scanLine.numberOfPixels; i++) {
       for (int j = point.y; j < getBodyContour().gridHeight(); j++) {
-        getBodyContour().setCell(point.x, j, id, true);
+        getBodyContour().setCell(static_cast<unsigned int>(point.x),
+                                 static_cast<unsigned int>(j),
+                                 id, true);
       }
       scanLine.getNext(point);
     }
@@ -232,12 +235,12 @@ bool BodyContourProvider::clampSegment(const Vector2i& ul, const Vector2i& lr, V
 void BodyContourProvider::debug() const
 {
   DEBUG_REQUEST("BodyContourProvider:draw_activated_cells",
-    for(int i = 0; i < getBodyContour().gridWidth(); i++) {
-      for (int j = 0; j < getBodyContour().gridHeight(); j++) {
+    for(unsigned int i = 0; i < getBodyContour().gridWidth(); i++) {
+      for (unsigned int j = 0; j < getBodyContour().gridHeight(); j++) {
         if (getBodyContour().getGrid()[i][j].occupied) {
-            RECT_PX(ColorClasses::black, 
-                  i*getBodyContour().cellSize(),     j*getBodyContour().cellSize(), 
-              (i+1)*getBodyContour().cellSize(), (j+1)*getBodyContour().cellSize());
+          RECT_PX(ColorClasses::black,
+                i*getBodyContour().cellSize(),     j*getBodyContour().cellSize(),
+            (i+1)*getBodyContour().cellSize(), (j+1)*getBodyContour().cellSize());
         }
       }
     }

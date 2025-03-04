@@ -104,6 +104,16 @@ public:
     naoth::ImageDrawings::drawRectToImage(*this, startX, startY, endX, endY, yy, cb, cr);
   }
 
+  inline void drawRectToImage(
+    ColorClasses::Color color,
+    const unsigned int startX,
+    const unsigned int startY,
+    const unsigned int endX,
+    const unsigned int endY)
+  {
+    drawRectToImage(color, static_cast<int>(startX), static_cast<int>(startY), static_cast<int>(endX), static_cast<int>(endY));
+  }
+
   inline void drawLineToImage(
     ColorClasses::Color color, 
     const int startX,
