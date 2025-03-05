@@ -12,7 +12,7 @@ project "TfliteBenchmark"
 	}
   
   links {
-    "tensorflow-lite"
+    "tensorflowlite_c"
 	}
   
   cppdialect "c++14"

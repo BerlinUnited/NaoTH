@@ -1,2 +1,4 @@
 # Heinrich says it was only used for remote games in 2021 - it has nothing to do with our log stick
-KERNEL=="sd*", SUBSYSTEMS=="usb", ENV{ID_FS_TYPE}=="ext3|ext4", ACTION=="add", SYMLINK+="logstick", RUN+="/usr/bin/mount_logstick"
+# Update: we now use this script to actually mount our log stick!
+
+ACTION=="add", SUBSYSTEM=="block", KERNEL=="sd*", ENV{ID_FS_LABEL}=="*logstick*||*LOGSTICK*", ENV{ID_FS_TYPE}=="vfat", ENV{SYSTEMD_WANTS}+="mount_logstick"

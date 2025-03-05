@@ -68,13 +68,18 @@ public:
  ::google::protobuf::internal::ExplicitlyConstructed<TeamState>
      _instance;
 } _TeamState_default_instance_;
+class TeamMessageDebugDefaultTypeInternal {
+public:
+ ::google::protobuf::internal::ExplicitlyConstructed<TeamMessageDebug>
+     _instance;
+} _TeamMessageDebug_default_instance_;
 
 namespace protobuf_TeamMessage_2eproto {
 
 
 namespace {
 
-::google::protobuf::Metadata file_level_metadata[10];
+::google::protobuf::Metadata file_level_metadata[11];
 const ::google::protobuf::EnumDescriptor* file_level_enum_descriptors[4];
 
 }  // namespace
@@ -90,6 +95,7 @@ PROTOBUF_CONSTEXPR_VAR ::google::protobuf::internal::AuxillaryParseTableField
 };
 PROTOBUF_CONSTEXPR_VAR ::google::protobuf::internal::ParseTable const
     TableStruct::schema[] GOOGLE_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
+  { NULL, NULL, 0, -1, -1, -1, -1, NULL, false },
   { NULL, NULL, 0, -1, -1, -1, -1, NULL, false },
   { NULL, NULL, 0, -1, -1, -1, -1, NULL, false },
   { NULL, NULL, 0, -1, -1, -1, -1, NULL, false },
@@ -317,6 +323,55 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_ATTRIBUTE_SECTION
   ~0u,  // no _weak_field_map_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamState, players_),
   ~0u,
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessageDebug, _has_bits_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessageDebug, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessageDebug, bodyid_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessageDebug, teamnumber_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessageDebug, playernumber_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessageDebug, timestamp_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessageDebug, frameinfo_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessageDebug, robotstate_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessageDebug, robotrole_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessageDebug, pose_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessageDebug, fallen_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessageDebug, readytowalk_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessageDebug, batterycharge_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessageDebug, temperature_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessageDebug, cputemperature_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessageDebug, whistledetected_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessageDebug, whistlecount_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessageDebug, ballage_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessageDebug, ballposition_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessageDebug, ballvelocity_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessageDebug, timetoball_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessageDebug, teamball_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessageDebug, wasstriker_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessageDebug, wantstobestriker_),
+  0,
+  7,
+  8,
+  9,
+  1,
+  10,
+  2,
+  3,
+  13,
+  14,
+  20,
+  11,
+  12,
+  15,
+  17,
+  21,
+  4,
+  5,
+  18,
+  6,
+  16,
+  19,
 };
 static const ::google::protobuf::internal::MigrationSchema schemas[] GOOGLE_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
   { 0, 7, sizeof(RobotRole)},
@@ -329,6 +384,7 @@ static const ::google::protobuf::internal::MigrationSchema schemas[] GOOGLE_ATTR
   { 123, 139, sizeof(TeamMessageDecision)},
   { 150, 181, sizeof(TeamState_Player)},
   { 207, 213, sizeof(TeamState)},
+  { 214, 241, sizeof(TeamMessageDebug)},
 };
 
 static ::google::protobuf::Message const * const file_default_instances[] = {
@@ -342,6 +398,7 @@ static ::google::protobuf::Message const * const file_default_instances[] = {
   reinterpret_cast<const ::google::protobuf::Message*>(&_TeamMessageDecision_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&_TeamState_Player_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&_TeamState_default_instance_),
+  reinterpret_cast<const ::google::protobuf::Message*>(&_TeamMessageDebug_default_instance_),
 };
 
 namespace {
@@ -362,7 +419,7 @@ void protobuf_AssignDescriptorsOnce() {
 void protobuf_RegisterTypes(const ::std::string&) GOOGLE_ATTRIBUTE_COLD;
 void protobuf_RegisterTypes(const ::std::string&) {
   protobuf_AssignDescriptorsOnce();
-  ::google::protobuf::internal::RegisterAllTypes(file_level_metadata, 10);
+  ::google::protobuf::internal::RegisterAllTypes(file_level_metadata, 11);
 }
 
 }  // namespace
@@ -400,7 +457,13 @@ void TableStruct::InitDefaultsImpl() {
   ::google::protobuf::internal::OnShutdownDestroyMessage(
       &_TeamState_Player_default_instance_);_TeamState_default_instance_._instance.DefaultConstruct();
   ::google::protobuf::internal::OnShutdownDestroyMessage(
-      &_TeamState_default_instance_);_Opponent_default_instance_._instance.get_mutable()->poseonfield_ = const_cast< ::naothmessages::Pose2D*>(
+      &_TeamState_default_instance_);TeamMessageDebug::_default_bodyid_.DefaultConstruct();
+  *TeamMessageDebug::_default_bodyid_.get_mutable() = ::std::string("unknown", 7);
+  ::google::protobuf::internal::OnShutdownDestroyString(
+      TeamMessageDebug::_default_bodyid_.get_mutable());
+  _TeamMessageDebug_default_instance_._instance.DefaultConstruct();
+  ::google::protobuf::internal::OnShutdownDestroyMessage(
+      &_TeamMessageDebug_default_instance_);_Opponent_default_instance_._instance.get_mutable()->poseonfield_ = const_cast< ::naothmessages::Pose2D*>(
       ::naothmessages::Pose2D::internal_default_instance());
   _BUUserTeamMessage_default_instance_._instance.get_mutable()->teamball_ = const_cast< ::naothmessages::DoubleVector2*>(
       ::naothmessages::DoubleVector2::internal_default_instance());
@@ -428,6 +491,18 @@ void TableStruct::InitDefaultsImpl() {
       ::naothmessages::DoubleVector2::internal_default_instance());
   _TeamState_Player_default_instance_._instance.get_mutable()->robotrole_ = const_cast< ::naothmessages::RobotRole*>(
       ::naothmessages::RobotRole::internal_default_instance());
+  _TeamMessageDebug_default_instance_._instance.get_mutable()->frameinfo_ = const_cast< ::naothmessages::FrameInfo*>(
+      ::naothmessages::FrameInfo::internal_default_instance());
+  _TeamMessageDebug_default_instance_._instance.get_mutable()->robotrole_ = const_cast< ::naothmessages::RobotRole*>(
+      ::naothmessages::RobotRole::internal_default_instance());
+  _TeamMessageDebug_default_instance_._instance.get_mutable()->pose_ = const_cast< ::naothmessages::Pose2D*>(
+      ::naothmessages::Pose2D::internal_default_instance());
+  _TeamMessageDebug_default_instance_._instance.get_mutable()->ballposition_ = const_cast< ::naothmessages::DoubleVector2*>(
+      ::naothmessages::DoubleVector2::internal_default_instance());
+  _TeamMessageDebug_default_instance_._instance.get_mutable()->ballvelocity_ = const_cast< ::naothmessages::DoubleVector2*>(
+      ::naothmessages::DoubleVector2::internal_default_instance());
+  _TeamMessageDebug_default_instance_._instance.get_mutable()->teamball_ = const_cast< ::naothmessages::DoubleVector2*>(
+      ::naothmessages::DoubleVector2::internal_default_instance());
 }
 
 void InitDefaults() {
@@ -510,27 +585,46 @@ void AddDescriptorsImpl() {
       "oBeStrikerUpdate\030\026 \001(\004\022\031\n\nwasStriker\030\027 \001"
       "(\010:\005false\022\030\n\020wasStrikerUpdate\030\030 \001(\004\022+\n\tr"
       "obotRole\030\031 \001(\0132\030.naothmessages.RobotRole"
-      "\022\027\n\017robotRoleUpdate\030\032 \001(\004*\262\001\n\tTeamColor\022"
-      "\014\n\010blueTeam\020\000\022\013\n\007redTeam\020\001\022\016\n\nyellowTeam"
-      "\020\002\022\r\n\tblackTeam\020\003\022\r\n\twhiteTeam\020\004\022\r\n\tgree"
-      "nTeam\020\005\022\016\n\norangeTeam\020\006\022\016\n\npurpleTeam\020\007\022"
-      "\r\n\tbrownTeam\020\010\022\014\n\010grayTeam\020\t\022\020\n\013invalidT"
-      "eam\020\377\001*d\n\nRobotState\022\013\n\007initial\020\000\022\t\n\005rea"
-      "dy\020\001\022\007\n\003set\020\002\022\013\n\007playing\020\003\022\014\n\010finished\020\004"
-      "\022\r\n\tpenalized\020\005\022\013\n\007unstiff\020\006*\230\002\n\017RobotRo"
-      "leStatic\022\026\n\022role_defender_left\020\000\022\030\n\024role"
-      "_defender_center\020\001\022\027\n\023role_defender_righ"
-      "t\020\002\022\030\n\024role_midfielder_left\020\003\022\032\n\026role_mi"
-      "dfielder_center\020\004\022\031\n\025role_midfielder_rig"
-      "ht\020\005\022\025\n\021role_forward_left\020\006\022\027\n\023role_forw"
-      "ard_center\020\007\022\026\n\022role_forward_right\020\010\022\017\n\013"
-      "role_goalie\020\t\022\020\n\014role_unknown\020\n*b\n\020Robot"
-      "RoleDynamic\022\r\n\trole_none\020\000\022\022\n\016role_suppo"
-      "rter\020\001\022\031\n\025role_goalie_supporter\020\002\022\020\n\014rol"
-      "e_striker\020\003B\033\n\031de.naoth.rc.core.messages"
+      "\022\027\n\017robotRoleUpdate\030\032 \001(\004\"\327\005\n\020TeamMessag"
+      "eDebug\022\027\n\006bodyID\030\001 \002(\t:\007unknown\022\025\n\nteamN"
+      "umber\030\002 \002(\r:\0010\022\027\n\014playerNumber\030\003 \002(\r:\0010\022"
+      "\024\n\ttimestamp\030\004 \002(\004:\0010\022+\n\tframeInfo\030\005 \001(\013"
+      "2\030.naothmessages.FrameInfo\0226\n\nrobotState"
+      "\030\006 \001(\0162\031.naothmessages.RobotState:\007initi"
+      "al\022+\n\trobotRole\030\007 \001(\0132\030.naothmessages.Ro"
+      "botRole\022#\n\004pose\030\010 \001(\0132\025.naothmessages.Po"
+      "se2D\022\025\n\006fallen\030\t \001(\010:\005false\022\023\n\013readyToWa"
+      "lk\030\n \001(\010\022\030\n\rbatteryCharge\030\013 \001(\002:\0011\022\026\n\013te"
+      "mperature\030\014 \001(\002:\0010\022\031\n\016cpuTemperature\030\r \001"
+      "(\002:\0010\022\036\n\017whistleDetected\030\016 \001(\010:\005false\022\027\n"
+      "\014whistleCount\030\017 \001(\005:\0010\022\023\n\007ballAge\030\020 \001(\005:"
+      "\002-1\0222\n\014ballPosition\030\021 \001(\0132\034.naothmessage"
+      "s.DoubleVector2\0222\n\014ballVelocity\030\022 \001(\0132\034."
+      "naothmessages.DoubleVector2\022\022\n\ntimeToBal"
+      "l\030\023 \001(\r\022.\n\010teamBall\030\024 \001(\0132\034.naothmessage"
+      "s.DoubleVector2\022\031\n\nwasStriker\030\025 \001(\010:\005fal"
+      "se\022\037\n\020wantsToBeStriker\030\026 \001(\010:\005false*\262\001\n\t"
+      "TeamColor\022\014\n\010blueTeam\020\000\022\013\n\007redTeam\020\001\022\016\n\n"
+      "yellowTeam\020\002\022\r\n\tblackTeam\020\003\022\r\n\twhiteTeam"
+      "\020\004\022\r\n\tgreenTeam\020\005\022\016\n\norangeTeam\020\006\022\016\n\npur"
+      "pleTeam\020\007\022\r\n\tbrownTeam\020\010\022\014\n\010grayTeam\020\t\022\020"
+      "\n\013invalidTeam\020\377\001*q\n\nRobotState\022\013\n\007initia"
+      "l\020\000\022\t\n\005ready\020\001\022\007\n\003set\020\002\022\013\n\007playing\020\003\022\014\n\010"
+      "finished\020\004\022\r\n\tpenalized\020\005\022\013\n\007unstiff\020\006\022\013"
+      "\n\007standby\020\007*\230\002\n\017RobotRoleStatic\022\026\n\022role_"
+      "defender_left\020\000\022\030\n\024role_defender_center\020"
+      "\001\022\027\n\023role_defender_right\020\002\022\030\n\024role_midfi"
+      "elder_left\020\003\022\032\n\026role_midfielder_center\020\004"
+      "\022\031\n\025role_midfielder_right\020\005\022\025\n\021role_forw"
+      "ard_left\020\006\022\027\n\023role_forward_center\020\007\022\026\n\022r"
+      "ole_forward_right\020\010\022\017\n\013role_goalie\020\t\022\020\n\014"
+      "role_unknown\020\n*b\n\020RobotRoleDynamic\022\r\n\tro"
+      "le_none\020\000\022\022\n\016role_supporter\020\001\022\031\n\025role_go"
+      "alie_supporter\020\002\022\020\n\014role_striker\020\003B\033\n\031de"
+      ".naoth.rc.core.messages"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 3600);
+      descriptor, 4343);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "TeamMessage.proto", &protobuf_RegisterTypes);
   ::naothmessages::protobuf_CommonTypes_2eproto::AddDescriptors();
@@ -587,6 +681,7 @@ bool RobotState_IsValid(int value) {
     case 4:
     case 5:
     case 6:
+    case 7:
       return true;
     default:
       return false;
@@ -8557,6 +8652,1875 @@ const ::google::protobuf::RepeatedPtrField< ::naothmessages::TeamState_Player >&
 TeamState::players() const {
   // @@protoc_insertion_point(field_list:naothmessages.TeamState.players)
   return players_;
+}
+
+#endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
+
+// ===================================================================
+
+::google::protobuf::internal::ExplicitlyConstructed< ::std::string> TeamMessageDebug::_default_bodyid_;
+#if !defined(_MSC_VER) || _MSC_VER >= 1900
+const int TeamMessageDebug::kBodyIDFieldNumber;
+const int TeamMessageDebug::kTeamNumberFieldNumber;
+const int TeamMessageDebug::kPlayerNumberFieldNumber;
+const int TeamMessageDebug::kTimestampFieldNumber;
+const int TeamMessageDebug::kFrameInfoFieldNumber;
+const int TeamMessageDebug::kRobotStateFieldNumber;
+const int TeamMessageDebug::kRobotRoleFieldNumber;
+const int TeamMessageDebug::kPoseFieldNumber;
+const int TeamMessageDebug::kFallenFieldNumber;
+const int TeamMessageDebug::kReadyToWalkFieldNumber;
+const int TeamMessageDebug::kBatteryChargeFieldNumber;
+const int TeamMessageDebug::kTemperatureFieldNumber;
+const int TeamMessageDebug::kCpuTemperatureFieldNumber;
+const int TeamMessageDebug::kWhistleDetectedFieldNumber;
+const int TeamMessageDebug::kWhistleCountFieldNumber;
+const int TeamMessageDebug::kBallAgeFieldNumber;
+const int TeamMessageDebug::kBallPositionFieldNumber;
+const int TeamMessageDebug::kBallVelocityFieldNumber;
+const int TeamMessageDebug::kTimeToBallFieldNumber;
+const int TeamMessageDebug::kTeamBallFieldNumber;
+const int TeamMessageDebug::kWasStrikerFieldNumber;
+const int TeamMessageDebug::kWantsToBeStrikerFieldNumber;
+#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+
+TeamMessageDebug::TeamMessageDebug()
+  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
+  if (GOOGLE_PREDICT_TRUE(this != internal_default_instance())) {
+    protobuf_TeamMessage_2eproto::InitDefaults();
+  }
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:naothmessages.TeamMessageDebug)
+}
+TeamMessageDebug::TeamMessageDebug(const TeamMessageDebug& from)
+  : ::google::protobuf::Message(),
+      _internal_metadata_(NULL),
+      _has_bits_(from._has_bits_),
+      _cached_size_(0) {
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  bodyid_.UnsafeSetDefault(&TeamMessageDebug::_default_bodyid_.get());
+  if (from.has_bodyid()) {
+    bodyid_.AssignWithDefault(&TeamMessageDebug::_default_bodyid_.get(), from.bodyid_);
+  }
+  if (from.has_frameinfo()) {
+    frameinfo_ = new ::naothmessages::FrameInfo(*from.frameinfo_);
+  } else {
+    frameinfo_ = NULL;
+  }
+  if (from.has_robotrole()) {
+    robotrole_ = new ::naothmessages::RobotRole(*from.robotrole_);
+  } else {
+    robotrole_ = NULL;
+  }
+  if (from.has_pose()) {
+    pose_ = new ::naothmessages::Pose2D(*from.pose_);
+  } else {
+    pose_ = NULL;
+  }
+  if (from.has_ballposition()) {
+    ballposition_ = new ::naothmessages::DoubleVector2(*from.ballposition_);
+  } else {
+    ballposition_ = NULL;
+  }
+  if (from.has_ballvelocity()) {
+    ballvelocity_ = new ::naothmessages::DoubleVector2(*from.ballvelocity_);
+  } else {
+    ballvelocity_ = NULL;
+  }
+  if (from.has_teamball()) {
+    teamball_ = new ::naothmessages::DoubleVector2(*from.teamball_);
+  } else {
+    teamball_ = NULL;
+  }
+  ::memcpy(&teamnumber_, &from.teamnumber_,
+    static_cast<size_t>(reinterpret_cast<char*>(&ballage_) -
+    reinterpret_cast<char*>(&teamnumber_)) + sizeof(ballage_));
+  // @@protoc_insertion_point(copy_constructor:naothmessages.TeamMessageDebug)
+}
+
+void TeamMessageDebug::SharedCtor() {
+  _cached_size_ = 0;
+  bodyid_.UnsafeSetDefault(&TeamMessageDebug::_default_bodyid_.get());
+  ::memset(&frameinfo_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&wantstobestriker_) -
+      reinterpret_cast<char*>(&frameinfo_)) + sizeof(wantstobestriker_));
+  batterycharge_ = 1;
+  ballage_ = -1;
+}
+
+TeamMessageDebug::~TeamMessageDebug() {
+  // @@protoc_insertion_point(destructor:naothmessages.TeamMessageDebug)
+  SharedDtor();
+}
+
+void TeamMessageDebug::SharedDtor() {
+  bodyid_.DestroyNoArena(&TeamMessageDebug::_default_bodyid_.get());
+  if (this != internal_default_instance()) delete frameinfo_;
+  if (this != internal_default_instance()) delete robotrole_;
+  if (this != internal_default_instance()) delete pose_;
+  if (this != internal_default_instance()) delete ballposition_;
+  if (this != internal_default_instance()) delete ballvelocity_;
+  if (this != internal_default_instance()) delete teamball_;
+}
+
+void TeamMessageDebug::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* TeamMessageDebug::descriptor() {
+  protobuf_TeamMessage_2eproto::protobuf_AssignDescriptorsOnce();
+  return protobuf_TeamMessage_2eproto::file_level_metadata[kIndexInFileMessages].descriptor;
+}
+
+const TeamMessageDebug& TeamMessageDebug::default_instance() {
+  protobuf_TeamMessage_2eproto::InitDefaults();
+  return *internal_default_instance();
+}
+
+TeamMessageDebug* TeamMessageDebug::New(::google::protobuf::Arena* arena) const {
+  TeamMessageDebug* n = new TeamMessageDebug;
+  if (arena != NULL) {
+    arena->Own(n);
+  }
+  return n;
+}
+
+void TeamMessageDebug::Clear() {
+// @@protoc_insertion_point(message_clear_start:naothmessages.TeamMessageDebug)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _has_bits_[0];
+  if (cached_has_bits & 127u) {
+    if (cached_has_bits & 0x00000001u) {
+      GOOGLE_DCHECK(!bodyid_.IsDefault(&TeamMessageDebug::_default_bodyid_.get()));
+      (*bodyid_.UnsafeRawStringPointer())->assign(*&TeamMessageDebug::_default_bodyid_.get());
+    }
+    if (cached_has_bits & 0x00000002u) {
+      GOOGLE_DCHECK(frameinfo_ != NULL);
+      frameinfo_->::naothmessages::FrameInfo::Clear();
+    }
+    if (cached_has_bits & 0x00000004u) {
+      GOOGLE_DCHECK(robotrole_ != NULL);
+      robotrole_->::naothmessages::RobotRole::Clear();
+    }
+    if (cached_has_bits & 0x00000008u) {
+      GOOGLE_DCHECK(pose_ != NULL);
+      pose_->::naothmessages::Pose2D::Clear();
+    }
+    if (cached_has_bits & 0x00000010u) {
+      GOOGLE_DCHECK(ballposition_ != NULL);
+      ballposition_->::naothmessages::DoubleVector2::Clear();
+    }
+    if (cached_has_bits & 0x00000020u) {
+      GOOGLE_DCHECK(ballvelocity_ != NULL);
+      ballvelocity_->::naothmessages::DoubleVector2::Clear();
+    }
+    if (cached_has_bits & 0x00000040u) {
+      GOOGLE_DCHECK(teamball_ != NULL);
+      teamball_->::naothmessages::DoubleVector2::Clear();
+    }
+  }
+  teamnumber_ = 0u;
+  if (cached_has_bits & 65280u) {
+    ::memset(&playernumber_, 0, static_cast<size_t>(
+        reinterpret_cast<char*>(&whistledetected_) -
+        reinterpret_cast<char*>(&playernumber_)) + sizeof(whistledetected_));
+  }
+  if (cached_has_bits & 4128768u) {
+    ::memset(&wasstriker_, 0, static_cast<size_t>(
+        reinterpret_cast<char*>(&wantstobestriker_) -
+        reinterpret_cast<char*>(&wasstriker_)) + sizeof(wantstobestriker_));
+    batterycharge_ = 1;
+    ballage_ = -1;
+  }
+  _has_bits_.Clear();
+  _internal_metadata_.Clear();
+}
+
+bool TeamMessageDebug::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:naothmessages.TeamMessageDebug)
+  for (;;) {
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(16383u);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // required string bodyID = 1 [default = "unknown"];
+      case 1: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(10u /* 10 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_bodyid()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+            this->bodyid().data(), static_cast<int>(this->bodyid().length()),
+            ::google::protobuf::internal::WireFormat::PARSE,
+            "naothmessages.TeamMessageDebug.bodyID");
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // required uint32 teamNumber = 2 [default = 0];
+      case 2: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(16u /* 16 & 0xFF */)) {
+          set_has_teamnumber();
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 input, &teamnumber_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // required uint32 playerNumber = 3 [default = 0];
+      case 3: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(24u /* 24 & 0xFF */)) {
+          set_has_playernumber();
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 input, &playernumber_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // required uint64 timestamp = 4 [default = 0];
+      case 4: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(32u /* 32 & 0xFF */)) {
+          set_has_timestamp();
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint64, ::google::protobuf::internal::WireFormatLite::TYPE_UINT64>(
+                 input, &timestamp_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // optional .naothmessages.FrameInfo frameInfo = 5;
+      case 5: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(42u /* 42 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_frameinfo()));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // optional .naothmessages.RobotState robotState = 6 [default = initial];
+      case 6: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(48u /* 48 & 0xFF */)) {
+          int value;
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   int, ::google::protobuf::internal::WireFormatLite::TYPE_ENUM>(
+                 input, &value)));
+          if (::naothmessages::RobotState_IsValid(value)) {
+            set_robotstate(static_cast< ::naothmessages::RobotState >(value));
+          } else {
+            mutable_unknown_fields()->AddVarint(
+                6, static_cast< ::google::protobuf::uint64>(value));
+          }
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // optional .naothmessages.RobotRole robotRole = 7;
+      case 7: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(58u /* 58 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_robotrole()));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // optional .naothmessages.Pose2D pose = 8;
+      case 8: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(66u /* 66 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_pose()));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // optional bool fallen = 9 [default = false];
+      case 9: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(72u /* 72 & 0xFF */)) {
+          set_has_fallen();
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
+                 input, &fallen_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // optional bool readyToWalk = 10;
+      case 10: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(80u /* 80 & 0xFF */)) {
+          set_has_readytowalk();
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
+                 input, &readytowalk_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // optional float batteryCharge = 11 [default = 1];
+      case 11: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(93u /* 93 & 0xFF */)) {
+          set_has_batterycharge();
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 input, &batterycharge_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // optional float temperature = 12 [default = 0];
+      case 12: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(101u /* 101 & 0xFF */)) {
+          set_has_temperature();
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 input, &temperature_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // optional float cpuTemperature = 13 [default = 0];
+      case 13: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(109u /* 109 & 0xFF */)) {
+          set_has_cputemperature();
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 input, &cputemperature_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // optional bool whistleDetected = 14 [default = false];
+      case 14: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(112u /* 112 & 0xFF */)) {
+          set_has_whistledetected();
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
+                 input, &whistledetected_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // optional int32 whistleCount = 15 [default = 0];
+      case 15: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(120u /* 120 & 0xFF */)) {
+          set_has_whistlecount();
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &whistlecount_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // optional int32 ballAge = 16 [default = -1];
+      case 16: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(128u /* 128 & 0xFF */)) {
+          set_has_ballage();
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &ballage_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // optional .naothmessages.DoubleVector2 ballPosition = 17;
+      case 17: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(138u /* 138 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_ballposition()));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // optional .naothmessages.DoubleVector2 ballVelocity = 18;
+      case 18: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(146u /* 146 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_ballvelocity()));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // optional uint32 timeToBall = 19;
+      case 19: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(152u /* 152 & 0xFF */)) {
+          set_has_timetoball();
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 input, &timetoball_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // optional .naothmessages.DoubleVector2 teamBall = 20;
+      case 20: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(162u /* 162 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_teamball()));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // optional bool wasStriker = 21 [default = false];
+      case 21: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(168u /* 168 & 0xFF */)) {
+          set_has_wasstriker();
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
+                 input, &wasstriker_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // optional bool wantsToBeStriker = 22 [default = false];
+      case 22: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(176u /* 176 & 0xFF */)) {
+          set_has_wantstobestriker();
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
+                 input, &wantstobestriker_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, _internal_metadata_.mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+success:
+  // @@protoc_insertion_point(parse_success:naothmessages.TeamMessageDebug)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:naothmessages.TeamMessageDebug)
+  return false;
+#undef DO_
+}
+
+void TeamMessageDebug::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:naothmessages.TeamMessageDebug)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  cached_has_bits = _has_bits_[0];
+  // required string bodyID = 1 [default = "unknown"];
+  if (cached_has_bits & 0x00000001u) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->bodyid().data(), static_cast<int>(this->bodyid().length()),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "naothmessages.TeamMessageDebug.bodyID");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      1, this->bodyid(), output);
+  }
+
+  // required uint32 teamNumber = 2 [default = 0];
+  if (cached_has_bits & 0x00000080u) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(2, this->teamnumber(), output);
+  }
+
+  // required uint32 playerNumber = 3 [default = 0];
+  if (cached_has_bits & 0x00000100u) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(3, this->playernumber(), output);
+  }
+
+  // required uint64 timestamp = 4 [default = 0];
+  if (cached_has_bits & 0x00000200u) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt64(4, this->timestamp(), output);
+  }
+
+  // optional .naothmessages.FrameInfo frameInfo = 5;
+  if (cached_has_bits & 0x00000002u) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      5, *this->frameinfo_, output);
+  }
+
+  // optional .naothmessages.RobotState robotState = 6 [default = initial];
+  if (cached_has_bits & 0x00000400u) {
+    ::google::protobuf::internal::WireFormatLite::WriteEnum(
+      6, this->robotstate(), output);
+  }
+
+  // optional .naothmessages.RobotRole robotRole = 7;
+  if (cached_has_bits & 0x00000004u) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      7, *this->robotrole_, output);
+  }
+
+  // optional .naothmessages.Pose2D pose = 8;
+  if (cached_has_bits & 0x00000008u) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      8, *this->pose_, output);
+  }
+
+  // optional bool fallen = 9 [default = false];
+  if (cached_has_bits & 0x00002000u) {
+    ::google::protobuf::internal::WireFormatLite::WriteBool(9, this->fallen(), output);
+  }
+
+  // optional bool readyToWalk = 10;
+  if (cached_has_bits & 0x00004000u) {
+    ::google::protobuf::internal::WireFormatLite::WriteBool(10, this->readytowalk(), output);
+  }
+
+  // optional float batteryCharge = 11 [default = 1];
+  if (cached_has_bits & 0x00100000u) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(11, this->batterycharge(), output);
+  }
+
+  // optional float temperature = 12 [default = 0];
+  if (cached_has_bits & 0x00000800u) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(12, this->temperature(), output);
+  }
+
+  // optional float cpuTemperature = 13 [default = 0];
+  if (cached_has_bits & 0x00001000u) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(13, this->cputemperature(), output);
+  }
+
+  // optional bool whistleDetected = 14 [default = false];
+  if (cached_has_bits & 0x00008000u) {
+    ::google::protobuf::internal::WireFormatLite::WriteBool(14, this->whistledetected(), output);
+  }
+
+  // optional int32 whistleCount = 15 [default = 0];
+  if (cached_has_bits & 0x00020000u) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(15, this->whistlecount(), output);
+  }
+
+  // optional int32 ballAge = 16 [default = -1];
+  if (cached_has_bits & 0x00200000u) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(16, this->ballage(), output);
+  }
+
+  // optional .naothmessages.DoubleVector2 ballPosition = 17;
+  if (cached_has_bits & 0x00000010u) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      17, *this->ballposition_, output);
+  }
+
+  // optional .naothmessages.DoubleVector2 ballVelocity = 18;
+  if (cached_has_bits & 0x00000020u) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      18, *this->ballvelocity_, output);
+  }
+
+  // optional uint32 timeToBall = 19;
+  if (cached_has_bits & 0x00040000u) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(19, this->timetoball(), output);
+  }
+
+  // optional .naothmessages.DoubleVector2 teamBall = 20;
+  if (cached_has_bits & 0x00000040u) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      20, *this->teamball_, output);
+  }
+
+  // optional bool wasStriker = 21 [default = false];
+  if (cached_has_bits & 0x00010000u) {
+    ::google::protobuf::internal::WireFormatLite::WriteBool(21, this->wasstriker(), output);
+  }
+
+  // optional bool wantsToBeStriker = 22 [default = false];
+  if (cached_has_bits & 0x00080000u) {
+    ::google::protobuf::internal::WireFormatLite::WriteBool(22, this->wantstobestriker(), output);
+  }
+
+  if (_internal_metadata_.have_unknown_fields()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        _internal_metadata_.unknown_fields(), output);
+  }
+  // @@protoc_insertion_point(serialize_end:naothmessages.TeamMessageDebug)
+}
+
+::google::protobuf::uint8* TeamMessageDebug::InternalSerializeWithCachedSizesToArray(
+    bool deterministic, ::google::protobuf::uint8* target) const {
+  (void)deterministic; // Unused
+  // @@protoc_insertion_point(serialize_to_array_start:naothmessages.TeamMessageDebug)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  cached_has_bits = _has_bits_[0];
+  // required string bodyID = 1 [default = "unknown"];
+  if (cached_has_bits & 0x00000001u) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->bodyid().data(), static_cast<int>(this->bodyid().length()),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "naothmessages.TeamMessageDebug.bodyID");
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        1, this->bodyid(), target);
+  }
+
+  // required uint32 teamNumber = 2 [default = 0];
+  if (cached_has_bits & 0x00000080u) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(2, this->teamnumber(), target);
+  }
+
+  // required uint32 playerNumber = 3 [default = 0];
+  if (cached_has_bits & 0x00000100u) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(3, this->playernumber(), target);
+  }
+
+  // required uint64 timestamp = 4 [default = 0];
+  if (cached_has_bits & 0x00000200u) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt64ToArray(4, this->timestamp(), target);
+  }
+
+  // optional .naothmessages.FrameInfo frameInfo = 5;
+  if (cached_has_bits & 0x00000002u) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageNoVirtualToArray(
+        5, *this->frameinfo_, deterministic, target);
+  }
+
+  // optional .naothmessages.RobotState robotState = 6 [default = initial];
+  if (cached_has_bits & 0x00000400u) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteEnumToArray(
+      6, this->robotstate(), target);
+  }
+
+  // optional .naothmessages.RobotRole robotRole = 7;
+  if (cached_has_bits & 0x00000004u) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageNoVirtualToArray(
+        7, *this->robotrole_, deterministic, target);
+  }
+
+  // optional .naothmessages.Pose2D pose = 8;
+  if (cached_has_bits & 0x00000008u) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageNoVirtualToArray(
+        8, *this->pose_, deterministic, target);
+  }
+
+  // optional bool fallen = 9 [default = false];
+  if (cached_has_bits & 0x00002000u) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(9, this->fallen(), target);
+  }
+
+  // optional bool readyToWalk = 10;
+  if (cached_has_bits & 0x00004000u) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(10, this->readytowalk(), target);
+  }
+
+  // optional float batteryCharge = 11 [default = 1];
+  if (cached_has_bits & 0x00100000u) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(11, this->batterycharge(), target);
+  }
+
+  // optional float temperature = 12 [default = 0];
+  if (cached_has_bits & 0x00000800u) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(12, this->temperature(), target);
+  }
+
+  // optional float cpuTemperature = 13 [default = 0];
+  if (cached_has_bits & 0x00001000u) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(13, this->cputemperature(), target);
+  }
+
+  // optional bool whistleDetected = 14 [default = false];
+  if (cached_has_bits & 0x00008000u) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(14, this->whistledetected(), target);
+  }
+
+  // optional int32 whistleCount = 15 [default = 0];
+  if (cached_has_bits & 0x00020000u) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(15, this->whistlecount(), target);
+  }
+
+  // optional int32 ballAge = 16 [default = -1];
+  if (cached_has_bits & 0x00200000u) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(16, this->ballage(), target);
+  }
+
+  // optional .naothmessages.DoubleVector2 ballPosition = 17;
+  if (cached_has_bits & 0x00000010u) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageNoVirtualToArray(
+        17, *this->ballposition_, deterministic, target);
+  }
+
+  // optional .naothmessages.DoubleVector2 ballVelocity = 18;
+  if (cached_has_bits & 0x00000020u) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageNoVirtualToArray(
+        18, *this->ballvelocity_, deterministic, target);
+  }
+
+  // optional uint32 timeToBall = 19;
+  if (cached_has_bits & 0x00040000u) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(19, this->timetoball(), target);
+  }
+
+  // optional .naothmessages.DoubleVector2 teamBall = 20;
+  if (cached_has_bits & 0x00000040u) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageNoVirtualToArray(
+        20, *this->teamball_, deterministic, target);
+  }
+
+  // optional bool wasStriker = 21 [default = false];
+  if (cached_has_bits & 0x00010000u) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(21, this->wasstriker(), target);
+  }
+
+  // optional bool wantsToBeStriker = 22 [default = false];
+  if (cached_has_bits & 0x00080000u) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(22, this->wantstobestriker(), target);
+  }
+
+  if (_internal_metadata_.have_unknown_fields()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields(), target);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:naothmessages.TeamMessageDebug)
+  return target;
+}
+
+size_t TeamMessageDebug::RequiredFieldsByteSizeFallback() const {
+// @@protoc_insertion_point(required_fields_byte_size_fallback_start:naothmessages.TeamMessageDebug)
+  size_t total_size = 0;
+
+  if (has_bodyid()) {
+    // required string bodyID = 1 [default = "unknown"];
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::StringSize(
+        this->bodyid());
+  }
+
+  if (has_teamnumber()) {
+    // required uint32 teamNumber = 2 [default = 0];
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::UInt32Size(
+        this->teamnumber());
+  }
+
+  if (has_playernumber()) {
+    // required uint32 playerNumber = 3 [default = 0];
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::UInt32Size(
+        this->playernumber());
+  }
+
+  if (has_timestamp()) {
+    // required uint64 timestamp = 4 [default = 0];
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::UInt64Size(
+        this->timestamp());
+  }
+
+  return total_size;
+}
+size_t TeamMessageDebug::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:naothmessages.TeamMessageDebug)
+  size_t total_size = 0;
+
+  if (_internal_metadata_.have_unknown_fields()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        _internal_metadata_.unknown_fields());
+  }
+  if (((_has_bits_[0] & 0x00000381) ^ 0x00000381) == 0) {  // All required fields are present.
+    // required string bodyID = 1 [default = "unknown"];
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::StringSize(
+        this->bodyid());
+
+    // required uint32 teamNumber = 2 [default = 0];
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::UInt32Size(
+        this->teamnumber());
+
+    // required uint32 playerNumber = 3 [default = 0];
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::UInt32Size(
+        this->playernumber());
+
+    // required uint64 timestamp = 4 [default = 0];
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::UInt64Size(
+        this->timestamp());
+
+  } else {
+    total_size += RequiredFieldsByteSizeFallback();
+  }
+  if (_has_bits_[0 / 32] & 126u) {
+    // optional .naothmessages.FrameInfo frameInfo = 5;
+    if (has_frameinfo()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          *this->frameinfo_);
+    }
+
+    // optional .naothmessages.RobotRole robotRole = 7;
+    if (has_robotrole()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          *this->robotrole_);
+    }
+
+    // optional .naothmessages.Pose2D pose = 8;
+    if (has_pose()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          *this->pose_);
+    }
+
+    // optional .naothmessages.DoubleVector2 ballPosition = 17;
+    if (has_ballposition()) {
+      total_size += 2 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          *this->ballposition_);
+    }
+
+    // optional .naothmessages.DoubleVector2 ballVelocity = 18;
+    if (has_ballvelocity()) {
+      total_size += 2 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          *this->ballvelocity_);
+    }
+
+    // optional .naothmessages.DoubleVector2 teamBall = 20;
+    if (has_teamball()) {
+      total_size += 2 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          *this->teamball_);
+    }
+
+  }
+  if (_has_bits_[8 / 32] & 64512u) {
+    // optional .naothmessages.RobotState robotState = 6 [default = initial];
+    if (has_robotstate()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::EnumSize(this->robotstate());
+    }
+
+    // optional float temperature = 12 [default = 0];
+    if (has_temperature()) {
+      total_size += 1 + 4;
+    }
+
+    // optional float cpuTemperature = 13 [default = 0];
+    if (has_cputemperature()) {
+      total_size += 1 + 4;
+    }
+
+    // optional bool fallen = 9 [default = false];
+    if (has_fallen()) {
+      total_size += 1 + 1;
+    }
+
+    // optional bool readyToWalk = 10;
+    if (has_readytowalk()) {
+      total_size += 1 + 1;
+    }
+
+    // optional bool whistleDetected = 14 [default = false];
+    if (has_whistledetected()) {
+      total_size += 1 + 1;
+    }
+
+  }
+  if (_has_bits_[16 / 32] & 4128768u) {
+    // optional bool wasStriker = 21 [default = false];
+    if (has_wasstriker()) {
+      total_size += 2 + 1;
+    }
+
+    // optional int32 whistleCount = 15 [default = 0];
+    if (has_whistlecount()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::Int32Size(
+          this->whistlecount());
+    }
+
+    // optional uint32 timeToBall = 19;
+    if (has_timetoball()) {
+      total_size += 2 +
+        ::google::protobuf::internal::WireFormatLite::UInt32Size(
+          this->timetoball());
+    }
+
+    // optional bool wantsToBeStriker = 22 [default = false];
+    if (has_wantstobestriker()) {
+      total_size += 2 + 1;
+    }
+
+    // optional float batteryCharge = 11 [default = 1];
+    if (has_batterycharge()) {
+      total_size += 1 + 4;
+    }
+
+    // optional int32 ballAge = 16 [default = -1];
+    if (has_ballage()) {
+      total_size += 2 +
+        ::google::protobuf::internal::WireFormatLite::Int32Size(
+          this->ballage());
+    }
+
+  }
+  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = cached_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void TeamMessageDebug::MergeFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:naothmessages.TeamMessageDebug)
+  GOOGLE_DCHECK_NE(&from, this);
+  const TeamMessageDebug* source =
+      ::google::protobuf::internal::DynamicCastToGenerated<const TeamMessageDebug>(
+          &from);
+  if (source == NULL) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:naothmessages.TeamMessageDebug)
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:naothmessages.TeamMessageDebug)
+    MergeFrom(*source);
+  }
+}
+
+void TeamMessageDebug::MergeFrom(const TeamMessageDebug& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:naothmessages.TeamMessageDebug)
+  GOOGLE_DCHECK_NE(&from, this);
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  cached_has_bits = from._has_bits_[0];
+  if (cached_has_bits & 255u) {
+    if (cached_has_bits & 0x00000001u) {
+      set_has_bodyid();
+      bodyid_.AssignWithDefault(&TeamMessageDebug::_default_bodyid_.get(), from.bodyid_);
+    }
+    if (cached_has_bits & 0x00000002u) {
+      mutable_frameinfo()->::naothmessages::FrameInfo::MergeFrom(from.frameinfo());
+    }
+    if (cached_has_bits & 0x00000004u) {
+      mutable_robotrole()->::naothmessages::RobotRole::MergeFrom(from.robotrole());
+    }
+    if (cached_has_bits & 0x00000008u) {
+      mutable_pose()->::naothmessages::Pose2D::MergeFrom(from.pose());
+    }
+    if (cached_has_bits & 0x00000010u) {
+      mutable_ballposition()->::naothmessages::DoubleVector2::MergeFrom(from.ballposition());
+    }
+    if (cached_has_bits & 0x00000020u) {
+      mutable_ballvelocity()->::naothmessages::DoubleVector2::MergeFrom(from.ballvelocity());
+    }
+    if (cached_has_bits & 0x00000040u) {
+      mutable_teamball()->::naothmessages::DoubleVector2::MergeFrom(from.teamball());
+    }
+    if (cached_has_bits & 0x00000080u) {
+      teamnumber_ = from.teamnumber_;
+    }
+    _has_bits_[0] |= cached_has_bits;
+  }
+  if (cached_has_bits & 65280u) {
+    if (cached_has_bits & 0x00000100u) {
+      playernumber_ = from.playernumber_;
+    }
+    if (cached_has_bits & 0x00000200u) {
+      timestamp_ = from.timestamp_;
+    }
+    if (cached_has_bits & 0x00000400u) {
+      robotstate_ = from.robotstate_;
+    }
+    if (cached_has_bits & 0x00000800u) {
+      temperature_ = from.temperature_;
+    }
+    if (cached_has_bits & 0x00001000u) {
+      cputemperature_ = from.cputemperature_;
+    }
+    if (cached_has_bits & 0x00002000u) {
+      fallen_ = from.fallen_;
+    }
+    if (cached_has_bits & 0x00004000u) {
+      readytowalk_ = from.readytowalk_;
+    }
+    if (cached_has_bits & 0x00008000u) {
+      whistledetected_ = from.whistledetected_;
+    }
+    _has_bits_[0] |= cached_has_bits;
+  }
+  if (cached_has_bits & 4128768u) {
+    if (cached_has_bits & 0x00010000u) {
+      wasstriker_ = from.wasstriker_;
+    }
+    if (cached_has_bits & 0x00020000u) {
+      whistlecount_ = from.whistlecount_;
+    }
+    if (cached_has_bits & 0x00040000u) {
+      timetoball_ = from.timetoball_;
+    }
+    if (cached_has_bits & 0x00080000u) {
+      wantstobestriker_ = from.wantstobestriker_;
+    }
+    if (cached_has_bits & 0x00100000u) {
+      batterycharge_ = from.batterycharge_;
+    }
+    if (cached_has_bits & 0x00200000u) {
+      ballage_ = from.ballage_;
+    }
+    _has_bits_[0] |= cached_has_bits;
+  }
+}
+
+void TeamMessageDebug::CopyFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:naothmessages.TeamMessageDebug)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void TeamMessageDebug::CopyFrom(const TeamMessageDebug& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:naothmessages.TeamMessageDebug)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool TeamMessageDebug::IsInitialized() const {
+  if ((_has_bits_[0] & 0x00000381) != 0x00000381) return false;
+  if (has_frameinfo()) {
+    if (!this->frameinfo_->IsInitialized()) return false;
+  }
+  if (has_robotrole()) {
+    if (!this->robotrole_->IsInitialized()) return false;
+  }
+  if (has_pose()) {
+    if (!this->pose_->IsInitialized()) return false;
+  }
+  if (has_ballposition()) {
+    if (!this->ballposition_->IsInitialized()) return false;
+  }
+  if (has_ballvelocity()) {
+    if (!this->ballvelocity_->IsInitialized()) return false;
+  }
+  if (has_teamball()) {
+    if (!this->teamball_->IsInitialized()) return false;
+  }
+  return true;
+}
+
+void TeamMessageDebug::Swap(TeamMessageDebug* other) {
+  if (other == this) return;
+  InternalSwap(other);
+}
+void TeamMessageDebug::InternalSwap(TeamMessageDebug* other) {
+  using std::swap;
+  bodyid_.Swap(&other->bodyid_);
+  swap(frameinfo_, other->frameinfo_);
+  swap(robotrole_, other->robotrole_);
+  swap(pose_, other->pose_);
+  swap(ballposition_, other->ballposition_);
+  swap(ballvelocity_, other->ballvelocity_);
+  swap(teamball_, other->teamball_);
+  swap(teamnumber_, other->teamnumber_);
+  swap(playernumber_, other->playernumber_);
+  swap(timestamp_, other->timestamp_);
+  swap(robotstate_, other->robotstate_);
+  swap(temperature_, other->temperature_);
+  swap(cputemperature_, other->cputemperature_);
+  swap(fallen_, other->fallen_);
+  swap(readytowalk_, other->readytowalk_);
+  swap(whistledetected_, other->whistledetected_);
+  swap(wasstriker_, other->wasstriker_);
+  swap(whistlecount_, other->whistlecount_);
+  swap(timetoball_, other->timetoball_);
+  swap(wantstobestriker_, other->wantstobestriker_);
+  swap(batterycharge_, other->batterycharge_);
+  swap(ballage_, other->ballage_);
+  swap(_has_bits_[0], other->_has_bits_[0]);
+  _internal_metadata_.Swap(&other->_internal_metadata_);
+  swap(_cached_size_, other->_cached_size_);
+}
+
+::google::protobuf::Metadata TeamMessageDebug::GetMetadata() const {
+  protobuf_TeamMessage_2eproto::protobuf_AssignDescriptorsOnce();
+  return protobuf_TeamMessage_2eproto::file_level_metadata[kIndexInFileMessages];
+}
+
+#if PROTOBUF_INLINE_NOT_IN_HEADERS
+// TeamMessageDebug
+
+// required string bodyID = 1 [default = "unknown"];
+bool TeamMessageDebug::has_bodyid() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+void TeamMessageDebug::set_has_bodyid() {
+  _has_bits_[0] |= 0x00000001u;
+}
+void TeamMessageDebug::clear_has_bodyid() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+void TeamMessageDebug::clear_bodyid() {
+  bodyid_.ClearToDefaultNoArena(&TeamMessageDebug::_default_bodyid_.get());
+  clear_has_bodyid();
+}
+const ::std::string& TeamMessageDebug::bodyid() const {
+  // @@protoc_insertion_point(field_get:naothmessages.TeamMessageDebug.bodyID)
+  return bodyid_.GetNoArena();
+}
+void TeamMessageDebug::set_bodyid(const ::std::string& value) {
+  set_has_bodyid();
+  bodyid_.SetNoArena(&TeamMessageDebug::_default_bodyid_.get(), value);
+  // @@protoc_insertion_point(field_set:naothmessages.TeamMessageDebug.bodyID)
+}
+#if LANG_CXX11
+void TeamMessageDebug::set_bodyid(::std::string&& value) {
+  set_has_bodyid();
+  bodyid_.SetNoArena(
+    &TeamMessageDebug::_default_bodyid_.get(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:naothmessages.TeamMessageDebug.bodyID)
+}
+#endif
+void TeamMessageDebug::set_bodyid(const char* value) {
+  GOOGLE_DCHECK(value != NULL);
+  set_has_bodyid();
+  bodyid_.SetNoArena(&TeamMessageDebug::_default_bodyid_.get(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:naothmessages.TeamMessageDebug.bodyID)
+}
+void TeamMessageDebug::set_bodyid(const char* value, size_t size) {
+  set_has_bodyid();
+  bodyid_.SetNoArena(&TeamMessageDebug::_default_bodyid_.get(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:naothmessages.TeamMessageDebug.bodyID)
+}
+::std::string* TeamMessageDebug::mutable_bodyid() {
+  set_has_bodyid();
+  // @@protoc_insertion_point(field_mutable:naothmessages.TeamMessageDebug.bodyID)
+  return bodyid_.MutableNoArena(&TeamMessageDebug::_default_bodyid_.get());
+}
+::std::string* TeamMessageDebug::release_bodyid() {
+  // @@protoc_insertion_point(field_release:naothmessages.TeamMessageDebug.bodyID)
+  clear_has_bodyid();
+  return bodyid_.ReleaseNoArena(&TeamMessageDebug::_default_bodyid_.get());
+}
+void TeamMessageDebug::set_allocated_bodyid(::std::string* bodyid) {
+  if (bodyid != NULL) {
+    set_has_bodyid();
+  } else {
+    clear_has_bodyid();
+  }
+  bodyid_.SetAllocatedNoArena(&TeamMessageDebug::_default_bodyid_.get(), bodyid);
+  // @@protoc_insertion_point(field_set_allocated:naothmessages.TeamMessageDebug.bodyID)
+}
+
+// required uint32 teamNumber = 2 [default = 0];
+bool TeamMessageDebug::has_teamnumber() const {
+  return (_has_bits_[0] & 0x00000080u) != 0;
+}
+void TeamMessageDebug::set_has_teamnumber() {
+  _has_bits_[0] |= 0x00000080u;
+}
+void TeamMessageDebug::clear_has_teamnumber() {
+  _has_bits_[0] &= ~0x00000080u;
+}
+void TeamMessageDebug::clear_teamnumber() {
+  teamnumber_ = 0u;
+  clear_has_teamnumber();
+}
+::google::protobuf::uint32 TeamMessageDebug::teamnumber() const {
+  // @@protoc_insertion_point(field_get:naothmessages.TeamMessageDebug.teamNumber)
+  return teamnumber_;
+}
+void TeamMessageDebug::set_teamnumber(::google::protobuf::uint32 value) {
+  set_has_teamnumber();
+  teamnumber_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.TeamMessageDebug.teamNumber)
+}
+
+// required uint32 playerNumber = 3 [default = 0];
+bool TeamMessageDebug::has_playernumber() const {
+  return (_has_bits_[0] & 0x00000100u) != 0;
+}
+void TeamMessageDebug::set_has_playernumber() {
+  _has_bits_[0] |= 0x00000100u;
+}
+void TeamMessageDebug::clear_has_playernumber() {
+  _has_bits_[0] &= ~0x00000100u;
+}
+void TeamMessageDebug::clear_playernumber() {
+  playernumber_ = 0u;
+  clear_has_playernumber();
+}
+::google::protobuf::uint32 TeamMessageDebug::playernumber() const {
+  // @@protoc_insertion_point(field_get:naothmessages.TeamMessageDebug.playerNumber)
+  return playernumber_;
+}
+void TeamMessageDebug::set_playernumber(::google::protobuf::uint32 value) {
+  set_has_playernumber();
+  playernumber_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.TeamMessageDebug.playerNumber)
+}
+
+// required uint64 timestamp = 4 [default = 0];
+bool TeamMessageDebug::has_timestamp() const {
+  return (_has_bits_[0] & 0x00000200u) != 0;
+}
+void TeamMessageDebug::set_has_timestamp() {
+  _has_bits_[0] |= 0x00000200u;
+}
+void TeamMessageDebug::clear_has_timestamp() {
+  _has_bits_[0] &= ~0x00000200u;
+}
+void TeamMessageDebug::clear_timestamp() {
+  timestamp_ = GOOGLE_ULONGLONG(0);
+  clear_has_timestamp();
+}
+::google::protobuf::uint64 TeamMessageDebug::timestamp() const {
+  // @@protoc_insertion_point(field_get:naothmessages.TeamMessageDebug.timestamp)
+  return timestamp_;
+}
+void TeamMessageDebug::set_timestamp(::google::protobuf::uint64 value) {
+  set_has_timestamp();
+  timestamp_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.TeamMessageDebug.timestamp)
+}
+
+// optional .naothmessages.FrameInfo frameInfo = 5;
+bool TeamMessageDebug::has_frameinfo() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+void TeamMessageDebug::set_has_frameinfo() {
+  _has_bits_[0] |= 0x00000002u;
+}
+void TeamMessageDebug::clear_has_frameinfo() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+void TeamMessageDebug::clear_frameinfo() {
+  if (frameinfo_ != NULL) frameinfo_->::naothmessages::FrameInfo::Clear();
+  clear_has_frameinfo();
+}
+const ::naothmessages::FrameInfo& TeamMessageDebug::frameinfo() const {
+  const ::naothmessages::FrameInfo* p = frameinfo_;
+  // @@protoc_insertion_point(field_get:naothmessages.TeamMessageDebug.frameInfo)
+  return p != NULL ? *p : *reinterpret_cast<const ::naothmessages::FrameInfo*>(
+      &::naothmessages::_FrameInfo_default_instance_);
+}
+::naothmessages::FrameInfo* TeamMessageDebug::mutable_frameinfo() {
+  set_has_frameinfo();
+  if (frameinfo_ == NULL) {
+    frameinfo_ = new ::naothmessages::FrameInfo;
+  }
+  // @@protoc_insertion_point(field_mutable:naothmessages.TeamMessageDebug.frameInfo)
+  return frameinfo_;
+}
+::naothmessages::FrameInfo* TeamMessageDebug::release_frameinfo() {
+  // @@protoc_insertion_point(field_release:naothmessages.TeamMessageDebug.frameInfo)
+  clear_has_frameinfo();
+  ::naothmessages::FrameInfo* temp = frameinfo_;
+  frameinfo_ = NULL;
+  return temp;
+}
+void TeamMessageDebug::set_allocated_frameinfo(::naothmessages::FrameInfo* frameinfo) {
+  delete frameinfo_;
+  frameinfo_ = frameinfo;
+  if (frameinfo) {
+    set_has_frameinfo();
+  } else {
+    clear_has_frameinfo();
+  }
+  // @@protoc_insertion_point(field_set_allocated:naothmessages.TeamMessageDebug.frameInfo)
+}
+
+// optional .naothmessages.RobotState robotState = 6 [default = initial];
+bool TeamMessageDebug::has_robotstate() const {
+  return (_has_bits_[0] & 0x00000400u) != 0;
+}
+void TeamMessageDebug::set_has_robotstate() {
+  _has_bits_[0] |= 0x00000400u;
+}
+void TeamMessageDebug::clear_has_robotstate() {
+  _has_bits_[0] &= ~0x00000400u;
+}
+void TeamMessageDebug::clear_robotstate() {
+  robotstate_ = 0;
+  clear_has_robotstate();
+}
+::naothmessages::RobotState TeamMessageDebug::robotstate() const {
+  // @@protoc_insertion_point(field_get:naothmessages.TeamMessageDebug.robotState)
+  return static_cast< ::naothmessages::RobotState >(robotstate_);
+}
+void TeamMessageDebug::set_robotstate(::naothmessages::RobotState value) {
+  assert(::naothmessages::RobotState_IsValid(value));
+  set_has_robotstate();
+  robotstate_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.TeamMessageDebug.robotState)
+}
+
+// optional .naothmessages.RobotRole robotRole = 7;
+bool TeamMessageDebug::has_robotrole() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+void TeamMessageDebug::set_has_robotrole() {
+  _has_bits_[0] |= 0x00000004u;
+}
+void TeamMessageDebug::clear_has_robotrole() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+void TeamMessageDebug::clear_robotrole() {
+  if (robotrole_ != NULL) robotrole_->::naothmessages::RobotRole::Clear();
+  clear_has_robotrole();
+}
+const ::naothmessages::RobotRole& TeamMessageDebug::robotrole() const {
+  const ::naothmessages::RobotRole* p = robotrole_;
+  // @@protoc_insertion_point(field_get:naothmessages.TeamMessageDebug.robotRole)
+  return p != NULL ? *p : *reinterpret_cast<const ::naothmessages::RobotRole*>(
+      &::naothmessages::_RobotRole_default_instance_);
+}
+::naothmessages::RobotRole* TeamMessageDebug::mutable_robotrole() {
+  set_has_robotrole();
+  if (robotrole_ == NULL) {
+    robotrole_ = new ::naothmessages::RobotRole;
+  }
+  // @@protoc_insertion_point(field_mutable:naothmessages.TeamMessageDebug.robotRole)
+  return robotrole_;
+}
+::naothmessages::RobotRole* TeamMessageDebug::release_robotrole() {
+  // @@protoc_insertion_point(field_release:naothmessages.TeamMessageDebug.robotRole)
+  clear_has_robotrole();
+  ::naothmessages::RobotRole* temp = robotrole_;
+  robotrole_ = NULL;
+  return temp;
+}
+void TeamMessageDebug::set_allocated_robotrole(::naothmessages::RobotRole* robotrole) {
+  delete robotrole_;
+  robotrole_ = robotrole;
+  if (robotrole) {
+    set_has_robotrole();
+  } else {
+    clear_has_robotrole();
+  }
+  // @@protoc_insertion_point(field_set_allocated:naothmessages.TeamMessageDebug.robotRole)
+}
+
+// optional .naothmessages.Pose2D pose = 8;
+bool TeamMessageDebug::has_pose() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+void TeamMessageDebug::set_has_pose() {
+  _has_bits_[0] |= 0x00000008u;
+}
+void TeamMessageDebug::clear_has_pose() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+void TeamMessageDebug::clear_pose() {
+  if (pose_ != NULL) pose_->::naothmessages::Pose2D::Clear();
+  clear_has_pose();
+}
+const ::naothmessages::Pose2D& TeamMessageDebug::pose() const {
+  const ::naothmessages::Pose2D* p = pose_;
+  // @@protoc_insertion_point(field_get:naothmessages.TeamMessageDebug.pose)
+  return p != NULL ? *p : *reinterpret_cast<const ::naothmessages::Pose2D*>(
+      &::naothmessages::_Pose2D_default_instance_);
+}
+::naothmessages::Pose2D* TeamMessageDebug::mutable_pose() {
+  set_has_pose();
+  if (pose_ == NULL) {
+    pose_ = new ::naothmessages::Pose2D;
+  }
+  // @@protoc_insertion_point(field_mutable:naothmessages.TeamMessageDebug.pose)
+  return pose_;
+}
+::naothmessages::Pose2D* TeamMessageDebug::release_pose() {
+  // @@protoc_insertion_point(field_release:naothmessages.TeamMessageDebug.pose)
+  clear_has_pose();
+  ::naothmessages::Pose2D* temp = pose_;
+  pose_ = NULL;
+  return temp;
+}
+void TeamMessageDebug::set_allocated_pose(::naothmessages::Pose2D* pose) {
+  delete pose_;
+  pose_ = pose;
+  if (pose) {
+    set_has_pose();
+  } else {
+    clear_has_pose();
+  }
+  // @@protoc_insertion_point(field_set_allocated:naothmessages.TeamMessageDebug.pose)
+}
+
+// optional bool fallen = 9 [default = false];
+bool TeamMessageDebug::has_fallen() const {
+  return (_has_bits_[0] & 0x00002000u) != 0;
+}
+void TeamMessageDebug::set_has_fallen() {
+  _has_bits_[0] |= 0x00002000u;
+}
+void TeamMessageDebug::clear_has_fallen() {
+  _has_bits_[0] &= ~0x00002000u;
+}
+void TeamMessageDebug::clear_fallen() {
+  fallen_ = false;
+  clear_has_fallen();
+}
+bool TeamMessageDebug::fallen() const {
+  // @@protoc_insertion_point(field_get:naothmessages.TeamMessageDebug.fallen)
+  return fallen_;
+}
+void TeamMessageDebug::set_fallen(bool value) {
+  set_has_fallen();
+  fallen_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.TeamMessageDebug.fallen)
+}
+
+// optional bool readyToWalk = 10;
+bool TeamMessageDebug::has_readytowalk() const {
+  return (_has_bits_[0] & 0x00004000u) != 0;
+}
+void TeamMessageDebug::set_has_readytowalk() {
+  _has_bits_[0] |= 0x00004000u;
+}
+void TeamMessageDebug::clear_has_readytowalk() {
+  _has_bits_[0] &= ~0x00004000u;
+}
+void TeamMessageDebug::clear_readytowalk() {
+  readytowalk_ = false;
+  clear_has_readytowalk();
+}
+bool TeamMessageDebug::readytowalk() const {
+  // @@protoc_insertion_point(field_get:naothmessages.TeamMessageDebug.readyToWalk)
+  return readytowalk_;
+}
+void TeamMessageDebug::set_readytowalk(bool value) {
+  set_has_readytowalk();
+  readytowalk_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.TeamMessageDebug.readyToWalk)
+}
+
+// optional float batteryCharge = 11 [default = 1];
+bool TeamMessageDebug::has_batterycharge() const {
+  return (_has_bits_[0] & 0x00100000u) != 0;
+}
+void TeamMessageDebug::set_has_batterycharge() {
+  _has_bits_[0] |= 0x00100000u;
+}
+void TeamMessageDebug::clear_has_batterycharge() {
+  _has_bits_[0] &= ~0x00100000u;
+}
+void TeamMessageDebug::clear_batterycharge() {
+  batterycharge_ = 1;
+  clear_has_batterycharge();
+}
+float TeamMessageDebug::batterycharge() const {
+  // @@protoc_insertion_point(field_get:naothmessages.TeamMessageDebug.batteryCharge)
+  return batterycharge_;
+}
+void TeamMessageDebug::set_batterycharge(float value) {
+  set_has_batterycharge();
+  batterycharge_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.TeamMessageDebug.batteryCharge)
+}
+
+// optional float temperature = 12 [default = 0];
+bool TeamMessageDebug::has_temperature() const {
+  return (_has_bits_[0] & 0x00000800u) != 0;
+}
+void TeamMessageDebug::set_has_temperature() {
+  _has_bits_[0] |= 0x00000800u;
+}
+void TeamMessageDebug::clear_has_temperature() {
+  _has_bits_[0] &= ~0x00000800u;
+}
+void TeamMessageDebug::clear_temperature() {
+  temperature_ = 0;
+  clear_has_temperature();
+}
+float TeamMessageDebug::temperature() const {
+  // @@protoc_insertion_point(field_get:naothmessages.TeamMessageDebug.temperature)
+  return temperature_;
+}
+void TeamMessageDebug::set_temperature(float value) {
+  set_has_temperature();
+  temperature_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.TeamMessageDebug.temperature)
+}
+
+// optional float cpuTemperature = 13 [default = 0];
+bool TeamMessageDebug::has_cputemperature() const {
+  return (_has_bits_[0] & 0x00001000u) != 0;
+}
+void TeamMessageDebug::set_has_cputemperature() {
+  _has_bits_[0] |= 0x00001000u;
+}
+void TeamMessageDebug::clear_has_cputemperature() {
+  _has_bits_[0] &= ~0x00001000u;
+}
+void TeamMessageDebug::clear_cputemperature() {
+  cputemperature_ = 0;
+  clear_has_cputemperature();
+}
+float TeamMessageDebug::cputemperature() const {
+  // @@protoc_insertion_point(field_get:naothmessages.TeamMessageDebug.cpuTemperature)
+  return cputemperature_;
+}
+void TeamMessageDebug::set_cputemperature(float value) {
+  set_has_cputemperature();
+  cputemperature_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.TeamMessageDebug.cpuTemperature)
+}
+
+// optional bool whistleDetected = 14 [default = false];
+bool TeamMessageDebug::has_whistledetected() const {
+  return (_has_bits_[0] & 0x00008000u) != 0;
+}
+void TeamMessageDebug::set_has_whistledetected() {
+  _has_bits_[0] |= 0x00008000u;
+}
+void TeamMessageDebug::clear_has_whistledetected() {
+  _has_bits_[0] &= ~0x00008000u;
+}
+void TeamMessageDebug::clear_whistledetected() {
+  whistledetected_ = false;
+  clear_has_whistledetected();
+}
+bool TeamMessageDebug::whistledetected() const {
+  // @@protoc_insertion_point(field_get:naothmessages.TeamMessageDebug.whistleDetected)
+  return whistledetected_;
+}
+void TeamMessageDebug::set_whistledetected(bool value) {
+  set_has_whistledetected();
+  whistledetected_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.TeamMessageDebug.whistleDetected)
+}
+
+// optional int32 whistleCount = 15 [default = 0];
+bool TeamMessageDebug::has_whistlecount() const {
+  return (_has_bits_[0] & 0x00020000u) != 0;
+}
+void TeamMessageDebug::set_has_whistlecount() {
+  _has_bits_[0] |= 0x00020000u;
+}
+void TeamMessageDebug::clear_has_whistlecount() {
+  _has_bits_[0] &= ~0x00020000u;
+}
+void TeamMessageDebug::clear_whistlecount() {
+  whistlecount_ = 0;
+  clear_has_whistlecount();
+}
+::google::protobuf::int32 TeamMessageDebug::whistlecount() const {
+  // @@protoc_insertion_point(field_get:naothmessages.TeamMessageDebug.whistleCount)
+  return whistlecount_;
+}
+void TeamMessageDebug::set_whistlecount(::google::protobuf::int32 value) {
+  set_has_whistlecount();
+  whistlecount_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.TeamMessageDebug.whistleCount)
+}
+
+// optional int32 ballAge = 16 [default = -1];
+bool TeamMessageDebug::has_ballage() const {
+  return (_has_bits_[0] & 0x00200000u) != 0;
+}
+void TeamMessageDebug::set_has_ballage() {
+  _has_bits_[0] |= 0x00200000u;
+}
+void TeamMessageDebug::clear_has_ballage() {
+  _has_bits_[0] &= ~0x00200000u;
+}
+void TeamMessageDebug::clear_ballage() {
+  ballage_ = -1;
+  clear_has_ballage();
+}
+::google::protobuf::int32 TeamMessageDebug::ballage() const {
+  // @@protoc_insertion_point(field_get:naothmessages.TeamMessageDebug.ballAge)
+  return ballage_;
+}
+void TeamMessageDebug::set_ballage(::google::protobuf::int32 value) {
+  set_has_ballage();
+  ballage_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.TeamMessageDebug.ballAge)
+}
+
+// optional .naothmessages.DoubleVector2 ballPosition = 17;
+bool TeamMessageDebug::has_ballposition() const {
+  return (_has_bits_[0] & 0x00000010u) != 0;
+}
+void TeamMessageDebug::set_has_ballposition() {
+  _has_bits_[0] |= 0x00000010u;
+}
+void TeamMessageDebug::clear_has_ballposition() {
+  _has_bits_[0] &= ~0x00000010u;
+}
+void TeamMessageDebug::clear_ballposition() {
+  if (ballposition_ != NULL) ballposition_->::naothmessages::DoubleVector2::Clear();
+  clear_has_ballposition();
+}
+const ::naothmessages::DoubleVector2& TeamMessageDebug::ballposition() const {
+  const ::naothmessages::DoubleVector2* p = ballposition_;
+  // @@protoc_insertion_point(field_get:naothmessages.TeamMessageDebug.ballPosition)
+  return p != NULL ? *p : *reinterpret_cast<const ::naothmessages::DoubleVector2*>(
+      &::naothmessages::_DoubleVector2_default_instance_);
+}
+::naothmessages::DoubleVector2* TeamMessageDebug::mutable_ballposition() {
+  set_has_ballposition();
+  if (ballposition_ == NULL) {
+    ballposition_ = new ::naothmessages::DoubleVector2;
+  }
+  // @@protoc_insertion_point(field_mutable:naothmessages.TeamMessageDebug.ballPosition)
+  return ballposition_;
+}
+::naothmessages::DoubleVector2* TeamMessageDebug::release_ballposition() {
+  // @@protoc_insertion_point(field_release:naothmessages.TeamMessageDebug.ballPosition)
+  clear_has_ballposition();
+  ::naothmessages::DoubleVector2* temp = ballposition_;
+  ballposition_ = NULL;
+  return temp;
+}
+void TeamMessageDebug::set_allocated_ballposition(::naothmessages::DoubleVector2* ballposition) {
+  delete ballposition_;
+  ballposition_ = ballposition;
+  if (ballposition) {
+    set_has_ballposition();
+  } else {
+    clear_has_ballposition();
+  }
+  // @@protoc_insertion_point(field_set_allocated:naothmessages.TeamMessageDebug.ballPosition)
+}
+
+// optional .naothmessages.DoubleVector2 ballVelocity = 18;
+bool TeamMessageDebug::has_ballvelocity() const {
+  return (_has_bits_[0] & 0x00000020u) != 0;
+}
+void TeamMessageDebug::set_has_ballvelocity() {
+  _has_bits_[0] |= 0x00000020u;
+}
+void TeamMessageDebug::clear_has_ballvelocity() {
+  _has_bits_[0] &= ~0x00000020u;
+}
+void TeamMessageDebug::clear_ballvelocity() {
+  if (ballvelocity_ != NULL) ballvelocity_->::naothmessages::DoubleVector2::Clear();
+  clear_has_ballvelocity();
+}
+const ::naothmessages::DoubleVector2& TeamMessageDebug::ballvelocity() const {
+  const ::naothmessages::DoubleVector2* p = ballvelocity_;
+  // @@protoc_insertion_point(field_get:naothmessages.TeamMessageDebug.ballVelocity)
+  return p != NULL ? *p : *reinterpret_cast<const ::naothmessages::DoubleVector2*>(
+      &::naothmessages::_DoubleVector2_default_instance_);
+}
+::naothmessages::DoubleVector2* TeamMessageDebug::mutable_ballvelocity() {
+  set_has_ballvelocity();
+  if (ballvelocity_ == NULL) {
+    ballvelocity_ = new ::naothmessages::DoubleVector2;
+  }
+  // @@protoc_insertion_point(field_mutable:naothmessages.TeamMessageDebug.ballVelocity)
+  return ballvelocity_;
+}
+::naothmessages::DoubleVector2* TeamMessageDebug::release_ballvelocity() {
+  // @@protoc_insertion_point(field_release:naothmessages.TeamMessageDebug.ballVelocity)
+  clear_has_ballvelocity();
+  ::naothmessages::DoubleVector2* temp = ballvelocity_;
+  ballvelocity_ = NULL;
+  return temp;
+}
+void TeamMessageDebug::set_allocated_ballvelocity(::naothmessages::DoubleVector2* ballvelocity) {
+  delete ballvelocity_;
+  ballvelocity_ = ballvelocity;
+  if (ballvelocity) {
+    set_has_ballvelocity();
+  } else {
+    clear_has_ballvelocity();
+  }
+  // @@protoc_insertion_point(field_set_allocated:naothmessages.TeamMessageDebug.ballVelocity)
+}
+
+// optional uint32 timeToBall = 19;
+bool TeamMessageDebug::has_timetoball() const {
+  return (_has_bits_[0] & 0x00040000u) != 0;
+}
+void TeamMessageDebug::set_has_timetoball() {
+  _has_bits_[0] |= 0x00040000u;
+}
+void TeamMessageDebug::clear_has_timetoball() {
+  _has_bits_[0] &= ~0x00040000u;
+}
+void TeamMessageDebug::clear_timetoball() {
+  timetoball_ = 0u;
+  clear_has_timetoball();
+}
+::google::protobuf::uint32 TeamMessageDebug::timetoball() const {
+  // @@protoc_insertion_point(field_get:naothmessages.TeamMessageDebug.timeToBall)
+  return timetoball_;
+}
+void TeamMessageDebug::set_timetoball(::google::protobuf::uint32 value) {
+  set_has_timetoball();
+  timetoball_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.TeamMessageDebug.timeToBall)
+}
+
+// optional .naothmessages.DoubleVector2 teamBall = 20;
+bool TeamMessageDebug::has_teamball() const {
+  return (_has_bits_[0] & 0x00000040u) != 0;
+}
+void TeamMessageDebug::set_has_teamball() {
+  _has_bits_[0] |= 0x00000040u;
+}
+void TeamMessageDebug::clear_has_teamball() {
+  _has_bits_[0] &= ~0x00000040u;
+}
+void TeamMessageDebug::clear_teamball() {
+  if (teamball_ != NULL) teamball_->::naothmessages::DoubleVector2::Clear();
+  clear_has_teamball();
+}
+const ::naothmessages::DoubleVector2& TeamMessageDebug::teamball() const {
+  const ::naothmessages::DoubleVector2* p = teamball_;
+  // @@protoc_insertion_point(field_get:naothmessages.TeamMessageDebug.teamBall)
+  return p != NULL ? *p : *reinterpret_cast<const ::naothmessages::DoubleVector2*>(
+      &::naothmessages::_DoubleVector2_default_instance_);
+}
+::naothmessages::DoubleVector2* TeamMessageDebug::mutable_teamball() {
+  set_has_teamball();
+  if (teamball_ == NULL) {
+    teamball_ = new ::naothmessages::DoubleVector2;
+  }
+  // @@protoc_insertion_point(field_mutable:naothmessages.TeamMessageDebug.teamBall)
+  return teamball_;
+}
+::naothmessages::DoubleVector2* TeamMessageDebug::release_teamball() {
+  // @@protoc_insertion_point(field_release:naothmessages.TeamMessageDebug.teamBall)
+  clear_has_teamball();
+  ::naothmessages::DoubleVector2* temp = teamball_;
+  teamball_ = NULL;
+  return temp;
+}
+void TeamMessageDebug::set_allocated_teamball(::naothmessages::DoubleVector2* teamball) {
+  delete teamball_;
+  teamball_ = teamball;
+  if (teamball) {
+    set_has_teamball();
+  } else {
+    clear_has_teamball();
+  }
+  // @@protoc_insertion_point(field_set_allocated:naothmessages.TeamMessageDebug.teamBall)
+}
+
+// optional bool wasStriker = 21 [default = false];
+bool TeamMessageDebug::has_wasstriker() const {
+  return (_has_bits_[0] & 0x00010000u) != 0;
+}
+void TeamMessageDebug::set_has_wasstriker() {
+  _has_bits_[0] |= 0x00010000u;
+}
+void TeamMessageDebug::clear_has_wasstriker() {
+  _has_bits_[0] &= ~0x00010000u;
+}
+void TeamMessageDebug::clear_wasstriker() {
+  wasstriker_ = false;
+  clear_has_wasstriker();
+}
+bool TeamMessageDebug::wasstriker() const {
+  // @@protoc_insertion_point(field_get:naothmessages.TeamMessageDebug.wasStriker)
+  return wasstriker_;
+}
+void TeamMessageDebug::set_wasstriker(bool value) {
+  set_has_wasstriker();
+  wasstriker_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.TeamMessageDebug.wasStriker)
+}
+
+// optional bool wantsToBeStriker = 22 [default = false];
+bool TeamMessageDebug::has_wantstobestriker() const {
+  return (_has_bits_[0] & 0x00080000u) != 0;
+}
+void TeamMessageDebug::set_has_wantstobestriker() {
+  _has_bits_[0] |= 0x00080000u;
+}
+void TeamMessageDebug::clear_has_wantstobestriker() {
+  _has_bits_[0] &= ~0x00080000u;
+}
+void TeamMessageDebug::clear_wantstobestriker() {
+  wantstobestriker_ = false;
+  clear_has_wantstobestriker();
+}
+bool TeamMessageDebug::wantstobestriker() const {
+  // @@protoc_insertion_point(field_get:naothmessages.TeamMessageDebug.wantsToBeStriker)
+  return wantstobestriker_;
+}
+void TeamMessageDebug::set_wantstobestriker(bool value) {
+  set_has_wantstobestriker();
+  wantstobestriker_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.TeamMessageDebug.wantsToBeStriker)
 }
 
 #endif  // PROTOBUF_INLINE_NOT_IN_HEADERS

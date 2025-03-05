@@ -7,27 +7,26 @@
 #include "Classifier/Fy1500_Conf.h"
 #include "Classifier/FrugallyDeep.h"
 #include "Classifier/mbc_36k.h"
+#include "Classifier/mbc_36ksm.h"
+#include "Classifier/mbc_36ksm_finetuned.h"
+#include "Classifier/mbc_36ksm_finetuned_crop.h"
 #include "Classifier/mbd_gopen_56k.h"
+#include "Classifier/TFLiteModelNaoTH.h"
 
 using namespace std;
 
-CNNBallDetector::CNNBallDetector()
+CNNBallDetector::CNNBallDetector():
+  last_percept_valid(false)
 {
-  DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:keyPoints", "draw key points extracted from integral image", false);
   DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:drawCandidates", "draw ball candidates", false);
   DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:drawCandidatesResizes", "draw ball candidates (resized)", false);
-  DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:refinePatches", "draw refined ball key points", false);
   DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:drawPercepts", "draw ball percepts", false);
   DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:drawPatchContrast", "draw patch contrast (only when contrast-check is in use!", false);
   DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:draw_projected_ball","", false);
-
   DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:extractPatches", "generate YUVC patches", false);
-
   DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:keyPointsBlack", "draw black key points extracted from integral image", false);
-
   DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:drawPatchInImage", "draw the gray-scale patch like it is passed to the CNN in the image", false);
 
-  theBallKeyPointExtractor = registerModule<BallKeyPointExtractor>("BallKeyPointExtractor", true);
   getDebugParameterList().add(&params);
 
   cnnMap = createCNNMap();
@@ -48,28 +47,29 @@ void CNNBallDetector::execute(CameraInfo::CameraID id)
   cameraID = id;
   getBallCandidates().reset();
 
-  best.clear();
-  // update parameter
-  theBallKeyPointExtractor->getModuleT()->setParameter(params.keyDetector);
-  theBallKeyPointExtractor->getModuleT()->setCameraId(cameraID);
-  //theBallKeyPointExtractor->getModuleT()->calculateKeyPoints(best);
-  theBallKeyPointExtractor->getModuleT()->calculateKeyPointsBetter(best);
-
-  addPatchByLastBall();
-
-  if(best.size() > 0) {
-    calculateCandidates();
+  patches.clear();
+  // Add the existing patches from the module, but do not perform any sorting.
+  // Instead, use the order as it is provided by the original patch list.
+  // Add in reverse order, so the entries with the highest value come first
+  for(BestPatchList::reverse_iterator i = getBestPatchList().rbegin(); i != getBestPatchList().rend(); ++i) {
+    patches.push_back(*i);
   }
 
-  DEBUG_REQUEST("Vision:CNNBallDetector:refinePatches",
-    for(BestPatchList::reverse_iterator i = best.rbegin(); i != best.rend(); ++i) {
-      //BestPatchList::Patch p = theBallKeyPointExtractor->getModuleT()->refineKeyPoint(*i);
-      RECT_PX(ColorClasses::red, (*i).min.x, (*i).min.y, (*i).max.x, (*i).max.y);
-    }
-  );
+  // add the last ball percept at the beginning of the now sorted list, so it gets checked first
+  addPatchByLastPercept();
 
+  // add the last ball model at the end of the now sorted list, so we check it last
+  // FIXME: if there are more patches in the list than the maxNumberOfKeys specifies,
+  // the last ball model will not be checked
+  addPatchByLastBall();
+
+  last_percept_valid = false;
+  if(!patches.empty()) {
+    calculateCandidates();
+  }
   DEBUG_REQUEST("Vision:CNNBallDetector:drawPercepts",
     for(MultiBallPercept::ConstABPIterator iter = getMultiBallPercept().begin(); iter != getMultiBallPercept().end(); iter++) {
+      
       if((*iter).cameraId == cameraID) {
         CIRCLE_PX(ColorClasses::orange, (int)((*iter).centerInImage.x+0.5), (int)((*iter).centerInImage.y+0.5), (int)((*iter).radiusInImage+0.5));
       }
@@ -91,7 +91,7 @@ void CNNBallDetector::execute(CameraInfo::CameraID id)
 
   DEBUG_REQUEST("Vision:CNNBallDetector:keyPointsBlack",  
     BestPatchList bbest;
-    for(BestPatchList::reverse_iterator i = best.rbegin(); i != best.rend(); ++i) {
+    for(BestPatchList::PatchList::iterator i = patches.begin(); i != patches.end(); ++i) {
       bbest.clear();
       BlackSpotExtractor::calculateKeyPointsBlackBetter(getBallDetectorIntegralImage(), bbest, (*i).min.x, (*i).min.y, (*i).max.x, (*i).max.y);
       int idx = 0;
@@ -108,15 +108,52 @@ void CNNBallDetector::execute(CameraInfo::CameraID id)
 std::map<string, std::shared_ptr<AbstractCNNFinder> > CNNBallDetector::createCNNMap()
 {
   std::map<string, std::shared_ptr<AbstractCNNFinder> > result;
-
   // register classifiers
-  result.insert({ "fy1500_conf", std::make_shared<Fy1500_Conf>() });
-  result.insert({ "mbc_36k", std::make_shared<mbc_36k>() });
-  result.insert({ "mbd_gopen_56k", std::make_shared<mbd_gopen_56k>() });
 
+  // devils compiled models
+
+  // Do not use a brightness offset for fy1500_conf, its baked into the first layer of the model cpp 
+  result.insert({ "fy1500_conf", std::make_shared<Fy1500_Conf>() });
+
+  // Ball Classifier from German Open 2024, we used a brightness offset of -0.59 at GO (Train Dataset mean brightness is -0.5130)
+  result.insert({ "mbc_36k", std::make_shared<mbc_36k>() }); // mbc: max ball classifier
+
+  // threshold 0.98 works good on the RC24 Monday Outdoor Test Log
+  // same as mbc_36k, but with softmax activation function implemented in the model
+  result.insert({ "mbc_36ksm", std::make_shared<mbc_36ksm>() }); 
+
+  // mean: -0.5714, now works with dynamic patchwise brightness 
+  // and doesnt need to be subtracted by mean of meanBrightnessOffset parameter
+  // mbc_36ksm finetuned on devils + naoth data + manual verfied patches from RC24 SQPR testgame
+  result.insert({ "mbc_36ksm_finetuned", std::make_shared<mbc_36ksm_finetuned>() });
+
+  // dynamic patchwise brightness 
+  // trained on devils + devils crop (based on ball_center) + devils gauss blurred
+  result.insert({ "mbc_36ksm_finetuned_crop", std::make_shared<mbc_36ksm_finetuned_crop>() });
+  
+  // Ball Detector from German Open 2024, we did not use a brightness offset at GO, was trained on dataset without brightness normalization
+  result.insert({ "mbd_gopen_56k", std::make_shared<mbd_gopen_56k>() }); // mbd: max ball detector
+
+  // frugally deep models
   result.insert({ "fdeep_fy1300", std::make_shared<FrugallyDeep>("fy1300.json", true, true, true)});
   result.insert({ "fdeep_fy1500", std::make_shared<FrugallyDeep>("fy1500.json", true, true, true)});
+
+  // tflite models 
+
+  // trained on naodevils data + GO24
+  // dataset path: naoth/datasets/classification_gopen24_nao_devils_labelstudio_validated_ball_no_ball_X_y.h5
+  // dataset mean brightness offset: -0.5130
+  result.insert({ "bc_36k_go24", std::make_shared<TFLiteModelNaoTH>("ball_classifier_36k_2024-04-21_GO24.tflite", false, false, true)});
+  result.insert({ "bc_36k_go24_f32", std::make_shared<TFLiteModelNaoTH>("ball_classifier_36k_2024-04-21_GO24_float32.tflite", false, false, true)});
+
+  // trained on naodevils data + GO24 + labor tests 2024 up to 2024-05-10
+  // dataset path: naoth/datasets/classification_naodevils_gopen_validated_sampled_labor_testgame_may_X_y.h5
+  // dataset mean brightness offset: -0.5101
+  result.insert({ "bc_36k_labor", std::make_shared<TFLiteModelNaoTH>("ball_classifier_36k_2024-05-17v2.tflite", false, false, true)});
+  result.insert({ "bc_36k_labor_f32", std::make_shared<TFLiteModelNaoTH>("ball_classifier_36k_2024-05-17v2_float32.tflite", false, false, true)});
   
+
+
   return result;
 }
 
@@ -132,6 +169,8 @@ std::map<string, std::shared_ptr<AbstractCNNFinder> > CNNBallDetector::createCNN
    if(location != cnnMap.end()){
      currentCNNClose = location->second;
    }
+
+   ASSERT(currentCNNClose != nullptr);
  }
 
  void CNNBallDetector::setDetector(const std::string& name, const std::string& nameClose) 
@@ -145,6 +184,8 @@ std::map<string, std::shared_ptr<AbstractCNNFinder> > CNNBallDetector::createCNN
    if(location != cnnMap.end()) {
      currentCNNClose_detector = location->second;
    }
+
+   ASSERT(currentCNNClose_detector != nullptr);
  }
 
 void CNNBallDetector::calculateCandidates()
@@ -152,9 +193,9 @@ void CNNBallDetector::calculateCandidates()
   // the used patch size
   const int patch_size = 16;
 
-  // NOTE: patches are sorted in the ascending order, so start from the end to get the best patches
+  // NOTE: at this point. the PatchList is already sorted with the most promising patches first
   int index = 0;
-  for(BestPatchList::reverse_iterator i = best.rbegin(); i != best.rend(); ++i)
+  for(BestPatchList::PatchList::iterator i = patches.begin(); i != patches.end(); ++i)
   {
     if(getFieldPercept().getValidField().isInside((*i).min) && getFieldPercept().getValidField().isInside((*i).max))
     {
@@ -166,15 +207,23 @@ void CNNBallDetector::calculateCandidates()
       static BallCandidates::PatchYUVClassified patch((*i).min, (*i).max, patch_size);
       patch.min = (*i).min;
       patch.max = (*i).max;
+
+
       if(!getImage().isInside(patch.min) || !getImage().isInside(patch.max)) {
         continue;
       }
 
-      //
       // add an additional border as post-processing
       int postBorder = (int)(patch.radius()*params.postBorderFactorFar);
       double selectedCNNThreshold = params.cnn.threshold;
-      if(patch.width() >= params.postMaxCloseSize) // HACK: use patch size as estimate if close or far away
+
+      if (params.closeMeansUseBottomCamera && cameraID == CameraInfo::Bottom)
+      {
+        postBorder = (int)(patch.radius()*params.postBorderFactorClose);
+        selectedCNNThreshold = params.cnn.thresholdClose;
+      }
+      
+      else if(!params.closeMeansUseBottomCamera && patch.width() >= params.postMaxCloseSize) // HACK: use patch size as estimate if close or far away
       {
         postBorder = (int)(patch.radius()*params.postBorderFactorClose);
         selectedCNNThreshold = params.cnn.thresholdClose;
@@ -260,32 +309,55 @@ void CNNBallDetector::calculateCandidates()
 
       std::shared_ptr<AbstractCNNFinder> cnn = currentCNN;
       std::shared_ptr<AbstractCNNFinder> cnn_detector = currentCNN_detector;
-      if(patch.width() >= params.postMaxCloseSize) {
+
+      if (params.closeMeansUseBottomCamera && cameraID == CameraInfo::Bottom)
+      { 
+        cnn = currentCNNClose;
+        cnn_detector = currentCNNClose_detector;
+      }
+      else if(!params.closeMeansUseBottomCamera && patch.width() >= params.postMaxCloseSize) {
         cnn = currentCNNClose;
         cnn_detector = currentCNNClose_detector;
       }
 
-      STOPWATCH_START("CNNBallDetector:predict");
-      cnn->predict(patch, params.cnn.meanBrightnessOffset);
-      cnn_detector->predict(patch, params.cnn.meanBrightnessOffset);
-      STOPWATCH_STOP("CNNBallDetector:predict");
+      STOPWATCH_START("CNNBallDetector:classifierPredict");
+      cnn->predict(patch, params.cnn.classifierMeanBrightnessOffset);
+      STOPWATCH_STOP("CNNBallDetector:classifierPredict");
 
-      bool found = false;
-      double radius = cnn_detector->getRadius();
-      Vector2d pos = cnn_detector->getCenter();
-      if(cnn->getBallConfidence() >= selectedCNNThreshold && pos.x >= 0.0 && pos.y >= 0.0) {
-        found = true;
+      // only run the detector if the classifier predicted a ball in the patch
+      if (cnn->getBallConfidence() >= selectedCNNThreshold) 
+      {
+        
+        // HACK: resizing the patch with postBorder helps the classifier
+        // but worsens the detector, so keep a copy of the original patch
+        static BallCandidates::PatchYUVClassified patchForDetector((*i).min, (*i).max, patch_size);
+        patchForDetector.min = (*i).min;
+        patchForDetector.max = (*i).max;
+        PatchWork::subsampling(getImage(), getFieldColorPercept(), patchForDetector);
+        
+        STOPWATCH_START("CNNBallDetector:detectorPredict");
+        cnn_detector->predict(patchForDetector, params.cnn.detectorMeanBrightnessOffset);
+        STOPWATCH_STOP("CNNBallDetector:detectorPredict");
+
+        double radius = cnn_detector->getRadius();
+        Vector2d pos = cnn_detector->getCenter();
+
+        // sanity check needed for fy1500_conf CNN, where ball.x and ball.y (and radius)
+        // has predicted values < 0 in some cases in the past
+        if (pos.x >= 0.0 && pos.y >= 0.0) {
+          // adjust the center and radius of the patch
+          Vector2d ballCenterInPatch(pos.x * patchForDetector.width(), pos.y*patchForDetector.width());
+          addBallPercept(ballCenterInPatch + patchForDetector.min, radius*patchForDetector.width());
+          if (last_percept_valid == false){
+            last_percept_min = patchForDetector.min;
+            last_percept_max = patchForDetector.max;
+            last_percept_valid = true;
+          }
+        }        
       }
 
       stopwatch.stop();
       stopwatch_values.push_back(static_cast<double>(stopwatch.lastValue) * 0.001);
-
-      if (found) {
-        // adjust the center and radius of the patch
-        Vector2d ballCenterInPatch(pos.x * patch.width(), pos.y*patch.width());
-       
-        addBallPercept(ballCenterInPatch + patch.min, radius*patch.width());
-      }
 
       DEBUG_REQUEST("Vision:CNNBallDetector:drawCandidates",
         // original patch
@@ -311,11 +383,13 @@ void CNNBallDetector::calculateCandidates()
 void CNNBallDetector::extractPatches()
 {
   int idx = 0;
-  for(BestPatchList::reverse_iterator i = best.rbegin(); i != best.rend(); ++i)
+  // at this point, the patches are already sorted with the most promising patches first
+  for(BestPatchList::PatchList::iterator i = patches.begin(); i != patches.end(); ++i)
   {
     if(idx >= params.numberOfExportBestPatches) {
       break;
     }
+    
     int offset = ((*i).max.x - (*i).min.x)/4;
     Vector2i min = (*i).min - offset;
     Vector2i max = (*i).max + offset;
@@ -336,7 +410,7 @@ void CNNBallDetector::extractPatches()
 /** Provides all the internally generated patches in the representation */
 void CNNBallDetector::providePatches()
 {
-  for(BestPatchList::reverse_iterator i = best.rbegin(); i != best.rend(); ++i)
+  for(BestPatchList::PatchList::iterator i = patches.begin(); i != patches.end(); i++)
   {
     BallCandidates::PatchYUVClassified& q = getBallCandidates().nextFreePatchYUVClassified();
     q.min = (*i).min;
@@ -369,6 +443,7 @@ void CNNBallDetector::addBallPercept(const Vector2d& center, double radius)
 
 void CNNBallDetector::addPatchByLastBall()
 {
+  // last effort if we detect nothing we check the position of the current ball model if it is valid
   if (getBallModel().valid)
   {
     Vector3d ballInField;
@@ -395,13 +470,49 @@ void CNNBallDetector::addPatchByLastBall()
                       RECT_PX(ColorClasses::pink, start.x, start.y, end.x, end.y);
                       CIRCLE_PX(ColorClasses::pink, ballInImage.x, ballInImage.y, static_cast<int>(estimatedRadius));
                       );
-        best.add(
-            start.x,
+
+        // TODO: Verify this, we might want to check all patches regardless of overlap
+        // 
+        // Insert ball patch if there is not already another Patch that overlaps it
+        // Reasoning: Since we can detect multiple balls, we do not want to detect 
+        // the same ball twice at different positions. 
+        // This patch is based on the ball model and therefore likely not the best candidate,
+        // so we prioritize the patches already in the list.
+        BestPatchList::Patch ballPatch  = BestPatchList::Patch(start.x,
             start.y,
             end.x,
             end.y,
             -1.0);
+        bool overlaps = false;
+        for(BestPatchList::PatchList::iterator i = patches.begin(); i != patches.end(); i++) {
+          
+          if(ballPatch.min.x < (*i).max.x && 
+              ballPatch.max.x > (*i).min.x &&
+              ballPatch.min.y < (*i).max.y && 
+              ballPatch.max.y > (*i).min.y) {
+            overlaps = true;
+            break;
+          }
+        }
+        if(overlaps == false) {
+          // TODO: Add not at the end, but at maxNumberOfKeys - 1 so we always
+          // check this patch last (if there are more than maxNumberOfKeys patches) 
+          patches.insert(patches.end(), ballPatch);
+        }
       }
     }
+  }
+}
+
+void CNNBallDetector::addPatchByLastPercept(){
+  if (last_percept_valid){
+    BestPatchList::Patch ballPatch  = BestPatchList::Patch(last_percept_min.x,
+              last_percept_min.y,
+              last_percept_max.x,
+              last_percept_max.y,
+              99);
+    // TODO: filter out other overlapping Patch(es)  in 'patches' here as,
+    // for the same reason we check overlap in addPatchByLastBall?
+    patches.insert(patches.begin(), ballPatch);
   }
 }

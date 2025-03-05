@@ -5,10 +5,10 @@
  */
 package de.naoth.rc;
 
-import de.naoth.rc.core.dialog.Dialog;
 import bibliothek.gui.DockUI;
 import bibliothek.gui.dock.util.laf.Nimbus6u10;
 import de.naoth.rc.components.preferences.PreferencesDialog;
+import de.naoth.rc.core.dialog.Dialog;
 import de.naoth.rc.core.server.ConnectionManager;
 import de.naoth.rc.core.server.ConnectionStatusEvent;
 import de.naoth.rc.core.server.ConnectionStatusListener;
@@ -32,8 +32,8 @@ import java.lang.reflect.Field;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
@@ -83,13 +83,9 @@ public class RobotControlImpl extends javax.swing.JFrame
   
   private final GridBagConstraints statusPanelPluginsConstraints = new GridBagConstraints();
   
-  //FIXME: why is this needed?
-  //private final String RC_TITLE = "";
-  
-  // HACK: set the path to the native libs
   static 
-  {  
-    // load the logger properties
+  {
+    // load the logger properties for debugging purposes
     // NOTE: this also prints a list of properties 
     InputStream stream = RobotControlImpl.class.getResourceAsStream("logging.properties");
     try {
@@ -105,45 +101,9 @@ public class RobotControlImpl extends javax.swing.JFrame
     for(String s: arguments) {
         System.out.println( s );
     }
-    
-    try
-    {
-        // we need an absolute path to import native libs
-        // in netbeans we can use the relative execution path
-        File bin = new File("./bin");
-        if (!bin.isDirectory()) {
-            // with a jar file, we need to determine the correct path relative to the jar file
-            File jar = new File(RobotControlImpl.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-            // ../bin
-            bin = new File(jar.getParentFile().getParentFile(), "bin");
-        }
-        
-        String arch = System.getProperty("os.arch").toLowerCase();
-        String name = System.getProperty("os.name").toLowerCase();
-        
-        if("linux".equals(name)) {
-            if("amd64".equals(arch)) {
-                addLibraryPath(bin.getAbsolutePath() + "/linux64");
-            } else {
-                addLibraryPath(bin.getAbsolutePath() + "/linux32");
-            }
-        } else {
-            if("amd64".equals(arch)) {
-                addLibraryPath(bin.getAbsolutePath() + "/win64");
-            } else {
-                addLibraryPath(bin.getAbsolutePath() + "/win32");
-            }
-            addLibraryPath(bin.getAbsolutePath() + "/macos");
-        }
-        
-        // list all properteies
-        System.getProperties().list(System.out);
-
-    } catch (Throwable ex) {
-          getLogger().log(Level.SEVERE, null, ex);
-      }
   }
 
+  
     /**
      * Adds the specified path to the java library path
      * Option 2 from: https://stackoverflow.com/a/15409446
@@ -426,7 +386,8 @@ public class RobotControlImpl extends javax.swing.JFrame
    */
   @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents() {
+    private void initComponents()
+    {
         java.awt.GridBagConstraints gridBagConstraints;
 
         dialogFastAccess = new javax.swing.JDialog();
@@ -464,8 +425,10 @@ public class RobotControlImpl extends javax.swing.JFrame
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("RobotControl for NAO v2019");
-        addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowClosing(java.awt.event.WindowEvent evt) {
+        addWindowListener(new java.awt.event.WindowAdapter()
+        {
+            public void windowClosing(java.awt.event.WindowEvent evt)
+            {
                 formWindowClosing(evt);
             }
         });
@@ -475,8 +438,10 @@ public class RobotControlImpl extends javax.swing.JFrame
 
         btManager.setText("Running Manager --");
         btManager.setToolTipText("Shows the number of currently registered Manager");
-        btManager.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        btManager.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
                 btManagerActionPerformed(evt);
             }
         });
@@ -511,7 +476,7 @@ public class RobotControlImpl extends javax.swing.JFrame
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblReceivedBytesS, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 1, Short.MAX_VALUE)
+                .addComponent(jSeparator4, javax.swing.GroupLayout.DEFAULT_SIZE, 1, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(lblSentBytesS, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -542,23 +507,27 @@ public class RobotControlImpl extends javax.swing.JFrame
         mainControlMenu.setMnemonic('R');
         mainControlMenu.setText("Main");
 
-        connectMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_K, java.awt.event.InputEvent.CTRL_MASK));
+        connectMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_K, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         connectMenuItem.setMnemonic('c');
         connectMenuItem.setText("Connect");
         connectMenuItem.setToolTipText("Connect to robot");
-        connectMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        connectMenuItem.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
                 connectMenuItemActionPerformed(evt);
             }
         });
         mainControlMenu.add(connectMenuItem);
 
-        disconnectMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_D, java.awt.event.InputEvent.CTRL_MASK));
+        disconnectMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_D, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         disconnectMenuItem.setMnemonic('d');
         disconnectMenuItem.setText("Disconnect");
         disconnectMenuItem.setToolTipText("Disconnect from robot");
-        disconnectMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        disconnectMenuItem.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
                 disconnectMenuItemActionPerformed(evt);
             }
         });
@@ -573,8 +542,10 @@ public class RobotControlImpl extends javax.swing.JFrame
 
         resetLayoutMenuItem.setText("Reset layout");
         resetLayoutMenuItem.setToolTipText("Resets all layout information");
-        resetLayoutMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        resetLayoutMenuItem.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
                 resetLayoutMenuItemActionPerformed(evt);
             }
         });
@@ -582,8 +553,10 @@ public class RobotControlImpl extends javax.swing.JFrame
 
         miSaveDialogConfig.setText("Save dialog layout");
         miSaveDialogConfig.setToolTipText("Saves the current active dialog configuration.");
-        miSaveDialogConfig.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        miSaveDialogConfig.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
                 miSaveDialogConfigActionPerformed(evt);
             }
         });
@@ -592,21 +565,25 @@ public class RobotControlImpl extends javax.swing.JFrame
 
         mainControlMenu.add(layout);
 
-        preferences.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_P, java.awt.event.InputEvent.CTRL_MASK));
+        preferences.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_P, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         preferences.setText("Preferences");
-        preferences.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        preferences.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
                 preferencesActionPerformed(evt);
             }
         });
         mainControlMenu.add(preferences);
         mainControlMenu.add(jSeparator1);
 
-        exitMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_X, java.awt.event.InputEvent.CTRL_MASK));
+        exitMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Q, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         exitMenuItem.setMnemonic('e');
         exitMenuItem.setText("Exit");
-        exitMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        exitMenuItem.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
                 exitMenuItemActionPerformed(evt);
             }
         });
@@ -618,8 +595,10 @@ public class RobotControlImpl extends javax.swing.JFrame
         helpMenu.setText("Help");
 
         helpMenuItem.setText("Help");
-        helpMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        helpMenuItem.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
                 helpMenuItemActionPerformed(evt);
             }
         });
@@ -627,8 +606,10 @@ public class RobotControlImpl extends javax.swing.JFrame
 
         aboutMenuItem.setMnemonic('a');
         aboutMenuItem.setText("About");
-        aboutMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        aboutMenuItem.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
                 aboutMenuItemActionPerformed(evt);
             }
         });

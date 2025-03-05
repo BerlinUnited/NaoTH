@@ -100,7 +100,10 @@ void GameLogger::execute()
       LOGSTUFF(RansacCirclePercept2018);
       
       if(params.logJPEGImages) {
+        getImageJPEG().compressYUYV();
         LOGSTUFF(ImageJPEG);
+
+        getImageJPEGTop().compressYUYV();
         LOGSTUFF(ImageJPEGTop);
       }
       

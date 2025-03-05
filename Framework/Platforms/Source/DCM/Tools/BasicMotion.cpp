@@ -23,11 +23,11 @@ BasicMotion::BasicMotion(
   theMotorJointData(theMotorJointData),
   theStartJointData(theStartJointData) // make a copy
 {
-  const double LElbowRollMax = Math::fromDegrees(-0.5);
-  const double RElbowRollMin = Math::fromDegrees(0.5);
-  const double LKneePitchMax = Math::fromDegrees(121.04);
+  const double LElbowRollMax  = Math::fromDegrees( -0.5);
+  const double RElbowRollMin  = Math::fromDegrees(  0.5);
+  const double LKneePitchMax  = Math::fromDegrees(121.04);
   const double LAnklePitchMin = Math::fromDegrees(-68.15);
-  const double RKneePitchMax = Math::fromDegrees(121.47);
+  const double RKneePitchMax  = Math::fromDegrees(121.47);
   const double RAnklePitchMin = Math::fromDegrees(-67.97);
 
   theInitJoints.position[JointData::HeadPitch]      = 0;

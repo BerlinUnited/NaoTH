@@ -5,13 +5,16 @@
 package de.naoth.rc.drawings3d;
 
 import de.naoth.rc.drawings.Colors;
+import java.awt.Color;
 import java.util.zip.DataFormatException;
-import javax.media.j3d.Appearance;
-import javax.media.j3d.ColoringAttributes;
-import javax.media.j3d.Material;
-import javax.media.j3d.Transform3D;
-import javax.media.j3d.TransformGroup;
-import javax.vecmath.Color3f;
+
+import org.jogamp.java3d.Appearance;
+import org.jogamp.java3d.ColoringAttributes;
+import org.jogamp.java3d.Material;
+import org.jogamp.java3d.Transform3D;
+import org.jogamp.java3d.TransformGroup;
+
+import org.jogamp.vecmath.Color3f;
 
 public class Drawable extends TransformGroup
 {
@@ -19,15 +22,21 @@ public class Drawable extends TransformGroup
   protected float[] parseFloatArray(String[] tokens, int beg, int end)
   {
     float[] dim = new float[end-beg];
-    for(int i=0; i<dim.length; i++)
-      dim[i] = Float.valueOf(tokens[beg+i]) * 0.001f;
+    for(int i = 0; i < dim.length; i++) {
+      dim[i] = Float.parseFloat(tokens[beg+i]) * 0.001f;
+    }
     return dim;
+  }
+  
+  protected Color3f parseColor(String color) {
+      Color javaColor = Colors.parseColor(color);
+      return new Color3f(javaColor.getRGBColorComponents(null));
   }
   
   protected Appearance parseAppearance(String color)
   {
-    Color3f c = new Color3f(Colors.parseColor(color));
-
+    Color3f c = parseColor(color);
+    
     Appearance app = new Appearance();
     app.setColoringAttributes(new ColoringAttributes(c, ColoringAttributes.SHADE_FLAT));
 
@@ -37,7 +46,6 @@ public class Drawable extends TransformGroup
     mat.setSpecularColor(c);
     mat.setColorTarget(Material.AMBIENT_AND_DIFFUSE);
     app.setMaterial(mat);
-
     
     /*
     app.setPolygonAttributes(new PolygonAttributes(

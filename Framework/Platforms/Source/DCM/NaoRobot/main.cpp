@@ -6,7 +6,9 @@
  */
 
 #include "NaoController.h"
-#include <Tools/ThreadUtil.h>
+
+#include "Tools/ThreadUtil.h"
+#include "Tools/FileUtils.h"
 
 #include <glib.h>
 #include <glib-object.h>
@@ -160,16 +162,10 @@ void* motionThreadCallback(void* ref)
 }//end motionThreadCallback
 
 
-// used to determine the NAO version
-bool fileExists(const std::string& filename) {
-  struct stat buffer;
-  return (stat(filename.c_str(), &buffer) == 0);
-}
-
 // determine if it's NAO 6
 bool isNAO6() {
-    return fileExists("/usr/bin/lola") ||
-           fileExists("/opt/aldebaran/bin/lola");
+    return FileUtils::fileExists("/usr/bin/lola") ||
+           FileUtils::fileExists("/opt/aldebaran/bin/lola");
 }
 
 #define TO_STRING_INT(x) #x
@@ -245,9 +241,10 @@ int main(int /*argc*/, char **/*argv[]*/)
     handle_error_en(err, "create motionThread");
   }
   
-  // set the pririty of the motion thread to 50
+  // set the pririty of the motion thread to 20
+  // Heinrich: was changed from 50, because lola has 36
   sched_param param;
-  param.sched_priority = 50;
+  param.sched_priority = 20;
   err = pthread_setschedparam(motionThread, SCHED_FIFO, &param);
   if (err != 0) {
     handle_error_en(err, "set priority motionThread");

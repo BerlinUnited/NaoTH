@@ -1,16 +1,10 @@
 #include "Fy1500_Conf.h"
+#include "Tools/SIMD/SIMD.h"
 
 #if WIN32
 #define alignas(x) __declspec(align(x))
 #endif
 
-// disable on macos and aarch64, i.e apple silicon
-// where emmintrin.h is not available
-#if defined(__APPLE__) && defined(__aarch64__)
-void Fy1500_Conf::cnn(float x0[16][16][1]){}
-#else
-
-#include <emmintrin.h>
 
 void Fy1500_Conf::cnn(float x0[16][16][1])
 {
@@ -2561,16 +2555,14 @@ void Fy1500_Conf::cnn(float x0[16][16][1])
 
 }
 
-#endif
-
 
 void Fy1500_Conf::predict(const BallCandidates::PatchYUVClassified& patch, double meanBrightness) {
 	ASSERT(patch.size() == 16);
 
 	for(size_t x=0; x < patch.size(); x++) {
 		for(size_t y=0; y < patch.size(); y++) {
-			// TODO: check
-			float value = (static_cast<float>((patch.data[patch.size() * x + y].pixel.y)) / 255.0f) - static_cast<float>(meanBrightness);
+			// Add a custom brightness offset that depends on the dataset, if zero centering was used
+			float value = (static_cast<float>((patch.data[patch.size() * x + y].pixel.y)) / 255.0f) + static_cast<float>(meanBrightness);
 			in_step[y][x][0] = value;
 		}
 	}

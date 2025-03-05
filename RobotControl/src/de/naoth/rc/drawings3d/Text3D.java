@@ -5,12 +5,12 @@ package de.naoth.rc.drawings3d;
 
 import java.awt.Font;
 import java.util.zip.DataFormatException;
-import javax.media.j3d.Appearance;
-import javax.media.j3d.Font3D;
-import javax.media.j3d.FontExtrusion;
-import javax.media.j3d.OrientedShape3D;
-import javax.media.j3d.Shape3D;
-import javax.vecmath.Point3f;
+import org.jogamp.java3d.Appearance;
+import org.jogamp.java3d.Font3D;
+import org.jogamp.java3d.FontExtrusion;
+import org.jogamp.java3d.OrientedShape3D;
+import org.jogamp.java3d.Shape3D;
+import org.jogamp.vecmath.Point3f;
 
 public class Text3D extends Drawable
 {
@@ -26,7 +26,7 @@ public class Text3D extends Drawable
       text += tokens[i];
     }
     float[] p = parseFloatArray(tokens, tokens.length-3, tokens.length);
-    javax.media.j3d.Text3D t = new javax.media.j3d.Text3D(f3d, text);
+    org.jogamp.java3d.Text3D t = new org.jogamp.java3d.Text3D(f3d, text);
     Shape3D s = new OrientedShape3D(t, app, OrientedShape3D.ROTATE_ABOUT_POINT, new Point3f(p), true, 0.5);
     addChild(s);
   }

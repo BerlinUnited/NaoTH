@@ -19,6 +19,7 @@ namespace game_symbols("Game Control Symbols")
     playing,
     penalized,
     finished,
+    standby,
     unstiff
   };
 
@@ -42,10 +43,11 @@ namespace game_symbols("Game Control Symbols")
   enum game.set_play
   {
     none,
-    goal_free_kick,
+    goal_kick,
     pushing_free_kick,
     corner_kick,
-    kick_in
+    kick_in,
+    penalty_kick
   };
 
   enum game.set_play input game.set_play;

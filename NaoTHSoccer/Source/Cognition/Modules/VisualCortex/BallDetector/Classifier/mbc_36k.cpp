@@ -3,18 +3,12 @@
 *          DO NOT MODIFY BY HAND!
 */
 #include "mbc_36k.h"
+#include "Tools/SIMD/SIMD.h"
+
 
 #if WIN32
 	#define alignas(x) __declspec(align(x))
 #endif
-
-// disable on macos and aarch64, i.e apple silicon
-// where emmintrin.h is not available
-#if defined(__APPLE__) && defined(__aarch64__)
-void mbc_36k::cnn(float x0[16][16][1]){}
-#else
-
-#include <emmintrin.h>
 
 void mbc_36k::cnn(float x0[16][16][1])
 {
@@ -28295,18 +28289,14 @@ void mbc_36k::cnn(float x0[16][16][1])
 
 }
 
-#endif
-
 void mbc_36k::predict(const BallCandidates::PatchYUVClassified& patch, double meanBrightnessOffset)
 {
 	ASSERT(patch.size() == 16);
 
 	for(size_t x=0; x < patch.size(); x++) {
 		for(size_t y=0; y < patch.size(); y++) {
-			// TODO: check
-			// .pixel.y accesses the brightness channel of the pixel
-			// subtract the mean brightness calculated on the dataset and the offset from the module parameters
-			float value = (static_cast<float>((patch.data[patch.size() * x + y].pixel.y)) / 255.0f) - 0.59 - static_cast<float>(meanBrightnessOffset);
+			// Add a custom brightness offset that depends on the dataset, if zero centering was used
+			float value = (static_cast<float>((patch.data[patch.size() * x + y].pixel.y)) / 255.0f) + static_cast<float>(meanBrightnessOffset);
 			in_step[y][x][0] = value;
 		}
 	}

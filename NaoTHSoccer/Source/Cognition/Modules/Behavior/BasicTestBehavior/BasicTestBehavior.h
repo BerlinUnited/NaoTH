@@ -26,7 +26,7 @@
 
 //#include "Representations/Modeling/AttentionModel.h"
 
-#include <Representations/Infrastructure/LEDRequest.h>
+#include "Representations/Infrastructure/LEDRequest.h"
 #include "Representations/Infrastructure/JointData.h"
 #include "Representations/Modeling/BodyStatus.h"
 
@@ -34,6 +34,8 @@
 
 #include <Representations/Perception/WhistlePercept.h>
 #include "Representations/Infrastructure/AudioControl.h"
+
+#include "Representations/Infrastructure/LEDRequest.h"
 
 // debug
 #include "Tools/Debug/DebugRequest.h"
@@ -65,6 +67,8 @@ BEGIN_DECLARE_MODULE(BasicTestBehavior)
   PROVIDE(BehaviorLEDRequest)
   PROVIDE(BodyStatus)
   PROVIDE(AudioControl)
+
+  PROVIDE(DebugLEDRequest)
 END_DECLARE_MODULE(BasicTestBehavior)
 
 class BasicTestBehavior: public BasicTestBehaviorBase

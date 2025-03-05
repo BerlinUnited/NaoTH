@@ -10,7 +10,7 @@ ModuleManager::~ModuleManager()
   for(iter = registeredModules.begin(); iter != registeredModules.end(); ++iter)
   {
     delete (iter->second);
-  }//end for
+  }
 }//end destructor
 
 
@@ -21,8 +21,7 @@ void ModuleManager::setModuleEnabled(std::string moduleName, bool value, bool re
   {
     iter->second->setEnabled(value);
     
-    if(recalculateExecutionList)
-    {
+    if(recalculateExecutionList) {
       calculateExecutionList();
     }
   }
@@ -32,8 +31,7 @@ void ModuleManager::setModuleEnabled(std::string moduleName, bool value, bool re
 AbstractModuleCreator* ModuleManager::getModule(const std::string& name)
 {
   ModuleCreatorMap::const_iterator iter = registeredModules.find(name);
-  if(iter != registeredModules.end())
-  {
+  if(iter != registeredModules.end()) {
     return iter->second;
   }
 
@@ -44,8 +42,7 @@ AbstractModuleCreator* ModuleManager::getModule(const std::string& name)
 const AbstractModuleCreator* ModuleManager::getModule(const std::string& name) const
 {
   ModuleCreatorMap::const_iterator iter = registeredModules.find(name);
-  if(iter != registeredModules.end())
-  {
+  if(iter != registeredModules.end()) {
     return iter->second;
   }
 
@@ -53,10 +50,74 @@ const AbstractModuleCreator* ModuleManager::getModule(const std::string& name) c
 }//end getModule
 
 
+void ModuleManager::inspectExecutionOrder() const
+{
+  // calculate the execution index for each module
+  std::map<std::string, int> moduleExecutionOrder;
+  int order = 0;
+  for(const std::string& name: getExecutionList()) {
+    moduleExecutionOrder[name] = order++;
+  }
+
+  // check all registered modules: 
+  // all required representations have to be provided before the module is executed
+  //for(const auto& m: registeredModules) 
+  for(AbstractModuleCreator* module: getModuleExecutionList())
+  {
+    // skip disabled modules 
+    if(!module->isEnabled()) {
+      continue;
+    }
+
+    // skip the Debug modules
+    const std::string name(module->getModule()->getName());
+    if(name.substr(0, 5) == "Debug") {
+      continue;
+    }
+
+    // get the execution order for the current module
+    int moduleIndex = moduleExecutionOrder.at(name);
+
+    // check all representations required by the module
+    for (auto& r: module->getModule()->getRequire()) 
+    {
+      // ignore debug representations
+      if(r.first.substr(0, 5) == "Debug") {
+        continue;
+      }
+
+      // check the modules that provide required representations
+      for(const Module* provider: r.second->getProvide()) 
+      {
+        // the provider is not in the executon order.
+        if(moduleExecutionOrder.find(provider->getName()) == moduleExecutionOrder.end()) {
+          //std::cout << "NOTE: module " << provider->getName() << " is not in the execution list" << std::endl;
+          continue;
+        }
+
+        // skip debug provider (those are only used for test purposes)
+        if(provider->getName().substr(0, 5) == "Debug") {
+          continue;
+        }
+
+        // get the execution order of the providing module
+        int providerModuleIndex = moduleExecutionOrder.at(provider->getName());
+
+        // a provider is executed later than the module
+        if(providerModuleIndex > moduleIndex) {
+          std::cout << "    " << provider->getName() << "(" << providerModuleIndex << ") -> "
+                    << r.second->getName() << " -> "
+                    << name << "(" << moduleIndex << ")" << std::endl;
+        }
+      }
+    }
+  }
+}
+
 
 void ModuleManager::calculateExecutionList()
 {
-    
+
   bool changed = true;
   std::list<std::string>::iterator start=moduleExecutionList.begin();
   const int maxAttempts = static_cast<int> (moduleExecutionList.size())*10;

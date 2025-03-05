@@ -54,6 +54,7 @@ Configuration::~Configuration()
 
 void Configuration::loadFromDir(std::string dirlocation,
                                 const std::string& platform,
+                                const std::string& competition,
                                 const std::string& scheme,
                                 const std::string& strategy,
                                 const std::string& bodyID,
@@ -69,6 +70,11 @@ void Configuration::loadFromDir(std::string dirlocation,
 
   loadFromSingleDir(publicKeyFile, dirlocation + "general/");
   loadFromSingleDir(publicKeyFile, dirlocation + "platform/" + platform + "/");
+
+
+  if(competition.size() > 0) {
+    loadFromSingleDir(publicKeyFile, dirlocation + "competition/" + competition + "/");
+  }
 
   if(scheme.size() > 0) {
     loadFromSingleDir(publicKeyFile, dirlocation + "scheme/" + scheme + "/");

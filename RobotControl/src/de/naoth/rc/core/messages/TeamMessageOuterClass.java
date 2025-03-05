@@ -218,6 +218,10 @@ public final class TeamMessageOuterClass {
      * <code>unstiff = 6;</code>
      */
     unstiff(6),
+    /**
+     * <code>standby = 7;</code>
+     */
+    standby(7),
     ;
 
     /**
@@ -248,6 +252,10 @@ public final class TeamMessageOuterClass {
      * <code>unstiff = 6;</code>
      */
     public static final int unstiff_VALUE = 6;
+    /**
+     * <code>standby = 7;</code>
+     */
+    public static final int standby_VALUE = 7;
 
 
     public final int getNumber() {
@@ -271,6 +279,7 @@ public final class TeamMessageOuterClass {
         case 4: return finished;
         case 5: return penalized;
         case 6: return unstiff;
+        case 7: return standby;
         default: return null;
       }
     }
@@ -15273,6 +15282,3179 @@ public final class TeamMessageOuterClass {
 
   }
 
+  public interface TeamMessageDebugOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:naothmessages.TeamMessageDebug)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>required string bodyID = 1 [default = "unknown"];</code>
+     */
+    boolean hasBodyID();
+    /**
+     * <code>required string bodyID = 1 [default = "unknown"];</code>
+     */
+    java.lang.String getBodyID();
+    /**
+     * <code>required string bodyID = 1 [default = "unknown"];</code>
+     */
+    com.google.protobuf.ByteString
+        getBodyIDBytes();
+
+    /**
+     * <code>required uint32 teamNumber = 2 [default = 0];</code>
+     */
+    boolean hasTeamNumber();
+    /**
+     * <code>required uint32 teamNumber = 2 [default = 0];</code>
+     */
+    int getTeamNumber();
+
+    /**
+     * <code>required uint32 playerNumber = 3 [default = 0];</code>
+     */
+    boolean hasPlayerNumber();
+    /**
+     * <code>required uint32 playerNumber = 3 [default = 0];</code>
+     */
+    int getPlayerNumber();
+
+    /**
+     * <code>required uint64 timestamp = 4 [default = 0];</code>
+     */
+    boolean hasTimestamp();
+    /**
+     * <code>required uint64 timestamp = 4 [default = 0];</code>
+     */
+    long getTimestamp();
+
+    /**
+     * <code>optional .naothmessages.FrameInfo frameInfo = 5;</code>
+     */
+    boolean hasFrameInfo();
+    /**
+     * <code>optional .naothmessages.FrameInfo frameInfo = 5;</code>
+     */
+    de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfo getFrameInfo();
+    /**
+     * <code>optional .naothmessages.FrameInfo frameInfo = 5;</code>
+     */
+    de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfoOrBuilder getFrameInfoOrBuilder();
+
+    /**
+     * <code>optional .naothmessages.RobotState robotState = 6 [default = initial];</code>
+     */
+    boolean hasRobotState();
+    /**
+     * <code>optional .naothmessages.RobotState robotState = 6 [default = initial];</code>
+     */
+    de.naoth.rc.core.messages.TeamMessageOuterClass.RobotState getRobotState();
+
+    /**
+     * <code>optional .naothmessages.RobotRole robotRole = 7;</code>
+     */
+    boolean hasRobotRole();
+    /**
+     * <code>optional .naothmessages.RobotRole robotRole = 7;</code>
+     */
+    de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole getRobotRole();
+    /**
+     * <code>optional .naothmessages.RobotRole robotRole = 7;</code>
+     */
+    de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRoleOrBuilder getRobotRoleOrBuilder();
+
+    /**
+     * <code>optional .naothmessages.Pose2D pose = 8;</code>
+     */
+    boolean hasPose();
+    /**
+     * <code>optional .naothmessages.Pose2D pose = 8;</code>
+     */
+    de.naoth.rc.core.messages.CommonTypes.Pose2D getPose();
+    /**
+     * <code>optional .naothmessages.Pose2D pose = 8;</code>
+     */
+    de.naoth.rc.core.messages.CommonTypes.Pose2DOrBuilder getPoseOrBuilder();
+
+    /**
+     * <code>optional bool fallen = 9 [default = false];</code>
+     */
+    boolean hasFallen();
+    /**
+     * <code>optional bool fallen = 9 [default = false];</code>
+     */
+    boolean getFallen();
+
+    /**
+     * <code>optional bool readyToWalk = 10;</code>
+     */
+    boolean hasReadyToWalk();
+    /**
+     * <code>optional bool readyToWalk = 10;</code>
+     */
+    boolean getReadyToWalk();
+
+    /**
+     * <code>optional float batteryCharge = 11 [default = 1];</code>
+     */
+    boolean hasBatteryCharge();
+    /**
+     * <code>optional float batteryCharge = 11 [default = 1];</code>
+     */
+    float getBatteryCharge();
+
+    /**
+     * <code>optional float temperature = 12 [default = 0];</code>
+     */
+    boolean hasTemperature();
+    /**
+     * <code>optional float temperature = 12 [default = 0];</code>
+     */
+    float getTemperature();
+
+    /**
+     * <code>optional float cpuTemperature = 13 [default = 0];</code>
+     */
+    boolean hasCpuTemperature();
+    /**
+     * <code>optional float cpuTemperature = 13 [default = 0];</code>
+     */
+    float getCpuTemperature();
+
+    /**
+     * <code>optional bool whistleDetected = 14 [default = false];</code>
+     */
+    boolean hasWhistleDetected();
+    /**
+     * <code>optional bool whistleDetected = 14 [default = false];</code>
+     */
+    boolean getWhistleDetected();
+
+    /**
+     * <code>optional int32 whistleCount = 15 [default = 0];</code>
+     */
+    boolean hasWhistleCount();
+    /**
+     * <code>optional int32 whistleCount = 15 [default = 0];</code>
+     */
+    int getWhistleCount();
+
+    /**
+     * <code>optional int32 ballAge = 16 [default = -1];</code>
+     */
+    boolean hasBallAge();
+    /**
+     * <code>optional int32 ballAge = 16 [default = -1];</code>
+     */
+    int getBallAge();
+
+    /**
+     * <code>optional .naothmessages.DoubleVector2 ballPosition = 17;</code>
+     */
+    boolean hasBallPosition();
+    /**
+     * <code>optional .naothmessages.DoubleVector2 ballPosition = 17;</code>
+     */
+    de.naoth.rc.core.messages.CommonTypes.DoubleVector2 getBallPosition();
+    /**
+     * <code>optional .naothmessages.DoubleVector2 ballPosition = 17;</code>
+     */
+    de.naoth.rc.core.messages.CommonTypes.DoubleVector2OrBuilder getBallPositionOrBuilder();
+
+    /**
+     * <code>optional .naothmessages.DoubleVector2 ballVelocity = 18;</code>
+     */
+    boolean hasBallVelocity();
+    /**
+     * <code>optional .naothmessages.DoubleVector2 ballVelocity = 18;</code>
+     */
+    de.naoth.rc.core.messages.CommonTypes.DoubleVector2 getBallVelocity();
+    /**
+     * <code>optional .naothmessages.DoubleVector2 ballVelocity = 18;</code>
+     */
+    de.naoth.rc.core.messages.CommonTypes.DoubleVector2OrBuilder getBallVelocityOrBuilder();
+
+    /**
+     * <code>optional uint32 timeToBall = 19;</code>
+     */
+    boolean hasTimeToBall();
+    /**
+     * <code>optional uint32 timeToBall = 19;</code>
+     */
+    int getTimeToBall();
+
+    /**
+     * <code>optional .naothmessages.DoubleVector2 teamBall = 20;</code>
+     */
+    boolean hasTeamBall();
+    /**
+     * <code>optional .naothmessages.DoubleVector2 teamBall = 20;</code>
+     */
+    de.naoth.rc.core.messages.CommonTypes.DoubleVector2 getTeamBall();
+    /**
+     * <code>optional .naothmessages.DoubleVector2 teamBall = 20;</code>
+     */
+    de.naoth.rc.core.messages.CommonTypes.DoubleVector2OrBuilder getTeamBallOrBuilder();
+
+    /**
+     * <code>optional bool wasStriker = 21 [default = false];</code>
+     */
+    boolean hasWasStriker();
+    /**
+     * <code>optional bool wasStriker = 21 [default = false];</code>
+     */
+    boolean getWasStriker();
+
+    /**
+     * <code>optional bool wantsToBeStriker = 22 [default = false];</code>
+     */
+    boolean hasWantsToBeStriker();
+    /**
+     * <code>optional bool wantsToBeStriker = 22 [default = false];</code>
+     */
+    boolean getWantsToBeStriker();
+  }
+  /**
+   * Protobuf type {@code naothmessages.TeamMessageDebug}
+   */
+  public  static final class TeamMessageDebug extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:naothmessages.TeamMessageDebug)
+      TeamMessageDebugOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use TeamMessageDebug.newBuilder() to construct.
+    private TeamMessageDebug(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private TeamMessageDebug() {
+      bodyID_ = "unknown";
+      teamNumber_ = 0;
+      playerNumber_ = 0;
+      timestamp_ = 0L;
+      robotState_ = 0;
+      fallen_ = false;
+      readyToWalk_ = false;
+      batteryCharge_ = 1F;
+      temperature_ = 0F;
+      cpuTemperature_ = 0F;
+      whistleDetected_ = false;
+      whistleCount_ = 0;
+      ballAge_ = -1;
+      timeToBall_ = 0;
+      wasStriker_ = false;
+      wantsToBeStriker_ = false;
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private TeamMessageDebug(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              com.google.protobuf.ByteString bs = input.readBytes();
+              bitField0_ |= 0x00000001;
+              bodyID_ = bs;
+              break;
+            }
+            case 16: {
+              bitField0_ |= 0x00000002;
+              teamNumber_ = input.readUInt32();
+              break;
+            }
+            case 24: {
+              bitField0_ |= 0x00000004;
+              playerNumber_ = input.readUInt32();
+              break;
+            }
+            case 32: {
+              bitField0_ |= 0x00000008;
+              timestamp_ = input.readUInt64();
+              break;
+            }
+            case 42: {
+              de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfo.Builder subBuilder = null;
+              if (((bitField0_ & 0x00000010) == 0x00000010)) {
+                subBuilder = frameInfo_.toBuilder();
+              }
+              frameInfo_ = input.readMessage(de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfo.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(frameInfo_);
+                frameInfo_ = subBuilder.buildPartial();
+              }
+              bitField0_ |= 0x00000010;
+              break;
+            }
+            case 48: {
+              int rawValue = input.readEnum();
+              de.naoth.rc.core.messages.TeamMessageOuterClass.RobotState value = de.naoth.rc.core.messages.TeamMessageOuterClass.RobotState.valueOf(rawValue);
+              if (value == null) {
+                unknownFields.mergeVarintField(6, rawValue);
+              } else {
+                bitField0_ |= 0x00000020;
+                robotState_ = rawValue;
+              }
+              break;
+            }
+            case 58: {
+              de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole.Builder subBuilder = null;
+              if (((bitField0_ & 0x00000040) == 0x00000040)) {
+                subBuilder = robotRole_.toBuilder();
+              }
+              robotRole_ = input.readMessage(de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(robotRole_);
+                robotRole_ = subBuilder.buildPartial();
+              }
+              bitField0_ |= 0x00000040;
+              break;
+            }
+            case 66: {
+              de.naoth.rc.core.messages.CommonTypes.Pose2D.Builder subBuilder = null;
+              if (((bitField0_ & 0x00000080) == 0x00000080)) {
+                subBuilder = pose_.toBuilder();
+              }
+              pose_ = input.readMessage(de.naoth.rc.core.messages.CommonTypes.Pose2D.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(pose_);
+                pose_ = subBuilder.buildPartial();
+              }
+              bitField0_ |= 0x00000080;
+              break;
+            }
+            case 72: {
+              bitField0_ |= 0x00000100;
+              fallen_ = input.readBool();
+              break;
+            }
+            case 80: {
+              bitField0_ |= 0x00000200;
+              readyToWalk_ = input.readBool();
+              break;
+            }
+            case 93: {
+              bitField0_ |= 0x00000400;
+              batteryCharge_ = input.readFloat();
+              break;
+            }
+            case 101: {
+              bitField0_ |= 0x00000800;
+              temperature_ = input.readFloat();
+              break;
+            }
+            case 109: {
+              bitField0_ |= 0x00001000;
+              cpuTemperature_ = input.readFloat();
+              break;
+            }
+            case 112: {
+              bitField0_ |= 0x00002000;
+              whistleDetected_ = input.readBool();
+              break;
+            }
+            case 120: {
+              bitField0_ |= 0x00004000;
+              whistleCount_ = input.readInt32();
+              break;
+            }
+            case 128: {
+              bitField0_ |= 0x00008000;
+              ballAge_ = input.readInt32();
+              break;
+            }
+            case 138: {
+              de.naoth.rc.core.messages.CommonTypes.DoubleVector2.Builder subBuilder = null;
+              if (((bitField0_ & 0x00010000) == 0x00010000)) {
+                subBuilder = ballPosition_.toBuilder();
+              }
+              ballPosition_ = input.readMessage(de.naoth.rc.core.messages.CommonTypes.DoubleVector2.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(ballPosition_);
+                ballPosition_ = subBuilder.buildPartial();
+              }
+              bitField0_ |= 0x00010000;
+              break;
+            }
+            case 146: {
+              de.naoth.rc.core.messages.CommonTypes.DoubleVector2.Builder subBuilder = null;
+              if (((bitField0_ & 0x00020000) == 0x00020000)) {
+                subBuilder = ballVelocity_.toBuilder();
+              }
+              ballVelocity_ = input.readMessage(de.naoth.rc.core.messages.CommonTypes.DoubleVector2.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(ballVelocity_);
+                ballVelocity_ = subBuilder.buildPartial();
+              }
+              bitField0_ |= 0x00020000;
+              break;
+            }
+            case 152: {
+              bitField0_ |= 0x00040000;
+              timeToBall_ = input.readUInt32();
+              break;
+            }
+            case 162: {
+              de.naoth.rc.core.messages.CommonTypes.DoubleVector2.Builder subBuilder = null;
+              if (((bitField0_ & 0x00080000) == 0x00080000)) {
+                subBuilder = teamBall_.toBuilder();
+              }
+              teamBall_ = input.readMessage(de.naoth.rc.core.messages.CommonTypes.DoubleVector2.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(teamBall_);
+                teamBall_ = subBuilder.buildPartial();
+              }
+              bitField0_ |= 0x00080000;
+              break;
+            }
+            case 168: {
+              bitField0_ |= 0x00100000;
+              wasStriker_ = input.readBool();
+              break;
+            }
+            case 176: {
+              bitField0_ |= 0x00200000;
+              wantsToBeStriker_ = input.readBool();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return de.naoth.rc.core.messages.TeamMessageOuterClass.internal_static_naothmessages_TeamMessageDebug_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return de.naoth.rc.core.messages.TeamMessageOuterClass.internal_static_naothmessages_TeamMessageDebug_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageDebug.class, de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageDebug.Builder.class);
+    }
+
+    private int bitField0_;
+    public static final int BODYID_FIELD_NUMBER = 1;
+    private volatile java.lang.Object bodyID_;
+    /**
+     * <code>required string bodyID = 1 [default = "unknown"];</code>
+     */
+    public boolean hasBodyID() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>required string bodyID = 1 [default = "unknown"];</code>
+     */
+    public java.lang.String getBodyID() {
+      java.lang.Object ref = bodyID_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          bodyID_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string bodyID = 1 [default = "unknown"];</code>
+     */
+    public com.google.protobuf.ByteString
+        getBodyIDBytes() {
+      java.lang.Object ref = bodyID_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        bodyID_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int TEAMNUMBER_FIELD_NUMBER = 2;
+    private int teamNumber_;
+    /**
+     * <code>required uint32 teamNumber = 2 [default = 0];</code>
+     */
+    public boolean hasTeamNumber() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>required uint32 teamNumber = 2 [default = 0];</code>
+     */
+    public int getTeamNumber() {
+      return teamNumber_;
+    }
+
+    public static final int PLAYERNUMBER_FIELD_NUMBER = 3;
+    private int playerNumber_;
+    /**
+     * <code>required uint32 playerNumber = 3 [default = 0];</code>
+     */
+    public boolean hasPlayerNumber() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>required uint32 playerNumber = 3 [default = 0];</code>
+     */
+    public int getPlayerNumber() {
+      return playerNumber_;
+    }
+
+    public static final int TIMESTAMP_FIELD_NUMBER = 4;
+    private long timestamp_;
+    /**
+     * <code>required uint64 timestamp = 4 [default = 0];</code>
+     */
+    public boolean hasTimestamp() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    /**
+     * <code>required uint64 timestamp = 4 [default = 0];</code>
+     */
+    public long getTimestamp() {
+      return timestamp_;
+    }
+
+    public static final int FRAMEINFO_FIELD_NUMBER = 5;
+    private de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfo frameInfo_;
+    /**
+     * <code>optional .naothmessages.FrameInfo frameInfo = 5;</code>
+     */
+    public boolean hasFrameInfo() {
+      return ((bitField0_ & 0x00000010) == 0x00000010);
+    }
+    /**
+     * <code>optional .naothmessages.FrameInfo frameInfo = 5;</code>
+     */
+    public de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfo getFrameInfo() {
+      return frameInfo_ == null ? de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfo.getDefaultInstance() : frameInfo_;
+    }
+    /**
+     * <code>optional .naothmessages.FrameInfo frameInfo = 5;</code>
+     */
+    public de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfoOrBuilder getFrameInfoOrBuilder() {
+      return frameInfo_ == null ? de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfo.getDefaultInstance() : frameInfo_;
+    }
+
+    public static final int ROBOTSTATE_FIELD_NUMBER = 6;
+    private int robotState_;
+    /**
+     * <code>optional .naothmessages.RobotState robotState = 6 [default = initial];</code>
+     */
+    public boolean hasRobotState() {
+      return ((bitField0_ & 0x00000020) == 0x00000020);
+    }
+    /**
+     * <code>optional .naothmessages.RobotState robotState = 6 [default = initial];</code>
+     */
+    public de.naoth.rc.core.messages.TeamMessageOuterClass.RobotState getRobotState() {
+      de.naoth.rc.core.messages.TeamMessageOuterClass.RobotState result = de.naoth.rc.core.messages.TeamMessageOuterClass.RobotState.valueOf(robotState_);
+      return result == null ? de.naoth.rc.core.messages.TeamMessageOuterClass.RobotState.initial : result;
+    }
+
+    public static final int ROBOTROLE_FIELD_NUMBER = 7;
+    private de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole robotRole_;
+    /**
+     * <code>optional .naothmessages.RobotRole robotRole = 7;</code>
+     */
+    public boolean hasRobotRole() {
+      return ((bitField0_ & 0x00000040) == 0x00000040);
+    }
+    /**
+     * <code>optional .naothmessages.RobotRole robotRole = 7;</code>
+     */
+    public de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole getRobotRole() {
+      return robotRole_ == null ? de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole.getDefaultInstance() : robotRole_;
+    }
+    /**
+     * <code>optional .naothmessages.RobotRole robotRole = 7;</code>
+     */
+    public de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRoleOrBuilder getRobotRoleOrBuilder() {
+      return robotRole_ == null ? de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole.getDefaultInstance() : robotRole_;
+    }
+
+    public static final int POSE_FIELD_NUMBER = 8;
+    private de.naoth.rc.core.messages.CommonTypes.Pose2D pose_;
+    /**
+     * <code>optional .naothmessages.Pose2D pose = 8;</code>
+     */
+    public boolean hasPose() {
+      return ((bitField0_ & 0x00000080) == 0x00000080);
+    }
+    /**
+     * <code>optional .naothmessages.Pose2D pose = 8;</code>
+     */
+    public de.naoth.rc.core.messages.CommonTypes.Pose2D getPose() {
+      return pose_ == null ? de.naoth.rc.core.messages.CommonTypes.Pose2D.getDefaultInstance() : pose_;
+    }
+    /**
+     * <code>optional .naothmessages.Pose2D pose = 8;</code>
+     */
+    public de.naoth.rc.core.messages.CommonTypes.Pose2DOrBuilder getPoseOrBuilder() {
+      return pose_ == null ? de.naoth.rc.core.messages.CommonTypes.Pose2D.getDefaultInstance() : pose_;
+    }
+
+    public static final int FALLEN_FIELD_NUMBER = 9;
+    private boolean fallen_;
+    /**
+     * <code>optional bool fallen = 9 [default = false];</code>
+     */
+    public boolean hasFallen() {
+      return ((bitField0_ & 0x00000100) == 0x00000100);
+    }
+    /**
+     * <code>optional bool fallen = 9 [default = false];</code>
+     */
+    public boolean getFallen() {
+      return fallen_;
+    }
+
+    public static final int READYTOWALK_FIELD_NUMBER = 10;
+    private boolean readyToWalk_;
+    /**
+     * <code>optional bool readyToWalk = 10;</code>
+     */
+    public boolean hasReadyToWalk() {
+      return ((bitField0_ & 0x00000200) == 0x00000200);
+    }
+    /**
+     * <code>optional bool readyToWalk = 10;</code>
+     */
+    public boolean getReadyToWalk() {
+      return readyToWalk_;
+    }
+
+    public static final int BATTERYCHARGE_FIELD_NUMBER = 11;
+    private float batteryCharge_;
+    /**
+     * <code>optional float batteryCharge = 11 [default = 1];</code>
+     */
+    public boolean hasBatteryCharge() {
+      return ((bitField0_ & 0x00000400) == 0x00000400);
+    }
+    /**
+     * <code>optional float batteryCharge = 11 [default = 1];</code>
+     */
+    public float getBatteryCharge() {
+      return batteryCharge_;
+    }
+
+    public static final int TEMPERATURE_FIELD_NUMBER = 12;
+    private float temperature_;
+    /**
+     * <code>optional float temperature = 12 [default = 0];</code>
+     */
+    public boolean hasTemperature() {
+      return ((bitField0_ & 0x00000800) == 0x00000800);
+    }
+    /**
+     * <code>optional float temperature = 12 [default = 0];</code>
+     */
+    public float getTemperature() {
+      return temperature_;
+    }
+
+    public static final int CPUTEMPERATURE_FIELD_NUMBER = 13;
+    private float cpuTemperature_;
+    /**
+     * <code>optional float cpuTemperature = 13 [default = 0];</code>
+     */
+    public boolean hasCpuTemperature() {
+      return ((bitField0_ & 0x00001000) == 0x00001000);
+    }
+    /**
+     * <code>optional float cpuTemperature = 13 [default = 0];</code>
+     */
+    public float getCpuTemperature() {
+      return cpuTemperature_;
+    }
+
+    public static final int WHISTLEDETECTED_FIELD_NUMBER = 14;
+    private boolean whistleDetected_;
+    /**
+     * <code>optional bool whistleDetected = 14 [default = false];</code>
+     */
+    public boolean hasWhistleDetected() {
+      return ((bitField0_ & 0x00002000) == 0x00002000);
+    }
+    /**
+     * <code>optional bool whistleDetected = 14 [default = false];</code>
+     */
+    public boolean getWhistleDetected() {
+      return whistleDetected_;
+    }
+
+    public static final int WHISTLECOUNT_FIELD_NUMBER = 15;
+    private int whistleCount_;
+    /**
+     * <code>optional int32 whistleCount = 15 [default = 0];</code>
+     */
+    public boolean hasWhistleCount() {
+      return ((bitField0_ & 0x00004000) == 0x00004000);
+    }
+    /**
+     * <code>optional int32 whistleCount = 15 [default = 0];</code>
+     */
+    public int getWhistleCount() {
+      return whistleCount_;
+    }
+
+    public static final int BALLAGE_FIELD_NUMBER = 16;
+    private int ballAge_;
+    /**
+     * <code>optional int32 ballAge = 16 [default = -1];</code>
+     */
+    public boolean hasBallAge() {
+      return ((bitField0_ & 0x00008000) == 0x00008000);
+    }
+    /**
+     * <code>optional int32 ballAge = 16 [default = -1];</code>
+     */
+    public int getBallAge() {
+      return ballAge_;
+    }
+
+    public static final int BALLPOSITION_FIELD_NUMBER = 17;
+    private de.naoth.rc.core.messages.CommonTypes.DoubleVector2 ballPosition_;
+    /**
+     * <code>optional .naothmessages.DoubleVector2 ballPosition = 17;</code>
+     */
+    public boolean hasBallPosition() {
+      return ((bitField0_ & 0x00010000) == 0x00010000);
+    }
+    /**
+     * <code>optional .naothmessages.DoubleVector2 ballPosition = 17;</code>
+     */
+    public de.naoth.rc.core.messages.CommonTypes.DoubleVector2 getBallPosition() {
+      return ballPosition_ == null ? de.naoth.rc.core.messages.CommonTypes.DoubleVector2.getDefaultInstance() : ballPosition_;
+    }
+    /**
+     * <code>optional .naothmessages.DoubleVector2 ballPosition = 17;</code>
+     */
+    public de.naoth.rc.core.messages.CommonTypes.DoubleVector2OrBuilder getBallPositionOrBuilder() {
+      return ballPosition_ == null ? de.naoth.rc.core.messages.CommonTypes.DoubleVector2.getDefaultInstance() : ballPosition_;
+    }
+
+    public static final int BALLVELOCITY_FIELD_NUMBER = 18;
+    private de.naoth.rc.core.messages.CommonTypes.DoubleVector2 ballVelocity_;
+    /**
+     * <code>optional .naothmessages.DoubleVector2 ballVelocity = 18;</code>
+     */
+    public boolean hasBallVelocity() {
+      return ((bitField0_ & 0x00020000) == 0x00020000);
+    }
+    /**
+     * <code>optional .naothmessages.DoubleVector2 ballVelocity = 18;</code>
+     */
+    public de.naoth.rc.core.messages.CommonTypes.DoubleVector2 getBallVelocity() {
+      return ballVelocity_ == null ? de.naoth.rc.core.messages.CommonTypes.DoubleVector2.getDefaultInstance() : ballVelocity_;
+    }
+    /**
+     * <code>optional .naothmessages.DoubleVector2 ballVelocity = 18;</code>
+     */
+    public de.naoth.rc.core.messages.CommonTypes.DoubleVector2OrBuilder getBallVelocityOrBuilder() {
+      return ballVelocity_ == null ? de.naoth.rc.core.messages.CommonTypes.DoubleVector2.getDefaultInstance() : ballVelocity_;
+    }
+
+    public static final int TIMETOBALL_FIELD_NUMBER = 19;
+    private int timeToBall_;
+    /**
+     * <code>optional uint32 timeToBall = 19;</code>
+     */
+    public boolean hasTimeToBall() {
+      return ((bitField0_ & 0x00040000) == 0x00040000);
+    }
+    /**
+     * <code>optional uint32 timeToBall = 19;</code>
+     */
+    public int getTimeToBall() {
+      return timeToBall_;
+    }
+
+    public static final int TEAMBALL_FIELD_NUMBER = 20;
+    private de.naoth.rc.core.messages.CommonTypes.DoubleVector2 teamBall_;
+    /**
+     * <code>optional .naothmessages.DoubleVector2 teamBall = 20;</code>
+     */
+    public boolean hasTeamBall() {
+      return ((bitField0_ & 0x00080000) == 0x00080000);
+    }
+    /**
+     * <code>optional .naothmessages.DoubleVector2 teamBall = 20;</code>
+     */
+    public de.naoth.rc.core.messages.CommonTypes.DoubleVector2 getTeamBall() {
+      return teamBall_ == null ? de.naoth.rc.core.messages.CommonTypes.DoubleVector2.getDefaultInstance() : teamBall_;
+    }
+    /**
+     * <code>optional .naothmessages.DoubleVector2 teamBall = 20;</code>
+     */
+    public de.naoth.rc.core.messages.CommonTypes.DoubleVector2OrBuilder getTeamBallOrBuilder() {
+      return teamBall_ == null ? de.naoth.rc.core.messages.CommonTypes.DoubleVector2.getDefaultInstance() : teamBall_;
+    }
+
+    public static final int WASSTRIKER_FIELD_NUMBER = 21;
+    private boolean wasStriker_;
+    /**
+     * <code>optional bool wasStriker = 21 [default = false];</code>
+     */
+    public boolean hasWasStriker() {
+      return ((bitField0_ & 0x00100000) == 0x00100000);
+    }
+    /**
+     * <code>optional bool wasStriker = 21 [default = false];</code>
+     */
+    public boolean getWasStriker() {
+      return wasStriker_;
+    }
+
+    public static final int WANTSTOBESTRIKER_FIELD_NUMBER = 22;
+    private boolean wantsToBeStriker_;
+    /**
+     * <code>optional bool wantsToBeStriker = 22 [default = false];</code>
+     */
+    public boolean hasWantsToBeStriker() {
+      return ((bitField0_ & 0x00200000) == 0x00200000);
+    }
+    /**
+     * <code>optional bool wantsToBeStriker = 22 [default = false];</code>
+     */
+    public boolean getWantsToBeStriker() {
+      return wantsToBeStriker_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      if (!hasBodyID()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasTeamNumber()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasPlayerNumber()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasTimestamp()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (hasFrameInfo()) {
+        if (!getFrameInfo().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      if (hasRobotRole()) {
+        if (!getRobotRole().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      if (hasPose()) {
+        if (!getPose().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      if (hasBallPosition()) {
+        if (!getBallPosition().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      if (hasBallVelocity()) {
+        if (!getBallVelocity().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      if (hasTeamBall()) {
+        if (!getTeamBall().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, bodyID_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeUInt32(2, teamNumber_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeUInt32(3, playerNumber_);
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeUInt64(4, timestamp_);
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        output.writeMessage(5, getFrameInfo());
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        output.writeEnum(6, robotState_);
+      }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        output.writeMessage(7, getRobotRole());
+      }
+      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+        output.writeMessage(8, getPose());
+      }
+      if (((bitField0_ & 0x00000100) == 0x00000100)) {
+        output.writeBool(9, fallen_);
+      }
+      if (((bitField0_ & 0x00000200) == 0x00000200)) {
+        output.writeBool(10, readyToWalk_);
+      }
+      if (((bitField0_ & 0x00000400) == 0x00000400)) {
+        output.writeFloat(11, batteryCharge_);
+      }
+      if (((bitField0_ & 0x00000800) == 0x00000800)) {
+        output.writeFloat(12, temperature_);
+      }
+      if (((bitField0_ & 0x00001000) == 0x00001000)) {
+        output.writeFloat(13, cpuTemperature_);
+      }
+      if (((bitField0_ & 0x00002000) == 0x00002000)) {
+        output.writeBool(14, whistleDetected_);
+      }
+      if (((bitField0_ & 0x00004000) == 0x00004000)) {
+        output.writeInt32(15, whistleCount_);
+      }
+      if (((bitField0_ & 0x00008000) == 0x00008000)) {
+        output.writeInt32(16, ballAge_);
+      }
+      if (((bitField0_ & 0x00010000) == 0x00010000)) {
+        output.writeMessage(17, getBallPosition());
+      }
+      if (((bitField0_ & 0x00020000) == 0x00020000)) {
+        output.writeMessage(18, getBallVelocity());
+      }
+      if (((bitField0_ & 0x00040000) == 0x00040000)) {
+        output.writeUInt32(19, timeToBall_);
+      }
+      if (((bitField0_ & 0x00080000) == 0x00080000)) {
+        output.writeMessage(20, getTeamBall());
+      }
+      if (((bitField0_ & 0x00100000) == 0x00100000)) {
+        output.writeBool(21, wasStriker_);
+      }
+      if (((bitField0_ & 0x00200000) == 0x00200000)) {
+        output.writeBool(22, wantsToBeStriker_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, bodyID_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(2, teamNumber_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(3, playerNumber_);
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt64Size(4, timestamp_);
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(5, getFrameInfo());
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(6, robotState_);
+      }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(7, getRobotRole());
+      }
+      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(8, getPose());
+      }
+      if (((bitField0_ & 0x00000100) == 0x00000100)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(9, fallen_);
+      }
+      if (((bitField0_ & 0x00000200) == 0x00000200)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(10, readyToWalk_);
+      }
+      if (((bitField0_ & 0x00000400) == 0x00000400)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeFloatSize(11, batteryCharge_);
+      }
+      if (((bitField0_ & 0x00000800) == 0x00000800)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeFloatSize(12, temperature_);
+      }
+      if (((bitField0_ & 0x00001000) == 0x00001000)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeFloatSize(13, cpuTemperature_);
+      }
+      if (((bitField0_ & 0x00002000) == 0x00002000)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(14, whistleDetected_);
+      }
+      if (((bitField0_ & 0x00004000) == 0x00004000)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(15, whistleCount_);
+      }
+      if (((bitField0_ & 0x00008000) == 0x00008000)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(16, ballAge_);
+      }
+      if (((bitField0_ & 0x00010000) == 0x00010000)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(17, getBallPosition());
+      }
+      if (((bitField0_ & 0x00020000) == 0x00020000)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(18, getBallVelocity());
+      }
+      if (((bitField0_ & 0x00040000) == 0x00040000)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(19, timeToBall_);
+      }
+      if (((bitField0_ & 0x00080000) == 0x00080000)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(20, getTeamBall());
+      }
+      if (((bitField0_ & 0x00100000) == 0x00100000)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(21, wasStriker_);
+      }
+      if (((bitField0_ & 0x00200000) == 0x00200000)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(22, wantsToBeStriker_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageDebug)) {
+        return super.equals(obj);
+      }
+      de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageDebug other = (de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageDebug) obj;
+
+      boolean result = true;
+      result = result && (hasBodyID() == other.hasBodyID());
+      if (hasBodyID()) {
+        result = result && getBodyID()
+            .equals(other.getBodyID());
+      }
+      result = result && (hasTeamNumber() == other.hasTeamNumber());
+      if (hasTeamNumber()) {
+        result = result && (getTeamNumber()
+            == other.getTeamNumber());
+      }
+      result = result && (hasPlayerNumber() == other.hasPlayerNumber());
+      if (hasPlayerNumber()) {
+        result = result && (getPlayerNumber()
+            == other.getPlayerNumber());
+      }
+      result = result && (hasTimestamp() == other.hasTimestamp());
+      if (hasTimestamp()) {
+        result = result && (getTimestamp()
+            == other.getTimestamp());
+      }
+      result = result && (hasFrameInfo() == other.hasFrameInfo());
+      if (hasFrameInfo()) {
+        result = result && getFrameInfo()
+            .equals(other.getFrameInfo());
+      }
+      result = result && (hasRobotState() == other.hasRobotState());
+      if (hasRobotState()) {
+        result = result && robotState_ == other.robotState_;
+      }
+      result = result && (hasRobotRole() == other.hasRobotRole());
+      if (hasRobotRole()) {
+        result = result && getRobotRole()
+            .equals(other.getRobotRole());
+      }
+      result = result && (hasPose() == other.hasPose());
+      if (hasPose()) {
+        result = result && getPose()
+            .equals(other.getPose());
+      }
+      result = result && (hasFallen() == other.hasFallen());
+      if (hasFallen()) {
+        result = result && (getFallen()
+            == other.getFallen());
+      }
+      result = result && (hasReadyToWalk() == other.hasReadyToWalk());
+      if (hasReadyToWalk()) {
+        result = result && (getReadyToWalk()
+            == other.getReadyToWalk());
+      }
+      result = result && (hasBatteryCharge() == other.hasBatteryCharge());
+      if (hasBatteryCharge()) {
+        result = result && (
+            java.lang.Float.floatToIntBits(getBatteryCharge())
+            == java.lang.Float.floatToIntBits(
+                other.getBatteryCharge()));
+      }
+      result = result && (hasTemperature() == other.hasTemperature());
+      if (hasTemperature()) {
+        result = result && (
+            java.lang.Float.floatToIntBits(getTemperature())
+            == java.lang.Float.floatToIntBits(
+                other.getTemperature()));
+      }
+      result = result && (hasCpuTemperature() == other.hasCpuTemperature());
+      if (hasCpuTemperature()) {
+        result = result && (
+            java.lang.Float.floatToIntBits(getCpuTemperature())
+            == java.lang.Float.floatToIntBits(
+                other.getCpuTemperature()));
+      }
+      result = result && (hasWhistleDetected() == other.hasWhistleDetected());
+      if (hasWhistleDetected()) {
+        result = result && (getWhistleDetected()
+            == other.getWhistleDetected());
+      }
+      result = result && (hasWhistleCount() == other.hasWhistleCount());
+      if (hasWhistleCount()) {
+        result = result && (getWhistleCount()
+            == other.getWhistleCount());
+      }
+      result = result && (hasBallAge() == other.hasBallAge());
+      if (hasBallAge()) {
+        result = result && (getBallAge()
+            == other.getBallAge());
+      }
+      result = result && (hasBallPosition() == other.hasBallPosition());
+      if (hasBallPosition()) {
+        result = result && getBallPosition()
+            .equals(other.getBallPosition());
+      }
+      result = result && (hasBallVelocity() == other.hasBallVelocity());
+      if (hasBallVelocity()) {
+        result = result && getBallVelocity()
+            .equals(other.getBallVelocity());
+      }
+      result = result && (hasTimeToBall() == other.hasTimeToBall());
+      if (hasTimeToBall()) {
+        result = result && (getTimeToBall()
+            == other.getTimeToBall());
+      }
+      result = result && (hasTeamBall() == other.hasTeamBall());
+      if (hasTeamBall()) {
+        result = result && getTeamBall()
+            .equals(other.getTeamBall());
+      }
+      result = result && (hasWasStriker() == other.hasWasStriker());
+      if (hasWasStriker()) {
+        result = result && (getWasStriker()
+            == other.getWasStriker());
+      }
+      result = result && (hasWantsToBeStriker() == other.hasWantsToBeStriker());
+      if (hasWantsToBeStriker()) {
+        result = result && (getWantsToBeStriker()
+            == other.getWantsToBeStriker());
+      }
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (hasBodyID()) {
+        hash = (37 * hash) + BODYID_FIELD_NUMBER;
+        hash = (53 * hash) + getBodyID().hashCode();
+      }
+      if (hasTeamNumber()) {
+        hash = (37 * hash) + TEAMNUMBER_FIELD_NUMBER;
+        hash = (53 * hash) + getTeamNumber();
+      }
+      if (hasPlayerNumber()) {
+        hash = (37 * hash) + PLAYERNUMBER_FIELD_NUMBER;
+        hash = (53 * hash) + getPlayerNumber();
+      }
+      if (hasTimestamp()) {
+        hash = (37 * hash) + TIMESTAMP_FIELD_NUMBER;
+        hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+            getTimestamp());
+      }
+      if (hasFrameInfo()) {
+        hash = (37 * hash) + FRAMEINFO_FIELD_NUMBER;
+        hash = (53 * hash) + getFrameInfo().hashCode();
+      }
+      if (hasRobotState()) {
+        hash = (37 * hash) + ROBOTSTATE_FIELD_NUMBER;
+        hash = (53 * hash) + robotState_;
+      }
+      if (hasRobotRole()) {
+        hash = (37 * hash) + ROBOTROLE_FIELD_NUMBER;
+        hash = (53 * hash) + getRobotRole().hashCode();
+      }
+      if (hasPose()) {
+        hash = (37 * hash) + POSE_FIELD_NUMBER;
+        hash = (53 * hash) + getPose().hashCode();
+      }
+      if (hasFallen()) {
+        hash = (37 * hash) + FALLEN_FIELD_NUMBER;
+        hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+            getFallen());
+      }
+      if (hasReadyToWalk()) {
+        hash = (37 * hash) + READYTOWALK_FIELD_NUMBER;
+        hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+            getReadyToWalk());
+      }
+      if (hasBatteryCharge()) {
+        hash = (37 * hash) + BATTERYCHARGE_FIELD_NUMBER;
+        hash = (53 * hash) + java.lang.Float.floatToIntBits(
+            getBatteryCharge());
+      }
+      if (hasTemperature()) {
+        hash = (37 * hash) + TEMPERATURE_FIELD_NUMBER;
+        hash = (53 * hash) + java.lang.Float.floatToIntBits(
+            getTemperature());
+      }
+      if (hasCpuTemperature()) {
+        hash = (37 * hash) + CPUTEMPERATURE_FIELD_NUMBER;
+        hash = (53 * hash) + java.lang.Float.floatToIntBits(
+            getCpuTemperature());
+      }
+      if (hasWhistleDetected()) {
+        hash = (37 * hash) + WHISTLEDETECTED_FIELD_NUMBER;
+        hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+            getWhistleDetected());
+      }
+      if (hasWhistleCount()) {
+        hash = (37 * hash) + WHISTLECOUNT_FIELD_NUMBER;
+        hash = (53 * hash) + getWhistleCount();
+      }
+      if (hasBallAge()) {
+        hash = (37 * hash) + BALLAGE_FIELD_NUMBER;
+        hash = (53 * hash) + getBallAge();
+      }
+      if (hasBallPosition()) {
+        hash = (37 * hash) + BALLPOSITION_FIELD_NUMBER;
+        hash = (53 * hash) + getBallPosition().hashCode();
+      }
+      if (hasBallVelocity()) {
+        hash = (37 * hash) + BALLVELOCITY_FIELD_NUMBER;
+        hash = (53 * hash) + getBallVelocity().hashCode();
+      }
+      if (hasTimeToBall()) {
+        hash = (37 * hash) + TIMETOBALL_FIELD_NUMBER;
+        hash = (53 * hash) + getTimeToBall();
+      }
+      if (hasTeamBall()) {
+        hash = (37 * hash) + TEAMBALL_FIELD_NUMBER;
+        hash = (53 * hash) + getTeamBall().hashCode();
+      }
+      if (hasWasStriker()) {
+        hash = (37 * hash) + WASSTRIKER_FIELD_NUMBER;
+        hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+            getWasStriker());
+      }
+      if (hasWantsToBeStriker()) {
+        hash = (37 * hash) + WANTSTOBESTRIKER_FIELD_NUMBER;
+        hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+            getWantsToBeStriker());
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageDebug parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageDebug parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageDebug parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageDebug parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageDebug parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageDebug parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageDebug parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageDebug parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageDebug parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageDebug parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageDebug parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageDebug parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageDebug prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code naothmessages.TeamMessageDebug}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:naothmessages.TeamMessageDebug)
+        de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageDebugOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return de.naoth.rc.core.messages.TeamMessageOuterClass.internal_static_naothmessages_TeamMessageDebug_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return de.naoth.rc.core.messages.TeamMessageOuterClass.internal_static_naothmessages_TeamMessageDebug_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageDebug.class, de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageDebug.Builder.class);
+      }
+
+      // Construct using de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageDebug.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+          getFrameInfoFieldBuilder();
+          getRobotRoleFieldBuilder();
+          getPoseFieldBuilder();
+          getBallPositionFieldBuilder();
+          getBallVelocityFieldBuilder();
+          getTeamBallFieldBuilder();
+        }
+      }
+      public Builder clear() {
+        super.clear();
+        bodyID_ = "unknown";
+        bitField0_ = (bitField0_ & ~0x00000001);
+        teamNumber_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        playerNumber_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        timestamp_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000008);
+        if (frameInfoBuilder_ == null) {
+          frameInfo_ = null;
+        } else {
+          frameInfoBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000010);
+        robotState_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000020);
+        if (robotRoleBuilder_ == null) {
+          robotRole_ = null;
+        } else {
+          robotRoleBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000040);
+        if (poseBuilder_ == null) {
+          pose_ = null;
+        } else {
+          poseBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000080);
+        fallen_ = false;
+        bitField0_ = (bitField0_ & ~0x00000100);
+        readyToWalk_ = false;
+        bitField0_ = (bitField0_ & ~0x00000200);
+        batteryCharge_ = 1F;
+        bitField0_ = (bitField0_ & ~0x00000400);
+        temperature_ = 0F;
+        bitField0_ = (bitField0_ & ~0x00000800);
+        cpuTemperature_ = 0F;
+        bitField0_ = (bitField0_ & ~0x00001000);
+        whistleDetected_ = false;
+        bitField0_ = (bitField0_ & ~0x00002000);
+        whistleCount_ = 0;
+        bitField0_ = (bitField0_ & ~0x00004000);
+        ballAge_ = -1;
+        bitField0_ = (bitField0_ & ~0x00008000);
+        if (ballPositionBuilder_ == null) {
+          ballPosition_ = null;
+        } else {
+          ballPositionBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00010000);
+        if (ballVelocityBuilder_ == null) {
+          ballVelocity_ = null;
+        } else {
+          ballVelocityBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00020000);
+        timeToBall_ = 0;
+        bitField0_ = (bitField0_ & ~0x00040000);
+        if (teamBallBuilder_ == null) {
+          teamBall_ = null;
+        } else {
+          teamBallBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00080000);
+        wasStriker_ = false;
+        bitField0_ = (bitField0_ & ~0x00100000);
+        wantsToBeStriker_ = false;
+        bitField0_ = (bitField0_ & ~0x00200000);
+        return this;
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return de.naoth.rc.core.messages.TeamMessageOuterClass.internal_static_naothmessages_TeamMessageDebug_descriptor;
+      }
+
+      public de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageDebug getDefaultInstanceForType() {
+        return de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageDebug.getDefaultInstance();
+      }
+
+      public de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageDebug build() {
+        de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageDebug result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageDebug buildPartial() {
+        de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageDebug result = new de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageDebug(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.bodyID_ = bodyID_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.teamNumber_ = teamNumber_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.playerNumber_ = playerNumber_;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        result.timestamp_ = timestamp_;
+        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+          to_bitField0_ |= 0x00000010;
+        }
+        if (frameInfoBuilder_ == null) {
+          result.frameInfo_ = frameInfo_;
+        } else {
+          result.frameInfo_ = frameInfoBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
+          to_bitField0_ |= 0x00000020;
+        }
+        result.robotState_ = robotState_;
+        if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
+          to_bitField0_ |= 0x00000040;
+        }
+        if (robotRoleBuilder_ == null) {
+          result.robotRole_ = robotRole_;
+        } else {
+          result.robotRole_ = robotRoleBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
+          to_bitField0_ |= 0x00000080;
+        }
+        if (poseBuilder_ == null) {
+          result.pose_ = pose_;
+        } else {
+          result.pose_ = poseBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000100) == 0x00000100)) {
+          to_bitField0_ |= 0x00000100;
+        }
+        result.fallen_ = fallen_;
+        if (((from_bitField0_ & 0x00000200) == 0x00000200)) {
+          to_bitField0_ |= 0x00000200;
+        }
+        result.readyToWalk_ = readyToWalk_;
+        if (((from_bitField0_ & 0x00000400) == 0x00000400)) {
+          to_bitField0_ |= 0x00000400;
+        }
+        result.batteryCharge_ = batteryCharge_;
+        if (((from_bitField0_ & 0x00000800) == 0x00000800)) {
+          to_bitField0_ |= 0x00000800;
+        }
+        result.temperature_ = temperature_;
+        if (((from_bitField0_ & 0x00001000) == 0x00001000)) {
+          to_bitField0_ |= 0x00001000;
+        }
+        result.cpuTemperature_ = cpuTemperature_;
+        if (((from_bitField0_ & 0x00002000) == 0x00002000)) {
+          to_bitField0_ |= 0x00002000;
+        }
+        result.whistleDetected_ = whistleDetected_;
+        if (((from_bitField0_ & 0x00004000) == 0x00004000)) {
+          to_bitField0_ |= 0x00004000;
+        }
+        result.whistleCount_ = whistleCount_;
+        if (((from_bitField0_ & 0x00008000) == 0x00008000)) {
+          to_bitField0_ |= 0x00008000;
+        }
+        result.ballAge_ = ballAge_;
+        if (((from_bitField0_ & 0x00010000) == 0x00010000)) {
+          to_bitField0_ |= 0x00010000;
+        }
+        if (ballPositionBuilder_ == null) {
+          result.ballPosition_ = ballPosition_;
+        } else {
+          result.ballPosition_ = ballPositionBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00020000) == 0x00020000)) {
+          to_bitField0_ |= 0x00020000;
+        }
+        if (ballVelocityBuilder_ == null) {
+          result.ballVelocity_ = ballVelocity_;
+        } else {
+          result.ballVelocity_ = ballVelocityBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00040000) == 0x00040000)) {
+          to_bitField0_ |= 0x00040000;
+        }
+        result.timeToBall_ = timeToBall_;
+        if (((from_bitField0_ & 0x00080000) == 0x00080000)) {
+          to_bitField0_ |= 0x00080000;
+        }
+        if (teamBallBuilder_ == null) {
+          result.teamBall_ = teamBall_;
+        } else {
+          result.teamBall_ = teamBallBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00100000) == 0x00100000)) {
+          to_bitField0_ |= 0x00100000;
+        }
+        result.wasStriker_ = wasStriker_;
+        if (((from_bitField0_ & 0x00200000) == 0x00200000)) {
+          to_bitField0_ |= 0x00200000;
+        }
+        result.wantsToBeStriker_ = wantsToBeStriker_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageDebug) {
+          return mergeFrom((de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageDebug)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageDebug other) {
+        if (other == de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageDebug.getDefaultInstance()) return this;
+        if (other.hasBodyID()) {
+          bitField0_ |= 0x00000001;
+          bodyID_ = other.bodyID_;
+          onChanged();
+        }
+        if (other.hasTeamNumber()) {
+          setTeamNumber(other.getTeamNumber());
+        }
+        if (other.hasPlayerNumber()) {
+          setPlayerNumber(other.getPlayerNumber());
+        }
+        if (other.hasTimestamp()) {
+          setTimestamp(other.getTimestamp());
+        }
+        if (other.hasFrameInfo()) {
+          mergeFrameInfo(other.getFrameInfo());
+        }
+        if (other.hasRobotState()) {
+          setRobotState(other.getRobotState());
+        }
+        if (other.hasRobotRole()) {
+          mergeRobotRole(other.getRobotRole());
+        }
+        if (other.hasPose()) {
+          mergePose(other.getPose());
+        }
+        if (other.hasFallen()) {
+          setFallen(other.getFallen());
+        }
+        if (other.hasReadyToWalk()) {
+          setReadyToWalk(other.getReadyToWalk());
+        }
+        if (other.hasBatteryCharge()) {
+          setBatteryCharge(other.getBatteryCharge());
+        }
+        if (other.hasTemperature()) {
+          setTemperature(other.getTemperature());
+        }
+        if (other.hasCpuTemperature()) {
+          setCpuTemperature(other.getCpuTemperature());
+        }
+        if (other.hasWhistleDetected()) {
+          setWhistleDetected(other.getWhistleDetected());
+        }
+        if (other.hasWhistleCount()) {
+          setWhistleCount(other.getWhistleCount());
+        }
+        if (other.hasBallAge()) {
+          setBallAge(other.getBallAge());
+        }
+        if (other.hasBallPosition()) {
+          mergeBallPosition(other.getBallPosition());
+        }
+        if (other.hasBallVelocity()) {
+          mergeBallVelocity(other.getBallVelocity());
+        }
+        if (other.hasTimeToBall()) {
+          setTimeToBall(other.getTimeToBall());
+        }
+        if (other.hasTeamBall()) {
+          mergeTeamBall(other.getTeamBall());
+        }
+        if (other.hasWasStriker()) {
+          setWasStriker(other.getWasStriker());
+        }
+        if (other.hasWantsToBeStriker()) {
+          setWantsToBeStriker(other.getWantsToBeStriker());
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        if (!hasBodyID()) {
+          return false;
+        }
+        if (!hasTeamNumber()) {
+          return false;
+        }
+        if (!hasPlayerNumber()) {
+          return false;
+        }
+        if (!hasTimestamp()) {
+          return false;
+        }
+        if (hasFrameInfo()) {
+          if (!getFrameInfo().isInitialized()) {
+            return false;
+          }
+        }
+        if (hasRobotRole()) {
+          if (!getRobotRole().isInitialized()) {
+            return false;
+          }
+        }
+        if (hasPose()) {
+          if (!getPose().isInitialized()) {
+            return false;
+          }
+        }
+        if (hasBallPosition()) {
+          if (!getBallPosition().isInitialized()) {
+            return false;
+          }
+        }
+        if (hasBallVelocity()) {
+          if (!getBallVelocity().isInitialized()) {
+            return false;
+          }
+        }
+        if (hasTeamBall()) {
+          if (!getTeamBall().isInitialized()) {
+            return false;
+          }
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageDebug parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageDebug) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      private java.lang.Object bodyID_ = "unknown";
+      /**
+       * <code>required string bodyID = 1 [default = "unknown"];</code>
+       */
+      public boolean hasBodyID() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>required string bodyID = 1 [default = "unknown"];</code>
+       */
+      public java.lang.String getBodyID() {
+        java.lang.Object ref = bodyID_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            bodyID_ = s;
+          }
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string bodyID = 1 [default = "unknown"];</code>
+       */
+      public com.google.protobuf.ByteString
+          getBodyIDBytes() {
+        java.lang.Object ref = bodyID_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          bodyID_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string bodyID = 1 [default = "unknown"];</code>
+       */
+      public Builder setBodyID(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        bodyID_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string bodyID = 1 [default = "unknown"];</code>
+       */
+      public Builder clearBodyID() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        bodyID_ = getDefaultInstance().getBodyID();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string bodyID = 1 [default = "unknown"];</code>
+       */
+      public Builder setBodyIDBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        bodyID_ = value;
+        onChanged();
+        return this;
+      }
+
+      private int teamNumber_ ;
+      /**
+       * <code>required uint32 teamNumber = 2 [default = 0];</code>
+       */
+      public boolean hasTeamNumber() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>required uint32 teamNumber = 2 [default = 0];</code>
+       */
+      public int getTeamNumber() {
+        return teamNumber_;
+      }
+      /**
+       * <code>required uint32 teamNumber = 2 [default = 0];</code>
+       */
+      public Builder setTeamNumber(int value) {
+        bitField0_ |= 0x00000002;
+        teamNumber_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required uint32 teamNumber = 2 [default = 0];</code>
+       */
+      public Builder clearTeamNumber() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        teamNumber_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private int playerNumber_ ;
+      /**
+       * <code>required uint32 playerNumber = 3 [default = 0];</code>
+       */
+      public boolean hasPlayerNumber() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>required uint32 playerNumber = 3 [default = 0];</code>
+       */
+      public int getPlayerNumber() {
+        return playerNumber_;
+      }
+      /**
+       * <code>required uint32 playerNumber = 3 [default = 0];</code>
+       */
+      public Builder setPlayerNumber(int value) {
+        bitField0_ |= 0x00000004;
+        playerNumber_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required uint32 playerNumber = 3 [default = 0];</code>
+       */
+      public Builder clearPlayerNumber() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        playerNumber_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private long timestamp_ ;
+      /**
+       * <code>required uint64 timestamp = 4 [default = 0];</code>
+       */
+      public boolean hasTimestamp() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      /**
+       * <code>required uint64 timestamp = 4 [default = 0];</code>
+       */
+      public long getTimestamp() {
+        return timestamp_;
+      }
+      /**
+       * <code>required uint64 timestamp = 4 [default = 0];</code>
+       */
+      public Builder setTimestamp(long value) {
+        bitField0_ |= 0x00000008;
+        timestamp_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required uint64 timestamp = 4 [default = 0];</code>
+       */
+      public Builder clearTimestamp() {
+        bitField0_ = (bitField0_ & ~0x00000008);
+        timestamp_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      private de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfo frameInfo_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfo, de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfo.Builder, de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfoOrBuilder> frameInfoBuilder_;
+      /**
+       * <code>optional .naothmessages.FrameInfo frameInfo = 5;</code>
+       */
+      public boolean hasFrameInfo() {
+        return ((bitField0_ & 0x00000010) == 0x00000010);
+      }
+      /**
+       * <code>optional .naothmessages.FrameInfo frameInfo = 5;</code>
+       */
+      public de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfo getFrameInfo() {
+        if (frameInfoBuilder_ == null) {
+          return frameInfo_ == null ? de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfo.getDefaultInstance() : frameInfo_;
+        } else {
+          return frameInfoBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>optional .naothmessages.FrameInfo frameInfo = 5;</code>
+       */
+      public Builder setFrameInfo(de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfo value) {
+        if (frameInfoBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          frameInfo_ = value;
+          onChanged();
+        } else {
+          frameInfoBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000010;
+        return this;
+      }
+      /**
+       * <code>optional .naothmessages.FrameInfo frameInfo = 5;</code>
+       */
+      public Builder setFrameInfo(
+          de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfo.Builder builderForValue) {
+        if (frameInfoBuilder_ == null) {
+          frameInfo_ = builderForValue.build();
+          onChanged();
+        } else {
+          frameInfoBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000010;
+        return this;
+      }
+      /**
+       * <code>optional .naothmessages.FrameInfo frameInfo = 5;</code>
+       */
+      public Builder mergeFrameInfo(de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfo value) {
+        if (frameInfoBuilder_ == null) {
+          if (((bitField0_ & 0x00000010) == 0x00000010) &&
+              frameInfo_ != null &&
+              frameInfo_ != de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfo.getDefaultInstance()) {
+            frameInfo_ =
+              de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfo.newBuilder(frameInfo_).mergeFrom(value).buildPartial();
+          } else {
+            frameInfo_ = value;
+          }
+          onChanged();
+        } else {
+          frameInfoBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000010;
+        return this;
+      }
+      /**
+       * <code>optional .naothmessages.FrameInfo frameInfo = 5;</code>
+       */
+      public Builder clearFrameInfo() {
+        if (frameInfoBuilder_ == null) {
+          frameInfo_ = null;
+          onChanged();
+        } else {
+          frameInfoBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000010);
+        return this;
+      }
+      /**
+       * <code>optional .naothmessages.FrameInfo frameInfo = 5;</code>
+       */
+      public de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfo.Builder getFrameInfoBuilder() {
+        bitField0_ |= 0x00000010;
+        onChanged();
+        return getFrameInfoFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>optional .naothmessages.FrameInfo frameInfo = 5;</code>
+       */
+      public de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfoOrBuilder getFrameInfoOrBuilder() {
+        if (frameInfoBuilder_ != null) {
+          return frameInfoBuilder_.getMessageOrBuilder();
+        } else {
+          return frameInfo_ == null ?
+              de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfo.getDefaultInstance() : frameInfo_;
+        }
+      }
+      /**
+       * <code>optional .naothmessages.FrameInfo frameInfo = 5;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfo, de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfo.Builder, de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfoOrBuilder> 
+          getFrameInfoFieldBuilder() {
+        if (frameInfoBuilder_ == null) {
+          frameInfoBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfo, de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfo.Builder, de.naoth.rc.core.messages.FrameworkRepresentations.FrameInfoOrBuilder>(
+                  getFrameInfo(),
+                  getParentForChildren(),
+                  isClean());
+          frameInfo_ = null;
+        }
+        return frameInfoBuilder_;
+      }
+
+      private int robotState_ = 0;
+      /**
+       * <code>optional .naothmessages.RobotState robotState = 6 [default = initial];</code>
+       */
+      public boolean hasRobotState() {
+        return ((bitField0_ & 0x00000020) == 0x00000020);
+      }
+      /**
+       * <code>optional .naothmessages.RobotState robotState = 6 [default = initial];</code>
+       */
+      public de.naoth.rc.core.messages.TeamMessageOuterClass.RobotState getRobotState() {
+        de.naoth.rc.core.messages.TeamMessageOuterClass.RobotState result = de.naoth.rc.core.messages.TeamMessageOuterClass.RobotState.valueOf(robotState_);
+        return result == null ? de.naoth.rc.core.messages.TeamMessageOuterClass.RobotState.initial : result;
+      }
+      /**
+       * <code>optional .naothmessages.RobotState robotState = 6 [default = initial];</code>
+       */
+      public Builder setRobotState(de.naoth.rc.core.messages.TeamMessageOuterClass.RobotState value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        bitField0_ |= 0x00000020;
+        robotState_ = value.getNumber();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional .naothmessages.RobotState robotState = 6 [default = initial];</code>
+       */
+      public Builder clearRobotState() {
+        bitField0_ = (bitField0_ & ~0x00000020);
+        robotState_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole robotRole_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole, de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole.Builder, de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRoleOrBuilder> robotRoleBuilder_;
+      /**
+       * <code>optional .naothmessages.RobotRole robotRole = 7;</code>
+       */
+      public boolean hasRobotRole() {
+        return ((bitField0_ & 0x00000040) == 0x00000040);
+      }
+      /**
+       * <code>optional .naothmessages.RobotRole robotRole = 7;</code>
+       */
+      public de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole getRobotRole() {
+        if (robotRoleBuilder_ == null) {
+          return robotRole_ == null ? de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole.getDefaultInstance() : robotRole_;
+        } else {
+          return robotRoleBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>optional .naothmessages.RobotRole robotRole = 7;</code>
+       */
+      public Builder setRobotRole(de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole value) {
+        if (robotRoleBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          robotRole_ = value;
+          onChanged();
+        } else {
+          robotRoleBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000040;
+        return this;
+      }
+      /**
+       * <code>optional .naothmessages.RobotRole robotRole = 7;</code>
+       */
+      public Builder setRobotRole(
+          de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole.Builder builderForValue) {
+        if (robotRoleBuilder_ == null) {
+          robotRole_ = builderForValue.build();
+          onChanged();
+        } else {
+          robotRoleBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000040;
+        return this;
+      }
+      /**
+       * <code>optional .naothmessages.RobotRole robotRole = 7;</code>
+       */
+      public Builder mergeRobotRole(de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole value) {
+        if (robotRoleBuilder_ == null) {
+          if (((bitField0_ & 0x00000040) == 0x00000040) &&
+              robotRole_ != null &&
+              robotRole_ != de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole.getDefaultInstance()) {
+            robotRole_ =
+              de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole.newBuilder(robotRole_).mergeFrom(value).buildPartial();
+          } else {
+            robotRole_ = value;
+          }
+          onChanged();
+        } else {
+          robotRoleBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000040;
+        return this;
+      }
+      /**
+       * <code>optional .naothmessages.RobotRole robotRole = 7;</code>
+       */
+      public Builder clearRobotRole() {
+        if (robotRoleBuilder_ == null) {
+          robotRole_ = null;
+          onChanged();
+        } else {
+          robotRoleBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000040);
+        return this;
+      }
+      /**
+       * <code>optional .naothmessages.RobotRole robotRole = 7;</code>
+       */
+      public de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole.Builder getRobotRoleBuilder() {
+        bitField0_ |= 0x00000040;
+        onChanged();
+        return getRobotRoleFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>optional .naothmessages.RobotRole robotRole = 7;</code>
+       */
+      public de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRoleOrBuilder getRobotRoleOrBuilder() {
+        if (robotRoleBuilder_ != null) {
+          return robotRoleBuilder_.getMessageOrBuilder();
+        } else {
+          return robotRole_ == null ?
+              de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole.getDefaultInstance() : robotRole_;
+        }
+      }
+      /**
+       * <code>optional .naothmessages.RobotRole robotRole = 7;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole, de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole.Builder, de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRoleOrBuilder> 
+          getRobotRoleFieldBuilder() {
+        if (robotRoleBuilder_ == null) {
+          robotRoleBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole, de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole.Builder, de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRoleOrBuilder>(
+                  getRobotRole(),
+                  getParentForChildren(),
+                  isClean());
+          robotRole_ = null;
+        }
+        return robotRoleBuilder_;
+      }
+
+      private de.naoth.rc.core.messages.CommonTypes.Pose2D pose_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          de.naoth.rc.core.messages.CommonTypes.Pose2D, de.naoth.rc.core.messages.CommonTypes.Pose2D.Builder, de.naoth.rc.core.messages.CommonTypes.Pose2DOrBuilder> poseBuilder_;
+      /**
+       * <code>optional .naothmessages.Pose2D pose = 8;</code>
+       */
+      public boolean hasPose() {
+        return ((bitField0_ & 0x00000080) == 0x00000080);
+      }
+      /**
+       * <code>optional .naothmessages.Pose2D pose = 8;</code>
+       */
+      public de.naoth.rc.core.messages.CommonTypes.Pose2D getPose() {
+        if (poseBuilder_ == null) {
+          return pose_ == null ? de.naoth.rc.core.messages.CommonTypes.Pose2D.getDefaultInstance() : pose_;
+        } else {
+          return poseBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>optional .naothmessages.Pose2D pose = 8;</code>
+       */
+      public Builder setPose(de.naoth.rc.core.messages.CommonTypes.Pose2D value) {
+        if (poseBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          pose_ = value;
+          onChanged();
+        } else {
+          poseBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000080;
+        return this;
+      }
+      /**
+       * <code>optional .naothmessages.Pose2D pose = 8;</code>
+       */
+      public Builder setPose(
+          de.naoth.rc.core.messages.CommonTypes.Pose2D.Builder builderForValue) {
+        if (poseBuilder_ == null) {
+          pose_ = builderForValue.build();
+          onChanged();
+        } else {
+          poseBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000080;
+        return this;
+      }
+      /**
+       * <code>optional .naothmessages.Pose2D pose = 8;</code>
+       */
+      public Builder mergePose(de.naoth.rc.core.messages.CommonTypes.Pose2D value) {
+        if (poseBuilder_ == null) {
+          if (((bitField0_ & 0x00000080) == 0x00000080) &&
+              pose_ != null &&
+              pose_ != de.naoth.rc.core.messages.CommonTypes.Pose2D.getDefaultInstance()) {
+            pose_ =
+              de.naoth.rc.core.messages.CommonTypes.Pose2D.newBuilder(pose_).mergeFrom(value).buildPartial();
+          } else {
+            pose_ = value;
+          }
+          onChanged();
+        } else {
+          poseBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000080;
+        return this;
+      }
+      /**
+       * <code>optional .naothmessages.Pose2D pose = 8;</code>
+       */
+      public Builder clearPose() {
+        if (poseBuilder_ == null) {
+          pose_ = null;
+          onChanged();
+        } else {
+          poseBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000080);
+        return this;
+      }
+      /**
+       * <code>optional .naothmessages.Pose2D pose = 8;</code>
+       */
+      public de.naoth.rc.core.messages.CommonTypes.Pose2D.Builder getPoseBuilder() {
+        bitField0_ |= 0x00000080;
+        onChanged();
+        return getPoseFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>optional .naothmessages.Pose2D pose = 8;</code>
+       */
+      public de.naoth.rc.core.messages.CommonTypes.Pose2DOrBuilder getPoseOrBuilder() {
+        if (poseBuilder_ != null) {
+          return poseBuilder_.getMessageOrBuilder();
+        } else {
+          return pose_ == null ?
+              de.naoth.rc.core.messages.CommonTypes.Pose2D.getDefaultInstance() : pose_;
+        }
+      }
+      /**
+       * <code>optional .naothmessages.Pose2D pose = 8;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          de.naoth.rc.core.messages.CommonTypes.Pose2D, de.naoth.rc.core.messages.CommonTypes.Pose2D.Builder, de.naoth.rc.core.messages.CommonTypes.Pose2DOrBuilder> 
+          getPoseFieldBuilder() {
+        if (poseBuilder_ == null) {
+          poseBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              de.naoth.rc.core.messages.CommonTypes.Pose2D, de.naoth.rc.core.messages.CommonTypes.Pose2D.Builder, de.naoth.rc.core.messages.CommonTypes.Pose2DOrBuilder>(
+                  getPose(),
+                  getParentForChildren(),
+                  isClean());
+          pose_ = null;
+        }
+        return poseBuilder_;
+      }
+
+      private boolean fallen_ ;
+      /**
+       * <code>optional bool fallen = 9 [default = false];</code>
+       */
+      public boolean hasFallen() {
+        return ((bitField0_ & 0x00000100) == 0x00000100);
+      }
+      /**
+       * <code>optional bool fallen = 9 [default = false];</code>
+       */
+      public boolean getFallen() {
+        return fallen_;
+      }
+      /**
+       * <code>optional bool fallen = 9 [default = false];</code>
+       */
+      public Builder setFallen(boolean value) {
+        bitField0_ |= 0x00000100;
+        fallen_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional bool fallen = 9 [default = false];</code>
+       */
+      public Builder clearFallen() {
+        bitField0_ = (bitField0_ & ~0x00000100);
+        fallen_ = false;
+        onChanged();
+        return this;
+      }
+
+      private boolean readyToWalk_ ;
+      /**
+       * <code>optional bool readyToWalk = 10;</code>
+       */
+      public boolean hasReadyToWalk() {
+        return ((bitField0_ & 0x00000200) == 0x00000200);
+      }
+      /**
+       * <code>optional bool readyToWalk = 10;</code>
+       */
+      public boolean getReadyToWalk() {
+        return readyToWalk_;
+      }
+      /**
+       * <code>optional bool readyToWalk = 10;</code>
+       */
+      public Builder setReadyToWalk(boolean value) {
+        bitField0_ |= 0x00000200;
+        readyToWalk_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional bool readyToWalk = 10;</code>
+       */
+      public Builder clearReadyToWalk() {
+        bitField0_ = (bitField0_ & ~0x00000200);
+        readyToWalk_ = false;
+        onChanged();
+        return this;
+      }
+
+      private float batteryCharge_ = 1F;
+      /**
+       * <code>optional float batteryCharge = 11 [default = 1];</code>
+       */
+      public boolean hasBatteryCharge() {
+        return ((bitField0_ & 0x00000400) == 0x00000400);
+      }
+      /**
+       * <code>optional float batteryCharge = 11 [default = 1];</code>
+       */
+      public float getBatteryCharge() {
+        return batteryCharge_;
+      }
+      /**
+       * <code>optional float batteryCharge = 11 [default = 1];</code>
+       */
+      public Builder setBatteryCharge(float value) {
+        bitField0_ |= 0x00000400;
+        batteryCharge_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional float batteryCharge = 11 [default = 1];</code>
+       */
+      public Builder clearBatteryCharge() {
+        bitField0_ = (bitField0_ & ~0x00000400);
+        batteryCharge_ = 1F;
+        onChanged();
+        return this;
+      }
+
+      private float temperature_ ;
+      /**
+       * <code>optional float temperature = 12 [default = 0];</code>
+       */
+      public boolean hasTemperature() {
+        return ((bitField0_ & 0x00000800) == 0x00000800);
+      }
+      /**
+       * <code>optional float temperature = 12 [default = 0];</code>
+       */
+      public float getTemperature() {
+        return temperature_;
+      }
+      /**
+       * <code>optional float temperature = 12 [default = 0];</code>
+       */
+      public Builder setTemperature(float value) {
+        bitField0_ |= 0x00000800;
+        temperature_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional float temperature = 12 [default = 0];</code>
+       */
+      public Builder clearTemperature() {
+        bitField0_ = (bitField0_ & ~0x00000800);
+        temperature_ = 0F;
+        onChanged();
+        return this;
+      }
+
+      private float cpuTemperature_ ;
+      /**
+       * <code>optional float cpuTemperature = 13 [default = 0];</code>
+       */
+      public boolean hasCpuTemperature() {
+        return ((bitField0_ & 0x00001000) == 0x00001000);
+      }
+      /**
+       * <code>optional float cpuTemperature = 13 [default = 0];</code>
+       */
+      public float getCpuTemperature() {
+        return cpuTemperature_;
+      }
+      /**
+       * <code>optional float cpuTemperature = 13 [default = 0];</code>
+       */
+      public Builder setCpuTemperature(float value) {
+        bitField0_ |= 0x00001000;
+        cpuTemperature_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional float cpuTemperature = 13 [default = 0];</code>
+       */
+      public Builder clearCpuTemperature() {
+        bitField0_ = (bitField0_ & ~0x00001000);
+        cpuTemperature_ = 0F;
+        onChanged();
+        return this;
+      }
+
+      private boolean whistleDetected_ ;
+      /**
+       * <code>optional bool whistleDetected = 14 [default = false];</code>
+       */
+      public boolean hasWhistleDetected() {
+        return ((bitField0_ & 0x00002000) == 0x00002000);
+      }
+      /**
+       * <code>optional bool whistleDetected = 14 [default = false];</code>
+       */
+      public boolean getWhistleDetected() {
+        return whistleDetected_;
+      }
+      /**
+       * <code>optional bool whistleDetected = 14 [default = false];</code>
+       */
+      public Builder setWhistleDetected(boolean value) {
+        bitField0_ |= 0x00002000;
+        whistleDetected_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional bool whistleDetected = 14 [default = false];</code>
+       */
+      public Builder clearWhistleDetected() {
+        bitField0_ = (bitField0_ & ~0x00002000);
+        whistleDetected_ = false;
+        onChanged();
+        return this;
+      }
+
+      private int whistleCount_ ;
+      /**
+       * <code>optional int32 whistleCount = 15 [default = 0];</code>
+       */
+      public boolean hasWhistleCount() {
+        return ((bitField0_ & 0x00004000) == 0x00004000);
+      }
+      /**
+       * <code>optional int32 whistleCount = 15 [default = 0];</code>
+       */
+      public int getWhistleCount() {
+        return whistleCount_;
+      }
+      /**
+       * <code>optional int32 whistleCount = 15 [default = 0];</code>
+       */
+      public Builder setWhistleCount(int value) {
+        bitField0_ |= 0x00004000;
+        whistleCount_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional int32 whistleCount = 15 [default = 0];</code>
+       */
+      public Builder clearWhistleCount() {
+        bitField0_ = (bitField0_ & ~0x00004000);
+        whistleCount_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private int ballAge_ = -1;
+      /**
+       * <code>optional int32 ballAge = 16 [default = -1];</code>
+       */
+      public boolean hasBallAge() {
+        return ((bitField0_ & 0x00008000) == 0x00008000);
+      }
+      /**
+       * <code>optional int32 ballAge = 16 [default = -1];</code>
+       */
+      public int getBallAge() {
+        return ballAge_;
+      }
+      /**
+       * <code>optional int32 ballAge = 16 [default = -1];</code>
+       */
+      public Builder setBallAge(int value) {
+        bitField0_ |= 0x00008000;
+        ballAge_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional int32 ballAge = 16 [default = -1];</code>
+       */
+      public Builder clearBallAge() {
+        bitField0_ = (bitField0_ & ~0x00008000);
+        ballAge_ = -1;
+        onChanged();
+        return this;
+      }
+
+      private de.naoth.rc.core.messages.CommonTypes.DoubleVector2 ballPosition_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          de.naoth.rc.core.messages.CommonTypes.DoubleVector2, de.naoth.rc.core.messages.CommonTypes.DoubleVector2.Builder, de.naoth.rc.core.messages.CommonTypes.DoubleVector2OrBuilder> ballPositionBuilder_;
+      /**
+       * <code>optional .naothmessages.DoubleVector2 ballPosition = 17;</code>
+       */
+      public boolean hasBallPosition() {
+        return ((bitField0_ & 0x00010000) == 0x00010000);
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector2 ballPosition = 17;</code>
+       */
+      public de.naoth.rc.core.messages.CommonTypes.DoubleVector2 getBallPosition() {
+        if (ballPositionBuilder_ == null) {
+          return ballPosition_ == null ? de.naoth.rc.core.messages.CommonTypes.DoubleVector2.getDefaultInstance() : ballPosition_;
+        } else {
+          return ballPositionBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector2 ballPosition = 17;</code>
+       */
+      public Builder setBallPosition(de.naoth.rc.core.messages.CommonTypes.DoubleVector2 value) {
+        if (ballPositionBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ballPosition_ = value;
+          onChanged();
+        } else {
+          ballPositionBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00010000;
+        return this;
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector2 ballPosition = 17;</code>
+       */
+      public Builder setBallPosition(
+          de.naoth.rc.core.messages.CommonTypes.DoubleVector2.Builder builderForValue) {
+        if (ballPositionBuilder_ == null) {
+          ballPosition_ = builderForValue.build();
+          onChanged();
+        } else {
+          ballPositionBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00010000;
+        return this;
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector2 ballPosition = 17;</code>
+       */
+      public Builder mergeBallPosition(de.naoth.rc.core.messages.CommonTypes.DoubleVector2 value) {
+        if (ballPositionBuilder_ == null) {
+          if (((bitField0_ & 0x00010000) == 0x00010000) &&
+              ballPosition_ != null &&
+              ballPosition_ != de.naoth.rc.core.messages.CommonTypes.DoubleVector2.getDefaultInstance()) {
+            ballPosition_ =
+              de.naoth.rc.core.messages.CommonTypes.DoubleVector2.newBuilder(ballPosition_).mergeFrom(value).buildPartial();
+          } else {
+            ballPosition_ = value;
+          }
+          onChanged();
+        } else {
+          ballPositionBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00010000;
+        return this;
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector2 ballPosition = 17;</code>
+       */
+      public Builder clearBallPosition() {
+        if (ballPositionBuilder_ == null) {
+          ballPosition_ = null;
+          onChanged();
+        } else {
+          ballPositionBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00010000);
+        return this;
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector2 ballPosition = 17;</code>
+       */
+      public de.naoth.rc.core.messages.CommonTypes.DoubleVector2.Builder getBallPositionBuilder() {
+        bitField0_ |= 0x00010000;
+        onChanged();
+        return getBallPositionFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector2 ballPosition = 17;</code>
+       */
+      public de.naoth.rc.core.messages.CommonTypes.DoubleVector2OrBuilder getBallPositionOrBuilder() {
+        if (ballPositionBuilder_ != null) {
+          return ballPositionBuilder_.getMessageOrBuilder();
+        } else {
+          return ballPosition_ == null ?
+              de.naoth.rc.core.messages.CommonTypes.DoubleVector2.getDefaultInstance() : ballPosition_;
+        }
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector2 ballPosition = 17;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          de.naoth.rc.core.messages.CommonTypes.DoubleVector2, de.naoth.rc.core.messages.CommonTypes.DoubleVector2.Builder, de.naoth.rc.core.messages.CommonTypes.DoubleVector2OrBuilder> 
+          getBallPositionFieldBuilder() {
+        if (ballPositionBuilder_ == null) {
+          ballPositionBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              de.naoth.rc.core.messages.CommonTypes.DoubleVector2, de.naoth.rc.core.messages.CommonTypes.DoubleVector2.Builder, de.naoth.rc.core.messages.CommonTypes.DoubleVector2OrBuilder>(
+                  getBallPosition(),
+                  getParentForChildren(),
+                  isClean());
+          ballPosition_ = null;
+        }
+        return ballPositionBuilder_;
+      }
+
+      private de.naoth.rc.core.messages.CommonTypes.DoubleVector2 ballVelocity_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          de.naoth.rc.core.messages.CommonTypes.DoubleVector2, de.naoth.rc.core.messages.CommonTypes.DoubleVector2.Builder, de.naoth.rc.core.messages.CommonTypes.DoubleVector2OrBuilder> ballVelocityBuilder_;
+      /**
+       * <code>optional .naothmessages.DoubleVector2 ballVelocity = 18;</code>
+       */
+      public boolean hasBallVelocity() {
+        return ((bitField0_ & 0x00020000) == 0x00020000);
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector2 ballVelocity = 18;</code>
+       */
+      public de.naoth.rc.core.messages.CommonTypes.DoubleVector2 getBallVelocity() {
+        if (ballVelocityBuilder_ == null) {
+          return ballVelocity_ == null ? de.naoth.rc.core.messages.CommonTypes.DoubleVector2.getDefaultInstance() : ballVelocity_;
+        } else {
+          return ballVelocityBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector2 ballVelocity = 18;</code>
+       */
+      public Builder setBallVelocity(de.naoth.rc.core.messages.CommonTypes.DoubleVector2 value) {
+        if (ballVelocityBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ballVelocity_ = value;
+          onChanged();
+        } else {
+          ballVelocityBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00020000;
+        return this;
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector2 ballVelocity = 18;</code>
+       */
+      public Builder setBallVelocity(
+          de.naoth.rc.core.messages.CommonTypes.DoubleVector2.Builder builderForValue) {
+        if (ballVelocityBuilder_ == null) {
+          ballVelocity_ = builderForValue.build();
+          onChanged();
+        } else {
+          ballVelocityBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00020000;
+        return this;
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector2 ballVelocity = 18;</code>
+       */
+      public Builder mergeBallVelocity(de.naoth.rc.core.messages.CommonTypes.DoubleVector2 value) {
+        if (ballVelocityBuilder_ == null) {
+          if (((bitField0_ & 0x00020000) == 0x00020000) &&
+              ballVelocity_ != null &&
+              ballVelocity_ != de.naoth.rc.core.messages.CommonTypes.DoubleVector2.getDefaultInstance()) {
+            ballVelocity_ =
+              de.naoth.rc.core.messages.CommonTypes.DoubleVector2.newBuilder(ballVelocity_).mergeFrom(value).buildPartial();
+          } else {
+            ballVelocity_ = value;
+          }
+          onChanged();
+        } else {
+          ballVelocityBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00020000;
+        return this;
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector2 ballVelocity = 18;</code>
+       */
+      public Builder clearBallVelocity() {
+        if (ballVelocityBuilder_ == null) {
+          ballVelocity_ = null;
+          onChanged();
+        } else {
+          ballVelocityBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00020000);
+        return this;
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector2 ballVelocity = 18;</code>
+       */
+      public de.naoth.rc.core.messages.CommonTypes.DoubleVector2.Builder getBallVelocityBuilder() {
+        bitField0_ |= 0x00020000;
+        onChanged();
+        return getBallVelocityFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector2 ballVelocity = 18;</code>
+       */
+      public de.naoth.rc.core.messages.CommonTypes.DoubleVector2OrBuilder getBallVelocityOrBuilder() {
+        if (ballVelocityBuilder_ != null) {
+          return ballVelocityBuilder_.getMessageOrBuilder();
+        } else {
+          return ballVelocity_ == null ?
+              de.naoth.rc.core.messages.CommonTypes.DoubleVector2.getDefaultInstance() : ballVelocity_;
+        }
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector2 ballVelocity = 18;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          de.naoth.rc.core.messages.CommonTypes.DoubleVector2, de.naoth.rc.core.messages.CommonTypes.DoubleVector2.Builder, de.naoth.rc.core.messages.CommonTypes.DoubleVector2OrBuilder> 
+          getBallVelocityFieldBuilder() {
+        if (ballVelocityBuilder_ == null) {
+          ballVelocityBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              de.naoth.rc.core.messages.CommonTypes.DoubleVector2, de.naoth.rc.core.messages.CommonTypes.DoubleVector2.Builder, de.naoth.rc.core.messages.CommonTypes.DoubleVector2OrBuilder>(
+                  getBallVelocity(),
+                  getParentForChildren(),
+                  isClean());
+          ballVelocity_ = null;
+        }
+        return ballVelocityBuilder_;
+      }
+
+      private int timeToBall_ ;
+      /**
+       * <code>optional uint32 timeToBall = 19;</code>
+       */
+      public boolean hasTimeToBall() {
+        return ((bitField0_ & 0x00040000) == 0x00040000);
+      }
+      /**
+       * <code>optional uint32 timeToBall = 19;</code>
+       */
+      public int getTimeToBall() {
+        return timeToBall_;
+      }
+      /**
+       * <code>optional uint32 timeToBall = 19;</code>
+       */
+      public Builder setTimeToBall(int value) {
+        bitField0_ |= 0x00040000;
+        timeToBall_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional uint32 timeToBall = 19;</code>
+       */
+      public Builder clearTimeToBall() {
+        bitField0_ = (bitField0_ & ~0x00040000);
+        timeToBall_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private de.naoth.rc.core.messages.CommonTypes.DoubleVector2 teamBall_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          de.naoth.rc.core.messages.CommonTypes.DoubleVector2, de.naoth.rc.core.messages.CommonTypes.DoubleVector2.Builder, de.naoth.rc.core.messages.CommonTypes.DoubleVector2OrBuilder> teamBallBuilder_;
+      /**
+       * <code>optional .naothmessages.DoubleVector2 teamBall = 20;</code>
+       */
+      public boolean hasTeamBall() {
+        return ((bitField0_ & 0x00080000) == 0x00080000);
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector2 teamBall = 20;</code>
+       */
+      public de.naoth.rc.core.messages.CommonTypes.DoubleVector2 getTeamBall() {
+        if (teamBallBuilder_ == null) {
+          return teamBall_ == null ? de.naoth.rc.core.messages.CommonTypes.DoubleVector2.getDefaultInstance() : teamBall_;
+        } else {
+          return teamBallBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector2 teamBall = 20;</code>
+       */
+      public Builder setTeamBall(de.naoth.rc.core.messages.CommonTypes.DoubleVector2 value) {
+        if (teamBallBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          teamBall_ = value;
+          onChanged();
+        } else {
+          teamBallBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00080000;
+        return this;
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector2 teamBall = 20;</code>
+       */
+      public Builder setTeamBall(
+          de.naoth.rc.core.messages.CommonTypes.DoubleVector2.Builder builderForValue) {
+        if (teamBallBuilder_ == null) {
+          teamBall_ = builderForValue.build();
+          onChanged();
+        } else {
+          teamBallBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00080000;
+        return this;
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector2 teamBall = 20;</code>
+       */
+      public Builder mergeTeamBall(de.naoth.rc.core.messages.CommonTypes.DoubleVector2 value) {
+        if (teamBallBuilder_ == null) {
+          if (((bitField0_ & 0x00080000) == 0x00080000) &&
+              teamBall_ != null &&
+              teamBall_ != de.naoth.rc.core.messages.CommonTypes.DoubleVector2.getDefaultInstance()) {
+            teamBall_ =
+              de.naoth.rc.core.messages.CommonTypes.DoubleVector2.newBuilder(teamBall_).mergeFrom(value).buildPartial();
+          } else {
+            teamBall_ = value;
+          }
+          onChanged();
+        } else {
+          teamBallBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00080000;
+        return this;
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector2 teamBall = 20;</code>
+       */
+      public Builder clearTeamBall() {
+        if (teamBallBuilder_ == null) {
+          teamBall_ = null;
+          onChanged();
+        } else {
+          teamBallBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00080000);
+        return this;
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector2 teamBall = 20;</code>
+       */
+      public de.naoth.rc.core.messages.CommonTypes.DoubleVector2.Builder getTeamBallBuilder() {
+        bitField0_ |= 0x00080000;
+        onChanged();
+        return getTeamBallFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector2 teamBall = 20;</code>
+       */
+      public de.naoth.rc.core.messages.CommonTypes.DoubleVector2OrBuilder getTeamBallOrBuilder() {
+        if (teamBallBuilder_ != null) {
+          return teamBallBuilder_.getMessageOrBuilder();
+        } else {
+          return teamBall_ == null ?
+              de.naoth.rc.core.messages.CommonTypes.DoubleVector2.getDefaultInstance() : teamBall_;
+        }
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector2 teamBall = 20;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          de.naoth.rc.core.messages.CommonTypes.DoubleVector2, de.naoth.rc.core.messages.CommonTypes.DoubleVector2.Builder, de.naoth.rc.core.messages.CommonTypes.DoubleVector2OrBuilder> 
+          getTeamBallFieldBuilder() {
+        if (teamBallBuilder_ == null) {
+          teamBallBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              de.naoth.rc.core.messages.CommonTypes.DoubleVector2, de.naoth.rc.core.messages.CommonTypes.DoubleVector2.Builder, de.naoth.rc.core.messages.CommonTypes.DoubleVector2OrBuilder>(
+                  getTeamBall(),
+                  getParentForChildren(),
+                  isClean());
+          teamBall_ = null;
+        }
+        return teamBallBuilder_;
+      }
+
+      private boolean wasStriker_ ;
+      /**
+       * <code>optional bool wasStriker = 21 [default = false];</code>
+       */
+      public boolean hasWasStriker() {
+        return ((bitField0_ & 0x00100000) == 0x00100000);
+      }
+      /**
+       * <code>optional bool wasStriker = 21 [default = false];</code>
+       */
+      public boolean getWasStriker() {
+        return wasStriker_;
+      }
+      /**
+       * <code>optional bool wasStriker = 21 [default = false];</code>
+       */
+      public Builder setWasStriker(boolean value) {
+        bitField0_ |= 0x00100000;
+        wasStriker_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional bool wasStriker = 21 [default = false];</code>
+       */
+      public Builder clearWasStriker() {
+        bitField0_ = (bitField0_ & ~0x00100000);
+        wasStriker_ = false;
+        onChanged();
+        return this;
+      }
+
+      private boolean wantsToBeStriker_ ;
+      /**
+       * <code>optional bool wantsToBeStriker = 22 [default = false];</code>
+       */
+      public boolean hasWantsToBeStriker() {
+        return ((bitField0_ & 0x00200000) == 0x00200000);
+      }
+      /**
+       * <code>optional bool wantsToBeStriker = 22 [default = false];</code>
+       */
+      public boolean getWantsToBeStriker() {
+        return wantsToBeStriker_;
+      }
+      /**
+       * <code>optional bool wantsToBeStriker = 22 [default = false];</code>
+       */
+      public Builder setWantsToBeStriker(boolean value) {
+        bitField0_ |= 0x00200000;
+        wantsToBeStriker_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional bool wantsToBeStriker = 22 [default = false];</code>
+       */
+      public Builder clearWantsToBeStriker() {
+        bitField0_ = (bitField0_ & ~0x00200000);
+        wantsToBeStriker_ = false;
+        onChanged();
+        return this;
+      }
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:naothmessages.TeamMessageDebug)
+    }
+
+    // @@protoc_insertion_point(class_scope:naothmessages.TeamMessageDebug)
+    private static final de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageDebug DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageDebug();
+    }
+
+    public static de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageDebug getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    @java.lang.Deprecated public static final com.google.protobuf.Parser<TeamMessageDebug>
+        PARSER = new com.google.protobuf.AbstractParser<TeamMessageDebug>() {
+      public TeamMessageDebug parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+          return new TeamMessageDebug(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<TeamMessageDebug> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<TeamMessageDebug> getParserForType() {
+      return PARSER;
+    }
+
+    public de.naoth.rc.core.messages.TeamMessageOuterClass.TeamMessageDebug getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_naothmessages_RobotRole_descriptor;
   private static final 
@@ -15323,6 +18505,11 @@ public final class TeamMessageOuterClass {
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_naothmessages_TeamState_Player_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_naothmessages_TeamMessageDebug_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_naothmessages_TeamMessageDebug_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -15404,24 +18591,43 @@ public final class TeamMessageOuterClass {
       "oBeStrikerUpdate\030\026 \001(\004\022\031\n\nwasStriker\030\027 \001",
       "(\010:\005false\022\030\n\020wasStrikerUpdate\030\030 \001(\004\022+\n\tr" +
       "obotRole\030\031 \001(\0132\030.naothmessages.RobotRole" +
-      "\022\027\n\017robotRoleUpdate\030\032 \001(\004*\262\001\n\tTeamColor\022" +
-      "\014\n\010blueTeam\020\000\022\013\n\007redTeam\020\001\022\016\n\nyellowTeam" +
-      "\020\002\022\r\n\tblackTeam\020\003\022\r\n\twhiteTeam\020\004\022\r\n\tgree" +
-      "nTeam\020\005\022\016\n\norangeTeam\020\006\022\016\n\npurpleTeam\020\007\022" +
-      "\r\n\tbrownTeam\020\010\022\014\n\010grayTeam\020\t\022\020\n\013invalidT" +
-      "eam\020\377\001*d\n\nRobotState\022\013\n\007initial\020\000\022\t\n\005rea" +
-      "dy\020\001\022\007\n\003set\020\002\022\013\n\007playing\020\003\022\014\n\010finished\020\004" +
-      "\022\r\n\tpenalized\020\005\022\013\n\007unstiff\020\006*\230\002\n\017RobotRo",
-      "leStatic\022\026\n\022role_defender_left\020\000\022\030\n\024role" +
-      "_defender_center\020\001\022\027\n\023role_defender_righ" +
-      "t\020\002\022\030\n\024role_midfielder_left\020\003\022\032\n\026role_mi" +
-      "dfielder_center\020\004\022\031\n\025role_midfielder_rig" +
-      "ht\020\005\022\025\n\021role_forward_left\020\006\022\027\n\023role_forw" +
-      "ard_center\020\007\022\026\n\022role_forward_right\020\010\022\017\n\013" +
-      "role_goalie\020\t\022\020\n\014role_unknown\020\n*b\n\020Robot" +
-      "RoleDynamic\022\r\n\trole_none\020\000\022\022\n\016role_suppo" +
-      "rter\020\001\022\031\n\025role_goalie_supporter\020\002\022\020\n\014rol" +
-      "e_striker\020\003B\033\n\031de.naoth.rc.core.messages"
+      "\022\027\n\017robotRoleUpdate\030\032 \001(\004\"\327\005\n\020TeamMessag" +
+      "eDebug\022\027\n\006bodyID\030\001 \002(\t:\007unknown\022\025\n\nteamN" +
+      "umber\030\002 \002(\r:\0010\022\027\n\014playerNumber\030\003 \002(\r:\0010\022" +
+      "\024\n\ttimestamp\030\004 \002(\004:\0010\022+\n\tframeInfo\030\005 \001(\013" +
+      "2\030.naothmessages.FrameInfo\0226\n\nrobotState" +
+      "\030\006 \001(\0162\031.naothmessages.RobotState:\007initi" +
+      "al\022+\n\trobotRole\030\007 \001(\0132\030.naothmessages.Ro" +
+      "botRole\022#\n\004pose\030\010 \001(\0132\025.naothmessages.Po",
+      "se2D\022\025\n\006fallen\030\t \001(\010:\005false\022\023\n\013readyToWa" +
+      "lk\030\n \001(\010\022\030\n\rbatteryCharge\030\013 \001(\002:\0011\022\026\n\013te" +
+      "mperature\030\014 \001(\002:\0010\022\031\n\016cpuTemperature\030\r \001" +
+      "(\002:\0010\022\036\n\017whistleDetected\030\016 \001(\010:\005false\022\027\n" +
+      "\014whistleCount\030\017 \001(\005:\0010\022\023\n\007ballAge\030\020 \001(\005:" +
+      "\002-1\0222\n\014ballPosition\030\021 \001(\0132\034.naothmessage" +
+      "s.DoubleVector2\0222\n\014ballVelocity\030\022 \001(\0132\034." +
+      "naothmessages.DoubleVector2\022\022\n\ntimeToBal" +
+      "l\030\023 \001(\r\022.\n\010teamBall\030\024 \001(\0132\034.naothmessage" +
+      "s.DoubleVector2\022\031\n\nwasStriker\030\025 \001(\010:\005fal",
+      "se\022\037\n\020wantsToBeStriker\030\026 \001(\010:\005false*\262\001\n\t" +
+      "TeamColor\022\014\n\010blueTeam\020\000\022\013\n\007redTeam\020\001\022\016\n\n" +
+      "yellowTeam\020\002\022\r\n\tblackTeam\020\003\022\r\n\twhiteTeam" +
+      "\020\004\022\r\n\tgreenTeam\020\005\022\016\n\norangeTeam\020\006\022\016\n\npur" +
+      "pleTeam\020\007\022\r\n\tbrownTeam\020\010\022\014\n\010grayTeam\020\t\022\020" +
+      "\n\013invalidTeam\020\377\001*q\n\nRobotState\022\013\n\007initia" +
+      "l\020\000\022\t\n\005ready\020\001\022\007\n\003set\020\002\022\013\n\007playing\020\003\022\014\n\010" +
+      "finished\020\004\022\r\n\tpenalized\020\005\022\013\n\007unstiff\020\006\022\013" +
+      "\n\007standby\020\007*\230\002\n\017RobotRoleStatic\022\026\n\022role_" +
+      "defender_left\020\000\022\030\n\024role_defender_center\020",
+      "\001\022\027\n\023role_defender_right\020\002\022\030\n\024role_midfi" +
+      "elder_left\020\003\022\032\n\026role_midfielder_center\020\004" +
+      "\022\031\n\025role_midfielder_right\020\005\022\025\n\021role_forw" +
+      "ard_left\020\006\022\027\n\023role_forward_center\020\007\022\026\n\022r" +
+      "ole_forward_right\020\010\022\017\n\013role_goalie\020\t\022\020\n\014" +
+      "role_unknown\020\n*b\n\020RobotRoleDynamic\022\r\n\tro" +
+      "le_none\020\000\022\022\n\016role_supporter\020\001\022\031\n\025role_go" +
+      "alie_supporter\020\002\022\020\n\014role_striker\020\003B\033\n\031de" +
+      ".naoth.rc.core.messages"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -15497,6 +18703,12 @@ public final class TeamMessageOuterClass {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_naothmessages_TeamState_Player_descriptor,
         new java.lang.String[] { "Number", "MessageFrameInfo", "MessageParsed", "MessageTimestamp", "NtpRequest", "NtpRequestUpdate", "RobotState", "RobotStateUpdate", "Fallen", "FallenUpdate", "ReadyToWalk", "ReadyToWalkUpdate", "Pose", "PoseUpdate", "BallAge", "BallAgeUpdate", "BallPosition", "BallPositionUpdate", "TimeToBall", "TimeToBallUpdate", "WantsToBeStriker", "WantsToBeStrikerUpdate", "WasStriker", "WasStrikerUpdate", "RobotRole", "RobotRoleUpdate", });
+    internal_static_naothmessages_TeamMessageDebug_descriptor =
+      getDescriptor().getMessageTypes().get(8);
+    internal_static_naothmessages_TeamMessageDebug_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_naothmessages_TeamMessageDebug_descriptor,
+        new java.lang.String[] { "BodyID", "TeamNumber", "PlayerNumber", "Timestamp", "FrameInfo", "RobotState", "RobotRole", "Pose", "Fallen", "ReadyToWalk", "BatteryCharge", "Temperature", "CpuTemperature", "WhistleDetected", "WhistleCount", "BallAge", "BallPosition", "BallVelocity", "TimeToBall", "TeamBall", "WasStriker", "WantsToBeStriker", });
     de.naoth.rc.core.messages.CommonTypes.getDescriptor();
     de.naoth.rc.core.messages.FrameworkRepresentations.getDescriptor();
   }

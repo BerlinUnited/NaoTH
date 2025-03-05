@@ -95,8 +95,8 @@ int main(int argc, char** argv)
   if (options.useTeamComms) { sim.enableTeamComm(options.teamcommInterface); }
   if (options.playerNumber != 0) { Platform::getInstance().theConfiguration.setInt("player", "PlayerNumber", (int)options.playerNumber); }
 
-  std::string ip = Platform::getInstance().theConfiguration.getString("teamcomm", "debug_ip");
-  unsigned int port = (unsigned int) Platform::getInstance().theConfiguration.getInt("teamcomm", "debug_port");
+  std::string ip = Platform::getInstance().theConfiguration.getString("TeamCommDebugger", "host");
+  unsigned int port = (unsigned int) Platform::getInstance().theConfiguration.getInt("TeamCommDebugger", "port");
   sim.enableTeamCommDebug(ip, port);
 
   //init_agent(sim);

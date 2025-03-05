@@ -4,9 +4,9 @@
 package de.naoth.rc.drawings3d;
 
 import java.util.zip.DataFormatException;
-import javax.media.j3d.Appearance;
-import javax.media.j3d.Transform3D;
-import javax.vecmath.Vector3f;
+import org.jogamp.java3d.Appearance;
+import org.jogamp.java3d.Transform3D;
+import org.jogamp.vecmath.Vector3f;
 
 public class Sphere extends Drawable
 {
@@ -20,7 +20,7 @@ public class Sphere extends Drawable
     Vector3f vec = new Vector3f(p);
     t.setTranslation(vec);
     setTransform(t);
-    com.sun.j3d.utils.geometry.Sphere s = new com.sun.j3d.utils.geometry.Sphere(radius, app);
+    org.jogamp.java3d.utils.geometry.Sphere s = new org.jogamp.java3d.utils.geometry.Sphere(radius, app);
     addChild(s);
   }
 }

@@ -66,8 +66,8 @@ void UltraSoundObstacleDetector::drawObstacleModel()
 
   DEBUG_REQUEST("UltraSoundObstacleDetector:drawSensorData",
     FIELD_DRAWING_CONTEXT;
-    Color colorLeft(Color::blue);
-    Color colorRight(Color::red);
+    Color colorLeft(Color::ColorID::blue);
+    Color colorRight(Color::ColorID::red);
     colorLeft[Color::Alpha] = 0.5;
     colorRight[Color::Alpha] = 0.5;
     // draw raw sensor data

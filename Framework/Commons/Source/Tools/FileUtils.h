@@ -6,11 +6,13 @@
 
 #include <string>
 #include <iostream>
-#include <stdio.h>
+#include <cstdio>
 
 #ifdef NAO
 #include <unistd.h>
 #endif
+
+#include <sys/stat.h>
 
 namespace FileUtils
 {
@@ -46,11 +48,19 @@ static inline bool writeStringToFile(const std::string& content, const std::stri
   return false;
 }
 
-
 static inline bool writeStreamToFile(const std::stringstream& content, const std::string& filename)
 {
   std::string str = content.str();
   return writeStringToFile(str, filename);
+}
+
+// #include <filesystem>
+// namespace fs = std::filesystem;
+// std::filesystem::exists(filename)
+static bool fileExists(const std::string& filename)
+{
+  struct stat buffer;
+  return (stat(filename.c_str(), &buffer) == 0);
 }
 
 };

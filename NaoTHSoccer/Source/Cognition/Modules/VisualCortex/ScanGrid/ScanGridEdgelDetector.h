@@ -7,7 +7,7 @@
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Infrastructure/Image.h"
 #include "Representations/Infrastructure/CameraInfo.h"
-#include <Representations/Perception/FieldColorPercept.h>
+//#include <Representations/Perception/FieldColorPercept.h>
 #include "Representations/Perception/BodyContour.h"
 #include "Representations/Perception/ScanLineEdgelPercept.h"
 #include "Representations/Perception/ScanGrid.h"
@@ -46,8 +46,8 @@ BEGIN_DECLARE_MODULE(ScanGridEdgelDetector)
   REQUIRE(CameraInfoTop)
   REQUIRE(CameraMatrix)
   REQUIRE(CameraMatrixTop)
-  REQUIRE(FieldColorPercept)
-  REQUIRE(FieldColorPerceptTop)
+  //REQUIRE(FieldColorPercept)
+  //REQUIRE(FieldColorPerceptTop)
   REQUIRE(BodyContour)
   REQUIRE(BodyContourTop)
   REQUIRE(FieldPercept)
@@ -91,6 +91,8 @@ public:
 
       PARAMETER_REGISTER(full_refinement) = true;
 
+      PARAMETER_REGISTER(use_smooting_filter) = true;
+
       syncWithConfig();
       //DebugParameterList::getInstance().add(this);
     }
@@ -109,6 +111,8 @@ public:
     double double_edgel_angle_threshold;
 
     int gradient_offset;
+
+    bool use_smooting_filter;
   } params;
 
 private:
@@ -275,6 +279,27 @@ private:
     getScanLineEdgelPercept().edgels.push_back(edgel);
   }
 
+  inline float filtred_pixel_value(int x, int y) 
+  {
+    if(!params.use_smooting_filter) {
+      return getImage().getY(x, y);
+    }
+
+    // no angle at the border (shouldn't happen)
+    if( x < 2 || x + 3 > (int)getImage().width() ||
+        y < 2 || y + 3 > (int)getImage().height() ) 
+    {
+      return getImage().getY_direct(x,y);
+    }
+
+    // TODO: the access to the image can be optimized and accelerated
+    return int((
+           getImage().getY_direct( x-1, y-1 )      + 2.0f*getImage().getY_direct( x-1, y )   + getImage().getY_direct( x-1, y+1 ) + 
+      2.0f*getImage().getY_direct( x,   y-1 ) +      4.0f*getImage().getY_direct( x,   y )     + 2.0f*getImage().getY_direct( x,   y+1 ) + 
+           getImage().getY_direct( x+1, y-1 )      + 2.0f*getImage().getY_direct( x+1, y )   + getImage().getY_direct( x+1, y+1 )
+    ) / 16.0f + 0.5f);
+  }
+
   inline void add_double_edgel(int scan_line_id, bool adaptive = false)
   {
     ASSERT(getScanLineEdgelPercept().edgels.size() > 1);
@@ -347,7 +372,7 @@ private:
   DOUBLE_CAM_REQUIRE(ScanGridEdgelDetector, Image);
   DOUBLE_CAM_REQUIRE(ScanGridEdgelDetector, CameraInfo);
   DOUBLE_CAM_REQUIRE(ScanGridEdgelDetector, CameraMatrix);
-  DOUBLE_CAM_REQUIRE(ScanGridEdgelDetector, FieldColorPercept);
+  //DOUBLE_CAM_REQUIRE(ScanGridEdgelDetector, FieldColorPercept);
   DOUBLE_CAM_REQUIRE(ScanGridEdgelDetector, BodyContour);
   DOUBLE_CAM_REQUIRE(ScanGridEdgelDetector, ScanGrid);
   DOUBLE_CAM_REQUIRE(ScanGridEdgelDetector, FieldPercept);

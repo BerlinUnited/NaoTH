@@ -96,7 +96,7 @@ void ImageJPEG::compressYUYV() const
   // In order to use it we would need to preserve cinfo between compressions.
   //jpeg_mem_dest(&cinfo, &jpeg, &jpeg_size);
 
-  // NOTE: we have to use JPOOL_PERMANENT here because aur buffer is allocated permamently
+  // NOTE: we have to use JPOOL_PERMANENT here because our buffer is allocated permamently
   // and shall not be freed automatically.
   // documentation can be found in section "Memory management"
   // https://github.com/libjpeg-turbo/libjpeg-turbo/blob/master/libjpeg.txt
@@ -185,7 +185,7 @@ void Serializer<ImageJPEG>::serialize(const ImageJPEG& parent, std::ostream& str
 
   img.set_format(naothmessages::Image_Format_JPEG);
 
-  parent.compressYUYV();
+  //parent.compressYUYV();
 
   // NOTE: we might want to use .set_allocated_data
   img.set_data(parent.getJPEG(), parent.getJPEGSize());

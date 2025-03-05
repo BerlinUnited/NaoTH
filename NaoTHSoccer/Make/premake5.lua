@@ -73,6 +73,7 @@ workspace "NaoTHSoccer"
   naoth_links = {
       "opencv_core",
       "opencv_imgproc",
+      "tensorflowlite_c",
       --"opencv_ml",
       --"opencv_objdetect",
       --"opencv_dnn",
@@ -193,6 +194,8 @@ workspace "NaoTHSoccer"
     -- NOTE: configuration doesn't affect these settings, they NEED to be in a if
     if (os.ishost("macosx") and _OPTIONS["platform"] ~= "Nao") then
       toolset ("clang")
+
+      buildoptions {"-fPIC"}
       --premake.gcc.cc = 'clang'
       --premake.gcc.cxx = 'clang++'
     end
@@ -284,6 +287,7 @@ workspace "NaoTHSoccer"
         dofile ("../Test/Make/AudioRecorder.lua")
           kind "ConsoleApp"
           vpaths { ["*"] = "../Test/Source/AudioRecorder" }
+
         dofile ("../Test/Make/TfliteBenchmark.lua")
           kind "ConsoleApp"
           vpaths { ["*"] = "../Test/Source/TfliteBenchmark" }
@@ -344,6 +348,10 @@ workspace "NaoTHSoccer"
       dofile ("../Test/Make/LoLa.lua")
           kind "ConsoleApp"
           vpaths { ["*"] = "../Test/Source/LoLa" }
+
+      dofile ("../Test/Make/TfliteBenchmark.lua")
+          kind "ConsoleApp"
+          vpaths { ["*"] = "../Test/Source/TfliteBenchmark" }
     end
 
     -- generate LogSimulatorJNI if required

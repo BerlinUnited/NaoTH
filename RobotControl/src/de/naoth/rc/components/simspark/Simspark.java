@@ -1,5 +1,7 @@
 package de.naoth.rc.components.simspark;
 
+import de.naoth.rc.components.simspark.commands.AckCommand;
+import de.naoth.rc.components.simspark.commands.SimsparkCommand;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -68,13 +70,13 @@ abstract class Simspark extends Thread {
      * @param msg Agent message with effector commands.
      * @param out
      */
-	public boolean sendMessage(String msg) throws IOException
+    public boolean sendMessage(SimsparkCommand msg) throws IOException
 	{
         if (out == null || !isConnected.get()) {
             return false;
-        }
-        out.write(intToBytes(msg.length()));
-        out.write(msg.getBytes());
+            }
+            out.write(intToBytes(msg.getCommand().length()));
+            out.write(msg.getCommand().getBytes());
         out.flush();
         return true;
 	}
@@ -133,7 +135,7 @@ abstract class Simspark extends Thread {
     public boolean checkConnection() {
         boolean disconnect = true;
         try {
-            disconnect = !sendMessage("(getAck)");
+            disconnect = !sendMessage(new AckCommand());
         } catch (IOException ex) {}
         
         if(disconnect) {

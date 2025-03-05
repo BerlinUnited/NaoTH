@@ -113,6 +113,8 @@ namespace motion_symbols("Motion Symbols") {
 
     fall_left,
     fall_right,
+    save_fall_front,
+    save_fall_back,
 
     kick_right,
 

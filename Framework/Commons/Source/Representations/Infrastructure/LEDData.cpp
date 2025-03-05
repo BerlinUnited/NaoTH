@@ -6,22 +6,18 @@
 using namespace naoth;
 using namespace std;
 
-LEDData::LEDData()
+LEDData::LEDData() : change(false)
 {
-  for(int i=0;i<numOfMonoLED;i++)
-  {
+  for(int i=0;i<numOfMonoLED;i++) {
     theMonoLED[i] = 0.0;
   }
 
-  for(int i=0;i<numOfMultiLED;i++)
-  {
+  for(int i=0;i<numOfMultiLED;i++) {
     for(int j=0;j<numOfLEDColor;j++)
     {
       theMultiLED[i][j] = 0.0;
     }
   }
-
-  change = true;
 }
 
 void LEDData::print(std::ostream& stream) const
@@ -30,6 +26,7 @@ void LEDData::print(std::ostream& stream) const
   {
     stream << getLEDName((MonoLEDID) i) << ": " << theMonoLED[i] << std::endl;
   }
+
   for(int i=0; i < numOfMultiLED; i++)
   {
     stream << getLEDName((MultiLEDID) i)
@@ -38,9 +35,6 @@ void LEDData::print(std::ostream& stream) const
   }
 }//end print
 
-LEDData::~LEDData()
-{
-}
 
 string LEDData::getLEDName(MonoLEDID led)
 {
@@ -81,7 +75,7 @@ string LEDData::getLEDName(MonoLEDID led)
     case HeadRearRight2: return string("HeadRearRight2");
 
     default: return string("Unknown MonoLED");
-  }//end switch
+  }
 }//end getLEDName
 
 string LEDData::getLEDName(MultiLEDID led)
@@ -108,5 +102,5 @@ string LEDData::getLEDName(MultiLEDID led)
     case FootRight: return string("FootRight");
     case ChestButton: return string("ChestButton");
     default: return string("Unknown MultiLED");
-  }//end switch
+  }
 }//end getLEDName

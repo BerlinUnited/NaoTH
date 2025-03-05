@@ -1,18 +1,18 @@
 /**
- * @file UDPReceiver.cpp
- * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
- *
- */
+* @file UDPReceiver.cpp
+* @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
+*
+*/
 
 #include "UDPReceiver.h"
-#include "Tools/Debug/NaoTHAssert.h"
 
 #include <Tools/ThreadUtil.h>
+//#include "Tools/Debug/NaoTHAssert.h"
+
+#include <iostream>
+#include <sstream>
 
 using namespace naoth;
-
-#include <sstream>
-using namespace std;
 
 UDPReceiver::UDPReceiver(unsigned int port, unsigned int buffersize)
   : exiting(false), socket(NULL)
@@ -21,24 +21,24 @@ UDPReceiver::UDPReceiver(unsigned int port, unsigned int buffersize)
   buffer = new char[buffersize];
 
   GError* err = bindAndListen(port);
-
   if(err)
   {
-    std::cout << "[WARN] could not initialize TeamCommSocket properly: " << err->message << std::endl;;
+    std::cout << "[WARN] could not initialize TeamCommSocket properly: " << err->message << std::endl;
+    socket = NULL;
     g_error_free(err);
-    return;
   }
+  else
+  {
+    std::cout << "[INFO] BroadCastLister start thread (" << port << ")" << std::endl;
+    cancelable = g_cancellable_new();
 
-  socket_cancelable = g_cancellable_new();
+    socketThread = std::thread(&UDPReceiver::socketLoop, this);
+    ThreadUtil::setPriority(socketThread, ThreadUtil::Priority::lowest);
 
-  std::cout << "[INFO] BroadCastLister start thread (" << port << ")" << std::endl;
-
-  socketThread = std::thread(&UDPReceiver::loop, this);
-  ThreadUtil::setPriority(socketThread, ThreadUtil::Priority::lowest);
-
-  stringstream s;
-  s << "Listen " << port;
-  ThreadUtil::setName(socketThread, s.str());
+    std::stringstream s;
+    s << "Listen " << port;
+    ThreadUtil::setName(socketThread, s.str());
+  }
 }
 
 UDPReceiver::~UDPReceiver()
@@ -47,7 +47,7 @@ UDPReceiver::~UDPReceiver()
   exiting = true;
 
   // notify all waiting connections to cancel
-  g_cancellable_cancel(socket_cancelable);
+  g_cancellable_cancel(cancelable);
 
   if(socketThread.joinable()) {
     socketThread.join();
@@ -57,7 +57,7 @@ UDPReceiver::~UDPReceiver()
     g_object_unref(socket);
   }
 
-  g_object_unref(socket_cancelable);
+  g_object_unref(cancelable);
   delete [] buffer;
 
   std::cout << "[UDPReceiver] stop done" << std::endl;
@@ -67,12 +67,14 @@ GError* UDPReceiver::bindAndListen(unsigned int port)
 {
   GError* err = NULL;
   socket = g_socket_new(G_SOCKET_FAMILY_IPV4, G_SOCKET_TYPE_DATAGRAM, G_SOCKET_PROTOCOL_UDP, &err);
-  if (err) return err;
+  if (err) {
+    return err;
+  }
 
   g_socket_set_blocking(socket, true);
 
   GInetAddress* inetAddress = g_inet_address_new_any(G_SOCKET_FAMILY_IPV4);
-  GSocketAddress* socketAddress = g_inet_socket_address_new(inetAddress, static_cast<unsigned short>(port));
+  GSocketAddress* socketAddress = g_inet_socket_address_new(inetAddress, static_cast<guint16>(port));
 
   g_socket_bind(socket, socketAddress, true, &err);
 
@@ -96,7 +98,7 @@ void UDPReceiver::receive(std::vector<std::string>& data)
   }
 }
 
-void UDPReceiver::loop()
+void UDPReceiver::socketLoop()
 {
   if(socket == NULL) {
     return;
@@ -104,8 +106,14 @@ void UDPReceiver::loop()
 
   while(!exiting)
   {
-    gssize result = g_socket_receive(socket, buffer, bufferSize, socket_cancelable, NULL);
-    if(result > 0)
+    GError *err = NULL;
+    gssize result = g_socket_receive(socket, buffer, bufferSize, cancelable, &err);
+    if (err) {
+      std::cout << "[WARN] UDPReceiver on port " << " g_socket_receive error: " << err->message << std::endl;
+      g_error_free(err);
+    } 
+    // TODO: output warning on 0 bytes messages?
+    else if(result > 0)
     {
       std::lock_guard<std::mutex> lock(messageInMutex);
       messageIn.push_back(std::string(buffer, static_cast<size_t>(result)));

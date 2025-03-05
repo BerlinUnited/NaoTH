@@ -3,15 +3,12 @@
  * If its our free-kick, we continue our normal play;
  * Otherwise we search for the ball and if we found the ball, we move back from it.
  */
-option free_kick_simple {
-
-  /** true if own free kick **/
-  bool @own;
-  
+option free_kick_simple
+{  
   initial state decide
   {
     decision {
-      if(@own)
+      if(game.own_kickoff)
         goto own_free_kick;
       else
         if (!ball.know_where_itis)
@@ -29,7 +26,9 @@ option free_kick_simple {
   state opp_free_kick_search_ball_left
   {
     decision {
-      if (ball.know_where_itis)
+      if(game.own_kickoff)
+        goto own_free_kick;
+      else if (ball.know_where_itis)
         goto opp_free_kick_turn_to_ball;
       else
         stay;
@@ -42,7 +41,9 @@ option free_kick_simple {
   state opp_free_kick_search_ball_right
   {
     decision {
-      if (ball.know_where_itis)
+      if(game.own_kickoff)
+        goto own_free_kick;
+      else if (ball.know_where_itis)
         goto opp_free_kick_turn_to_ball;
       else
         stay;
@@ -55,7 +56,9 @@ option free_kick_simple {
   state opp_free_kick_turn_to_ball
   {
     decision {
-      if (abs(value = atan2(y = ball.preview.y, x = ball.preview.x)) < 10)
+      if(game.own_kickoff)
+        goto own_free_kick;
+      else if (abs(value = atan2(y = ball.preview.y, x = ball.preview.x)) < 10)
         goto opp_free_kick_move_away;
       else
         stay;
@@ -75,7 +78,9 @@ option free_kick_simple {
   {
     decision {
       // TODO: input symbol for self-loc security margin
-      if (ball.preview.x > field.centerCircleRadius + 300) // self-loc security margin
+      if(game.own_kickoff)
+        goto own_free_kick;
+      else if (ball.preview.x > field.centerCircleRadius + 300) // self-loc security margin
         goto opp_free_kick_watch_ball;
       else
         stay;
@@ -93,7 +98,10 @@ option free_kick_simple {
   {
     decision
     {
-      stay;
+      if(game.own_kickoff)
+        goto own_free_kick;
+      else
+        stay;
     }
     
     action
@@ -107,7 +115,10 @@ option free_kick_simple {
   state own_free_kick
   {
     decision {
-      stay;
+      if(!game.own_kickoff)
+        goto decide;
+      else
+        stay;
     }
     
     action {

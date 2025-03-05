@@ -31,6 +31,7 @@ enum RobotState
   finished = 4;
   penalized = 5;
   unstiff = 6;
+  standby = 7;
 };
 
 enum RobotRoleStatic
@@ -183,4 +184,35 @@ message TeamState
     optional uint64 robotRoleUpdate = 26;
   }
   repeated Player players = 1;
+}
+
+message TeamMessageDebug
+{
+  required string bodyID = 1 [default="unknown"];
+  required uint32 teamNumber = 2 [default=0];
+  required uint32 playerNumber = 3 [default=0];
+
+  required uint64 timestamp = 4 [default=0];
+  optional FrameInfo frameInfo = 5;
+
+  optional RobotState robotState = 6 [default=initial];
+  optional RobotRole robotRole = 7;
+  optional Pose2D pose = 8;
+  optional bool fallen = 9 [default=false];
+  optional bool readyToWalk = 10;
+
+  optional float batteryCharge = 11 [default=1.0];
+  optional float temperature = 12 [default=0.0];
+  optional float cpuTemperature = 13 [default=0.0];
+  optional bool whistleDetected = 14 [default=false];
+  optional int32 whistleCount = 15 [default=0];
+
+  optional int32 ballAge = 16 [default=-1];
+  optional DoubleVector2 ballPosition = 17;
+  optional DoubleVector2 ballVelocity = 18;
+  optional uint32 timeToBall = 19;
+  optional DoubleVector2 teamBall = 20;
+
+  optional bool wasStriker = 21 [default=false];
+  optional bool wantsToBeStriker = 22 [default=false];
 }

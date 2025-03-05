@@ -26,8 +26,12 @@
 #include "Representations/Motion/Request/MotionRequest.h"
 #include "Representations/Motion/MotionStatus.h"
 
+// tools
+#include "Tools/Debug/DebugParameterList.h"
 
 BEGIN_DECLARE_MODULE(MotionEngine)
+  PROVIDE(DebugParameterList)
+
   REQUIRE(FrameInfo)
 
   PROVIDE(MotionLock) // it's unlocked if a motion is forced
@@ -49,7 +53,21 @@ public:
 
   void execute();
 
-protected:
+private:
+  class Parameter : public ParameterList
+  {
+  public:
+    Parameter() : ParameterList("MotionEngine")
+    {
+      PARAMETER_REGISTER(freeze_recovery) = false;
+      syncWithConfig();
+    }
+
+    bool freeze_recovery;
+  } params;
+
+
+private:
   
   void selectMotion();
   
@@ -68,6 +86,11 @@ private:
   typedef std::list<MotionFactory*> MotionFactorieRegistry;
   MotionFactorieRegistry theMotionFactories;
 
+  // this is used to monitor anomalis with the execution timings
+  // frame info from the last time when MotionEngine was executed
+  FrameInfo last_frame_info;
+  // frame info of the last time when an emergency (delayey execution) occured
+  FrameInfo last_freeze_frame_info;
 
   Module* createEmptyMotion()
   {
@@ -80,7 +103,8 @@ private:
   {
     initial,
     running,
-    exiting
+    exiting,
+    frozen
   } state;
 };
 

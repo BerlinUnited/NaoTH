@@ -16,7 +16,8 @@
 class Color: public Vector_n<double,4>
 {
 public:
-  enum ColorPalett
+  // in the old days these id's were used as color classes.
+  enum class ColorID
   {
     white,
     gray,
@@ -39,6 +40,7 @@ public:
     numberOfChanel
   };
 
+public:
   // default color is black
   Color();
 
@@ -50,7 +52,7 @@ public:
 
   Color(const char* color);
 
-  Color(ColorPalett c);
+  Color(ColorID c);
 
   /**
   * Generate a color using an index number.
@@ -76,6 +78,7 @@ public:
   static Color RED;
   static Color BLUE;
   static Color GREEN;
+
 };//end class Color
 
 /**

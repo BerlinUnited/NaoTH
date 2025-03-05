@@ -8,7 +8,7 @@
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Infrastructure/ButtonState.h"
 #include "Representations/Infrastructure/WifiMode.h"
-#include <Representations/Infrastructure/LEDRequest.h>
+#include "Representations/Infrastructure/LEDRequest.h"
 #include "Representations/Infrastructure/SoundData.h"
 
 using namespace naoth;

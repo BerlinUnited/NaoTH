@@ -6,8 +6,8 @@
 package de.naoth.rc.drawings3d;
 
 import java.util.zip.DataFormatException;
-import javax.media.j3d.Transform3D;
-import javax.vecmath.Vector3f;
+import org.jogamp.java3d.Transform3D;
+import org.jogamp.vecmath.Vector3f;
 
 public class ColorCube extends Drawable {
 
@@ -17,7 +17,7 @@ public class ColorCube extends Drawable {
     Transform3D t = parseTransform3D(tokens, 2);
 
     setTransform(t);
-    com.sun.j3d.utils.geometry.ColorCube b = new com.sun.j3d.utils.geometry.ColorCube(dim[0]);
+    org.jogamp.java3d.utils.geometry.ColorCube b = new org.jogamp.java3d.utils.geometry.ColorCube(dim[0]);
     addChild(b);
   }
 
@@ -27,7 +27,7 @@ public class ColorCube extends Drawable {
     t.setTranslation(p);
 
     setTransform(t);
-    com.sun.j3d.utils.geometry.ColorCube b = new com.sun.j3d.utils.geometry.ColorCube(size);
+    org.jogamp.java3d.utils.geometry.ColorCube b = new org.jogamp.java3d.utils.geometry.ColorCube(size);
     addChild(b);
   }
 }

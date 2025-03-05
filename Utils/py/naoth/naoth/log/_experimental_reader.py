@@ -187,10 +187,13 @@ class Frame:
         """
 
         if name in self._fields:
-            raise ValueError(
-                f"Frame already contains member {name}: "
-                f"{self._fields[name]} [current] vs ({position, size}) [incoming]"
-            )
+            # TODO: fix this when recording jpeg logs, probably async related
+            print(f"Frame {self.number} already contains member {name}: , HACK: ignoring so that jpeg logs can parse")
+        
+        # raise ValueError(
+        #     f"Frame already contains member {name}: "
+        #     f"{self._fields[name]} [current] vs ({position, size}) [incoming]"
+        # )
 
         self._fields[name] = position, size
         self.size += Scanner.size_of_field(name, size)
