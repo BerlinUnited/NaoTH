@@ -23,9 +23,10 @@ option head_control
       goto search_for_ball_and_look_around;
     else if(head.control_mode == look_at_team_ball)
       goto look_at_team_ball;
-   else if(head.control_mode == look_at_preview_angle)
+    else if(head.control_mode == look_at_preview_angle)
       goto look_at_preview_angle;
-
+    else if(head.control_mode == look_at_referee)
+      goto look_at_referee;
   }
 
   initial state none
@@ -119,11 +120,26 @@ option head_control
     }
   }
   
- state look_at_preview_angle{
-   action{
-     look_at_preview_angle();
-   }
- }
+  state look_at_preview_angle{
+    action
+    {
+      look_at_preview_angle();
+    }
+  }
+
+  // Only for player nr. 7 during standby, look at the T-junction where the referee stands
+  state look_at_referee
+  {
+    action
+    {
+      // with this code it looks slightly to the left, but down.
+      head.motion_type = look_at_world_point;
+      head.camera.id = Top;
+      head.point_in_world.x = field.yPosLeftSideline * 2;  
+      head.point_in_world.y = -field.centerCircleRadius;  
+      head.point_in_world.z = 500;
+    }
+  }
  
 }
   

@@ -59,7 +59,10 @@ option roles_play_soccer
           goto set;
         else if(game.current_mode == standby)
           // keep looking around in standby
-          stay;
+          if (game.player_number == 7)
+            goto referee_detection;
+          else
+            stay;
         else 
           goto idle;
       }
@@ -70,6 +73,24 @@ option roles_play_soccer
     {
       head.control_mode = look_around;
       motion.type = stand;
+    }
+  }
+
+
+  state referee_detection
+  {
+        
+    decision
+    {
+      else if (game.current_mode != standby)
+        goto idle;
+      else
+        stay;
+    }
+    
+    action
+    {
+      head.control_mode = look_at_referee;
     }
   }
 

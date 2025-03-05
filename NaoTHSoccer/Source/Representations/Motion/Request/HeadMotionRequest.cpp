@@ -25,6 +25,7 @@ std::string HeadMotionRequest::getName(HeadMotionID id)
     case stabilize: return "stabilize";
     case look_straight_ahead: return "look_straight_ahead";
     case look_at_world_point: return "look_at_world_point";
+    case look_at_referee: return "look_at_referee";
     //case look_at_point_on_the_ground: return "look_at_point_on_the_ground";
     default: return "unknown";
   }
