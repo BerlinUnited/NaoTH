@@ -1,17 +1,18 @@
 package de.naoth.rc.components.teamcommviewer;
 
-import de.naoth.rc.dataformats.SPLMessage;
-import de.naoth.rc.math.Vector2D;
 import de.naoth.rc.core.messages.TeamMessageOuterClass;
 import de.naoth.rc.core.server.ConnectionStatusEvent;
 import de.naoth.rc.core.server.ConnectionStatusListener;
 import de.naoth.rc.core.server.MessageServer;
+import de.naoth.rc.dataformats.SPLMessage;
+import de.naoth.rc.math.Vector2D;
 import java.awt.Color;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
@@ -28,8 +29,8 @@ import javafx.beans.property.StringProperty;
  * 
  * @author Philipp Strobel <philippstrobel@posteo.de>
  */
-public class RobotStatus {
-
+public class RobotStatus 
+{
     public final static long MAX_TIME_BEFORE_DEAD = 5000; //ms
     
     public static final Color COLOR_INFO = new Color(0.0f, 1.0f, 0.0f, 0.5f);
@@ -76,6 +77,14 @@ public class RobotStatus {
     private final BooleanProperty isDead = new SimpleBooleanProperty(false);
     public BooleanProperty isDeadProperty() { return isDead; }
     public boolean getIsDead() { return isDead.get(); }
+    
+    // TODO: isDead is a computed value and needs to be reset after a certain 
+    //       time if no update was received.
+    //       This method is passive and does not require an internal thread 
+    //       to be up to date
+    //public boolean isDead() {
+    //    return ((System.currentTimeMillis() > lastSeen + MAX_TIME_BEFORE_DEAD) || this.msgPerSecond.get() <= 0.0);
+    //}
     
     private final DoubleProperty temperature = new SimpleDoubleProperty(0.0);
     public DoubleProperty temperatureProperty() { return temperature; };
@@ -128,7 +137,9 @@ public class RobotStatus {
     
     public SPLMessage lastMessage = null;
     public boolean isOpponent;
-    private IsDeadTimer isDeadTimer = null;
+
+    private final ScheduledExecutorService executorService;
+    private ScheduledFuture timer = null;
     
     /**
      * Creates new form RobotStatus
@@ -145,8 +156,9 @@ public class RobotStatus {
         this.ipAddress.set(ipAddress);
         this.isOpponent = isOpponent;
         if(useIsDeadTimer) {
-            isDeadTimer = new IsDeadTimer();
-            isDeadTimer.start();
+            executorService = Executors.newSingleThreadScheduledExecutor();
+        } else {
+            executorService = null;
         }
         // when robot is 'dead', set msgPerSecond to zero
         isDead.addListener((s, o, n) -> {
@@ -155,8 +167,8 @@ public class RobotStatus {
             }
         });
 
-        this.messageServer.addConnectionStatusListener(new ConnectionStatusListener() {
-
+        this.messageServer.addConnectionStatusListener(new ConnectionStatusListener() 
+        {
             @Override
             public void connected(ConnectionStatusEvent event) {
                 isConnected.set(true);
@@ -171,14 +183,6 @@ public class RobotStatus {
         });
     }
 
-    @Override
-    protected void finalize() throws Throwable {
-        if(isDeadTimer != null) {
-            isDeadTimer.cancel();
-        }
-        super.finalize();
-    }
-
     public void addListener(RobotStatusListener l) {
         listener.add(l);
     }
@@ -187,11 +191,12 @@ public class RobotStatus {
     }
 
     /**
-     * Updates all informations with the given message.
+     * Updates all information with the given message.
      * @param timestamp
      * @param msg 
      */
-    public void updateStatus(long timestamp, SPLMessage msg) {
+    public void updateStatus(long timestamp, SPLMessage msg) 
+    {
         this.lastMessage = msg;
         
         this.teamNum.set(msg.teamNum);
@@ -202,15 +207,27 @@ public class RobotStatus {
         if (!timestamps.isEmpty()) {
             lastSeen = timestamps.get(timestamps.size() - 1);
         }
+
+        // this can happen, when navigating in logfiles backwards (game, teamcomm)
         if (lastSeen < timestamp) {
             timestamps.add(timestamp);
             lastSeen = timestamp;
         }
-        if(isDeadTimer == null) {
-            this.isDead.set(((System.currentTimeMillis() - lastSeen) > MAX_TIME_BEFORE_DEAD || this.msgPerSecond.get() <= 0.0));
+        
+        if(executorService == null) {
+            this.isDead.set(((System.currentTimeMillis() > lastSeen + MAX_TIME_BEFORE_DEAD) || this.msgPerSecond.get() <= 0.0));
         } else {
-            isDeadTimer.reset();
+            // cancel the old timer (let it finish if it's already running)
+            if(timer != null) {
+                timer.cancel(false);
+            }
+
+            this.isDead.set(false);
+            
+            // set the robot status to "dead" after a certain time without update
+            timer = executorService.schedule(() -> isDead.set(true), MAX_TIME_BEFORE_DEAD, TimeUnit.MILLISECONDS);
         }
+        
         this.msgPerSecond.set(calculateMsgPerSecond());
         this.fallen.set(msg.fallen == 1);
         this.ballAge.set(msg.ballAge);
@@ -305,6 +322,7 @@ public class RobotStatus {
                 try {
                     port = Integer.parseInt(parts[1]);
                 } catch (Exception e) {
+                    // don't report
                 }
             }
             return this.messageServer.connect(host, port);
@@ -329,45 +347,6 @@ public class RobotStatus {
             }
 
             return r;
-        }
-    }
-    
-    private class IsDeadTimer extends Thread
-    {
-        private long startTime;
-        private volatile boolean running = true;
-        private final Object sync = new Object();
-        
-        public IsDeadTimer() {
-            reset();
-        }
-        
-        public void reset() {
-            synchronized(sync) {
-                startTime = System.currentTimeMillis();
-                isDead.set(false);
-                sync.notify();
-            }
-        }
-        
-        public void cancel() {
-            running = false;
-            interrupt();
-        }
-        
-        @Override
-        public void run() {
-            while (running) {
-                synchronized(sync) {
-                    long c = (startTime + MAX_TIME_BEFORE_DEAD) - System.currentTimeMillis();
-                    if(c<=0) {
-                        isDead.set(true);
-                    }
-                    try {
-                        sync.wait(c<0?0:c);
-                    } catch (InterruptedException ex) {}
-                }
-            }
         }
     }
 }
