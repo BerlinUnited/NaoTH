@@ -23,7 +23,7 @@
             <Label text="Blue:" />
             <Spinner fx:id="ownPort" editable="true">
               <valueFactory>
-                <SpinnerValueFactory.IntegerSpinnerValueFactory initialValue="10004" max="1000000" min="0" />
+                <SpinnerValueFactory.IntegerSpinnerValueFactory initialValue="10704" max="1000000" min="0" />
               </valueFactory>
               <tooltip>
                 <Tooltip text="Own team port number" />

@@ -135,7 +135,8 @@ private:
   struct Parameters: public ParameterList
   {
     Parameters() : ParameterList("CNNBallDetector")
-    {
+    { 
+      PARAMETER_REGISTER(closeMeansUseBottomCamera) = false;
       PARAMETER_REGISTER(cnn.threshold) = 0.4;
       PARAMETER_REGISTER(cnn.thresholdClose) = 0.45;
 
@@ -177,6 +178,10 @@ private:
       double detectorMeanBrightnessOffset;
     } cnn;
 
+    // experimental, change meaning of close to use bottom camera
+    // (currently the patch size is used to determine the closeness condition)
+    bool closeMeansUseBottomCamera;
+
     int maxNumberOfKeys;
     int numberOfExportBestPatches;
     bool providePatches;
@@ -214,6 +219,9 @@ private:
   std::map<std::string, std::shared_ptr<AbstractCNNFinder> > cnnMap;
  
   BestPatchList::PatchList patches;
+  Vector2i last_percept_min;
+  Vector2i last_percept_max;
+  bool last_percept_valid;
 
 private:
   void calculateCandidates();
@@ -221,6 +229,7 @@ private:
   void extractPatches();
   void providePatches();
   void addPatchByLastBall();
+  void addPatchByLastPercept();
 
   void setClassifier(const std::string& name, const std::string& nameClose);
   void setDetector(const std::string& name, const std::string& nameClose);

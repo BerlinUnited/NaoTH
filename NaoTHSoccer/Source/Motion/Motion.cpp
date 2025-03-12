@@ -12,6 +12,8 @@
 
 #include "Tools/CameraGeometry.h"
 
+ // needed for sleep_for in debug kill 
+#include "Tools/ThreadUtil.h"
 
 using namespace naoth;
 
@@ -24,6 +26,8 @@ Motion::Motion()
   registerLogableRepresentationList();
 
   DEBUG_REQUEST_REGISTER("Motion:KinematicChain:orientation_test", "", false);
+
+  DEBUG_REQUEST_REGISTER("Motion:delay_1000", "Sleep for 100ms in each cycle to simulate slow processing.", false);
 
   DEBUG_REQUEST_REGISTER("Motion:KinematicChain:drawMotor3D", "", false);
   DEBUG_REQUEST_REGISTER("Motion:KinematicChain:drawSensor3D", "", false);
@@ -164,6 +168,9 @@ void Motion::call()
   postProcess();
   STOPWATCH_STOP("Motion:postProcess");
 
+  // for testing of motion freeze
+  DEBUG_REQUEST("Motion:delay_1000", ThreadUtil::sleep(1000); );
+
   DEBUG_REQUEST("Motion:KinematicChain:drawSensor3D",  drawRobot3D(getKinematicChainSensor()); );
   DEBUG_REQUEST("Motion:KinematicChain:drawMotor3D",  drawRobot3D(getKinematicChainMotor()); );
 
@@ -179,7 +186,6 @@ void Motion::call()
     getDebugCommandManager().handleCommand(iter->command, iter->arguments, debug_answer_stream);
     getDebugMessageOut().addResponse(iter->id, debug_answer_stream);
   }
-
 
   // HACK: reset all the debug stuff before executing the modules
   STOPWATCH_START("Motion.Debug.Init");
@@ -311,6 +317,26 @@ void Motion::modifyJointOffsets()
 
 void Motion::debugPlots()
 {
+  //  double avg_stiff = 0;
+  if(getMotionStatus().currentMotion == motion::save_fall_back || getMotionStatus().currentMotion == motion::save_fall_front) {
+    fall_times_run += 1;
+
+    //      for (int i = 0; i < 6; ++i) {
+    //          avg_stiff += getSensorJointData().stiffness[i]; // todo: Can't use getMotorJointData data, here, isn't getSensorJointData one exec delayed?
+    //      }
+    //      avg_stiff = (avg_stiff * 100) / 6;
+    //      PLOT_GENERIC("Motion:Betterfalling-Develop:Stiffness", t_run, avg_stiff);
+    PLOT_GENERIC("Motion:FirstSemesterFalling:r-shoulder-roll-req-position", fall_times_run, getMotorJointData().position[2]); // r shoulder roll
+    PLOT_GENERIC("Motion:FirstSemesterFalling:r-shoulder-roll-req-stiffness", fall_times_run, getMotorJointData().stiffness[2]); // r shoulder roll
+    //PLOT_GENERIC("Motion:FirstSemesterFalling:r-shoulder-roll-req-position-s", fall_times_run, getSensorJointData().position[2]); // r shoulder roll
+    //PLOT_GENERIC("Motion:FirstSemesterFalling:r-shoulder-roll-req-stiffness-s", fall_times_run, getSensorJointData().stiffness[2]); // r shoulder roll
+  } else {
+    fall_times_run = 0;
+  }
+  //  PLOT("Motion:A_StiffnessWritten:s", avg_stiff);
+
+
+
   // some basic plots
   // plotting sensor data
   PLOT("Motion:GyrometerData:data:x", getGyrometerData().data.x);

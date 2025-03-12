@@ -91,6 +91,7 @@ option stand_up
     action
     {
       motion.type = stand;
+      head.control_mode = look_straight_ahead;
       arm.control_mode = normal;
     }
   }
@@ -107,6 +108,7 @@ option stand_up
     action
     {
       motion.type = stand;
+      head.control_mode = look_straight_ahead;
       arm.control_mode = normal;
     }
   }

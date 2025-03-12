@@ -284,6 +284,7 @@ void GameController::handleButtons()
     switch (getPlayerInfo().robotState)
     {
     case PlayerInfo::initial:
+    case PlayerInfo::standby:
     case PlayerInfo::ready:
     case PlayerInfo::set:
     case PlayerInfo::playing:

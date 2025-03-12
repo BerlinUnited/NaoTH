@@ -34,7 +34,7 @@ public:
     return function(valueBuffer);
   }
 
-  inline const Vector2i& point() const {
+  inline const T& point() const {
     return pointBuffer[2];
   }
 };

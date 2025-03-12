@@ -104,6 +104,7 @@ public class RobotTeamCommListener implements Runnable {
                             spl_msg.fallen = (byte) (user.getFallen() ? 1 : 0);
                             spl_msg.pose_x = (float) user.getPose().getTranslation().getX();
                             spl_msg.pose_y = (float) user.getPose().getTranslation().getY();
+                            spl_msg.pose_a = (float) user.getPose().getRotation();
                             spl_msg.ballAge = user.getBallAge();
                             spl_msg.ball_x = (float) user.getBallPosition().getX();
                             spl_msg.ball_y = (float) user.getBallPosition().getY();

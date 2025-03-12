@@ -241,9 +241,10 @@ int main(int /*argc*/, char **/*argv[]*/)
     handle_error_en(err, "create motionThread");
   }
   
-  // set the pririty of the motion thread to 50
+  // set the pririty of the motion thread to 20
+  // Heinrich: was changed from 50, because lola has 36
   sched_param param;
-  param.sched_priority = 50;
+  param.sched_priority = 20;
   err = pthread_setschedparam(motionThread, SCHED_FIFO, &param);
   if (err != 0) {
     handle_error_en(err, "set priority motionThread");

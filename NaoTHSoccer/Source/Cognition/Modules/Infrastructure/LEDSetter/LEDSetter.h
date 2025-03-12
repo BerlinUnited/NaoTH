@@ -15,6 +15,8 @@
 #include <ModuleFramework/Representation.h>
 #include <ModuleFramework/Module.h>
 
+#include <Tools/Debug/DebugRequest.h>
+
 #include "Representations/Infrastructure/LEDRequest.h"
 #include <Representations/Infrastructure/LEDData.h>
 #include <Representations/Infrastructure/FrameInfo.h>
@@ -22,6 +24,7 @@
 using namespace naoth;
 
 BEGIN_DECLARE_MODULE(LEDSetter)
+  PROVIDE(DebugRequest)
 
   REQUIRE(FrameInfo)
 
@@ -30,6 +33,8 @@ BEGIN_DECLARE_MODULE(LEDSetter)
   REQUIRE(WifiModeSetterLEDRequest)
   REQUIRE(BehaviorLEDRequest)  
 
+  REQUIRE(DebugLEDRequest)
+
   PROVIDE(LEDData)
 
 END_DECLARE_MODULE(LEDSetter)
@@ -37,7 +42,7 @@ END_DECLARE_MODULE(LEDSetter)
 class LEDSetter : public LEDSetterBase
 {
 public:
-  LEDSetter() {}
+  LEDSetter();
   virtual ~LEDSetter() {}
 
   virtual void execute();

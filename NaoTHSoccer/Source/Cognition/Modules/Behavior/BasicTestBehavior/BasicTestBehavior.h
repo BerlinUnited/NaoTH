@@ -35,6 +35,8 @@
 #include <Representations/Perception/WhistlePercept.h>
 #include "Representations/Infrastructure/AudioControl.h"
 
+#include "Representations/Infrastructure/LEDRequest.h"
+
 // debug
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugModify.h"
@@ -65,6 +67,8 @@ BEGIN_DECLARE_MODULE(BasicTestBehavior)
   PROVIDE(BehaviorLEDRequest)
   PROVIDE(BodyStatus)
   PROVIDE(AudioControl)
+
+  PROVIDE(DebugLEDRequest)
 END_DECLARE_MODULE(BasicTestBehavior)
 
 class BasicTestBehavior: public BasicTestBehaviorBase

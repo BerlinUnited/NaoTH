@@ -18,12 +18,10 @@ MotionEngine::MotionEngine()
   theIKArmGrasping = registerModule<IKArmGrasping>("IKArmGrasping", true);
   theArmMotionEngine = registerModule<ArmMotionEngine>("ArmMotionEngine", true);
 
-
   theMotionFactories.push_back(registerModule<InitialMotionFactory>("InitialMotionFactory", true)->getModuleT());
   theMotionFactories.push_back(registerModule<InverseKinematicsMotionFactory>("InverseKinematicsMotionFactory", true)->getModuleT());
   theMotionFactories.push_back(registerModule<KeyFrameMotionFactory>("KeyFrameMotionFactory", true)->getModuleT());
   theMotionFactories.push_back(registerModule<ParallelKinematicMotionFactory>("ParallelKinematicMotionFactory", true)->getModuleT());
-
 
   //
   currentlyExecutedMotion = createEmptyMotion();
@@ -31,19 +29,44 @@ MotionEngine::MotionEngine()
   // init internal state
   //selectMotion();// create init motion
   state = initial;
+
+  getDebugParameterList().add(&params);
 }
 
-MotionEngine::~MotionEngine()
-{
-
+MotionEngine::~MotionEngine() {
+  getDebugParameterList().remove(&params);
 }
-
 
 void MotionEngine::execute()
 {
+  // catch emergency cases
+  if(params.freeze_recovery && getFrameInfo().getTimeSince(last_frame_info) > 100) {
+    last_freeze_frame_info = getFrameInfo();
+    state = frozen;
+    std::cout << "[MotionEngine] ACHTUNG: freeze detected." << std::endl;
+  }
+  
+  last_frame_info = getFrameInfo();
+
   // ensure initialization
   switch (state)
   {
+  // not used yet
+  case frozen:
+    getHeadMotionRequest().id = HeadMotionRequest::numOfHeadMotion;
+    getMotionRequest().time = getMotionStatus().time;
+
+    getMotionLock().forceUnlock();
+    getMotionRequest().id = motion::comply;
+
+    // wait before executing any motion to make sure the interruptions stopped
+    // minimal recovery time 3s
+    if(getFrameInfo().getTimeSince(last_freeze_frame_info) > 1000) {
+      getMotionLock().forceUnlock();
+      state = initial;
+      std::cout << "[MotionEngine] ACHTUNG: recovering from a freeze." << std::endl;
+    }
+    break;
   case initial: // wait for the init motion to start
   {
     getHeadMotionRequest().id = HeadMotionRequest::numOfHeadMotion;

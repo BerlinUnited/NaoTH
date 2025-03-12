@@ -69,6 +69,8 @@ BasicTestBehavior::BasicTestBehavior()
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:init", "Set the robot init.", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:dance", "Let's dance", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:protect_falling", "Don't hurt me!", false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:save_fall_front", "Don't hurt me!", false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:save_fall_back", "Don't hurt me!", false);
   // needed by the motion editor
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:play_editor_motionnet", "play the motion editor motion", false);
 
@@ -84,6 +86,8 @@ BasicTestBehavior::BasicTestBehavior()
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:led:HeadMiddleRight0", "it is what it is...", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:led:HeadRearRight2", "it is what it is...", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:led:all", "it is what it is...", false);
+
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:led:debug_eye_blue_green", "set the left eye blue", false);
 
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:arms:arms_back", "set arms request to back", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:arms:arms_down", "set arms request to down", false);
@@ -371,6 +375,14 @@ void BasicTestBehavior::testMotion()
     getMotionRequest().id = motion::protect_falling;
   );
 
+  DEBUG_REQUEST("BasicTestBehavior:motion:id:save_fall_front",
+    getMotionRequest().id = motion::save_fall_front;
+  );
+
+  DEBUG_REQUEST("BasicTestBehavior:motion:id:save_fall_back",
+    getMotionRequest().id = motion::save_fall_back;
+  );
+
   DEBUG_REQUEST("BasicTestBehavior:motion:id:play_editor_motionnet",
     getMotionRequest().id = motion::play_editor_motionnet;
   );
@@ -450,6 +462,13 @@ void BasicTestBehavior::testLED() {
     for (int i = LEDData::HeadFrontLeft0; i <= LEDData::HeadRearRight2; i++) {
       getBehaviorLEDRequest().request.theMonoLED[i] = 1.0;
     }
+  );
+
+  getDebugLEDRequest().enabled = false;
+  DEBUG_REQUEST("BasicTestBehavior:led:debug_eye_blue_green",
+    getDebugLEDRequest().enabled = true;
+    getDebugLEDRequest().request.setEyeLeft(0,0,1);
+    getDebugLEDRequest().request.setEyeRight(0,1,0);
   );
 
 } //testLED

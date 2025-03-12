@@ -24,12 +24,12 @@ public class Example extends JFrame {
  
         ParameterDataModel treeTableModel = new ParameterDataModel();
  
-        treeTableModel.insertPath("A:b:n",":").setValue(new Boolean(true));
-        treeTableModel.insertPath("A:c:m",":").setValue(new Double(1.0));
-        treeTableModel.insertPath("A:b:k",":").setValue(new Double(2.0));
-        treeTableModel.insertPath("B:b:n",":").setValue(new Double(1.0));
-        treeTableModel.insertPath("B:c:m",":").setValue(new Double(1.0));
-        treeTableModel.insertPath("B:a:k",":").setValue(new Double(1.0));
+        treeTableModel.insertPath("A:b:n",":").setValue(true);
+        treeTableModel.insertPath("A:c:m",":").setValue(1.0);
+        treeTableModel.insertPath("A:b:k",":").setValue(2.0);
+        treeTableModel.insertPath("B:b:n",":").setValue(1.0);
+        treeTableModel.insertPath("B:c:m",":").setValue(1.0);
+        treeTableModel.insertPath("B:a:k",":").setValue(1.0);
         
         
         
