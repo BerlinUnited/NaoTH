@@ -20,6 +20,8 @@
 #include "Representations/Perception/CameraMatrix.h"
 #include "Representations/Infrastructure/FieldInfo.h"
 
+#include "Representations/Modeling/PlayerInfo.h"
+
 // debug
 #include "Representations/Debug/Stopwatch.h"
 #include "Tools/Debug/DebugRequest.h"
@@ -39,6 +41,8 @@ BEGIN_DECLARE_MODULE(ReadyPoseDetector)
   PROVIDE(StopwatchManager)
 
   REQUIRE(FrameInfo)
+
+  REQUIRE(PlayerInfo)
 
   REQUIRE(CameraInfo)
   REQUIRE(CameraInfoTop)
