@@ -288,9 +288,9 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
    * END ROLE DECISIONS
    */
 
+  REGISTER_MODULE(StaticDebugModelProvider);
   REGISTER_MODULE(KickDirectionSimulator);
   REGISTER_MODULE(Simulation);
-  REGISTER_MODULE(StaticDebugModelProvider);
   REGISTER_MODULE(AttentionEngine);
 
   // behavior
