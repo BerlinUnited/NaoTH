@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
 {
     // copied from htwk
     std::vector<BenchmarkParts> benchmarks {
-        {"Dummy Model 2", "Config/dummy_model2.tflite", {1, 16, 16, 1}, 1},
+        {"movenet", "Config/movenet_lightning.tflite", {1, 192, 192, 3}, 1},
     };
 
     for(auto& b : benchmarks) {
@@ -29,7 +29,17 @@ int main(int argc, char *argv[])
 
         exec.execute();
 
+        // tensor: float32[1,1,17,3]
         std::cout << exec.getOutputTensor() << std::endl;
+        
+        const float (*output)[1][1][17][3] = reinterpret_cast<const float(*)[1][1][17][3]>(exec.getOutputTensor());
+        
+        for(int i = 0; i < 17; i++) {
+            for (int j = 0; j < 3; j++) {
+              std::cout << (*output)[0][0][i][j] << "\t";
+            }
+            std::cout << std::endl;
+        }
         
     }
     return 0;
