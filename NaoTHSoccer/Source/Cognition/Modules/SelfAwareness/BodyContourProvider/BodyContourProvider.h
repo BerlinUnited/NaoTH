@@ -23,12 +23,14 @@
 #include "Representations/Infrastructure/CameraInfo.h"
 #include "Representations/Perception/BodyContour.h"
 #include "Representations/Perception/CameraMatrix.h"
+#include "Representations/Modeling/CameraMatrixOffset.h"
 #include "Representations/Modeling/KinematicChain.h"
 
 // debug
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugDrawings3D.h"
 #include "Tools/Debug/DebugImageDrawings.h"
+#include "Tools/Debug/DebugModify.h"
 
 #include <vector>
 
@@ -39,12 +41,16 @@ BEGIN_DECLARE_MODULE(BodyContourProvider)
   PROVIDE(DebugDrawings3D)
   PROVIDE(DebugImageDrawings)
   PROVIDE(DebugImageDrawingsTop)
+  PROVIDE(DebugModify)
 
   REQUIRE(FrameInfo)
   REQUIRE(CameraInfo)
   REQUIRE(CameraInfoTop)
+  REQUIRE(CameraMatrixOffset)
+
   REQUIRE(CameraMatrix)
   REQUIRE(CameraMatrixTop)
+
   REQUIRE(KinematicChain)
 
   PROVIDE(BodyContour)
