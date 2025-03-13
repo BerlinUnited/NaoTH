@@ -67,7 +67,7 @@ void ScanLineEdgelDetector::execute(CameraInfo::CameraID id)
   {
     ASSERT(getImage().isInside(start.x, start.y));
     // don't scan the own body
-    start = getBodyContour().getImageCoordsOfFirstFreeCell(start);
+    start = getBodyContour().getFirstFreeCell(start);
 
     // execute the scan
     ScanLineEdgelPercept::EndPoint endPoint = scanForEdgels(i, start, end);
