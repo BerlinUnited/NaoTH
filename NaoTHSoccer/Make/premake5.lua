@@ -291,6 +291,10 @@ workspace "NaoTHSoccer"
         dofile ("../Test/Make/TfliteBenchmark.lua")
           kind "ConsoleApp"
           vpaths { ["*"] = "../Test/Source/TfliteBenchmark" }
+
+        dofile ("../Test/Make/TfliteCheck.lua")
+          kind "ConsoleApp"
+          vpaths { ["*"] = "../Test/Source/TfliteCheck" }
     end
 
     
@@ -353,11 +357,8 @@ workspace "NaoTHSoccer"
           vpaths { ["*"] = "../Test/Source/TfliteBenchmark" }
         dofile ("../Test/Make/TfliteCheck.lua")
           kind "ConsoleApp"
-          vpaths { ["*"] = "../Test/Source/LoLa" }
+          vpaths { ["*"] = "../Test/Source/TfliteCheck" }
 
-      dofile ("../Test/Make/TfliteBenchmark.lua")
-          kind "ConsoleApp"
-          vpaths { ["*"] = "../Test/Source/TfliteBenchmark" }
     end
 
     -- generate LogSimulatorJNI if required
