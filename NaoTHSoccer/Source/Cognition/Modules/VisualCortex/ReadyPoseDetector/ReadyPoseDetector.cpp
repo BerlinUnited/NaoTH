@@ -90,7 +90,11 @@ void ReadyPoseDetector::execute()
       }
 
       ColorModelConversions::fromYCbCrToRGB(pixel.y, pixel.cb, pixel.cr, pixelRGB.a, pixelRGB.b, pixelRGB.c);
-      //(*inputTensor)
+      
+      
+      (*inputTensor)[0][y][x][0] = ((float)pixelRGB.a);
+      (*inputTensor)[0][y][x][1] = ((float)pixelRGB.b);
+      (*inputTensor)[0][y][x][2] = ((float)pixelRGB.c);
     }
   }
 
@@ -101,14 +105,60 @@ void ReadyPoseDetector::execute()
   // draw output
   const float (*output)[1][1][17][3] = reinterpret_cast<const float(*)[1][1][17][3]>(exec.getOutputTensor());
 
+  /*
   for(int i = 0; i < 17; i++) {
     for (int j = 0; j < 3; j++) {
       std::cout << (*output)[0][0][i][j] << "\t";
     }
     std::cout << std::endl;
   }
+  */
+
+
+  // eyes
+  float y1 = (*output)[0][0][1][0] * 192.0;
+  float x1 = (*output)[0][0][1][1] * 192.0;
+
+  float y2 = (*output)[0][0][2][0] * 192.0;
+  float x2 = (*output)[0][0][2][1] * 192.0;
+
+  // hands
+  float y3 = (*output)[0][0][9][0] * 192.0;
+  float x3 = (*output)[0][0][9][1] * 192.0;
+
+  float y4 = (*output)[0][0][10][0] * 192.0;
+  float x4 = (*output)[0][0][10][1] * 192.0;
+
+
+  //y,x und conf. y
+  DEBUG_REQUEST("ReadyPoseDetector:draw_detection_area",
+    IMAGE_DRAWING_CONTEXT;
+    CANVAS("ImageTop");
+    PEN("FF0000", 1);
+
+    CIRCLE(poseInImage.x + (int)x1, poseInImage.y + (int)y1, 3);
+    CIRCLE(poseInImage.x + (int)x2, poseInImage.y + (int)y2, 3);
+    CIRCLE(poseInImage.x + (int)x3, poseInImage.y + (int)y3, 3);
+    CIRCLE(poseInImage.x + (int)x4, poseInImage.y + (int)y4, 3);
+  );
+
+
+  bool readyRefereePoseDetected = false;
+
+  if( (y3 + y4) * 0.5 < (y1 + y1) * 0.5 - 5) {
+    readyRefereePoseDetected = true;
+  }
+
+  DEBUG_REQUEST("ReadyPoseDetector:draw_detection_area",
+    IMAGE_DRAWING_CONTEXT;
+    CANVAS("ImageTop");
+    PEN("00FF00", 3);
+
+    if(readyRefereePoseDetected) {
+      BOX(poseInImage.x, poseInImage.y, poseInImage.x + 192, poseInImage.y + 192);
+    }
+  );
 
   
-  // 192, 192 rgb
 }
 
