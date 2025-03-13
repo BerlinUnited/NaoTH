@@ -26,6 +26,10 @@ ReadyPoseDetector::~ReadyPoseDetector()
 void ReadyPoseDetector::execute()
 {
 
+  // reset
+  getWhistlePercept().readyRefereePoseDetected = false;
+
+
   if(getPlayerInfo().robotState != PlayerInfo::RobotState::standby) {
     return;
   }
@@ -141,11 +145,8 @@ void ReadyPoseDetector::execute()
     CIRCLE(poseInImage.x + (int)x4, poseInImage.y + (int)y4, 3);
   );
 
-
-  bool readyRefereePoseDetected = false;
-
   if( (y3 + y4) * 0.5 < (y1 + y1) * 0.5 - 5) {
-    readyRefereePoseDetected = true;
+    getWhistlePercept().readyRefereePoseDetected = true;
   }
 
   DEBUG_REQUEST("ReadyPoseDetector:draw_detection_area",
@@ -153,7 +154,7 @@ void ReadyPoseDetector::execute()
     CANVAS("ImageTop");
     PEN("00FF00", 3);
 
-    if(readyRefereePoseDetected) {
+    if(getWhistlePercept().readyRefereePoseDetected) {
       BOX(poseInImage.x, poseInImage.y, poseInImage.x + 192, poseInImage.y + 192);
     }
   );

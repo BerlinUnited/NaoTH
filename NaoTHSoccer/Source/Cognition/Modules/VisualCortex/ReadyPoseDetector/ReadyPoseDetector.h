@@ -18,6 +18,11 @@
 #include <Representations/Infrastructure/Image.h>
 
 #include "Representations/Perception/CameraMatrix.h"
+
+#include "Representations/Perception/WhistlePercept.h"
+
+
+
 #include "Representations/Infrastructure/FieldInfo.h"
 
 #include "Representations/Modeling/PlayerInfo.h"
@@ -55,6 +60,10 @@ BEGIN_DECLARE_MODULE(ReadyPoseDetector)
   REQUIRE(CameraMatrix)
   REQUIRE(CameraMatrixTop)
   REQUIRE(FieldInfo)
+
+
+  // EVIL HACK
+  PROVIDE(WhistlePercept)
 END_DECLARE_MODULE(ReadyPoseDetector)
 
 
