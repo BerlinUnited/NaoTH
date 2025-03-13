@@ -23,6 +23,7 @@
 #include "Representations/Infrastructure/CameraInfo.h"
 #include "Representations/Perception/BodyContour.h"
 #include "Representations/Perception/CameraMatrix.h"
+#include "Representations/Modeling/CameraMatrixOffset.h"
 #include "Representations/Modeling/KinematicChain.h"
 
 // debug
@@ -45,6 +46,7 @@ BEGIN_DECLARE_MODULE(BodyContourProvider)
   REQUIRE(FrameInfo)
   REQUIRE(CameraInfo)
   REQUIRE(CameraInfoTop)
+  REQUIRE(CameraMatrixOffset)
 
   REQUIRE(CameraMatrix)
   REQUIRE(CameraMatrixTop)
