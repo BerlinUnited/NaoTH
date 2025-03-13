@@ -112,10 +112,7 @@ void BodyContourProvider::execute(CameraInfo::CameraID id)
 
 void BodyContourProvider::add(const Pose3D& origin, const std::vector<Vector3d>& c, double sign, BodyContour::BodyPartID id)
 {
-  if(id == CameraInfo::Top) {
-    return;
-  }
-
+  
   //Pose3D cm =  getKinematicChain().theLinks[KinematicChain::Head].M * NaoInfo::robotDimensions.cameraTransformation[naoth::CameraInfo::Bottom];
   // translate and rotate the pose into camera
   double yOffsetHead = 0;
@@ -124,8 +121,8 @@ void BodyContourProvider::add(const Pose3D& origin, const std::vector<Vector3d>&
   MODIFY("BodyContourProvider:yOffsetCamera", yOffsetCamera);
   Pose3D cm = getKinematicChain().theLinks[KinematicChain::Head].M;
   cm.rotateY(yOffsetHead);
-  cm.translate(NaoInfo::robotDimensions.cameraTransform[naoth::CameraInfo::Bottom].offset);
-  cm.rotateY(NaoInfo::robotDimensions.cameraTransform[naoth::CameraInfo::Bottom].rotationY + yOffsetCamera);
+  cm.translate(NaoInfo::robotDimensions.cameraTransform[cameraID].offset);
+  cm.rotateY(NaoInfo::robotDimensions.cameraTransform[cameraID].rotationY + yOffsetCamera);
 
   // constants
   const Vector2i frameUpperLeft(0,0);
