@@ -25,7 +25,7 @@ ReadyPoseDetector::~ReadyPoseDetector()
 
 void ReadyPoseDetector::execute()
 {
-  /*
+
   if(getPlayerInfo().robotState != PlayerInfo::RobotState::standby) {
     return;
   }
@@ -34,7 +34,6 @@ void ReadyPoseDetector::execute()
   if(getPlayerInfo().playerNumber != 4 && getPlayerInfo().playerNumber != 7) {
     return;
   }
-  */
 
   /*
   // default position of the player 4
