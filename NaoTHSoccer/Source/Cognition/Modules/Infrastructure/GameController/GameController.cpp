@@ -121,9 +121,10 @@ void GameController::execute()
   }
 
   // reset
-  if(getPlayerInfo().robotState != PlayerInfo::standby) {
+  if(getPlayerInfo().robotState != PlayerInfo::ready) {
     ready_by_pose_detection = false;
   }
+
 
   // try update from the game controller message if not manually overwritten
   if ( getGameData().valid && getWifiMode().wifiEnabled ) 
@@ -169,7 +170,22 @@ void GameController::execute()
     if(getWhistlePercept().readyRefereePoseDetected || ready_by_pose_detection) {
       getPlayerInfo().robotState = PlayerInfo::ready;
       ready_by_pose_detection = true;
+    } 
+    /*
+    else if(getTeamState().hasPlayer(7)) 
+    {
+      const TeamState::Player& p7 = getTeamState().getPlayer(7);
+      if(p7.state() == PlayerInfo::ready) {
+        ready_by_pose_detection = true;
+      }
+    } else if(getTeamState().hasPlayer(4)) 
+    {
+      const TeamState::Player& p4 = getTeamState().getPlayer(4);
+      if(p4.state() == PlayerInfo::ready) {
+        ready_by_pose_detection = true;
+      }
     }
+    */
   }
 
   // TODO: when to show / update led states?

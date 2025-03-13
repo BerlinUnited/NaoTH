@@ -63,8 +63,15 @@ void ReadyPoseDetector::execute()
   }
   */
 
-
+  // this works for the player 4
   Vector2d poseInImage(132, 110);
+
+  // flip sides for number 7
+  if(getPlayerInfo().playerNumber == 7) {
+    poseInImage.x = getImageTop().width() - 192 - poseInImage.x;
+  }
+
+
   MODIFY("ReadyPoseDetector:poseInImage.x", poseInImage.x);
   MODIFY("ReadyPoseDetector:poseInImage.y", poseInImage.y);
 
@@ -121,31 +128,41 @@ void ReadyPoseDetector::execute()
   // eyes
   float y1 = (*output)[0][0][1][0] * 192.0;
   float x1 = (*output)[0][0][1][1] * 192.0;
+  float c1 = (*output)[0][0][1][2];
 
   float y2 = (*output)[0][0][2][0] * 192.0;
   float x2 = (*output)[0][0][2][1] * 192.0;
+  float c2 = (*output)[0][0][2][2];
 
   // hands
   float y3 = (*output)[0][0][9][0] * 192.0;
   float x3 = (*output)[0][0][9][1] * 192.0;
+  float c3 = (*output)[0][0][9][2];
 
   float y4 = (*output)[0][0][10][0] * 192.0;
   float x4 = (*output)[0][0][10][1] * 192.0;
+  float c4 = (*output)[0][0][10][2];
 
 
   //y,x und conf. y
   DEBUG_REQUEST("ReadyPoseDetector:draw_detection_area",
     IMAGE_DRAWING_CONTEXT;
     CANVAS("ImageTop");
-    PEN("FF0000", 1);
 
+    PEN("FF0000", 1);
     CIRCLE(poseInImage.x + (int)x1, poseInImage.y + (int)y1, 3);
+    TEXT_DRAWING2(poseInImage.x + (int)x1, poseInImage.y + (int)y1, 0.1, (int)(c1*100.0));
     CIRCLE(poseInImage.x + (int)x2, poseInImage.y + (int)y2, 3);
+    TEXT_DRAWING2(poseInImage.x + (int)x2, poseInImage.y + (int)y2, 0.1, (int)(c2*100.0));
+
+    PEN("0000FF", 1);
     CIRCLE(poseInImage.x + (int)x3, poseInImage.y + (int)y3, 3);
+    TEXT_DRAWING2(poseInImage.x + (int)x3, poseInImage.y + (int)y3, 0.1, (int)(c3*100.0));
     CIRCLE(poseInImage.x + (int)x4, poseInImage.y + (int)y4, 3);
+    TEXT_DRAWING2(poseInImage.x + (int)x4, poseInImage.y + (int)y4, 0.1, (int)(c4*100.0));
   );
 
-  if( (y3 + y4) * 0.5 < (y1 + y1) * 0.5 - 5) {
+  if( c1 > 0.45 && c2 > 0.45 && (y3 + y4) * 0.5 < (y1 + y1) * 0.5 - 5) {
     getWhistlePercept().readyRefereePoseDetected = true;
   }
 

@@ -20,11 +20,12 @@ option roles_play_soccer
         goto calibrate_inertial;
       else if (game.current_mode == standby)
         // some players might wach the referee here in the future
-        goto calibrate_inertial;
+      //  goto calibrate_inertial;
+        goto standby;
       else
         stay;
     } 
-    action{}
+    action {}
   }
 
   state calibrate_inertial
@@ -77,11 +78,14 @@ option roles_play_soccer
     decision
     {
       else if(game.current_mode == playing)
-        goto play;
+        //goto play;
+        goto calibrate_inertial;
       else if(game.current_mode == ready)
-        goto ready;
+        //goto ready;
+        goto calibrate_inertial;
       else if(game.current_mode == set)
-        goto set;
+        //goto set;
+        goto calibrate_inertial;
       else 
         stay;
     }
