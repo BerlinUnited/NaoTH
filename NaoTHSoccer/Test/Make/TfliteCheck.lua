@@ -17,4 +17,4 @@ project "TfliteCheck"
   
   cppdialect "c++14"
 	
-  targetname "tflite-benchmark"
+  targetname "tflite-check"
