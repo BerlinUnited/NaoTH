@@ -54,6 +54,8 @@ private:
 private:
   bool debug_whistle_heard;
   bool play_by_whistle;
+
+  bool ready_by_pose_detection;
 };
 
 #endif // GAMECONTROLLER_H
