@@ -12,6 +12,7 @@ ReadyPoseDetector::ReadyPoseDetector()
   DEBUG_REQUEST_REGISTER("ReadyPoseDetector:draw_pose_in_image", "draw pose", false);
   DEBUG_REQUEST_REGISTER("ReadyPoseDetector:draw_detection_area", "draw pose", false);
   
+  exec.loadModelFromFile("Config/movenet_lightning.tflite", {1, 192, 192, 3}, 1);
 
   getDebugParameterList().add(&params);
 }
@@ -24,7 +25,7 @@ ReadyPoseDetector::~ReadyPoseDetector()
 
 void ReadyPoseDetector::execute()
 {
-
+  /*
   if(getPlayerInfo().robotState != PlayerInfo::RobotState::standby) {
     return;
   }
@@ -33,6 +34,7 @@ void ReadyPoseDetector::execute()
   if(getPlayerInfo().playerNumber != 4 && getPlayerInfo().playerNumber != 7) {
     return;
   }
+  */
 
   /*
   // default position of the player 4
@@ -72,6 +74,10 @@ void ReadyPoseDetector::execute()
   );
 
 
+  float (*inputTensor)[1][192][192][3] = reinterpret_cast<float(*)[1][192][192][3]>(exec.getInputTensor());
+
+
+  // create input tensor
   Pixel pixel;
   Pixel pixelRGB;
   Vector2i point;
@@ -84,10 +90,24 @@ void ReadyPoseDetector::execute()
       }
 
       ColorModelConversions::fromYCbCrToRGB(pixel.y, pixel.cb, pixel.cr, pixelRGB.a, pixelRGB.b, pixelRGB.c);
-
-
+      //(*inputTensor)
     }
   }
+
+
+  exec.execute();
+
+
+  // draw output
+  const float (*output)[1][1][17][3] = reinterpret_cast<const float(*)[1][1][17][3]>(exec.getOutputTensor());
+
+  for(int i = 0; i < 17; i++) {
+    for (int j = 0; j < 3; j++) {
+      std::cout << (*output)[0][0][i][j] << "\t";
+    }
+    std::cout << std::endl;
+  }
+
   
   // 192, 192 rgb
 }

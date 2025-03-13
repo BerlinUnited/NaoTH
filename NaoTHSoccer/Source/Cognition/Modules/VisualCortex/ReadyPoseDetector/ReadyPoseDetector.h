@@ -22,6 +22,8 @@
 
 #include "Representations/Modeling/PlayerInfo.h"
 
+#include "tfliteexecuter.h"
+
 // debug
 #include "Representations/Debug/Stopwatch.h"
 #include "Tools/Debug/DebugRequest.h"
@@ -76,6 +78,11 @@ private:
 
     double parameter;
   } params;
+
+
+private:
+
+  TFLiteExecuter exec;
 
 };//end class CNNBallDetector
 
