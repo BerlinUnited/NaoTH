@@ -11,6 +11,8 @@
 
 #include "Tools/CameraGeometry.h"
 #include "Tools/ImageProcessing/BresenhamLineScan.h"
+#include "Tools/NaoInfo.h"
+
 
 using namespace std;
 
@@ -110,6 +112,18 @@ void BodyContourProvider::execute(CameraInfo::CameraID id)
 
 void BodyContourProvider::add(const Pose3D& origin, const std::vector<Vector3d>& c, double sign, BodyContour::BodyPartID id)
 {
+  
+  //Pose3D cm =  getKinematicChain().theLinks[KinematicChain::Head].M * NaoInfo::robotDimensions.cameraTransformation[naoth::CameraInfo::Bottom];
+  // translate and rotate the pose into camera
+  double yOffsetHead = getCameraMatrixOffset().head_rot.y;
+  MODIFY("BodyContourProvider:yOffsetHead", yOffsetHead);
+  double yOffsetCamera = getCameraMatrixOffset().cam_rot[cameraID].y;
+  MODIFY("BodyContourProvider:yOffsetCamera", yOffsetCamera);
+  Pose3D cm = getKinematicChain().theLinks[KinematicChain::Head].M;
+  cm.rotateY(yOffsetHead);
+  cm.translate(NaoInfo::robotDimensions.cameraTransform[cameraID].offset);
+  cm.rotateY(NaoInfo::robotDimensions.cameraTransform[cameraID].rotationY + yOffsetCamera);
+
   // constants
   const Vector2i frameUpperLeft(0,0);
   const Vector2i frameLowerRight(getCameraInfo().resolutionWidth-1, getCameraInfo().resolutionHeight-1);
@@ -118,14 +132,14 @@ void BodyContourProvider::add(const Pose3D& origin, const std::vector<Vector3d>&
   Vector3d p1 = origin * Vector3d(c[0].x, c[0].y * sign, c[0].z);
   // project this point into the image
   Vector2i q1;
-  bool q1_ok = CameraGeometry::relativePointToImage(getCameraMatrix(), getCameraInfo(), p1, q1);
+  bool q1_ok = CameraGeometry::relativePointToImage(cm, getCameraInfo(), p1, q1);
 
   // start building the contour lines
   for(size_t i = 1; i < c.size(); i++)
   {
     Vector3d p2 = origin * Vector3d(c[i].x, c[i].y * sign, c[i].z);
     Vector2i q2;
-    bool q2_ok = CameraGeometry::relativePointToImage(getCameraMatrix(), getCameraInfo(), p2, q2);
+    bool q2_ok = CameraGeometry::relativePointToImage(cm, getCameraInfo(), p2, q2);
 
     // if the projection was successful
     if (q1_ok && q2_ok)
