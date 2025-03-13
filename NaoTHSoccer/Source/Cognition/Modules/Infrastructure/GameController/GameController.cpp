@@ -171,21 +171,25 @@ void GameController::execute()
       getPlayerInfo().robotState = PlayerInfo::ready;
       ready_by_pose_detection = true;
     } 
-    /*
-    else if(getTeamState().hasPlayer(7)) 
+    
+    if(getTeamState().hasPlayer(7))
     {
       const TeamState::Player& p7 = getTeamState().getPlayer(7);
       if(p7.state() == PlayerInfo::ready) {
-        ready_by_pose_detection = true;
-      }
-    } else if(getTeamState().hasPlayer(4)) 
-    {
-      const TeamState::Player& p4 = getTeamState().getPlayer(4);
-      if(p4.state() == PlayerInfo::ready) {
+        getPlayerInfo().robotState = PlayerInfo::ready;
         ready_by_pose_detection = true;
       }
     }
-    */
+    
+    if(getTeamState().hasPlayer(4)) 
+    {
+      const TeamState::Player& p4 = getTeamState().getPlayer(4);
+      if(p4.state() == PlayerInfo::ready) {
+        getPlayerInfo().robotState = PlayerInfo::ready;
+        ready_by_pose_detection = true;
+      }
+    }
+    
   }
 
   // TODO: when to show / update led states?
