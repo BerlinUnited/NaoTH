@@ -5,6 +5,7 @@
 #include "PlatformInterface/Platform.h"
 
 TeamCommEventDecision::TeamCommEventDecision()
+  : readyChangeWasSent(false)
 {
     getDebugParameterList().add(&params);
 }
@@ -17,6 +18,8 @@ TeamCommEventDecision::~TeamCommEventDecision()
 void TeamCommEventDecision::execute()
 {
     getTeamMessageDecision().reset();
+
+    // execute a decision method based on the parameter
     (this->*params.decisionMethod)();
 }
 
@@ -43,16 +46,32 @@ void TeamCommEventDecision::byInterval()
 
 void TeamCommEventDecision::byDistance()
 {
+    // as kind of safety set a lower bound how often we can send messages
+    if ((unsigned int)getFrameInfo().getTimeSince(params.byDistance_lastSentTimestamp) < params.byDistance_minInterval) {
+      return;
+    }
+
+    if(getPlayerInfo().playerNumber == 4 || getPlayerInfo().playerNumber == 7) {
+      if (getPlayerInfo().robotState == PlayerInfo::ready && !readyChangeWasSent) {
+        getTeamMessageDecision().send_state.set();
+        // update timestamp for the safety condition
+        params.byDistance_lastSentTimestamp = getFrameInfo().getTime();
+
+        readyChangeWasSent = true;
+      }
+
+      // reset the erady notify flag
+      if(getPlayerInfo().robotState == PlayerInfo::standby) {
+        readyChangeWasSent = false;
+      }
+    }
+
     // if the robot is not playing (eg. penalized), do not send any message
     if (getPlayerInfo().robotState != PlayerInfo::playing) {
         return;
     }
 
-    // as kind of safety set a lower bound how often we can send messages
-    if ((unsigned int)getFrameInfo().getTimeSince(params.byDistance_lastSentTimestamp) < params.byDistance_minInterval) {
-        return;
-    }
-
+    // TODO: does this work? Can this happen in the play state? This probably should be above
     // use the initial phase phase for syncing
     if (getGameData().gameState == GameData::initial)
     {
