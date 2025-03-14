@@ -51,6 +51,15 @@ void TeamCommEventDecision::byDistance()
       return;
     }
 
+    // use the initial phase phase for syncing
+    if (getGameData().gameState == GameData::initial)
+    {
+      getTeamMessageDecision().send_ntpRequests.set();
+      // update timestamp for the safety condition
+      params.byDistance_lastSentTimestamp = getFrameInfo().getTime();
+    }
+
+    // send the ready state switch
     if(getPlayerInfo().playerNumber == 4 || getPlayerInfo().playerNumber == 7) {
       if (getPlayerInfo().robotState == PlayerInfo::ready && !readyChangeWasSent) {
         getTeamMessageDecision().send_state.set();
@@ -69,15 +78,6 @@ void TeamCommEventDecision::byDistance()
     // if the robot is not playing (eg. penalized), do not send any message
     if (getPlayerInfo().robotState != PlayerInfo::playing) {
         return;
-    }
-
-    // TODO: does this work? Can this happen in the play state? This probably should be above
-    // use the initial phase phase for syncing
-    if (getGameData().gameState == GameData::initial)
-    {
-        getTeamMessageDecision().send_ntpRequests.set();
-        // update timestamp for the safety condition
-        params.byDistance_lastSentTimestamp = getFrameInfo().getTime();
     }
 
     const auto& role = getRoleDecisionModel().getRole(getPlayerInfo().playerNumber);
