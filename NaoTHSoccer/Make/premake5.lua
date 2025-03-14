@@ -291,6 +291,10 @@ workspace "NaoTHSoccer"
         dofile ("../Test/Make/TfliteBenchmark.lua")
           kind "ConsoleApp"
           vpaths { ["*"] = "../Test/Source/TfliteBenchmark" }
+
+        dofile ("../Test/Make/TfliteCheck.lua")
+          kind "ConsoleApp"
+          vpaths { ["*"] = "../Test/Source/TfliteCheck" }
     end
 
     
@@ -329,6 +333,9 @@ workspace "NaoTHSoccer"
     -- generate tests if required
     if _OPTIONS["Test"] ~= nil then
       group "Test"
+        --dofile ("../Test/Make/AudioRecorder.lua")
+        --  kind "ConsoleApp"
+        --  vpaths { ["*"] = "../Test/Source/AudioRecorder" }
         dofile ("../Test/Make/EigenPerformance.lua")
           kind "ConsoleApp"
           vpaths { ["*"] = "../Test/Source/EigenPerformance" }
@@ -336,22 +343,22 @@ workspace "NaoTHSoccer"
         dofile ("../Test/Make/GeneralAlignment.lua")
           kind "ConsoleApp"
           vpaths { ["*"] = "../Test/Source/GeneralAlignment" }
-
+        dofile ("../Test/Make/LoLa.lua")
+          kind "ConsoleApp"
+          vpaths { ["*"] = "../Test/Source/LoLa" }
         dofile ("../Test/Make/Optimizers.lua")
           kind "ConsoleApp"
           vpaths { ["*"] = "../Test/Source/Optimizers" }
-
-	    dofile ("../Test/Make/Polygon.lua")
-          kind "ConsoleApp"
-          vpaths { ["*"] = "../Test/Source/Polygon" }
-      
-      dofile ("../Test/Make/LoLa.lua")
-          kind "ConsoleApp"
-          vpaths { ["*"] = "../Test/Source/LoLa" }
-
-      dofile ("../Test/Make/TfliteBenchmark.lua")
+        dofile ("../Test/Make/Polygon.lua")
+            kind "ConsoleApp"
+            vpaths { ["*"] = "../Test/Source/Polygon" }
+        dofile ("../Test/Make/TfliteBenchmark.lua")
           kind "ConsoleApp"
           vpaths { ["*"] = "../Test/Source/TfliteBenchmark" }
+        dofile ("../Test/Make/TfliteCheck.lua")
+          kind "ConsoleApp"
+          vpaths { ["*"] = "../Test/Source/TfliteCheck" }
+
     end
 
     -- generate LogSimulatorJNI if required

@@ -96,6 +96,10 @@ private:
 
     void byInterval();
     void byDistance();
+
+private:
+  bool readyChangeWasSent;
+
 };
 
 #endif  /* TEAMCOMMEVENTDECISION_H */
