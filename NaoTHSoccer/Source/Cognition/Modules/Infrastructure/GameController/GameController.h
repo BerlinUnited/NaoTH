@@ -16,6 +16,7 @@
 #include "Representations/Modeling/BodyState.h"
 #include "Representations/Modeling/RobotPose.h"
 #include "Representations/Modeling/BallModel.h"
+#include "Representations/Modeling/TeamState.h"
 
 using namespace naoth;
 
@@ -30,6 +31,8 @@ BEGIN_DECLARE_MODULE(GameController)
   REQUIRE(BodyState)
   REQUIRE(RobotPose)
   REQUIRE(BallModel)
+
+  REQUIRE(TeamState)
 
   PROVIDE(GameData)
   PROVIDE(PlayerInfo)
@@ -54,6 +57,8 @@ private:
 private:
   bool debug_whistle_heard;
   bool play_by_whistle;
+
+  bool ready_by_pose_detection;
 };
 
 #endif // GAMECONTROLLER_H

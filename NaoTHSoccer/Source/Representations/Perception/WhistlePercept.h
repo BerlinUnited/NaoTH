@@ -38,6 +38,9 @@ namespace naoth
 
     bool whistleDetected;
 
+    // hack
+    bool readyRefereePoseDetected;
+
     WhistlePercept();
     virtual ~WhistlePercept();
     virtual void print(std::ostream& stream) const;

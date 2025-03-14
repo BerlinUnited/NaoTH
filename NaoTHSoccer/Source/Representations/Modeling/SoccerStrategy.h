@@ -36,7 +36,9 @@ public:
   Vector2d formation;
 
   /** direction of the attack (based on potential field, see: PotentialFieldProvider) */
-  Vector2d attackDirection; 
+  Vector2d attackDirection;
+
+  bool run_pose_detection;
 
   /** the shorest time, in which the robot can reach the ball [ms] */
   double timeToBall;

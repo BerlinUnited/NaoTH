@@ -6,7 +6,8 @@
 GameController::GameController()
   : 
   debug_whistle_heard(false),
-  play_by_whistle(false)
+  play_by_whistle(false),
+  ready_by_pose_detection(false)
 {
   DEBUG_REQUEST_REGISTER("gamecontroller:game_state:play", "force the play state", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:game_state:penalized", "force the penalized state", false);
@@ -119,6 +120,12 @@ void GameController::execute()
     play_by_whistle = false;
   }
 
+  // reset
+  if(getPlayerInfo().robotState != PlayerInfo::ready) {
+    ready_by_pose_detection = false;
+  }
+
+
   // try update from the game controller message if not manually overwritten
   if ( getGameData().valid && getWifiMode().wifiEnabled ) 
   {
@@ -132,9 +139,14 @@ void GameController::execute()
       getPlayerInfo().update(getGameData());
     }
 
-    // take the ownership of the play state
+    // release the ownership of the play state to the GC when its in sync
     if(getPlayerInfo().robotState == PlayerInfo::playing) {
       play_by_whistle = false;
+    }
+
+    // release the ownership of the ready state to the GC when its in sync
+    if(getPlayerInfo().robotState == PlayerInfo::ready) {
+      ready_by_pose_detection = false;
     }
   }
 
@@ -150,6 +162,34 @@ void GameController::execute()
       getPlayerInfo().robotState = PlayerInfo::playing;
       play_by_whistle = true;
     }
+  }
+
+  if(getPlayerInfo().robotState == PlayerInfo::standby)
+  {
+    // switch from set to play
+    if(getWhistlePercept().readyRefereePoseDetected || ready_by_pose_detection) {
+      getPlayerInfo().robotState = PlayerInfo::ready;
+      ready_by_pose_detection = true;
+    } 
+    
+    if(getTeamState().hasPlayer(7))
+    {
+      const TeamState::Player& p7 = getTeamState().getPlayer(7);
+      if(p7.state() == PlayerInfo::ready) {
+        getPlayerInfo().robotState = PlayerInfo::ready;
+        ready_by_pose_detection = true;
+      }
+    }
+    
+    if(getTeamState().hasPlayer(4)) 
+    {
+      const TeamState::Player& p4 = getTeamState().getPlayer(4);
+      if(p4.state() == PlayerInfo::ready) {
+        getPlayerInfo().robotState = PlayerInfo::ready;
+        ready_by_pose_detection = true;
+      }
+    }
+    
   }
 
   // TODO: when to show / update led states?
