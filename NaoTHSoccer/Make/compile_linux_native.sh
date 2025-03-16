@@ -8,10 +8,10 @@ set -e
 trap '[ $? -eq 0 ] || echo "!!!! FAILURE WITH CODE $? !!!!"' EXIT
 
 echo "###### GENERATE MAKE FILES ######"
-premake5 gmake2
+premake5 gmake
 
 echo "###### COMPILE ######"
 # run make in the corresponding build dir
-(cd ../build/gmake2/ && make config=optdebug_native ScriptableSimulator $@)
+(cd ../build/gmake/ && make config=optdebug_native ScriptableSimulator $@)
 
 echo "###### FINISH ######"

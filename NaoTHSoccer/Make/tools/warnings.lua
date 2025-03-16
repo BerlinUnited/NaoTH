@@ -49,7 +49,7 @@ filter "system:macosx"
   buildoptions {"-Wno-logical-op-parentheses"}
 
 -- for linux systems and cygwin 
-filter {"platforms:Native", "action:gmake or gmake2", "system:linux"} 
+filter {"platforms:Native", "action:gmake", "system:linux"}
   -- may be needed for newer glib2 versions, remove if not needed
   buildoptions {"-Wno-deprecated-declarations"}
   buildoptions {"-Wno-deprecated"}
