@@ -131,7 +131,7 @@ void MonteCarloSelfLocator::execute()
   }
 
   // TODO: in the future we might want to localize in initial, then we will need a more detailed approach here
-  if(getPlayerInfo().robotState == PlayerInfo::initial) 
+  if(getPlayerInfo().robotState == PlayerInfo::initial || getPlayerInfo().robotState == PlayerInfo::standby) 
   {
     state = KIDNAPPED;
   }
@@ -446,8 +446,8 @@ void MonteCarloSelfLocator::updateByOdometryRelative(SampleSet& sampleSet, bool 
 
 void MonteCarloSelfLocator::updateBySituation()
 {
-  if(getSituationPrior().currentPrior == getSituationPrior().firstReady ||
-    getPlayerInfo().robotState == PlayerInfo::standby)
+  if(getSituationPrior().currentPrior == getSituationPrior().firstReady)
+    //||getPlayerInfo().robotState == PlayerInfo::standby)
   {
     updateByStartPositions(theSampleSet);
   }
