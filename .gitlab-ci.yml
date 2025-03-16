@@ -44,8 +44,8 @@ compile_local_clang:
   - export CC=$(which clang)
   - export CXX=$(which clang++)
   - export LD=$(which ld.lld)
-  - premake5 gmake2 --protoc
-  - cd ../build/gmake2
+  - premake5 gmake --protoc
+  - cd ../build/gmake
   - make all -j 4
   artifacts:
     expire_in: 4 weeks
@@ -139,7 +139,7 @@ publish_naoth_docker:
   dependencies: []  # don't download any artifacts to this job for speed
   script:
   - cd NaoTHSoccer/Make
-  - premake5 gmake2 --protoc
+  - premake5 gmake --protoc
   - cd ../../Utils/py/naoth
   - ./package_naoth.sh
 
@@ -154,6 +154,6 @@ publish_naoth_python_pypi:
   dependencies: []  # don't download any artifacts to this job for speed
   script:
   - cd NaoTHSoccer/Make
-  - premake5 gmake2 --protoc
+  - premake5 gmake --protoc
   - cd ../../Utils/py/naoth
   - ./package_naoth_pypi.sh

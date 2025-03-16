@@ -15,7 +15,7 @@ if [ "${1::1}" == "-" ] || [ "${#}" -eq 0 ]; then
 fi
 
 echo "###### GENERATE MAKE FILES ######"
-premake5 --platform=Nao --Test gmake2
+premake5 --platform=Nao --Test gmake
 
 echo "###### COMPILE ######"
 # run make in the corresponding build dir
