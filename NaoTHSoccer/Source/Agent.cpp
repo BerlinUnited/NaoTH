@@ -11,7 +11,7 @@ void naoth::init_agent(naoth::PlatformInterface& platform)
   // create and register processes
   platform.registerCognition(new Cognition());
   platform.registerMotion(new Motion());
-}// end init_agent
+}
 
 
 Motion* createMotion()
