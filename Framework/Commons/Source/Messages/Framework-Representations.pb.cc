@@ -226,13 +226,15 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_ATTRIBUTE_SECTION
   ~0u,  // no _weak_field_map_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(RobotInfo, platform_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(RobotInfo, bodynickname_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(RobotInfo, headnickname_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(RobotInfo, headid_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(RobotInfo, bodyid_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(RobotInfo, basictimestep_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(RobotInfo, robotname_),
   0,
   1,
   2,
   3,
+  5,
   4,
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FSRData, _has_bits_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FSRData, _internal_metadata_),
@@ -297,12 +299,12 @@ static const ::google::protobuf::internal::MigrationSchema schemas[] GOOGLE_ATTR
   { 71, 79, sizeof(SensorJointData)},
   { 82, 91, sizeof(UltraSoundReceiveData)},
   { 95, 102, sizeof(FrameInfo)},
-  { 104, 114, sizeof(RobotInfo)},
-  { 119, 127, sizeof(FSRData)},
-  { 130, 138, sizeof(AccelerometerData)},
-  { 141, 150, sizeof(GyrometerData)},
-  { 154, 161, sizeof(InertialSensorData)},
-  { 163, 171, sizeof(ButtonData)},
+  { 104, 115, sizeof(RobotInfo)},
+  { 121, 129, sizeof(FSRData)},
+  { 132, 140, sizeof(AccelerometerData)},
+  { 143, 152, sizeof(GyrometerData)},
+  { 156, 163, sizeof(InertialSensorData)},
+  { 165, 173, sizeof(ButtonData)},
 };
 
 static ::google::protobuf::Message const * const file_default_instances[] = {
@@ -425,34 +427,34 @@ void AddDescriptorsImpl() {
       "SoundReceiveData\022\032\n\022ultraSoundTimeStep\030\001"
       " \001(\r\022\017\n\007rawdata\030\002 \002(\001\022\020\n\010dataLeft\030\003 \003(\001\022"
       "\021\n\tdataRight\030\004 \003(\001\".\n\tFrameInfo\022\023\n\013frame"
-      "Number\030\001 \002(\r\022\014\n\004time\030\002 \002(\r\"p\n\tRobotInfo\022"
+      "Number\030\001 \002(\r\022\014\n\004time\030\002 \002(\r\"}\n\tRobotInfo\022"
       "\020\n\010platform\030\001 \001(\t\022\024\n\014bodyNickName\030\002 \001(\t\022"
-      "\024\n\014headNickName\030\003 \001(\t\022\016\n\006bodyID\030\004 \001(\t\022\025\n"
-      "\rbasicTimeStep\030\005 \001(\r\"=\n\007FSRData\022\021\n\005force"
-      "\030\001 \003(\001B\002\030\001\022\014\n\004data\030\002 \003(\001\022\021\n\005valid\030\003 \003(\010B"
-      "\002\030\001\"\214\001\n\021AccelerometerData\022\034\n\020legacyPacke"
-      "dData\030\001 \003(\001B\002\030\001\022*\n\004data\030\002 \001(\0132\034.naothmes"
-      "sages.DoubleVector3\022-\n\007rawData\030\003 \001(\0132\034.n"
-      "aothmessages.DoubleVector3\"\225\001\n\rGyrometer"
-      "Data\022\034\n\020legacyPackedData\030\001 \003(\001B\002\030\001\022*\n\004da"
-      "ta\030\002 \001(\0132\034.naothmessages.DoubleVector3\022-"
-      "\n\007rawData\030\003 \001(\0132\034.naothmessages.DoubleVe"
-      "ctor3\022\013\n\003ref\030\004 \001(\001\"^\n\022InertialSensorData"
-      "\022\034\n\020legacyPackedData\030\001 \003(\001B\002\030\001\022*\n\004data\030\002"
-      " \001(\0132\034.naothmessages.DoubleVector2\"\323\002\n\nB"
-      "uttonData\022\021\n\tisPressed\030\001 \003(\010\022\032\n\022numOfFra"
-      "mesPressed\030\002 \003(\r\022\024\n\014eventCounter\030\003 \003(\r\"\377"
-      "\001\n\010ButtonID\022\t\n\005Chest\020\000\022\020\n\014LeftFootLeft\020\001"
-      "\022\021\n\rLeftFootRight\020\002\022\021\n\rRightFootLeft\020\003\022\022"
-      "\n\016RightFootRight\020\004\022\r\n\tHeadFront\020\005\022\016\n\nHea"
-      "dMiddle\020\006\022\014\n\010HeadRear\020\007\022\020\n\014LeftHandBack\020"
-      "\010\022\020\n\014LeftHandLeft\020\t\022\021\n\rLeftHandRight\020\n\022\021"
-      "\n\rRightHandBack\020\013\022\021\n\rRightHandLeft\020\014\022\022\n\016"
-      "RightHandRight\020\rB\033\n\031de.naoth.rc.core.mes"
-      "sages"
+      "\016\n\006headId\030\003 \001(\t\022\016\n\006bodyId\030\004 \001(\t\022\025\n\rbasic"
+      "TimeStep\030\005 \001(\r\022\021\n\trobotName\030\006 \001(\t\"=\n\007FSR"
+      "Data\022\021\n\005force\030\001 \003(\001B\002\030\001\022\014\n\004data\030\002 \003(\001\022\021\n"
+      "\005valid\030\003 \003(\010B\002\030\001\"\214\001\n\021AccelerometerData\022\034"
+      "\n\020legacyPackedData\030\001 \003(\001B\002\030\001\022*\n\004data\030\002 \001"
+      "(\0132\034.naothmessages.DoubleVector3\022-\n\007rawD"
+      "ata\030\003 \001(\0132\034.naothmessages.DoubleVector3\""
+      "\225\001\n\rGyrometerData\022\034\n\020legacyPackedData\030\001 "
+      "\003(\001B\002\030\001\022*\n\004data\030\002 \001(\0132\034.naothmessages.Do"
+      "ubleVector3\022-\n\007rawData\030\003 \001(\0132\034.naothmess"
+      "ages.DoubleVector3\022\013\n\003ref\030\004 \001(\001\"^\n\022Inert"
+      "ialSensorData\022\034\n\020legacyPackedData\030\001 \003(\001B"
+      "\002\030\001\022*\n\004data\030\002 \001(\0132\034.naothmessages.Double"
+      "Vector2\"\323\002\n\nButtonData\022\021\n\tisPressed\030\001 \003("
+      "\010\022\032\n\022numOfFramesPressed\030\002 \003(\r\022\024\n\014eventCo"
+      "unter\030\003 \003(\r\"\377\001\n\010ButtonID\022\t\n\005Chest\020\000\022\020\n\014L"
+      "eftFootLeft\020\001\022\021\n\rLeftFootRight\020\002\022\021\n\rRigh"
+      "tFootLeft\020\003\022\022\n\016RightFootRight\020\004\022\r\n\tHeadF"
+      "ront\020\005\022\016\n\nHeadMiddle\020\006\022\014\n\010HeadRear\020\007\022\020\n\014"
+      "LeftHandBack\020\010\022\020\n\014LeftHandLeft\020\t\022\021\n\rLeft"
+      "HandRight\020\n\022\021\n\rRightHandBack\020\013\022\021\n\rRightH"
+      "andLeft\020\014\022\022\n\016RightHandRight\020\rB\033\n\031de.naot"
+      "h.rc.core.messages"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 2165);
+      descriptor, 2178);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Framework-Representations.proto", &protobuf_RegisterTypes);
   ::naothmessages::protobuf_CommonTypes_2eproto::AddDescriptors();
@@ -4389,9 +4391,10 @@ void FrameInfo::set_time(::google::protobuf::uint32 value) {
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
 const int RobotInfo::kPlatformFieldNumber;
 const int RobotInfo::kBodyNickNameFieldNumber;
-const int RobotInfo::kHeadNickNameFieldNumber;
-const int RobotInfo::kBodyIDFieldNumber;
+const int RobotInfo::kHeadIdFieldNumber;
+const int RobotInfo::kBodyIdFieldNumber;
 const int RobotInfo::kBasicTimeStepFieldNumber;
+const int RobotInfo::kRobotNameFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 RobotInfo::RobotInfo()
@@ -4416,13 +4419,17 @@ RobotInfo::RobotInfo(const RobotInfo& from)
   if (from.has_bodynickname()) {
     bodynickname_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.bodynickname_);
   }
-  headnickname_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  if (from.has_headnickname()) {
-    headnickname_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.headnickname_);
+  headid_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  if (from.has_headid()) {
+    headid_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.headid_);
   }
   bodyid_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   if (from.has_bodyid()) {
     bodyid_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.bodyid_);
+  }
+  robotname_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  if (from.has_robotname()) {
+    robotname_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.robotname_);
   }
   basictimestep_ = from.basictimestep_;
   // @@protoc_insertion_point(copy_constructor:naothmessages.RobotInfo)
@@ -4432,8 +4439,9 @@ void RobotInfo::SharedCtor() {
   _cached_size_ = 0;
   platform_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   bodynickname_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  headnickname_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  headid_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   bodyid_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  robotname_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   basictimestep_ = 0u;
 }
 
@@ -4445,8 +4453,9 @@ RobotInfo::~RobotInfo() {
 void RobotInfo::SharedDtor() {
   platform_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   bodynickname_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  headnickname_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  headid_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   bodyid_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  robotname_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 
 void RobotInfo::SetCachedSize(int size) const {
@@ -4479,7 +4488,7 @@ void RobotInfo::Clear() {
   (void) cached_has_bits;
 
   cached_has_bits = _has_bits_[0];
-  if (cached_has_bits & 15u) {
+  if (cached_has_bits & 31u) {
     if (cached_has_bits & 0x00000001u) {
       GOOGLE_DCHECK(!platform_.IsDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited()));
       (*platform_.UnsafeRawStringPointer())->clear();
@@ -4489,12 +4498,16 @@ void RobotInfo::Clear() {
       (*bodynickname_.UnsafeRawStringPointer())->clear();
     }
     if (cached_has_bits & 0x00000004u) {
-      GOOGLE_DCHECK(!headnickname_.IsDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited()));
-      (*headnickname_.UnsafeRawStringPointer())->clear();
+      GOOGLE_DCHECK(!headid_.IsDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited()));
+      (*headid_.UnsafeRawStringPointer())->clear();
     }
     if (cached_has_bits & 0x00000008u) {
       GOOGLE_DCHECK(!bodyid_.IsDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited()));
       (*bodyid_.UnsafeRawStringPointer())->clear();
+    }
+    if (cached_has_bits & 0x00000010u) {
+      GOOGLE_DCHECK(!robotname_.IsDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited()));
+      (*robotname_.UnsafeRawStringPointer())->clear();
     }
   }
   basictimestep_ = 0u;
@@ -4544,23 +4557,23 @@ bool RobotInfo::MergePartialFromCodedStream(
         break;
       }
 
-      // optional string headNickName = 3;
+      // optional string headId = 3;
       case 3: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
             static_cast< ::google::protobuf::uint8>(26u /* 26 & 0xFF */)) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadString(
-                input, this->mutable_headnickname()));
+                input, this->mutable_headid()));
           ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
-            this->headnickname().data(), static_cast<int>(this->headnickname().length()),
+            this->headid().data(), static_cast<int>(this->headid().length()),
             ::google::protobuf::internal::WireFormat::PARSE,
-            "naothmessages.RobotInfo.headNickName");
+            "naothmessages.RobotInfo.headId");
         } else {
           goto handle_unusual;
         }
         break;
       }
 
-      // optional string bodyID = 4;
+      // optional string bodyId = 4;
       case 4: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
             static_cast< ::google::protobuf::uint8>(34u /* 34 & 0xFF */)) {
@@ -4569,7 +4582,7 @@ bool RobotInfo::MergePartialFromCodedStream(
           ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
             this->bodyid().data(), static_cast<int>(this->bodyid().length()),
             ::google::protobuf::internal::WireFormat::PARSE,
-            "naothmessages.RobotInfo.bodyID");
+            "naothmessages.RobotInfo.bodyId");
         } else {
           goto handle_unusual;
         }
@@ -4584,6 +4597,22 @@ bool RobotInfo::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
                  input, &basictimestep_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // optional string robotName = 6;
+      case 6: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(50u /* 50 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_robotname()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+            this->robotname().data(), static_cast<int>(this->robotname().length()),
+            ::google::protobuf::internal::WireFormat::PARSE,
+            "naothmessages.RobotInfo.robotName");
         } else {
           goto handle_unusual;
         }
@@ -4637,29 +4666,39 @@ void RobotInfo::SerializeWithCachedSizes(
       2, this->bodynickname(), output);
   }
 
-  // optional string headNickName = 3;
+  // optional string headId = 3;
   if (cached_has_bits & 0x00000004u) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
-      this->headnickname().data(), static_cast<int>(this->headnickname().length()),
+      this->headid().data(), static_cast<int>(this->headid().length()),
       ::google::protobuf::internal::WireFormat::SERIALIZE,
-      "naothmessages.RobotInfo.headNickName");
+      "naothmessages.RobotInfo.headId");
     ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
-      3, this->headnickname(), output);
+      3, this->headid(), output);
   }
 
-  // optional string bodyID = 4;
+  // optional string bodyId = 4;
   if (cached_has_bits & 0x00000008u) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
       this->bodyid().data(), static_cast<int>(this->bodyid().length()),
       ::google::protobuf::internal::WireFormat::SERIALIZE,
-      "naothmessages.RobotInfo.bodyID");
+      "naothmessages.RobotInfo.bodyId");
     ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
       4, this->bodyid(), output);
   }
 
   // optional uint32 basicTimeStep = 5;
-  if (cached_has_bits & 0x00000010u) {
+  if (cached_has_bits & 0x00000020u) {
     ::google::protobuf::internal::WireFormatLite::WriteUInt32(5, this->basictimestep(), output);
+  }
+
+  // optional string robotName = 6;
+  if (cached_has_bits & 0x00000010u) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->robotname().data(), static_cast<int>(this->robotname().length()),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "naothmessages.RobotInfo.robotName");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      6, this->robotname(), output);
   }
 
   if (_internal_metadata_.have_unknown_fields()) {
@@ -4699,31 +4738,42 @@ void RobotInfo::SerializeWithCachedSizes(
         2, this->bodynickname(), target);
   }
 
-  // optional string headNickName = 3;
+  // optional string headId = 3;
   if (cached_has_bits & 0x00000004u) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
-      this->headnickname().data(), static_cast<int>(this->headnickname().length()),
+      this->headid().data(), static_cast<int>(this->headid().length()),
       ::google::protobuf::internal::WireFormat::SERIALIZE,
-      "naothmessages.RobotInfo.headNickName");
+      "naothmessages.RobotInfo.headId");
     target =
       ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-        3, this->headnickname(), target);
+        3, this->headid(), target);
   }
 
-  // optional string bodyID = 4;
+  // optional string bodyId = 4;
   if (cached_has_bits & 0x00000008u) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
       this->bodyid().data(), static_cast<int>(this->bodyid().length()),
       ::google::protobuf::internal::WireFormat::SERIALIZE,
-      "naothmessages.RobotInfo.bodyID");
+      "naothmessages.RobotInfo.bodyId");
     target =
       ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
         4, this->bodyid(), target);
   }
 
   // optional uint32 basicTimeStep = 5;
-  if (cached_has_bits & 0x00000010u) {
+  if (cached_has_bits & 0x00000020u) {
     target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(5, this->basictimestep(), target);
+  }
+
+  // optional string robotName = 6;
+  if (cached_has_bits & 0x00000010u) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->robotname().data(), static_cast<int>(this->robotname().length()),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "naothmessages.RobotInfo.robotName");
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        6, this->robotname(), target);
   }
 
   if (_internal_metadata_.have_unknown_fields()) {
@@ -4743,7 +4793,7 @@ size_t RobotInfo::ByteSizeLong() const {
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
         _internal_metadata_.unknown_fields());
   }
-  if (_has_bits_[0 / 32] & 31u) {
+  if (_has_bits_[0 / 32] & 63u) {
     // optional string platform = 1;
     if (has_platform()) {
       total_size += 1 +
@@ -4758,18 +4808,25 @@ size_t RobotInfo::ByteSizeLong() const {
           this->bodynickname());
     }
 
-    // optional string headNickName = 3;
-    if (has_headnickname()) {
+    // optional string headId = 3;
+    if (has_headid()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::StringSize(
-          this->headnickname());
+          this->headid());
     }
 
-    // optional string bodyID = 4;
+    // optional string bodyId = 4;
     if (has_bodyid()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::StringSize(
           this->bodyid());
+    }
+
+    // optional string robotName = 6;
+    if (has_robotname()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->robotname());
     }
 
     // optional uint32 basicTimeStep = 5;
@@ -4810,7 +4867,7 @@ void RobotInfo::MergeFrom(const RobotInfo& from) {
   (void) cached_has_bits;
 
   cached_has_bits = from._has_bits_[0];
-  if (cached_has_bits & 31u) {
+  if (cached_has_bits & 63u) {
     if (cached_has_bits & 0x00000001u) {
       set_has_platform();
       platform_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.platform_);
@@ -4820,14 +4877,18 @@ void RobotInfo::MergeFrom(const RobotInfo& from) {
       bodynickname_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.bodynickname_);
     }
     if (cached_has_bits & 0x00000004u) {
-      set_has_headnickname();
-      headnickname_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.headnickname_);
+      set_has_headid();
+      headid_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.headid_);
     }
     if (cached_has_bits & 0x00000008u) {
       set_has_bodyid();
       bodyid_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.bodyid_);
     }
     if (cached_has_bits & 0x00000010u) {
+      set_has_robotname();
+      robotname_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.robotname_);
+    }
+    if (cached_has_bits & 0x00000020u) {
       basictimestep_ = from.basictimestep_;
     }
     _has_bits_[0] |= cached_has_bits;
@@ -4860,8 +4921,9 @@ void RobotInfo::InternalSwap(RobotInfo* other) {
   using std::swap;
   platform_.Swap(&other->platform_);
   bodynickname_.Swap(&other->bodynickname_);
-  headnickname_.Swap(&other->headnickname_);
+  headid_.Swap(&other->headid_);
   bodyid_.Swap(&other->bodyid_);
+  robotname_.Swap(&other->robotname_);
   swap(basictimestep_, other->basictimestep_);
   swap(_has_bits_[0], other->_has_bits_[0]);
   _internal_metadata_.Swap(&other->_internal_metadata_);
@@ -5002,70 +5064,70 @@ void RobotInfo::set_allocated_bodynickname(::std::string* bodynickname) {
   // @@protoc_insertion_point(field_set_allocated:naothmessages.RobotInfo.bodyNickName)
 }
 
-// optional string headNickName = 3;
-bool RobotInfo::has_headnickname() const {
+// optional string headId = 3;
+bool RobotInfo::has_headid() const {
   return (_has_bits_[0] & 0x00000004u) != 0;
 }
-void RobotInfo::set_has_headnickname() {
+void RobotInfo::set_has_headid() {
   _has_bits_[0] |= 0x00000004u;
 }
-void RobotInfo::clear_has_headnickname() {
+void RobotInfo::clear_has_headid() {
   _has_bits_[0] &= ~0x00000004u;
 }
-void RobotInfo::clear_headnickname() {
-  headnickname_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  clear_has_headnickname();
+void RobotInfo::clear_headid() {
+  headid_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  clear_has_headid();
 }
-const ::std::string& RobotInfo::headnickname() const {
-  // @@protoc_insertion_point(field_get:naothmessages.RobotInfo.headNickName)
-  return headnickname_.GetNoArena();
+const ::std::string& RobotInfo::headid() const {
+  // @@protoc_insertion_point(field_get:naothmessages.RobotInfo.headId)
+  return headid_.GetNoArena();
 }
-void RobotInfo::set_headnickname(const ::std::string& value) {
-  set_has_headnickname();
-  headnickname_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:naothmessages.RobotInfo.headNickName)
+void RobotInfo::set_headid(const ::std::string& value) {
+  set_has_headid();
+  headid_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:naothmessages.RobotInfo.headId)
 }
 #if LANG_CXX11
-void RobotInfo::set_headnickname(::std::string&& value) {
-  set_has_headnickname();
-  headnickname_.SetNoArena(
+void RobotInfo::set_headid(::std::string&& value) {
+  set_has_headid();
+  headid_.SetNoArena(
     &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
-  // @@protoc_insertion_point(field_set_rvalue:naothmessages.RobotInfo.headNickName)
+  // @@protoc_insertion_point(field_set_rvalue:naothmessages.RobotInfo.headId)
 }
 #endif
-void RobotInfo::set_headnickname(const char* value) {
+void RobotInfo::set_headid(const char* value) {
   GOOGLE_DCHECK(value != NULL);
-  set_has_headnickname();
-  headnickname_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:naothmessages.RobotInfo.headNickName)
+  set_has_headid();
+  headid_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:naothmessages.RobotInfo.headId)
 }
-void RobotInfo::set_headnickname(const char* value, size_t size) {
-  set_has_headnickname();
-  headnickname_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+void RobotInfo::set_headid(const char* value, size_t size) {
+  set_has_headid();
+  headid_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:naothmessages.RobotInfo.headNickName)
+  // @@protoc_insertion_point(field_set_pointer:naothmessages.RobotInfo.headId)
 }
-::std::string* RobotInfo::mutable_headnickname() {
-  set_has_headnickname();
-  // @@protoc_insertion_point(field_mutable:naothmessages.RobotInfo.headNickName)
-  return headnickname_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+::std::string* RobotInfo::mutable_headid() {
+  set_has_headid();
+  // @@protoc_insertion_point(field_mutable:naothmessages.RobotInfo.headId)
+  return headid_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-::std::string* RobotInfo::release_headnickname() {
-  // @@protoc_insertion_point(field_release:naothmessages.RobotInfo.headNickName)
-  clear_has_headnickname();
-  return headnickname_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+::std::string* RobotInfo::release_headid() {
+  // @@protoc_insertion_point(field_release:naothmessages.RobotInfo.headId)
+  clear_has_headid();
+  return headid_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-void RobotInfo::set_allocated_headnickname(::std::string* headnickname) {
-  if (headnickname != NULL) {
-    set_has_headnickname();
+void RobotInfo::set_allocated_headid(::std::string* headid) {
+  if (headid != NULL) {
+    set_has_headid();
   } else {
-    clear_has_headnickname();
+    clear_has_headid();
   }
-  headnickname_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), headnickname);
-  // @@protoc_insertion_point(field_set_allocated:naothmessages.RobotInfo.headNickName)
+  headid_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), headid);
+  // @@protoc_insertion_point(field_set_allocated:naothmessages.RobotInfo.headId)
 }
 
-// optional string bodyID = 4;
+// optional string bodyId = 4;
 bool RobotInfo::has_bodyid() const {
   return (_has_bits_[0] & 0x00000008u) != 0;
 }
@@ -5080,41 +5142,41 @@ void RobotInfo::clear_bodyid() {
   clear_has_bodyid();
 }
 const ::std::string& RobotInfo::bodyid() const {
-  // @@protoc_insertion_point(field_get:naothmessages.RobotInfo.bodyID)
+  // @@protoc_insertion_point(field_get:naothmessages.RobotInfo.bodyId)
   return bodyid_.GetNoArena();
 }
 void RobotInfo::set_bodyid(const ::std::string& value) {
   set_has_bodyid();
   bodyid_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:naothmessages.RobotInfo.bodyID)
+  // @@protoc_insertion_point(field_set:naothmessages.RobotInfo.bodyId)
 }
 #if LANG_CXX11
 void RobotInfo::set_bodyid(::std::string&& value) {
   set_has_bodyid();
   bodyid_.SetNoArena(
     &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
-  // @@protoc_insertion_point(field_set_rvalue:naothmessages.RobotInfo.bodyID)
+  // @@protoc_insertion_point(field_set_rvalue:naothmessages.RobotInfo.bodyId)
 }
 #endif
 void RobotInfo::set_bodyid(const char* value) {
   GOOGLE_DCHECK(value != NULL);
   set_has_bodyid();
   bodyid_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:naothmessages.RobotInfo.bodyID)
+  // @@protoc_insertion_point(field_set_char:naothmessages.RobotInfo.bodyId)
 }
 void RobotInfo::set_bodyid(const char* value, size_t size) {
   set_has_bodyid();
   bodyid_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:naothmessages.RobotInfo.bodyID)
+  // @@protoc_insertion_point(field_set_pointer:naothmessages.RobotInfo.bodyId)
 }
 ::std::string* RobotInfo::mutable_bodyid() {
   set_has_bodyid();
-  // @@protoc_insertion_point(field_mutable:naothmessages.RobotInfo.bodyID)
+  // @@protoc_insertion_point(field_mutable:naothmessages.RobotInfo.bodyId)
   return bodyid_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 ::std::string* RobotInfo::release_bodyid() {
-  // @@protoc_insertion_point(field_release:naothmessages.RobotInfo.bodyID)
+  // @@protoc_insertion_point(field_release:naothmessages.RobotInfo.bodyId)
   clear_has_bodyid();
   return bodyid_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -5125,18 +5187,18 @@ void RobotInfo::set_allocated_bodyid(::std::string* bodyid) {
     clear_has_bodyid();
   }
   bodyid_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), bodyid);
-  // @@protoc_insertion_point(field_set_allocated:naothmessages.RobotInfo.bodyID)
+  // @@protoc_insertion_point(field_set_allocated:naothmessages.RobotInfo.bodyId)
 }
 
 // optional uint32 basicTimeStep = 5;
 bool RobotInfo::has_basictimestep() const {
-  return (_has_bits_[0] & 0x00000010u) != 0;
+  return (_has_bits_[0] & 0x00000020u) != 0;
 }
 void RobotInfo::set_has_basictimestep() {
-  _has_bits_[0] |= 0x00000010u;
+  _has_bits_[0] |= 0x00000020u;
 }
 void RobotInfo::clear_has_basictimestep() {
-  _has_bits_[0] &= ~0x00000010u;
+  _has_bits_[0] &= ~0x00000020u;
 }
 void RobotInfo::clear_basictimestep() {
   basictimestep_ = 0u;
@@ -5150,6 +5212,69 @@ void RobotInfo::set_basictimestep(::google::protobuf::uint32 value) {
   set_has_basictimestep();
   basictimestep_ = value;
   // @@protoc_insertion_point(field_set:naothmessages.RobotInfo.basicTimeStep)
+}
+
+// optional string robotName = 6;
+bool RobotInfo::has_robotname() const {
+  return (_has_bits_[0] & 0x00000010u) != 0;
+}
+void RobotInfo::set_has_robotname() {
+  _has_bits_[0] |= 0x00000010u;
+}
+void RobotInfo::clear_has_robotname() {
+  _has_bits_[0] &= ~0x00000010u;
+}
+void RobotInfo::clear_robotname() {
+  robotname_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  clear_has_robotname();
+}
+const ::std::string& RobotInfo::robotname() const {
+  // @@protoc_insertion_point(field_get:naothmessages.RobotInfo.robotName)
+  return robotname_.GetNoArena();
+}
+void RobotInfo::set_robotname(const ::std::string& value) {
+  set_has_robotname();
+  robotname_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:naothmessages.RobotInfo.robotName)
+}
+#if LANG_CXX11
+void RobotInfo::set_robotname(::std::string&& value) {
+  set_has_robotname();
+  robotname_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:naothmessages.RobotInfo.robotName)
+}
+#endif
+void RobotInfo::set_robotname(const char* value) {
+  GOOGLE_DCHECK(value != NULL);
+  set_has_robotname();
+  robotname_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:naothmessages.RobotInfo.robotName)
+}
+void RobotInfo::set_robotname(const char* value, size_t size) {
+  set_has_robotname();
+  robotname_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:naothmessages.RobotInfo.robotName)
+}
+::std::string* RobotInfo::mutable_robotname() {
+  set_has_robotname();
+  // @@protoc_insertion_point(field_mutable:naothmessages.RobotInfo.robotName)
+  return robotname_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+::std::string* RobotInfo::release_robotname() {
+  // @@protoc_insertion_point(field_release:naothmessages.RobotInfo.robotName)
+  clear_has_robotname();
+  return robotname_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+void RobotInfo::set_allocated_robotname(::std::string* robotname) {
+  if (robotname != NULL) {
+    set_has_robotname();
+  } else {
+    clear_has_robotname();
+  }
+  robotname_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), robotname);
+  // @@protoc_insertion_point(field_set_allocated:naothmessages.RobotInfo.robotName)
 }
 
 #endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
