@@ -83,10 +83,15 @@ message FrameInfo {
 
 message RobotInfo {
   optional string platform = 1;
+  
   optional string bodyNickName = 2;
-  optional string headNickName = 3;
-  optional string bodyID = 4;
+  
+  optional string headId = 3;
+  optional string bodyId = 4;
+  
   optional uint32 basicTimeStep = 5;
+  
+  optional string robotName = 6;
 }
 
 message FSRData {

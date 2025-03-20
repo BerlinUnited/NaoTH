@@ -10,11 +10,14 @@ void Serializer<RobotInfo>::serialize(const RobotInfo& representation, std::ostr
   naothmessages::RobotInfo info;
 
   info.set_platform(representation.platform);
-  info.set_bodynickname(representation.bodyNickName);
-  info.set_headnickname(representation.headNickName);
-  info.set_bodyid(representation.bodyID);
-  info.set_basictimestep(representation.basicTimeStep);
+  info.set_robotname(representation.robotName);
 
+  info.set_headid(representation.headId);
+  info.set_bodyid(representation.bodyId);
+  info.set_bodynickname(representation.bodyNickName);
+
+  info.set_basictimestep(representation.basicTimeStep);
+  
   google::protobuf::io::OstreamOutputStream buf(&stream);
   info.SerializePartialToZeroCopyStream(&buf);
 }
@@ -25,25 +28,24 @@ void Serializer<RobotInfo>::deserialize(std::istream& stream, RobotInfo& represe
   google::protobuf::io::IstreamInputStream buf(&stream);
   info.ParseFromZeroCopyStream(&buf);
 
-  if(info.has_platform())
-  {
+  if(info.has_platform()) {
     representation.platform = info.platform();
   }
-  if(info.has_bodynickname())
-  {
+  if(info.has_robotname()) {
+    representation.robotName = info.robotname();
+  }
+  if(info.has_headid()) {
+    representation.headId = info.headid();
+  }
+  if(info.has_bodyid()) {
+    representation.bodyId = info.bodyid();
+  }
+  if(info.has_bodynickname()) {
     representation.bodyNickName = info.bodynickname();
   }
-  if(info.has_headnickname())
-  {
-    representation.headNickName = info.headnickname();
-  }
-  if(info.has_bodyid())
-  {
-    representation.bodyID = info.bodyid();
-  }
-  if(info.has_basictimestep())
-  {
+  if(info.has_basictimestep()) {
     representation.basicTimeStep = info.basictimestep();
   }
+
 }
 

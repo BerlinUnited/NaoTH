@@ -2,7 +2,8 @@
  * @file RobotInfo.h
  *
  * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu Yuan</a>
- * @breief some basic information about robot
+ * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
+ * @breief basic information about the robot
  *
  */
 
@@ -19,14 +20,20 @@ namespace naoth
 class RobotInfo: public Printable
 {
 public:
-  RobotInfo(){}
 
-  std::string platform;
-  std::string bodyNickName;
-  std::string headNickName;
-  std::string bodyID;
+  // Robot's id information
+  std::string platform;     // platform type
+  std::string robotName;    // name of the robot (usually hostname), e.g., nao32
 
-  /** The time of each step which depends on platforms */
+  std::string headId;       // usually the serial number of the head, or the MAC of the LAN port
+  std::string bodyId;       // serial number of the body
+
+  // TODO: do we need that?
+  std::string bodyNickName; // short id of the body, usually NaoXXXX, where XXXX are the last four digits of the bodyId
+
+
+  // TODO: maybe this should be somewhere else
+  // Time step of the sensor data and motion data.
   unsigned int basicTimeStep;
   
   /**
@@ -37,11 +44,12 @@ public:
 
   virtual void print(std::ostream& stream) const
   {
-    stream << "Platform: " << platform << std::endl;
-    stream << "HeadNickName: " << headNickName << std::endl;
-    stream << "BodyNickName: " << bodyNickName << std::endl;
-    stream << "BodyID: " << bodyID << std::endl;
-    stream << "basicTimeStep: " << basicTimeStep << std::endl;
+    stream << "Platform:      " << platform       << std::endl;
+    stream << "Name:          " << robotName      << std::endl;
+    stream << "HeadId:        " << headId         << std::endl;
+    stream << "BodyId:        " << bodyId         << std::endl;
+    stream << "BodyNickName:  " << bodyNickName   << std::endl;
+    stream << "BasicTimeStep: " << basicTimeStep  << std::endl;
   }
 };
 
