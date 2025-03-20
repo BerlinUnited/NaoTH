@@ -98,7 +98,7 @@ public:
 
   // delegate
   inline bool swapReading(){ return memory.swapReading(); }
-  inline const V& data() { return *memory.reading(); }
+  inline const V& data() const { return *memory.reading(); }
 
 private:
  mutable std::mutex _mutex;
