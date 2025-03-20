@@ -77,13 +77,18 @@ void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   // load the joint limits from the config
   JointData::loadJointLimitsFromConfig();
 
+  // copy robot info to the blackboard
+  // copy and provide RobotInfo
+  getRobotInfo().platform       = platform.getPlatformName();
+  //
+  getRobotInfo().robotName      = platform.getRobotName();
+  getRobotInfo().headId         = platform.getHeadId();
+  getRobotInfo().bodyNickName   = platform.getBodyNickName();
+  getRobotInfo().bodyId         = platform.getBodyId();
+  //
+  getRobotInfo().basicTimeStep  = platform.getBasicTimeStep();
 
-  // init robot info
-  getRobotInfo().platform = platform.getPlatformName();
-  getRobotInfo().headNickName = platform.getHeadNickName();
-  getRobotInfo().bodyNickName = platform.getBodyNickName();
-  getRobotInfo().bodyID = platform.getBodyID();
-  getRobotInfo().basicTimeStep = platform.getBasicTimeStep();
+
 
   std::cout << "[Motion] register begin" << std::endl;
 #define REG_INPUT(R)                                                    \

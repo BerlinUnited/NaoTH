@@ -5,27 +5,24 @@
 #include "Sensor.h"
 #include <PlatformInterface/Platform.h>
 
-Sensor::Sensor()
-{
-}
-
-Sensor::~Sensor()
-{
-}
-
 
 #define REG_INPUT(R) \
   platformInterface.registerInput(get##R())
 
 void Sensor::init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& platform)
 {
-  // read RobotInfo
-  getRobotInfo().platform = platform.getPlatformName();
-  getRobotInfo().headNickName = platform.getHeadNickName();
-  getRobotInfo().bodyNickName = platform.getBodyNickName();
-  getRobotInfo().bodyID = platform.getBodyID();
-  getRobotInfo().basicTimeStep = platform.getBasicTimeStep();
-  
+
+  // copy and provide RobotInfo
+  getRobotInfo().platform       = platform.getPlatformName();
+  //
+  getRobotInfo().robotName      = platform.getRobotName();
+  getRobotInfo().headId         = platform.getHeadId();
+  getRobotInfo().bodyNickName   = platform.getBodyNickName();
+  getRobotInfo().bodyId         = platform.getBodyId();
+  //
+  getRobotInfo().basicTimeStep  = platform.getBasicTimeStep();
+
+
   REG_INPUT(Image);
   REG_INPUT(ImageTop);
   REG_INPUT(CurrentCameraSettings);
