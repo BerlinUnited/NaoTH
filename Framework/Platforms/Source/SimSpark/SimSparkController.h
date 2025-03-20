@@ -109,11 +109,11 @@ public:
 
   virtual ~SimSparkController();
 
-  virtual std::string getBodyID() const;
+  virtual std::string getBodyId() const;
   virtual std::string getBodyNickName() const;
-  virtual std::string getHeadNickName() const;
-  virtual std::string getRobotName() const { return getBodyNickName(); }
-  virtual std::string getPlatformName() const { return thePlatformName; }
+  virtual std::string getHeadId() const;
+  virtual std::string getRobotName() const      { return getBodyNickName(); }
+  virtual std::string getPlatformName() const   { return thePlatformName; }
   virtual unsigned int getBasicTimeStep() const { return 20; }
 
   /////////////////////// init ///////////////////////

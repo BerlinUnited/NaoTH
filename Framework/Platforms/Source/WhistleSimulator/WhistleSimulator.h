@@ -19,29 +19,18 @@
 
 #include "RawAudioFilePlayer.h"
 
-class WhistleSimulator : public naoth::PlatformInterface {
+class WhistleSimulator : public naoth::PlatformInterface 
+{
     public:
         WhistleSimulator(const std::string& filePath, bool backendMode, bool realTime, unsigned short port);
         virtual ~WhistleSimulator() {}
 
-        virtual std::string getBodyID() const {
-            return "WhistleSimulator";
-        }
-        virtual std::string getBodyNickName() const {
-            return "naoth";
-        }
-        virtual std::string getHeadNickName() const {
-            return "naoth";
-        }
-        virtual std::string getRobotName() const {
-            return "WhistleSimulator";
-        }
-        virtual std::string getPlatformName() const {
-            return "WhistleSimulator";
-        }
-        virtual unsigned int getBasicTimeStep() const {
-            return 20;
-        }
+        virtual std::string getBodyId() const         { return "WhistleSimulator"; }
+        virtual std::string getBodyNickName() const   { return "naoth"; }
+        virtual std::string getHeadId() const         { return "naoth"; }
+        virtual std::string getRobotName() const      { return "WhistleSimulator"; }
+        virtual std::string getPlatformName() const   { return "WhistleSimulator"; }
+        virtual unsigned int getBasicTimeStep() const { return 20; }
 
         void main();
 

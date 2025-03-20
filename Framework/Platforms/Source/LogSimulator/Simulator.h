@@ -41,11 +41,11 @@ public:
   Simulator(const std::string& filePath, bool backendMode, bool realTime, unsigned short port);
   virtual ~Simulator(){}
 
-  virtual std::string getBodyID() const { return "naoth-logsimulator"; }
-  virtual std::string getBodyNickName() const {return "naoth"; }
-  virtual std::string getHeadNickName() const {return "naoth"; }
-  virtual std::string getRobotName() const { return "naoth-logsimulator"; }
-  virtual std::string getPlatformName() const { return "LogSimulator"; }
+  virtual std::string getBodyId() const         { return "naoth-logsimulator"; }
+  virtual std::string getBodyNickName() const   { return "naoth"; }
+  virtual std::string getHeadId() const         { return "naoth"; }
+  virtual std::string getRobotName() const      { return "naoth-logsimulator"; }
+  virtual std::string getPlatformName() const   { return "LogSimulator"; }
   virtual unsigned int getBasicTimeStep() const { return 20; }
 
   void main(bool start = false);

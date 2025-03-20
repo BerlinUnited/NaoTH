@@ -66,10 +66,10 @@ public:
   virtual ~WebotsController();
 
   // basic platform info
-  virtual std::string getBodyID()         const { return "none"; };
-  virtual std::string getRobotName()      const { return"webots_nao"; }
+  virtual std::string getBodyId()         const { return "none"; };
+  virtual std::string getRobotName()      const { return "webots_nao"; }
   virtual std::string getBodyNickName()   const { return getRobotName(); }
-  virtual std::string getHeadNickName()   const { return getRobotName(); }
+  virtual std::string getHeadId()         const { return getRobotName(); }
   virtual std::string getPlatformName()   const { return thePlatformName; }
   virtual unsigned int getBasicTimeStep() const { return 10; }
 
