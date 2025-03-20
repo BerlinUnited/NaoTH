@@ -88,17 +88,25 @@ GameController::GameController()
   }
 
   // use the team configuration if avaliable
-  const std::string& name = naoth::Platform::getInstance().theRobotName;
+  const std::string& name = getRobotInfo().robotName; //naoth::Platform::getInstance().theRobotName;
   if (config.hasKey("team", name)) {
     getPlayerInfo().playerNumber = config.getInt("team", name);
   }
 
-  if (config.hasKey("player", "InitialState")) {
+  // load a state fro the config
+  // TODO: make it a module parameter and add fromString(...) function to the PlayerInfo
+  if (config.hasKey("player", "InitialState")) 
+  {
     const auto state  = config.getString("player", "InitialState");
-    const auto states = {PlayerInfo::initial,  PlayerInfo::ready,
-                         PlayerInfo::set,      PlayerInfo::playing,
-                         PlayerInfo::finished, PlayerInfo::penalized,
-                         PlayerInfo::unstiff};
+    const auto states = {
+      PlayerInfo::initial,  
+      PlayerInfo::ready,
+      PlayerInfo::set,
+      PlayerInfo::playing,
+      PlayerInfo::finished,
+      PlayerInfo::penalized,
+      PlayerInfo::unstiff
+    };
     for (const auto& s : states) {
       if (state == PlayerInfo::toString(s)) {
           getPlayerInfo().robotState = s;
