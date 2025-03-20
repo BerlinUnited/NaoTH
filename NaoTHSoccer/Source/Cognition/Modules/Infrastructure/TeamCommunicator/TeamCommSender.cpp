@@ -84,7 +84,7 @@ void TeamCommSender::fillMessageBeforeSending() const
     msg.custom.wantsToBeStriker = getRoleDecisionModel().wantsToBeStriker;
     msg.custom.wasStriker = getRoleDecisionModel().isStriker(getPlayerInfo().playerNumber);
 
-    msg.custom.bodyID = getRobotInfo().bodyID;
+    msg.custom.bodyID = getRobotInfo().bodyId;
     ASSERT(getSoccerStrategy().timeToBall >= 0);
     msg.custom.timeToBall = (unsigned int)getSoccerStrategy().timeToBall;
     msg.custom.batteryCharge = getBatteryData().charge;
