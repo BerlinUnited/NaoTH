@@ -28,18 +28,18 @@ const double NaoInfo::ElbowOffsetY    = 15.00;
 // Correct numbers for NAO V6 -- checked on 20.04.2021 (URDF file)
 const Vector3d NaoInfo::FSRPositionsLeft[naoth::FSRData::numOfFSR] =
 {
-  Vector3d( 70.25, 29.9,-FootHeight),
-  Vector3d( 70.25,-23.1,-FootHeight),
-  Vector3d(-30.25, 29.9,-FootHeight),
-  Vector3d(-29.65,-19.1,-FootHeight)
+  Vector3d( 70.25,  29.9, -FootHeight),
+  Vector3d( 70.25, -23.1, -FootHeight),
+  Vector3d(-30.25,  29.9, -FootHeight),
+  Vector3d(-29.65, -19.1, -FootHeight)
 };
 
 const Vector3d NaoInfo::FSRPositionsRight[naoth::FSRData::numOfFSR] =
 {
-  Vector3d( 70.25, 23.1,-FootHeight),
-  Vector3d( 70.25,-29.9,-FootHeight),
-  Vector3d(-30.25, 19.1,-FootHeight),
-  Vector3d(-29.65,-29.9,-FootHeight)
+  Vector3d( 70.25,  23.1, -FootHeight),
+  Vector3d( 70.25, -29.9, -FootHeight),
+  Vector3d(-30.25,  19.1, -FootHeight),
+  Vector3d(-29.65, -29.9, -FootHeight)
 };
 
 const NaoInfo::RobotDimensions NaoInfo::robotDimensions;
