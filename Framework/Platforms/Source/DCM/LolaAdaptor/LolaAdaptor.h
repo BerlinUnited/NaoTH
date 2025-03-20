@@ -41,7 +41,7 @@ private:
   void openSharedMemory(SharedMemory<T> &sm, const std::string &path);
 
   /**
-   * @brief Writes the nao bodyId and the nickname to the "Config/nao.info" file.
+   * @brief Writes the nao bodyId and the nickname to the file "/tmp/nao.info".
    */
   void writeNaoInfo(const std::string& theBodyID, const std::string& theHeadID) const;
 
@@ -92,10 +92,10 @@ private:
   InertialSensorData theInertialSensorData;
   BasicMotion* initialMotion = NULL;
 
-  // DCM --> NaoController
+  // LoLa --> NaoController
   SharedMemory<DCMSensorData> naoSensorData;
 
-  // NaoController --> DCM
+  // NaoController --> LoLa
   //SharedMemory<NaoCommandData> naoCommandData;
   SharedMemory<Accessor<MotorJointData> > naoCommandMotorJointData;
   SharedMemory<Accessor<UltraSoundSendData> > naoCommandUltraSoundSendData;
