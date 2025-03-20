@@ -825,7 +825,7 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
             {
                 try {
                     RobotInfo robotInfo = RobotInfo.parseFrom(robotInfoFrame.getData());
-                    return Optional.of(robotInfo.getBodyID());
+                    return Optional.of(robotInfo.getBodyId());
                     
                 } catch (InvalidProtocolBufferException ex) {
                     Logger.getLogger(FieldViewer.class.getName()).log(Level.SEVERE, null, ex);
