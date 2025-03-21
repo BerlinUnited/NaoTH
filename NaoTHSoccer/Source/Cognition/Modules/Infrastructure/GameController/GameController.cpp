@@ -128,7 +128,6 @@ void GameController::execute()
   // reset kickoff state
   if (getPlayerInfo().robotState == PlayerInfo::playing) {
     getPlayerInfo().kickoff = false;
-    getPlayerInfo().robotSetPlay = PlayerInfo::set_none;
   }
 
   // try update from the game controller message if not manually overwritten
