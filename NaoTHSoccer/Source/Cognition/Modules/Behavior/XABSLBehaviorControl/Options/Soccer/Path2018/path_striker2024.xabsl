@@ -4,6 +4,8 @@ option path_striker2024
   {
     if(!body.ready_to_walk || game.current_mode != playing)
       goto idle;
+    else if(game.set_play != none && strategy.role != goalie)
+      goto play_path_striker2018;
     else if(situation_abortable && !ball.know_where_itis)
       goto search;
     else if(situation_abortable && vector.abs(x=ball.future.preview.x, y=ball.future.preview.y) > 500)
@@ -25,6 +27,17 @@ option path_striker2024
       path2018.routine = none;
     }
   }
+
+  state play_path_striker2018
+   {
+     decision {
+       else
+        stay;
+     }
+     action {
+      path_striker2018();
+     }
+   } 
 
   state search 
   {
