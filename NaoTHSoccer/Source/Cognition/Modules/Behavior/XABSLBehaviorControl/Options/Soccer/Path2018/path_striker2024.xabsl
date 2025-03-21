@@ -4,7 +4,7 @@ option path_striker2024
   {
     if(!body.ready_to_walk || game.current_mode != playing)
       goto idle;
-    else if(game.set_play != none && strategy.role != goalie)
+    else if(game.set_play != none)
       goto play_path_striker2018;
     else if(situation_abortable && !ball.know_where_itis)
       goto search;
