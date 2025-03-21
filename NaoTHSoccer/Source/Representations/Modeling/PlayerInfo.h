@@ -110,10 +110,6 @@ public:
   /** Whether the behavior decided to play as striker */
   bool isPlayingStriker;
 
-  /** for debug reasons: the currently used scheme. */
-  // TODO: move this to a separate representation 
-  std::string scheme;
-
   static std::string toString(RobotState value);
   static std::string toString(RobotSetPlay value);
   static std::string toString(GamePhase value);

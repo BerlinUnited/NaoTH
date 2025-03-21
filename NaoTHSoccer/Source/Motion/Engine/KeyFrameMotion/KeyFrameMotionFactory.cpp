@@ -27,14 +27,14 @@ KeyFrameMotionFactory::KeyFrameMotionFactory()
       "load the temporary editor's motion net.", this);*/
   
   // load motion nets in different folders
-  const std::string& dirlocation = Platform::getInstance().theConfigDirectory;
+  const std::string& dirlocation = Platform::getInstance().getConfigPaths().directory;
+  const std::string& platform = Platform::getInstance().getConfigPaths().platform;
+  // NOTE: maybe load motionnets dependingon the scheme or competition?
   //const std::string& scheme = Platform::getInstance().theScheme;
-  const std::string& id = Platform::getInstance().theHardwareIdentity;
-  const std::string& platform = Platform::getInstance().thePlatform;
+
   const std::string motionnet = "motionnet/";
   loadAvailableMotionNets(dirlocation + "general/" + motionnet);
   loadAvailableMotionNets(dirlocation + "platform/" + platform + "/" + motionnet);
-  loadAvailableMotionNets(dirlocation + "robots/" + id + "/" + motionnet);
   loadAvailableMotionNets(dirlocation + "private/" + motionnet);
 
   //

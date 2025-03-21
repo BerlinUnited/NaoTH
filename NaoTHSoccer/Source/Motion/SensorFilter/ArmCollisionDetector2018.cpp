@@ -16,7 +16,7 @@ ArmCollisionDetector2018::ArmCollisionDetector2018()
 
     getDebugParameterList().add(&params);
     double alpha, beta;
-    const std::string& dirlocation = Platform::getInstance().theConfigDirectory;
+    const std::string& dirlocation = Platform::getInstance().getConfigPaths().directory;
 
     std::ifstream fileLeft(dirlocation + params.point_configLeft);
     while (fileLeft >> alpha >> beta) {

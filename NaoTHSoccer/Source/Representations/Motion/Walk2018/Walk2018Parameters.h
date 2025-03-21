@@ -363,11 +363,11 @@ class ZMPPreviewControllerParameter : public ParameterList {
         }
 
     private:
-        void loadParameter(){
+        void loadParameter() {
             // generate the file name
-            std::string path = naoth::Platform::getInstance().theConfigDirectory;
+            std::string path = naoth::Platform::getInstance().getConfigPaths().directory;
             path += "platform/";
-            path += naoth::Platform::getInstance().thePlatform;
+            path += naoth::Platform::getInstance().getConfigPaths().platform;
             path += "/previewControl.prm";
 
             // open the stream
