@@ -4,8 +4,6 @@ option path_striker2024
   {
     if(!body.ready_to_walk || game.current_mode != playing)
       goto idle;
-    else if(game.set_play != none)
-      goto play_path_striker2018;
     else if(situation_abortable && !ball.know_where_itis)
       goto search;
     else if(situation_abortable && vector.abs(x=ball.future.preview.x, y=ball.future.preview.y) > 500)
@@ -63,10 +61,12 @@ option path_striker2024
         stay;
       else if(vector.abs(x=ball.future.preview.x, y=ball.future.preview.y) > 500)
         stay;
+      else if(game.set_play != none)
+        goto turn_carefully;
       else if(attack.best_action == kick_short)
         goto forwardkick;
       else
-        goto approach_close;
+        goto approach_dribble;
     }
     action{
       situation_abortable = true;
@@ -80,7 +80,32 @@ option path_striker2024
     }
   }
 
-  state approach_close
+  state turn_carefully
+  {
+    decision
+    {
+      // TODO: Sometimes the turn around ball is finished but there is no best action.
+      //       when and why can this hapen?! Why is there no best action?
+      else if(path.turn_around_ball_2_target_reached)
+        goto forwardkick;
+      else if(attack.best_action == kick_short)
+        goto forwardkick;
+      else
+        stay;
+    }
+    action
+    {
+      situation_abortable = true;
+
+      // carefuly turn around the ball
+      path2018.routine = move_around_ball_old;
+      path.direction = attack.direction.preview;
+      path.radius = 250;
+      path.stable = true;
+    }
+  }
+
+  state approach_dribble
   {
     decision
     {
