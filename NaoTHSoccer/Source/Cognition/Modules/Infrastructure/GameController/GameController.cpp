@@ -87,8 +87,10 @@ GameController::GameController()
     std::cerr << "[GameData] " << "No team color (TeamColor) given" << std::endl;
   }
 
-  // use the team configuration if avaliable
-  const std::string& name = getRobotInfo().robotName; //naoth::Platform::getInstance().theRobotName;
+  // NOTE: we cannot use getRobotInfo().robotName at this moment, 
+  //   because the representation RobotInfo might not be provided at the moment of construction.
+  // Use the team configuration if avaliable
+  const std::string& name = naoth::Platform::getInstance().theRobotName;
   if (config.hasKey("team", name)) {
     getPlayerInfo().playerNumber = config.getInt("team", name);
   }
