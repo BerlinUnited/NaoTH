@@ -932,8 +932,8 @@ void MonteCarloSelfLocator::updateByStartPositions(SampleSet& sampleSet) const
   Vector2d startRight(startLeft.x, -startLeft.y);
   Vector2d endRight(endLeft.x, -endLeft.y);
 
-  LineDensity leftStartingLine(startLeft, endLeft, -Math::pi_2, parameters.startPositionsSigmaDistance, parameters.startPositionsSigmaAngle);
-  LineDensity rightStartingLine(startRight, endRight, Math::pi_2, parameters.startPositionsSigmaDistance, parameters.startPositionsSigmaAngle);
+  LineDensity leftStartingLine (startLeft , endLeft , -Math::pi_2, parameters.startPositionsSigmaDistance, parameters.startPositionsSigmaAngle);
+  LineDensity rightStartingLine(startRight, endRight,  Math::pi_2, parameters.startPositionsSigmaDistance, parameters.startPositionsSigmaAngle);
 
   /*---- HACK BEGIN ----*/
   LineDensity startingLine;
