@@ -1,7 +1,8 @@
 
 #include "LolaAdaptor.h"
 
-#include "Tools/FileUtils.h"
+#include <Tools/FileUtils.h>
+#include "Tools/NaoInfoTools.h"
 
 using namespace naoth;
 
@@ -15,6 +16,7 @@ LolaAdaptor::LolaAdaptor()
     }
 
     openSharedMemory(naoSensorData, "/nao_sensor_data");
+    
     openSharedMemory(naoCommandMotorJointData, "/nao_command.MotorJointData");
     openSharedMemory(naoCommandUltraSoundSendData, "/nao_command.UltraSoundSendData");
     openSharedMemory(naoCommandLEDData, "/nao_command.LEDData");
@@ -36,34 +38,23 @@ LolaAdaptor::~LolaAdaptor()
 template<typename T>
 void LolaAdaptor::openSharedMemory(SharedMemory<T> &sm, const std::string &path)
 {
-    std::cout<< "[LolaAdaptor] Opening Shared Memory: "<<path<<std::endl;
+    std::cout << "[LolaAdaptor] Opening Shared Memory: " << path << std::endl;
     sm.open(path);
 }
 
-void LolaAdaptor::writeNaoInfo(const std::string& theBodyID, const std::string& theHeadID) const
+void LolaAdaptor::writeNaoInfo(const std::string& bodyId, const std::string& headId) const
 {
-    // save the body ID
-    std::cout << "[LolaAdaptor] bodyID: " << theBodyID << std::endl;
-
-    // generate the theBodyNickName = NaoXXXX, 
-    // where XXXX are the last 4 digits of the body ID
-    std::string theBodyNickName = "error";
-    if(theBodyID.length() >= 4) {
-      theBodyNickName = "Nao" + theBodyID.substr( theBodyID.length() - 4 ); //theDCMHandler.getBodyNickName();
-    }
-    std::cout << "[LolaAdaptor] nickName: "<< theBodyNickName << std::endl;
-
-    // save the value to file
-    // FIXME: fixed path "Config/nao.info"
-    {
-      std::ofstream os("/home/nao/Config/nao.info");
-      ASSERT(os.good());
-      os << theBodyID << "\n" 
-         << theBodyNickName << "\n" 
-         << theHeadID << "\n"
-         << std::endl;
-      os.close();
-    }
+    // write the values to file
+    std::ofstream os("/tmp/nao.info");
+    ASSERT(os.good());
+    
+    os << headId                                 << std::endl
+       << bodyId                                 << std::endl 
+       << NaoInfoTools::makeBodyNickName(bodyId) << std::endl
+       << NaoInfoTools::readRobotName()          << std::endl
+       << "Nao6"                                 << std::endl; // platform name
+       
+    os.close();
 }//end writeNaoInfo()
 
 void LolaAdaptor::start()

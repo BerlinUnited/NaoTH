@@ -12,7 +12,7 @@ void TeamCommDebugger::execute()
       const auto& state = getTeamState().getPlayer(getPlayerInfo().playerNumber);
 
       naothmessages::TeamMessageDebug debugMessage;
-      debugMessage.set_bodyid(getRobotInfo().bodyID);
+      debugMessage.set_bodyid(getRobotInfo().bodyId);
       debugMessage.set_teamnumber(getPlayerInfo().teamNumber);
       debugMessage.set_playernumber(getPlayerInfo().playerNumber);
       debugMessage.set_timestamp(state.messageTimestamp);

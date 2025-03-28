@@ -36,11 +36,11 @@ public:
   DummySimulator(bool backendMode, unsigned short port);
   virtual ~DummySimulator();
 
-  virtual std::string getBodyID() const { return "dummy-simulator"; }
-  virtual std::string getBodyNickName() const { return "naoth"; }
-  virtual std::string getHeadNickName() const { return "naoth"; }
-  virtual std::string getRobotName() const { return "dummy-simulator"; }
-  virtual std::string getPlatformName() const { return "DummySimulator"; }
+  virtual std::string getBodyId() const         { return "dummy-simulator"; }
+  virtual std::string getBodyNickName() const   { return "naoth"; }
+  virtual std::string getHeadId() const         { return "naoth"; }
+  virtual std::string getRobotName() const      { return "dummy-simulator"; }
+  virtual std::string getPlatformName() const   { return "DummySimulator"; }
   virtual unsigned int getBasicTimeStep() const { return 20; }
 
   void main();

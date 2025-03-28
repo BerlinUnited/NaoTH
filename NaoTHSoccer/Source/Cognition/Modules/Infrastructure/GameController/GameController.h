@@ -12,6 +12,7 @@
 #include "Representations/Perception/WhistlePercept.h"
 #include "Representations/Infrastructure/GameData.h"
 #include "Representations/Infrastructure/WifiMode.h"
+#include "Representations/Infrastructure/RobotInfo.h"
 
 #include "Representations/Modeling/BodyState.h"
 #include "Representations/Modeling/RobotPose.h"
@@ -27,6 +28,7 @@ BEGIN_DECLARE_MODULE(GameController)
   REQUIRE(FrameInfo)
   REQUIRE(WhistlePercept)
   REQUIRE(WifiMode)
+  REQUIRE(RobotInfo)
 
   REQUIRE(BodyState)
   REQUIRE(RobotPose)

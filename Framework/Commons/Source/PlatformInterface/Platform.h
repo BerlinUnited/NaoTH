@@ -79,7 +79,7 @@ public:
 
     // set the the hardware identity according to platform
     _hardwareIdentity = base->getBodyNickName();
-    _headHardwareIdentity = base->getHeadNickName();
+    _headHardwareIdentity = base->getHeadId();
     _robotName = base->getRobotName();
     _platform = base->getPlatformName(); // set to platform by default
     _competition = ""; // empty to mark as "no competition configured"

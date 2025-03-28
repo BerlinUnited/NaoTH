@@ -43,6 +43,7 @@
 #include "Representations/Infrastructure/GameData.h"
 #include "Representations/Infrastructure/SoundData.h"
 #include "Representations/Infrastructure/AudioData.h"
+#include "Representations/Infrastructure/RobotInfo.h"
 
 // local tools
 #include "Tools/DCMData.h"
@@ -61,12 +62,13 @@ public:
 
   // platform info
   const bool nao6;
-  virtual std::string getBodyID() const         { return theBodyID;             } // body serial number: AL...XXXX
-  virtual std::string getBodyNickName() const   { return theBodyNickName;       } // NaoXXXX
-  virtual std::string getHeadNickName() const   { return theHeadNickName;       } // mac of the eth0
-  virtual std::string getRobotName() const      { return theRobotName;          } // e.g., nao12
-  virtual std::string getPlatformName() const   { return nao6 ? "Nao6" : "Nao"; }
-  virtual unsigned int getBasicTimeStep() const { return nao6 ? 12 : 10;        }
+  
+  virtual std::string getBodyId() const         { return robotInfo.bodyId;        } // body serial number: AL...XXXX
+  virtual std::string getBodyNickName() const   { return robotInfo.bodyNickName;  } // NaoXXXX
+  virtual std::string getHeadId() const         { return robotInfo.headId;        } // SN of the head or mac of the eth0
+  virtual std::string getRobotName() const      { return robotInfo.robotName;     } // name of the robot, e.g., nao12
+  virtual std::string getPlatformName() const   { return robotInfo.platform;      } // e.g., 
+  virtual unsigned int getBasicTimeStep() const { return robotInfo.basicTimeStep; }
   
   // camera stuff
   void get(Image& data) { 
@@ -194,9 +196,10 @@ public:
     PlatformInterface::setCognitionOutput();
     //STOPWATCH_STOP("setCognitionOutput");
   }
-
+  
 private:
   void readNaoInfo();
+
 
 protected:
   virtual MessageQueue* createMessageQueue(const std::string& /*name*/)
@@ -205,16 +208,13 @@ protected:
   }
 
 protected:
-  std::string theBodyID;
-  std::string theBodyNickName;
-  std::string theHeadNickName;
-  std::string theRobotName;
+  RobotInfo robotInfo;
 
   // -- begin -- shared memory access --
-  // DCM --> NaoController
+  // LoLa --> NaoController
   SharedMemoryReader<DCMSensorData> naoSensorData;
 
-  // NaoController --> DCM
+  // NaoController --> LoLa
   SharedMemoryWriter<Accessor<MotorJointData> > naoCommandMotorJointData;
   SharedMemoryWriter<Accessor<UltraSoundSendData> > naoCommandUltraSoundSendData;
   SharedMemoryWriter<Accessor<LEDData> > naoCommandLEDData;

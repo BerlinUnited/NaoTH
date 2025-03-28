@@ -7669,32 +7669,32 @@ public final class FrameworkRepresentations {
         getBodyNickNameBytes();
 
     /**
-     * <code>optional string headNickName = 3;</code>
+     * <code>optional string headId = 3;</code>
      */
-    boolean hasHeadNickName();
+    boolean hasHeadId();
     /**
-     * <code>optional string headNickName = 3;</code>
+     * <code>optional string headId = 3;</code>
      */
-    java.lang.String getHeadNickName();
+    java.lang.String getHeadId();
     /**
-     * <code>optional string headNickName = 3;</code>
+     * <code>optional string headId = 3;</code>
      */
     com.google.protobuf.ByteString
-        getHeadNickNameBytes();
+        getHeadIdBytes();
 
     /**
-     * <code>optional string bodyID = 4;</code>
+     * <code>optional string bodyId = 4;</code>
      */
-    boolean hasBodyID();
+    boolean hasBodyId();
     /**
-     * <code>optional string bodyID = 4;</code>
+     * <code>optional string bodyId = 4;</code>
      */
-    java.lang.String getBodyID();
+    java.lang.String getBodyId();
     /**
-     * <code>optional string bodyID = 4;</code>
+     * <code>optional string bodyId = 4;</code>
      */
     com.google.protobuf.ByteString
-        getBodyIDBytes();
+        getBodyIdBytes();
 
     /**
      * <code>optional uint32 basicTimeStep = 5;</code>
@@ -7704,6 +7704,20 @@ public final class FrameworkRepresentations {
      * <code>optional uint32 basicTimeStep = 5;</code>
      */
     int getBasicTimeStep();
+
+    /**
+     * <code>optional string robotName = 6;</code>
+     */
+    boolean hasRobotName();
+    /**
+     * <code>optional string robotName = 6;</code>
+     */
+    java.lang.String getRobotName();
+    /**
+     * <code>optional string robotName = 6;</code>
+     */
+    com.google.protobuf.ByteString
+        getRobotNameBytes();
   }
   /**
    * Protobuf type {@code naothmessages.RobotInfo}
@@ -7720,9 +7734,10 @@ public final class FrameworkRepresentations {
     private RobotInfo() {
       platform_ = "";
       bodyNickName_ = "";
-      headNickName_ = "";
-      bodyID_ = "";
+      headId_ = "";
+      bodyId_ = "";
       basicTimeStep_ = 0;
+      robotName_ = "";
     }
 
     @java.lang.Override
@@ -7768,18 +7783,24 @@ public final class FrameworkRepresentations {
             case 26: {
               com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000004;
-              headNickName_ = bs;
+              headId_ = bs;
               break;
             }
             case 34: {
               com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000008;
-              bodyID_ = bs;
+              bodyId_ = bs;
               break;
             }
             case 40: {
               bitField0_ |= 0x00000010;
               basicTimeStep_ = input.readUInt32();
+              break;
+            }
+            case 50: {
+              com.google.protobuf.ByteString bs = input.readBytes();
+              bitField0_ |= 0x00000020;
+              robotName_ = bs;
               break;
             }
           }
@@ -7891,19 +7912,19 @@ public final class FrameworkRepresentations {
       }
     }
 
-    public static final int HEADNICKNAME_FIELD_NUMBER = 3;
-    private volatile java.lang.Object headNickName_;
+    public static final int HEADID_FIELD_NUMBER = 3;
+    private volatile java.lang.Object headId_;
     /**
-     * <code>optional string headNickName = 3;</code>
+     * <code>optional string headId = 3;</code>
      */
-    public boolean hasHeadNickName() {
+    public boolean hasHeadId() {
       return ((bitField0_ & 0x00000004) == 0x00000004);
     }
     /**
-     * <code>optional string headNickName = 3;</code>
+     * <code>optional string headId = 3;</code>
      */
-    public java.lang.String getHeadNickName() {
-      java.lang.Object ref = headNickName_;
+    public java.lang.String getHeadId() {
+      java.lang.Object ref = headId_;
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
@@ -7911,22 +7932,22 @@ public final class FrameworkRepresentations {
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
         if (bs.isValidUtf8()) {
-          headNickName_ = s;
+          headId_ = s;
         }
         return s;
       }
     }
     /**
-     * <code>optional string headNickName = 3;</code>
+     * <code>optional string headId = 3;</code>
      */
     public com.google.protobuf.ByteString
-        getHeadNickNameBytes() {
-      java.lang.Object ref = headNickName_;
+        getHeadIdBytes() {
+      java.lang.Object ref = headId_;
       if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
-        headNickName_ = b;
+        headId_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
@@ -7934,18 +7955,18 @@ public final class FrameworkRepresentations {
     }
 
     public static final int BODYID_FIELD_NUMBER = 4;
-    private volatile java.lang.Object bodyID_;
+    private volatile java.lang.Object bodyId_;
     /**
-     * <code>optional string bodyID = 4;</code>
+     * <code>optional string bodyId = 4;</code>
      */
-    public boolean hasBodyID() {
+    public boolean hasBodyId() {
       return ((bitField0_ & 0x00000008) == 0x00000008);
     }
     /**
-     * <code>optional string bodyID = 4;</code>
+     * <code>optional string bodyId = 4;</code>
      */
-    public java.lang.String getBodyID() {
-      java.lang.Object ref = bodyID_;
+    public java.lang.String getBodyId() {
+      java.lang.Object ref = bodyId_;
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
@@ -7953,22 +7974,22 @@ public final class FrameworkRepresentations {
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
         if (bs.isValidUtf8()) {
-          bodyID_ = s;
+          bodyId_ = s;
         }
         return s;
       }
     }
     /**
-     * <code>optional string bodyID = 4;</code>
+     * <code>optional string bodyId = 4;</code>
      */
     public com.google.protobuf.ByteString
-        getBodyIDBytes() {
-      java.lang.Object ref = bodyID_;
+        getBodyIdBytes() {
+      java.lang.Object ref = bodyId_;
       if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
-        bodyID_ = b;
+        bodyId_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
@@ -7990,6 +8011,48 @@ public final class FrameworkRepresentations {
       return basicTimeStep_;
     }
 
+    public static final int ROBOTNAME_FIELD_NUMBER = 6;
+    private volatile java.lang.Object robotName_;
+    /**
+     * <code>optional string robotName = 6;</code>
+     */
+    public boolean hasRobotName() {
+      return ((bitField0_ & 0x00000020) == 0x00000020);
+    }
+    /**
+     * <code>optional string robotName = 6;</code>
+     */
+    public java.lang.String getRobotName() {
+      java.lang.Object ref = robotName_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          robotName_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string robotName = 6;</code>
+     */
+    public com.google.protobuf.ByteString
+        getRobotNameBytes() {
+      java.lang.Object ref = robotName_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        robotName_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
@@ -8009,13 +8072,16 @@ public final class FrameworkRepresentations {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 2, bodyNickName_);
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 3, headNickName_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 3, headId_);
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 4, bodyID_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 4, bodyId_);
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         output.writeUInt32(5, basicTimeStep_);
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 6, robotName_);
       }
       unknownFields.writeTo(output);
     }
@@ -8032,14 +8098,17 @@ public final class FrameworkRepresentations {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, bodyNickName_);
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, headNickName_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, headId_);
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, bodyID_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, bodyId_);
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(5, basicTimeStep_);
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(6, robotName_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -8067,20 +8136,25 @@ public final class FrameworkRepresentations {
         result = result && getBodyNickName()
             .equals(other.getBodyNickName());
       }
-      result = result && (hasHeadNickName() == other.hasHeadNickName());
-      if (hasHeadNickName()) {
-        result = result && getHeadNickName()
-            .equals(other.getHeadNickName());
+      result = result && (hasHeadId() == other.hasHeadId());
+      if (hasHeadId()) {
+        result = result && getHeadId()
+            .equals(other.getHeadId());
       }
-      result = result && (hasBodyID() == other.hasBodyID());
-      if (hasBodyID()) {
-        result = result && getBodyID()
-            .equals(other.getBodyID());
+      result = result && (hasBodyId() == other.hasBodyId());
+      if (hasBodyId()) {
+        result = result && getBodyId()
+            .equals(other.getBodyId());
       }
       result = result && (hasBasicTimeStep() == other.hasBasicTimeStep());
       if (hasBasicTimeStep()) {
         result = result && (getBasicTimeStep()
             == other.getBasicTimeStep());
+      }
+      result = result && (hasRobotName() == other.hasRobotName());
+      if (hasRobotName()) {
+        result = result && getRobotName()
+            .equals(other.getRobotName());
       }
       result = result && unknownFields.equals(other.unknownFields);
       return result;
@@ -8101,17 +8175,21 @@ public final class FrameworkRepresentations {
         hash = (37 * hash) + BODYNICKNAME_FIELD_NUMBER;
         hash = (53 * hash) + getBodyNickName().hashCode();
       }
-      if (hasHeadNickName()) {
-        hash = (37 * hash) + HEADNICKNAME_FIELD_NUMBER;
-        hash = (53 * hash) + getHeadNickName().hashCode();
+      if (hasHeadId()) {
+        hash = (37 * hash) + HEADID_FIELD_NUMBER;
+        hash = (53 * hash) + getHeadId().hashCode();
       }
-      if (hasBodyID()) {
+      if (hasBodyId()) {
         hash = (37 * hash) + BODYID_FIELD_NUMBER;
-        hash = (53 * hash) + getBodyID().hashCode();
+        hash = (53 * hash) + getBodyId().hashCode();
       }
       if (hasBasicTimeStep()) {
         hash = (37 * hash) + BASICTIMESTEP_FIELD_NUMBER;
         hash = (53 * hash) + getBasicTimeStep();
+      }
+      if (hasRobotName()) {
+        hash = (37 * hash) + ROBOTNAME_FIELD_NUMBER;
+        hash = (53 * hash) + getRobotName().hashCode();
       }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
@@ -8246,12 +8324,14 @@ public final class FrameworkRepresentations {
         bitField0_ = (bitField0_ & ~0x00000001);
         bodyNickName_ = "";
         bitField0_ = (bitField0_ & ~0x00000002);
-        headNickName_ = "";
+        headId_ = "";
         bitField0_ = (bitField0_ & ~0x00000004);
-        bodyID_ = "";
+        bodyId_ = "";
         bitField0_ = (bitField0_ & ~0x00000008);
         basicTimeStep_ = 0;
         bitField0_ = (bitField0_ & ~0x00000010);
+        robotName_ = "";
+        bitField0_ = (bitField0_ & ~0x00000020);
         return this;
       }
 
@@ -8287,15 +8367,19 @@ public final class FrameworkRepresentations {
         if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
           to_bitField0_ |= 0x00000004;
         }
-        result.headNickName_ = headNickName_;
+        result.headId_ = headId_;
         if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
           to_bitField0_ |= 0x00000008;
         }
-        result.bodyID_ = bodyID_;
+        result.bodyId_ = bodyId_;
         if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
           to_bitField0_ |= 0x00000010;
         }
         result.basicTimeStep_ = basicTimeStep_;
+        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
+          to_bitField0_ |= 0x00000020;
+        }
+        result.robotName_ = robotName_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -8348,18 +8432,23 @@ public final class FrameworkRepresentations {
           bodyNickName_ = other.bodyNickName_;
           onChanged();
         }
-        if (other.hasHeadNickName()) {
+        if (other.hasHeadId()) {
           bitField0_ |= 0x00000004;
-          headNickName_ = other.headNickName_;
+          headId_ = other.headId_;
           onChanged();
         }
-        if (other.hasBodyID()) {
+        if (other.hasBodyId()) {
           bitField0_ |= 0x00000008;
-          bodyID_ = other.bodyID_;
+          bodyId_ = other.bodyId_;
           onChanged();
         }
         if (other.hasBasicTimeStep()) {
           setBasicTimeStep(other.getBasicTimeStep());
+        }
+        if (other.hasRobotName()) {
+          bitField0_ |= 0x00000020;
+          robotName_ = other.robotName_;
+          onChanged();
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -8541,24 +8630,24 @@ public final class FrameworkRepresentations {
         return this;
       }
 
-      private java.lang.Object headNickName_ = "";
+      private java.lang.Object headId_ = "";
       /**
-       * <code>optional string headNickName = 3;</code>
+       * <code>optional string headId = 3;</code>
        */
-      public boolean hasHeadNickName() {
+      public boolean hasHeadId() {
         return ((bitField0_ & 0x00000004) == 0x00000004);
       }
       /**
-       * <code>optional string headNickName = 3;</code>
+       * <code>optional string headId = 3;</code>
        */
-      public java.lang.String getHeadNickName() {
-        java.lang.Object ref = headNickName_;
+      public java.lang.String getHeadId() {
+        java.lang.Object ref = headId_;
         if (!(ref instanceof java.lang.String)) {
           com.google.protobuf.ByteString bs =
               (com.google.protobuf.ByteString) ref;
           java.lang.String s = bs.toStringUtf8();
           if (bs.isValidUtf8()) {
-            headNickName_ = s;
+            headId_ = s;
           }
           return s;
         } else {
@@ -8566,75 +8655,75 @@ public final class FrameworkRepresentations {
         }
       }
       /**
-       * <code>optional string headNickName = 3;</code>
+       * <code>optional string headId = 3;</code>
        */
       public com.google.protobuf.ByteString
-          getHeadNickNameBytes() {
-        java.lang.Object ref = headNickName_;
+          getHeadIdBytes() {
+        java.lang.Object ref = headId_;
         if (ref instanceof String) {
           com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
                   (java.lang.String) ref);
-          headNickName_ = b;
+          headId_ = b;
           return b;
         } else {
           return (com.google.protobuf.ByteString) ref;
         }
       }
       /**
-       * <code>optional string headNickName = 3;</code>
+       * <code>optional string headId = 3;</code>
        */
-      public Builder setHeadNickName(
+      public Builder setHeadId(
           java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00000004;
-        headNickName_ = value;
+        headId_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional string headNickName = 3;</code>
+       * <code>optional string headId = 3;</code>
        */
-      public Builder clearHeadNickName() {
+      public Builder clearHeadId() {
         bitField0_ = (bitField0_ & ~0x00000004);
-        headNickName_ = getDefaultInstance().getHeadNickName();
+        headId_ = getDefaultInstance().getHeadId();
         onChanged();
         return this;
       }
       /**
-       * <code>optional string headNickName = 3;</code>
+       * <code>optional string headId = 3;</code>
        */
-      public Builder setHeadNickNameBytes(
+      public Builder setHeadIdBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00000004;
-        headNickName_ = value;
+        headId_ = value;
         onChanged();
         return this;
       }
 
-      private java.lang.Object bodyID_ = "";
+      private java.lang.Object bodyId_ = "";
       /**
-       * <code>optional string bodyID = 4;</code>
+       * <code>optional string bodyId = 4;</code>
        */
-      public boolean hasBodyID() {
+      public boolean hasBodyId() {
         return ((bitField0_ & 0x00000008) == 0x00000008);
       }
       /**
-       * <code>optional string bodyID = 4;</code>
+       * <code>optional string bodyId = 4;</code>
        */
-      public java.lang.String getBodyID() {
-        java.lang.Object ref = bodyID_;
+      public java.lang.String getBodyId() {
+        java.lang.Object ref = bodyId_;
         if (!(ref instanceof java.lang.String)) {
           com.google.protobuf.ByteString bs =
               (com.google.protobuf.ByteString) ref;
           java.lang.String s = bs.toStringUtf8();
           if (bs.isValidUtf8()) {
-            bodyID_ = s;
+            bodyId_ = s;
           }
           return s;
         } else {
@@ -8642,53 +8731,53 @@ public final class FrameworkRepresentations {
         }
       }
       /**
-       * <code>optional string bodyID = 4;</code>
+       * <code>optional string bodyId = 4;</code>
        */
       public com.google.protobuf.ByteString
-          getBodyIDBytes() {
-        java.lang.Object ref = bodyID_;
+          getBodyIdBytes() {
+        java.lang.Object ref = bodyId_;
         if (ref instanceof String) {
           com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
                   (java.lang.String) ref);
-          bodyID_ = b;
+          bodyId_ = b;
           return b;
         } else {
           return (com.google.protobuf.ByteString) ref;
         }
       }
       /**
-       * <code>optional string bodyID = 4;</code>
+       * <code>optional string bodyId = 4;</code>
        */
-      public Builder setBodyID(
+      public Builder setBodyId(
           java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00000008;
-        bodyID_ = value;
+        bodyId_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional string bodyID = 4;</code>
+       * <code>optional string bodyId = 4;</code>
        */
-      public Builder clearBodyID() {
+      public Builder clearBodyId() {
         bitField0_ = (bitField0_ & ~0x00000008);
-        bodyID_ = getDefaultInstance().getBodyID();
+        bodyId_ = getDefaultInstance().getBodyId();
         onChanged();
         return this;
       }
       /**
-       * <code>optional string bodyID = 4;</code>
+       * <code>optional string bodyId = 4;</code>
        */
-      public Builder setBodyIDBytes(
+      public Builder setBodyIdBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00000008;
-        bodyID_ = value;
+        bodyId_ = value;
         onChanged();
         return this;
       }
@@ -8721,6 +8810,82 @@ public final class FrameworkRepresentations {
       public Builder clearBasicTimeStep() {
         bitField0_ = (bitField0_ & ~0x00000010);
         basicTimeStep_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object robotName_ = "";
+      /**
+       * <code>optional string robotName = 6;</code>
+       */
+      public boolean hasRobotName() {
+        return ((bitField0_ & 0x00000020) == 0x00000020);
+      }
+      /**
+       * <code>optional string robotName = 6;</code>
+       */
+      public java.lang.String getRobotName() {
+        java.lang.Object ref = robotName_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            robotName_ = s;
+          }
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string robotName = 6;</code>
+       */
+      public com.google.protobuf.ByteString
+          getRobotNameBytes() {
+        java.lang.Object ref = robotName_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          robotName_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string robotName = 6;</code>
+       */
+      public Builder setRobotName(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000020;
+        robotName_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string robotName = 6;</code>
+       */
+      public Builder clearRobotName() {
+        bitField0_ = (bitField0_ & ~0x00000020);
+        robotName_ = getDefaultInstance().getRobotName();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string robotName = 6;</code>
+       */
+      public Builder setRobotNameBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000020;
+        robotName_ = value;
         onChanged();
         return this;
       }
@@ -13582,31 +13747,31 @@ public final class FrameworkRepresentations {
       "SoundReceiveData\022\032\n\022ultraSoundTimeStep\030\001" +
       " \001(\r\022\017\n\007rawdata\030\002 \002(\001\022\020\n\010dataLeft\030\003 \003(\001\022" +
       "\021\n\tdataRight\030\004 \003(\001\".\n\tFrameInfo\022\023\n\013frame",
-      "Number\030\001 \002(\r\022\014\n\004time\030\002 \002(\r\"p\n\tRobotInfo\022" +
+      "Number\030\001 \002(\r\022\014\n\004time\030\002 \002(\r\"}\n\tRobotInfo\022" +
       "\020\n\010platform\030\001 \001(\t\022\024\n\014bodyNickName\030\002 \001(\t\022" +
-      "\024\n\014headNickName\030\003 \001(\t\022\016\n\006bodyID\030\004 \001(\t\022\025\n" +
-      "\rbasicTimeStep\030\005 \001(\r\"=\n\007FSRData\022\021\n\005force" +
-      "\030\001 \003(\001B\002\030\001\022\014\n\004data\030\002 \003(\001\022\021\n\005valid\030\003 \003(\010B" +
-      "\002\030\001\"\214\001\n\021AccelerometerData\022\034\n\020legacyPacke" +
-      "dData\030\001 \003(\001B\002\030\001\022*\n\004data\030\002 \001(\0132\034.naothmes" +
-      "sages.DoubleVector3\022-\n\007rawData\030\003 \001(\0132\034.n" +
-      "aothmessages.DoubleVector3\"\225\001\n\rGyrometer" +
-      "Data\022\034\n\020legacyPackedData\030\001 \003(\001B\002\030\001\022*\n\004da",
-      "ta\030\002 \001(\0132\034.naothmessages.DoubleVector3\022-" +
-      "\n\007rawData\030\003 \001(\0132\034.naothmessages.DoubleVe" +
-      "ctor3\022\013\n\003ref\030\004 \001(\001\"^\n\022InertialSensorData" +
-      "\022\034\n\020legacyPackedData\030\001 \003(\001B\002\030\001\022*\n\004data\030\002" +
-      " \001(\0132\034.naothmessages.DoubleVector2\"\323\002\n\nB" +
-      "uttonData\022\021\n\tisPressed\030\001 \003(\010\022\032\n\022numOfFra" +
-      "mesPressed\030\002 \003(\r\022\024\n\014eventCounter\030\003 \003(\r\"\377" +
-      "\001\n\010ButtonID\022\t\n\005Chest\020\000\022\020\n\014LeftFootLeft\020\001" +
-      "\022\021\n\rLeftFootRight\020\002\022\021\n\rRightFootLeft\020\003\022\022" +
-      "\n\016RightFootRight\020\004\022\r\n\tHeadFront\020\005\022\016\n\nHea",
-      "dMiddle\020\006\022\014\n\010HeadRear\020\007\022\020\n\014LeftHandBack\020" +
-      "\010\022\020\n\014LeftHandLeft\020\t\022\021\n\rLeftHandRight\020\n\022\021" +
-      "\n\rRightHandBack\020\013\022\021\n\rRightHandLeft\020\014\022\022\n\016" +
-      "RightHandRight\020\rB\033\n\031de.naoth.rc.core.mes" +
-      "sages"
+      "\016\n\006headId\030\003 \001(\t\022\016\n\006bodyId\030\004 \001(\t\022\025\n\rbasic" +
+      "TimeStep\030\005 \001(\r\022\021\n\trobotName\030\006 \001(\t\"=\n\007FSR" +
+      "Data\022\021\n\005force\030\001 \003(\001B\002\030\001\022\014\n\004data\030\002 \003(\001\022\021\n" +
+      "\005valid\030\003 \003(\010B\002\030\001\"\214\001\n\021AccelerometerData\022\034" +
+      "\n\020legacyPackedData\030\001 \003(\001B\002\030\001\022*\n\004data\030\002 \001" +
+      "(\0132\034.naothmessages.DoubleVector3\022-\n\007rawD" +
+      "ata\030\003 \001(\0132\034.naothmessages.DoubleVector3\"" +
+      "\225\001\n\rGyrometerData\022\034\n\020legacyPackedData\030\001 ",
+      "\003(\001B\002\030\001\022*\n\004data\030\002 \001(\0132\034.naothmessages.Do" +
+      "ubleVector3\022-\n\007rawData\030\003 \001(\0132\034.naothmess" +
+      "ages.DoubleVector3\022\013\n\003ref\030\004 \001(\001\"^\n\022Inert" +
+      "ialSensorData\022\034\n\020legacyPackedData\030\001 \003(\001B" +
+      "\002\030\001\022*\n\004data\030\002 \001(\0132\034.naothmessages.Double" +
+      "Vector2\"\323\002\n\nButtonData\022\021\n\tisPressed\030\001 \003(" +
+      "\010\022\032\n\022numOfFramesPressed\030\002 \003(\r\022\024\n\014eventCo" +
+      "unter\030\003 \003(\r\"\377\001\n\010ButtonID\022\t\n\005Chest\020\000\022\020\n\014L" +
+      "eftFootLeft\020\001\022\021\n\rLeftFootRight\020\002\022\021\n\rRigh" +
+      "tFootLeft\020\003\022\022\n\016RightFootRight\020\004\022\r\n\tHeadF",
+      "ront\020\005\022\016\n\nHeadMiddle\020\006\022\014\n\010HeadRear\020\007\022\020\n\014" +
+      "LeftHandBack\020\010\022\020\n\014LeftHandLeft\020\t\022\021\n\rLeft" +
+      "HandRight\020\n\022\021\n\rRightHandBack\020\013\022\021\n\rRightH" +
+      "andLeft\020\014\022\022\n\016RightHandRight\020\rB\033\n\031de.naot" +
+      "h.rc.core.messages"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -13662,7 +13827,7 @@ public final class FrameworkRepresentations {
     internal_static_naothmessages_RobotInfo_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_naothmessages_RobotInfo_descriptor,
-        new java.lang.String[] { "Platform", "BodyNickName", "HeadNickName", "BodyID", "BasicTimeStep", });
+        new java.lang.String[] { "Platform", "BodyNickName", "HeadId", "BodyId", "BasicTimeStep", "RobotName", });
     internal_static_naothmessages_FSRData_descriptor =
       getDescriptor().getMessageTypes().get(7);
     internal_static_naothmessages_FSRData_fieldAccessorTable = new

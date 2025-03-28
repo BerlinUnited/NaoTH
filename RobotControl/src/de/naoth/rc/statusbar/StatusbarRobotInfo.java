@@ -131,8 +131,8 @@ public class StatusbarRobotInfo extends StatusbarPluginImpl implements Connectio
             public void newObjectReceived(byte[] object) {
                 try {
                     FrameworkRepresentations.RobotInfo info = FrameworkRepresentations.RobotInfo.parseFrom(object);
-                    headId = info.getHeadNickName();
-                    bodyId = info.getBodyNickName();
+                    headId = info.getHeadId();
+                    bodyId = info.getBodyId();
                     updateTooltip();
                 } catch (InvalidProtocolBufferException ex) {/* ignore exception */}
             }

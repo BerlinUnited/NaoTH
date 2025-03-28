@@ -2,8 +2,8 @@
  * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
  */
 
-#ifndef _SENSOR_H
-#define _SENSOR_H
+#ifndef SENSOR_H
+#define SENSOR_H
 
 #include <ModuleFramework/Representation.h>
 #include <ModuleFramework/Module.h>
@@ -102,13 +102,13 @@ END_DECLARE_MODULE(Sensor)
 class Sensor : public SensorBase
 {
 public:
-  Sensor();
-  virtual ~Sensor();
+  Sensor() {}
+  virtual ~Sensor() {}
 
   virtual void execute();
 
   void init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& platform);
 };
 
-#endif  /* _SENSOR_H */
+#endif  /* SENSOR_H */
 

@@ -30,10 +30,11 @@ public:
   // Platform Info
   virtual std::string getPlatformName() const = 0;
 
+  // NOTE: this is specififc for the robot NAO
   virtual std::string getRobotName() const = 0;
-  virtual std::string getBodyID() const = 0;
+  virtual std::string getBodyId() const = 0;
   virtual std::string getBodyNickName() const = 0;
-  virtual std::string getHeadNickName() const = 0;
+  virtual std::string getHeadId() const = 0;
   
   // Robot Info
   virtual unsigned int getBasicTimeStep() const = 0;
