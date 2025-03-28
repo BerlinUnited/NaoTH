@@ -5,8 +5,8 @@
 * Declaration of class SituationPriorProvider
 */
 
-#ifndef _SituationPriorProvider_H
-#define _SituationPriorProvider_H
+#ifndef SITUATION_PRIOR_PROVIDER_H
+#define SITUATION_PRIOR_PROVIDER_H
 
 #include <ModuleFramework/Module.h>
 #include "Tools/Math/Geometry.h"
@@ -52,7 +52,7 @@ class SituationPriorProvider: public SituationPriorProviderBase
 {
 public:
  SituationPriorProvider();
- ~SituationPriorProvider();
+ ~SituationPriorProvider() {}
 
  virtual void execute();
 
@@ -70,9 +70,7 @@ private:
     {
     }
 
-    LineDensity(
-      const Vector2d& start, const Vector2d& end, 
-      double angle)
+    LineDensity(const Vector2d& start, const Vector2d& end, double angle)
       :
       segment(start, end),
       angle(angle)/*, 
@@ -81,12 +79,14 @@ private:
     {
     }
 
-    /*double update(const Sample& sample) const {
+    /*
+    double update(const Sample& sample) const {
       double distDiff = segment.minDistance(sample.translation);
       double angleDiff = Math::normalize(angle - sample.rotation);
       return Math::gaussianProbability(distDiff, distDeviation) * 
              Math::gaussianProbability(angleDiff, angleDeviation);
-    }*/
+    }
+    */
 
     void draw(DrawingCanvas2D& canvas)
     {
@@ -108,9 +108,8 @@ private:
   GameData::GameState gameStateWhenPenalized;
   GameData::Penalty reasonForLastPenalized;
 
-  bool walked_after_penalized_or_init;
-
-  bool wasLiftedUp;
+  // inidicate whether the robot has walked since the last state change
+  bool walked_since_state_change;
 };
 
-#endif  /* _SituationPriorProvider_H */
+#endif  /* SITUATION_PRIOR_PROVIDER_H */
