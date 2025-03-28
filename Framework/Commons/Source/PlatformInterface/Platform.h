@@ -63,9 +63,9 @@ public:
     configPaths.platform  = base->getPlatformName(); // set to platform by default
 
     // reading the config structure
-    readStringFromFile("competition.cfg", configPaths.competition);
-    readStringFromFile("scheme.cfg",      configPaths.scheme);
-    readStringFromFile("strategy.cfg",    configPaths.strategy);
+    readStringFromFile(configPaths.directory + "competition.cfg", configPaths.competition);
+    readStringFromFile(configPaths.directory + "scheme.cfg",      configPaths.scheme);
+    readStringFromFile(configPaths.directory + "strategy.cfg",    configPaths.strategy);
       
 
     // TODO: load config from separate folders
