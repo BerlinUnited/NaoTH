@@ -27,7 +27,7 @@ public:
   /** Update the whole kinematic chain based on the provided data. */
   static void updateKinematicChainAll(
     const RotationMatrix& theBodyRotation,
-    const Vector3<double>& theBodyAcceleration,
+    const Vector3d& theBodyAcceleration,
     const double deltaTime,
     KinematicChain& theKinematicChain,
     Vector3d* theFSRPos);

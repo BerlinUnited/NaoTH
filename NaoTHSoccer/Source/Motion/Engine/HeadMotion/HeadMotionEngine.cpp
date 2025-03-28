@@ -322,19 +322,22 @@ void HeadMotionEngine::lookAtWorldPointCool(const Vector3d& origTarget)
   Vector2d x = CameraGeometry::lookAtPoint(target, cameraMatrix.translation.z);
   */
 
-  Vector2d x;
+  // calculate the target angles for the head (spherical coordinates):
+  //   (x, y) ~ (head yaw, head pitch)
+  Vector2d targetAngles;
   if(getHeadMotionRequest().cameraID == naoth::CameraInfo::Top) {
-    x = CameraGeometry::lookAtPoint(target, getCameraMatrixTop().translation.z);
+    targetAngles = CameraGeometry::lookAtPoint(target, getCameraMatrixTop().translation.z);
   } else {
-    x = CameraGeometry::lookAtPoint(target, getCameraMatrix().translation.z);
+    targetAngles = CameraGeometry::lookAtPoint(target, getCameraMatrix().translation.z);
   }
 
   // HACK: for HULKS game RC23
-  if(x.y < Math::fromDegrees(21))
-    x.y = Math::fromDegrees(21);
+  if(targetAngles.y < Math::fromDegrees(21)) {
+    targetAngles.y = Math::fromDegrees(21);
+  }
 
   //moveByAngle(x);
-  gotoAngle(x);
+  gotoAngle(targetAngles);
 }//end lookAtWorldPointCool
 
 // needed by lookAtWorldPoint

@@ -25,7 +25,7 @@ void KinematicChainProviderMotion::execute()
     RotationMatrix orientation;
     Vector3d local_acc_without_gravity;
 
-    if(parameter.useIMUData){
+    if(parameter.useIMUData) {
         // calculate the KinematicChainSensor based on sensor data
         orientation = getIMUData().orientation_rotvec; // get orientation (ignore any rotation around z axis) as rotation matrix
 

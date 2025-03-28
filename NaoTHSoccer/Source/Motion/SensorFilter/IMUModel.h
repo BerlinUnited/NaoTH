@@ -48,10 +48,14 @@ BEGIN_DECLARE_MODULE(IMUModel)
 
     REQUIRE(FrameInfo)
     REQUIRE(RobotInfo)
-
+    
+    // raw sensor values 
     REQUIRE(GyrometerData)
     REQUIRE(AccelerometerData)
+    // body orientation provided by the NAO-Platform
     REQUIRE(InertialSensorData)
+    
+    // used for debug / plot
     REQUIRE(InertialModel)
 
     REQUIRE(MotionStatus)
