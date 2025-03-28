@@ -57,8 +57,6 @@ void Configuration::loadFromDir(std::string dirlocation,
                                 const std::string& competition,
                                 const std::string& scheme,
                                 const std::string& strategy,
-                                const std::string& bodyID,
-                                const std::string& headID,
                                 const std::string& robotName)
 {
   ASSERT_MSG(isDir(dirlocation), "Could not load configuration from " << dirlocation << ": directory does not exist.");
@@ -87,9 +85,6 @@ void Configuration::loadFromDir(std::string dirlocation,
   bool robot_config_required = (platform == "Nao" || platform == "nao");
   loadFromSingleDir(publicKeyFile, dirlocation + "robots/" + robotName + "/", robot_config_required);
 
-  loadFromSingleDir(publicKeyFile, dirlocation + "robots_bodies/" + bodyID + "/", false);
-  loadFromSingleDir(publicKeyFile, dirlocation + "robot_heads/" + headID + "/", false);
-  
   privateDir = dirlocation + "private/";
   loadFromSingleDir(privateKeyFile, privateDir);
 }

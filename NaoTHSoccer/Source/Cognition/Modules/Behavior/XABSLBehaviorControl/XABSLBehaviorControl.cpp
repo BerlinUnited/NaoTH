@@ -60,7 +60,7 @@ XABSLBehaviorControl::XABSLBehaviorControl()
     std::cerr << "[XABSLBehaviorControl] ERROR: could not load \"Config/behavior/agent.cfg\"" << std::endl;
   }
 
-  const string behaviorPath = naoth::Platform::getInstance().theConfigDirectory + "/behavior-ic.dat";
+  const string behaviorPath = naoth::Platform::getInstance().getConfigPaths().directory + "/behavior-ic.dat";
   loadBehaviorFromFile(behaviorPath, agentName);
 
 }//end constructor
@@ -274,7 +274,7 @@ void XABSLBehaviorControl::executeDebugCommand(
   if(command == "behavior:reload")
   {
     // restart the behavior
-    const string behaviorPath = naoth::Platform::getInstance().theConfigDirectory + "/behavior-ic.dat";
+    const string behaviorPath = naoth::Platform::getInstance().getConfigPaths().directory + "/behavior-ic.dat";
     loadBehaviorFromFile(behaviorPath, agentName);
     
     if(theErrorHandler.errorsOccurred)

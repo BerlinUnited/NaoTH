@@ -3,8 +3,8 @@
  * The Platform singleton holds all objects about platform
  */
 
-#ifndef _PLATFORM_H
-#define _PLATFORM_H
+#ifndef PLATFORM_H
+#define PLATFORM_H
 
 #include "PlatformBase.h"
 #include <Tools/DataStructures/Singleton.h>
@@ -26,49 +26,30 @@ protected:
 
 private:
   Platform()
-  : _hardwareIdentity("Uninitialized"),
-    _headHardwareIdentity("Uninitialized"),
-    _configDir("Config/"),
-
-    theConfigDirectory(_configDir),
-    theHardwareIdentity(_hardwareIdentity),
-    theHeadHardwareIdentity(_headHardwareIdentity),
-    theRobotName(_robotName),
-    thePlatform(_platform),
-    theCompetition(_competition),
-    theScheme(_scheme),
-    theStrategy(_strategy)
   {
-      // only if the config directory doesn't exists locally ...
-      if(!std::filesystem::is_directory(_configDir)) {
-          // retrieve the config dir from environment var
-          const std::string env = std::getenv("NAOTH_CONFIGDIR") != NULL ? std::string(std::getenv("NAOTH_CONFIGDIR")) : "";
-          if(!env.empty()) {
-              _configDir = env + (env.back() != '/' ? "/" : "");
-          }
+    configPaths.directory = "Config/";
+
+    // only if the config directory doesn't exists locally ...
+    if(!std::filesystem::is_directory(configPaths.directory)) {
+      // retrieve the config dir from environment var
+      if(const char* env = std::getenv("NAOTH_CONFIGDIR")) {
+        configPaths.directory = std::string(env);
+        // append a trailing slash if there was none
+        configPaths.directory += (configPaths.directory.back() != '/' ? "/" : "");
       }
+    }
   }
 
   // cannot be copied
   Platform& operator=( const Platform& ) { return *this; }
 
-  void readStringFromFile(std::string file, std::string& str) {
+  void readStringFromFile(std::string file_path, std::string& str) {
       // try to read the scheme name from file
-      std::ifstream fstream((theConfigDirectory + file).c_str());
+      std::ifstream fstream(file_path);
       if(fstream.is_open() && fstream.good()) {
-        std::getline(fstream, str);
+        fstream >> str;
       }
   }
-
-  // 
-  std::string _hardwareIdentity;
-  std::string _headHardwareIdentity;
-  std::string _robotName;
-  std::string _configDir;
-  std::string _platform;
-  std::string _competition;
-  std::string _scheme;
-  std::string _strategy;
 
 public:
   virtual ~Platform(){}
@@ -78,38 +59,49 @@ public:
     ASSERT(base != NULL);
 
     // set the the hardware identity according to platform
-    _hardwareIdentity = base->getBodyNickName();
-    _headHardwareIdentity = base->getHeadId();
-    _robotName = base->getRobotName();
-    _platform = base->getPlatformName(); // set to platform by default
-    _competition = ""; // empty to mark as "no competition configured"
-    _scheme = ""; // empty to mark as "no-scheme"
-    _strategy = ""; // empty to mark as "default-strategy"
+    configPaths.robotName = base->getRobotName();
+    configPaths.platform  = base->getPlatformName(); // set to platform by default
 
-    readStringFromFile("competition.cfg", _competition);
-    readStringFromFile("scheme.cfg", _scheme);
-    readStringFromFile("strategy.cfg", _strategy);
+    // reading the config structure
+    readStringFromFile(configPaths.directory + "competition.cfg", configPaths.competition);
+    readStringFromFile(configPaths.directory + "scheme.cfg",      configPaths.scheme);
+    readStringFromFile(configPaths.directory + "strategy.cfg",    configPaths.strategy);
       
+
+    // TODO: load config from separate folders
     // load config
     theConfiguration.loadFromDir(
-      theConfigDirectory, thePlatform, theCompetition, theScheme, theStrategy, 
-      theHardwareIdentity, theHeadHardwareIdentity, theRobotName);
-  }//end init
+      configPaths.directory, 
+      configPaths.platform, 
+      configPaths.competition, 
+      configPaths.scheme, 
+      configPaths.strategy, 
+      configPaths.robotName);
 
-  // NOTE: the identity of the robot is defined by the configuration
-  // const accessors
-  const std::string& theConfigDirectory;
-  const std::string& theHardwareIdentity; // the string to indentify different robots
-  const std::string& theHeadHardwareIdentity; // the string to indentify different robot heads
-  const std::string& theRobotName;
-  const std::string& thePlatform;
-  const std::string& theCompetition;
-  const std::string& theScheme;
-  const std::string& theStrategy;
+  }// end init
 
+private:
 
+  struct ConfigutationPaths {
+    std::string directory;
+
+    std::string competition;
+    std::string scheme;
+    std::string strategy;
+
+    // robot info
+    std::string platform;
+    std::string robotName;
+  } configPaths;
+
+public: // configuration
   Configuration theConfiguration;
+
+  const ConfigutationPaths& getConfigPaths() const {
+    return configPaths;
+  }
+
 };
 }
-#endif  /* _PLATFORM_H */
+#endif  /* PLATFORM_H */
 

@@ -23,9 +23,7 @@ PlayerInfo::PlayerInfo()
   gamePhase(normal),
   kickoff(false),
 
-  isPlayingStriker(false),
-  // HACK: this should be somewhere else
-  scheme(Platform::getInstance().theScheme)
+  isPlayingStriker(false)
 {
 }
 
@@ -90,6 +88,5 @@ void PlayerInfo::print(ostream& stream) const
   stream << "robotSetPlay:     " << toString(robotSetPlay) << endl;
   stream << "gamephase:        " << toString(gamePhase) << endl;
   stream << "isPlayingStriker: " << (isPlayingStriker?"yes":"no") << endl;
-  stream << "active scheme:    " << (scheme.empty()?"-":scheme) << std::endl;
 }
 

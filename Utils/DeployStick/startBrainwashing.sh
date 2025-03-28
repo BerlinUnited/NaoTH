@@ -37,16 +37,7 @@ su nao -c "cp -rv /home/nao/bin ./backup"
 # remove files that will be copied and copy the new ones
 echo "[deploy] clean and copy new files"
 if [ -d "./deploy/home/nao/naoqi/Config" ]; then
-  rm -rf /home/nao/Config/general
-  rm -rf /home/nao/Config/platform
-  rm -rf /home/nao/Config/robots
-  rm -rf /home/nao/Config/robot_heads
-  rm -rf /home/nao/Config/scheme
-  rm -rf /home/nao/Config/private
-  rm -f /home/nao/Config/scheme.cfg
-  rm -f /home/nao/Config/behavior-ic.dat
-  rm -f /home/nao/Config/reachability_grid.dat
-  
+  rm -rf /home/nao/Config/*
   su nao -c "cp -r ./deploy/home/nao/naoqi/Config/* /home/nao/Config/"
 fi
 

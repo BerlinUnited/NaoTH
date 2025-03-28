@@ -90,7 +90,7 @@ GameController::GameController()
   // NOTE: we cannot use getRobotInfo().robotName at this moment, 
   //   because the representation RobotInfo might not be provided at the moment of construction.
   // Use the team configuration if avaliable
-  const std::string& name = naoth::Platform::getInstance().theRobotName;
+  const std::string& name = naoth::Platform::getInstance().getConfigPaths().robotName;
   if (config.hasKey("team", name)) {
     getPlayerInfo().playerNumber = config.getInt("team", name);
   }
