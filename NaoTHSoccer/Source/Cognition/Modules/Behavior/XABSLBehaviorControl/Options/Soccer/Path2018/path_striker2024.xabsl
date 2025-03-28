@@ -26,17 +26,6 @@ option path_striker2024
     }
   }
 
-  state play_path_striker2018
-   {
-     decision {
-       else
-        stay;
-     }
-     action {
-      path_striker2018();
-     }
-   } 
-
   state search 
   {
     decision 
