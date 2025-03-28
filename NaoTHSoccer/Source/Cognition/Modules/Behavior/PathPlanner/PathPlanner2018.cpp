@@ -80,6 +80,7 @@ void PathPlanner2018::execute()
     break;
   case PathRequest::PathID::MOVE_AROUND_BALL_OLD:
     moveAroundBall(getPathRequest().direction, getPathRequest().radius, getPathRequest().stable);
+    getPathStatus().turn_around_ball_2_target_reached = target_reached;
     break;
   case PathRequest::PathID::MOVE_AROUND_BALL2:
     //TODO maybe use a parameter to select the actual routine that is executed when move around is set from the behavior???
@@ -182,6 +183,7 @@ void PathPlanner2018::moveAroundBall(const double direction, const double radius
     double ballRotation = ballPos.angle();
     double ballDistance = ballPos.abs();
 
+    // NOTE: minimal correction step
     double direction_deg = Math::toDegrees(direction);
     if (direction_deg > -10 && direction_deg <= 0){
       direction_deg = -10;
@@ -191,29 +193,40 @@ void PathPlanner2018::moveAroundBall(const double direction, const double radius
     }
 
     double min1;
-    double min2;
     double max1;
+
+    double min2;
     double max2;
+
     if (direction_deg <= 0)
     {
       // turn left
       min1 = 0.0;
-      min2 = 0.0;
       max1 = 45.0;
-      max2 = 100.0;
-    }
-    else {
+
+      min2 = 0.0;
+      max2 = 80.0;
+    } else {
       // turn right
       min1 = -45;
-      min2 = -100;
       max1 = 0;
+
+      min2 = -80;
       max2 = 0;
     }
+
+    const double sidestep_turn = Math::fromDegrees(Math::clamp(-direction_deg, min1, max1));
+
 
     double stepX = (ballDistance - radius) * std::cos(ballRotation);
     // Math::clamp(-direction, min1, max1) ==> safe guard for xabsl input
     // outer clamp geht von -radius zu 0
-    double stepY = Math::clamp(radius * std::tan(Math::fromDegrees(Math::clamp(-direction_deg, min1, max1))), min2, max2) * std::cos(ballRotation);
+    double stepY = Math::clamp(radius * std::tan(sidestep_turn), min2, max2) * std::cos(ballRotation);
+
+    const double side_step = radius * std::tan(sidestep_turn);
+    if(min2 / 2.0 <= side_step && side_step <= max2 / 2.0) {
+      target_reached = true;
+    }
 
     // choose the parametr for the character based on the flag
     const double character = stable ? params.moveAroundBallCharacterStable : params.moveAroundBallCharacter;

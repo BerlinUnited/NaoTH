@@ -115,16 +115,20 @@ void GameController::execute()
   PlayerInfo::RobotState oldRobotState = getPlayerInfo().robotState;
   GameData::TeamColor oldTeamColor = getPlayerInfo().teamColor;
 
-  // reset the whistle state if the game state is not play anymore
+  // reset the whistle state
   if(getPlayerInfo().robotState != PlayerInfo::playing) {
     play_by_whistle = false;
   }
 
-  // reset
+  // reset ready pose detection
   if(getPlayerInfo().robotState != PlayerInfo::ready) {
     ready_by_pose_detection = false;
   }
-
+  
+  // reset kickoff state
+  if (getPlayerInfo().robotState == PlayerInfo::playing) {
+    getPlayerInfo().kickoff = false;
+  }
 
   // try update from the game controller message if not manually overwritten
   if ( getGameData().valid && getWifiMode().wifiEnabled ) 
@@ -189,8 +193,21 @@ void GameController::execute()
         ready_by_pose_detection = true;
       }
     }
-    
   }
+
+  
+  if (getPlayerInfo().robotSetPlay == PlayerInfo::goal_kick) {
+      const Vector2d globalBallPos = (getRobotPose() * getBallModel().position);
+      // the ball is in the own half
+      getPlayerInfo().kickoff = (globalBallPos.x < 0);
+  }
+  if (getPlayerInfo().robotSetPlay == PlayerInfo::corner_kick) {
+      const Vector2d globalBallPos = (getRobotPose() * getBallModel().position);
+      // the ball is in the opponent half
+      getPlayerInfo().kickoff = (globalBallPos.x > 0);
+  }
+
+
 
   // TODO: when to show / update led states?
   if(  oldRobotState != getPlayerInfo().robotState

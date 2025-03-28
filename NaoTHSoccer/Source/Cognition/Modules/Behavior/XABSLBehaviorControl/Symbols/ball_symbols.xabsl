@@ -13,7 +13,9 @@ namespace ball_symbols("Ball Symbols") {
   /** Position of the ball at rest in y direction relative to the field in mm */
   float input ball.position_at_rest.y [mm];
 
+  /** NOTE: at the moment this is identical with ball.preview.x*/
   float input ball.future.preview.x;
+  /** NOTE: at the moment this is identical with ball.preview.y*/
   float input ball.future.preview.y;
 
   float input ball.interception.preview.x;
