@@ -213,7 +213,8 @@ void GameController::execute()
       // the ball is in the own half
       getPlayerInfo().kickoff = (globalBallPos.x < 0);
   }
-  if (getPlayerInfo().robotSetPlay == PlayerInfo::corner_kick) {
+  // TODO: make sure that pushing_free_kick actually works like this
+  if (getPlayerInfo().robotSetPlay == PlayerInfo::corner_kick || getPlayerInfo().robotSetPlay == PlayerInfo::pushing_free_kick) {
       const Vector2d globalBallPos = (getRobotPose() * getBallModel().position);
       // the ball is in the opponent half
       getPlayerInfo().kickoff = (globalBallPos.x > 0);
