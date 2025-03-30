@@ -32,6 +32,9 @@ namespace game_symbols("Game Control Symbols")
   /* indicate whether we have a kick off */
   bool input game.own_kickoff;
 
+  /* indicate whether the ball remained untouched during a set play */
+  bool input game.ballUntouchedInSetPlay;
+
   /*Milliseconds remaining in the game */
   float input game.msecsRemaining;
 

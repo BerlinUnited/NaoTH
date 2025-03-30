@@ -37,6 +37,7 @@ void GameSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("game.msecsRemaining", &getMsecsRemaining);
   engine.registerDecimalInputSymbol("game.msecsRemainingSecondary", &getMsecsRemainingSecondary);
   engine.registerBooleanInputSymbol("game.own_kickoff", &getOwnKickOff);
+  engine.registerBooleanInputSymbol("game.ballUntouchedInSetPlay", &getBallUntouchedInSetPlay);
 
   // HACK: is only true when the game state plaing was set by the game controller
   //       we assume this message comes with a delay of >10s
@@ -81,6 +82,10 @@ bool GameSymbols::getPlayingIsSetByGameController() {
 
 bool GameSymbols::getOwnKickOff() {
   return theInstance->getPlayerInfo().kickoff;
+}
+
+bool GameSymbols::getBallUntouchedInSetPlay() {
+    return theInstance->getGameData().ballUntouchedInSetPlay;
 }
 
 double GameSymbols::getPlayerNumber() {
