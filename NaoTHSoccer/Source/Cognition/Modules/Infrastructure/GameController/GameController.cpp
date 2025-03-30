@@ -205,7 +205,9 @@ void GameController::execute()
     }
   }
 
-  
+
+  getGameData().updateSetPlayState();
+
   if (getPlayerInfo().robotSetPlay == PlayerInfo::goal_kick) {
       const Vector2d globalBallPos = (getRobotPose() * getBallModel().position);
       // the ball is in the own half

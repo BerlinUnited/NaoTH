@@ -161,6 +161,11 @@ public:
     //uint16_t singleShots;     // bits represent penalty shot success
   };
 
+  static int secondsIntoSetPlay;
+  static bool ballUntouchedInSetPlay;
+
+  void updateSetPlayState();
+
   static std::string toString(TeamColor value);
   static std::string toString(CompetitionPhase value);
   static std::string toString(CompetitionType value);

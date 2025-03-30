@@ -11,6 +11,9 @@
 using namespace naoth;
 using namespace std;
 
+int GameData::secondsIntoSetPlay = 0;
+bool GameData::ballUntouchedInSetPlay = false;
+
 GameData::GameData()
   : 
   valid(false),
@@ -206,6 +209,17 @@ GameData::Penalty GameData::penaltyFromString(const std::string& str)
   return manual;
 }
 
+void GameData::updateSetPlayState() {
+    if (setPlay != SetPlay::set_none) {
+        secondsIntoSetPlay = secondaryTime; 
+        ballUntouchedInSetPlay = true;
+    } else {
+        if (secondsIntoSetPlay >= 2) {
+            ballUntouchedInSetPlay = false;
+        }
+    }
+}
+
 void GameData::parseFrom(const spl::RoboCupGameControlData& data, int teamNumber)
 {
   playersPerTeam    = data.playersPerTeam;
@@ -262,6 +276,10 @@ void GameData::print(ostream& stream) const
   stream << "gamePhase = "        << toString(gamePhase) << std::endl;
   stream << "gameState = "        << toString(gameState) << std::endl;
   stream << "setPlay = "          << toString(setPlay) << std::endl;
+
+  
+  stream << "secondsIntoSetPlay:   " << secondsIntoSetPlay << endl;
+  stream << "ballUntouchedInSetPlay: " << (ballUntouchedInSetPlay ? "yes" : "no")<< endl;
 
   stream << "firstHalf = "      << firstHalf << std::endl;
   stream << "kickingTeam = "    << kickingTeam << std::endl;
