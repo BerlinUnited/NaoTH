@@ -109,6 +109,10 @@ public:
   // TODO: move somewhere else (it's a strategic decision)?
   /** Whether the behavior decided to play as striker */
   bool isPlayingStriker;
+  
+  static bool ballUntouchedInSetPlay;
+  static int secondsIntoSetPlay;
+  static int lastSetPlayTime;
 
   static std::string toString(RobotState value);
   static std::string toString(RobotSetPlay value);

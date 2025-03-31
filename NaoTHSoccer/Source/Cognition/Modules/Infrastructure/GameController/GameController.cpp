@@ -206,7 +206,23 @@ void GameController::execute()
   }
 
 
-  getGameData().updateSetPlayState();
+  // checks if the ball remained untouched in a set play
+  // so careful approach can be used
+  if (getPlayerInfo().robotSetPlay != PlayerInfo::set_none) {
+      getPlayerInfo().secondsIntoSetPlay     = getGameData().secondaryTime;
+      getPlayerInfo().lastSetPlayTime        = getGameData().secsRemaining;
+      getPlayerInfo().ballUntouchedInSetPlay = true;
+  } else {
+      if (getPlayerInfo().secondsIntoSetPlay >= 2) {
+          getPlayerInfo().ballUntouchedInSetPlay = false;
+      }
+  }
+
+  // resets the untuched idicator after 30 seconds
+  if (getPlayerInfo().ballUntouchedInSetPlay && 
+      getPlayerInfo().lastSetPlayTime - getGameData().secsRemaining >= 30) {
+      getPlayerInfo().ballUntouchedInSetPlay = false;
+  }
 
   if (getPlayerInfo().robotSetPlay == PlayerInfo::goal_kick) {
       const Vector2d globalBallPos = (getRobotPose() * getBallModel().position);
