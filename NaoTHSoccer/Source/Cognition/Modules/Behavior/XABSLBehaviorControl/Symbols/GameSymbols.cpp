@@ -85,7 +85,7 @@ bool GameSymbols::getOwnKickOff() {
 }
 
 bool GameSymbols::getBallUntouchedInSetPlay() {
-    return theInstance->getGameData().ballUntouchedInSetPlay;
+    return theInstance->getPlayerInfo().ballUntouchedInSetPlay;
 }
 
 double GameSymbols::getPlayerNumber() {
