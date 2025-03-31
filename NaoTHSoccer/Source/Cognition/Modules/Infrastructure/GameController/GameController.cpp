@@ -236,6 +236,12 @@ void GameController::execute()
       getPlayerInfo().kickoff = (globalBallPos.x > 0);
   }
 
+  // ensures the kickoff state is set correctly at game start
+  if (getPlayerInfo().robotSetPlay == PlayerInfo::set_none) {
+      getPlayerInfo().kickoff =
+          getGameData().kickingTeam == getPlayerInfo().teamNumber;
+  }
+
 
 
   // TODO: when to show / update led states?
