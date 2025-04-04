@@ -10,10 +10,6 @@
 using namespace naoth;
 using namespace std;
 
-bool PlayerInfo::ballTouchedInSetPlay = true;
-int PlayerInfo::secondsIntoSetPlay      = 0;
-int PlayerInfo::lastSetPlayTime         = 0;
-
 PlayerInfo::PlayerInfo() 
 :
   playerNumber(0),
@@ -26,8 +22,8 @@ PlayerInfo::PlayerInfo()
   robotSetPlay(set_none),
   gamePhase(normal),
   kickoff(false),
-
-  isPlayingStriker(false)
+  isPlayingStriker(false),
+  ballTouchedInSetPlay(true)
 {
 }
 
@@ -93,7 +89,5 @@ void PlayerInfo::print(ostream& stream) const
   stream << "gamephase:        " << toString(gamePhase) << endl;
   stream << "isPlayingStriker: " << (isPlayingStriker ? "yes" : "no") << endl;
   stream << "ballTouchedInSetPlay: " << (ballTouchedInSetPlay ? "yes" : "no") << endl;
-  stream << "secondsIntoSetPlay: " << secondsIntoSetPlay << endl;
-  stream << "lastSetPlayTime: " << lastSetPlayTime << endl;
 }
 

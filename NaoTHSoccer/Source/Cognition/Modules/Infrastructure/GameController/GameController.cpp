@@ -7,7 +7,9 @@ GameController::GameController()
   : 
   debug_whistle_heard(false),
   play_by_whistle(false),
-  ready_by_pose_detection(false)
+  ready_by_pose_detection(false),
+  setPlaySecondsRemaining(-1),
+  lastSetPlayTime(-1)
 {
   DEBUG_REQUEST_REGISTER("gamecontroller:game_state:play", "force the play state", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:game_state:penalized", "force the penalized state", false);
@@ -209,18 +211,18 @@ void GameController::execute()
   // checks if the ball remained untouched in a set play
   // so careful approach can be used
   if (getPlayerInfo().robotSetPlay != PlayerInfo::set_none) {
-      getPlayerInfo().secondsIntoSetPlay     = getGameData().secondaryTime;
-      getPlayerInfo().lastSetPlayTime        = getGameData().secsRemaining;
+      setPlaySecondsRemaining = getGameData().secondaryTime;
+      lastSetPlayTime = getGameData().secsRemaining;
       getPlayerInfo().ballTouchedInSetPlay = false;
-  } else {
-      if (getPlayerInfo().secondsIntoSetPlay >= 2) {
-          getPlayerInfo().ballTouchedInSetPlay = true;
-      }
+  } 
+  else if (setPlaySecondsRemaining >= 2) {
+      getPlayerInfo().ballTouchedInSetPlay = true;
   }
+  
 
   // resets the untuched idicator after 30 seconds
   if (!getPlayerInfo().ballTouchedInSetPlay && 
-      getPlayerInfo().lastSetPlayTime - getGameData().secsRemaining >= 30) {
+      lastSetPlayTime - getGameData().secsRemaining >= 30) {
       getPlayerInfo().ballTouchedInSetPlay = true;
   }
 
