@@ -211,17 +211,17 @@ void GameController::execute()
   if (getPlayerInfo().robotSetPlay != PlayerInfo::set_none) {
       getPlayerInfo().secondsIntoSetPlay     = getGameData().secondaryTime;
       getPlayerInfo().lastSetPlayTime        = getGameData().secsRemaining;
-      getPlayerInfo().ballUntouchedInSetPlay = true;
+      getPlayerInfo().ballTouchedInSetPlay = false;
   } else {
       if (getPlayerInfo().secondsIntoSetPlay >= 2) {
-          getPlayerInfo().ballUntouchedInSetPlay = false;
+          getPlayerInfo().ballTouchedInSetPlay = true;
       }
   }
 
   // resets the untuched idicator after 30 seconds
-  if (getPlayerInfo().ballUntouchedInSetPlay && 
+  if (!getPlayerInfo().ballTouchedInSetPlay && 
       getPlayerInfo().lastSetPlayTime - getGameData().secsRemaining >= 30) {
-      getPlayerInfo().ballUntouchedInSetPlay = false;
+      getPlayerInfo().ballTouchedInSetPlay = true;
   }
 
   if (getPlayerInfo().robotSetPlay == PlayerInfo::goal_kick) {

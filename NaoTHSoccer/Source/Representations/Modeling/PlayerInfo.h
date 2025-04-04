@@ -110,7 +110,7 @@ public:
   /** Whether the behavior decided to play as striker */
   bool isPlayingStriker;
   
-  static bool ballUntouchedInSetPlay;
+  static bool ballTouchedInSetPlay;
   static int secondsIntoSetPlay;
   static int lastSetPlayTime;
 
