@@ -85,6 +85,8 @@ void GameLogger::execute()
 
       LOGSTUFF(MultiBallPercept);
       LOGSTUFF(BallModel);
+
+      LOGSTUFF(RobotPose);
       
       if(params.logUltraSound) {
         LOGSTUFF(UltraSoundReceiveData);
