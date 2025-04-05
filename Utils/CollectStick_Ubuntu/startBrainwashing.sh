@@ -32,12 +32,12 @@ exec_cmd_and_return_or_default() {
 
 # set file vars
 currentDir=$(pwd)  # /media/brainwasher
-infoFile="/home/nao/Config/nao.info"
+infoFile="/tmp/nao.info"
 errorFile="/home/nao/brainwasher.log"
 
 # set vars
 current_date=$(date +"%y%m%d-%H%M")
-current_nao=$(sed -n "2p" $infoFile)
+current_nao=$(sed -n "3p" $infoFile)
 current_nao_name=$(cat /etc/hostname) # get the name, eg. "nao96"
 current_nao_number=$(cat /etc/hostname | grep -Eo "[0-9]{2}" | head -n 1 ) # get the number, e.g. "96"
 current_nao_player=$(exec_cmd_and_return_or_default 'grep -o -E "\[PlayerInfo\] playerNumber.*" /var/log/syslog | tail -1 | sed "s/[^0-9]*//g"' '0') # grep the playerNumber from log, take the last one and extract the actual number
