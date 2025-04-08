@@ -293,27 +293,33 @@ void ArmMotionEngine::setBothArmsJointPosition(double left_shoulderPitch, double
 void ArmMotionEngine::setStiffness(double stiffness)
 {
   getMotorJointData().stiffness[JointData::RShoulderPitch] = stiffness;
-  getMotorJointData().stiffness[JointData::RShoulderRoll] = stiffness;
-  getMotorJointData().stiffness[JointData::RElbowYaw] = stiffness;
-  getMotorJointData().stiffness[JointData::RElbowRoll] = stiffness;
+  getMotorJointData().stiffness[JointData::RShoulderRoll]  = stiffness;
+  getMotorJointData().stiffness[JointData::RElbowYaw]      = stiffness;
+  getMotorJointData().stiffness[JointData::RElbowRoll]     = stiffness;
+  getMotorJointData().stiffness[JointData::RWristYaw]       = stiffness;
+
   getMotorJointData().stiffness[JointData::LShoulderPitch] = stiffness;
-  getMotorJointData().stiffness[JointData::LShoulderRoll] = stiffness;
-  getMotorJointData().stiffness[JointData::LElbowYaw] = stiffness;
-  getMotorJointData().stiffness[JointData::LElbowRoll] = stiffness;
+  getMotorJointData().stiffness[JointData::LShoulderRoll]  = stiffness;
+  getMotorJointData().stiffness[JointData::LElbowYaw]      = stiffness;
+  getMotorJointData().stiffness[JointData::LElbowRoll]     = stiffness;
+  getMotorJointData().stiffness[JointData::LWristYaw]       = stiffness;
 }
 
 void ArmMotionEngine::hold() 
 {
   double stiffness = 0.7;    //it was 0.7 in former times
 
-  getMotorJointData().stiffness[JointData::RShoulderPitch] = stiffness;
-  getMotorJointData().stiffness[JointData::RShoulderRoll] = stiffness;
-  getMotorJointData().stiffness[JointData::RElbowYaw] = stiffness;
-  getMotorJointData().stiffness[JointData::RElbowRoll] = stiffness;
-  getMotorJointData().stiffness[JointData::LShoulderPitch] = stiffness;
-  getMotorJointData().stiffness[JointData::LShoulderRoll] = stiffness;
-  getMotorJointData().stiffness[JointData::LElbowYaw] = stiffness;
-  getMotorJointData().stiffness[JointData::LElbowRoll] = stiffness;
+  getMotorJointData().stiffness[JointData::RShoulderPitch]  = stiffness;
+  getMotorJointData().stiffness[JointData::RShoulderRoll]   = stiffness;
+  getMotorJointData().stiffness[JointData::RElbowYaw]       = stiffness;
+  getMotorJointData().stiffness[JointData::RElbowRoll]      = stiffness;
+  getMotorJointData().stiffness[JointData::RWristYaw]       = stiffness;
+
+  getMotorJointData().stiffness[JointData::LShoulderPitch]  = stiffness;
+  getMotorJointData().stiffness[JointData::LShoulderRoll]   = stiffness;
+  getMotorJointData().stiffness[JointData::LElbowYaw]       = stiffness;
+  getMotorJointData().stiffness[JointData::LElbowRoll]      = stiffness;
+  getMotorJointData().stiffness[JointData::LWristYaw]       = stiffness;
 
   getMotorJointData().position[JointData::RShoulderPitch] =
           getSensorJointData().position[JointData::RShoulderPitch];
@@ -323,6 +329,9 @@ void ArmMotionEngine::hold()
           getSensorJointData().position[JointData::RElbowYaw];
   getMotorJointData().position[JointData::RElbowRoll] =
           getSensorJointData().position[JointData::RElbowRoll];
+  getMotorJointData().position[JointData::RWristYaw] =
+    getSensorJointData().position[JointData::RWristYaw];
+
   getMotorJointData().position[JointData::LShoulderPitch] =
           getSensorJointData().position[JointData::LShoulderPitch];
   getMotorJointData().position[JointData::LShoulderRoll] =
@@ -331,19 +340,21 @@ void ArmMotionEngine::hold()
           getSensorJointData().position[JointData::LElbowYaw];
   getMotorJointData().position[JointData::LElbowRoll] =
           getSensorJointData().position[JointData::LElbowRoll];
+  getMotorJointData().position[JointData::LWristYaw] =
+    getSensorJointData().position[JointData::LWristYaw];
 }
 
 bool ArmMotionEngine::armsDown()
 {
   static double target[JointData::numOfJoint];
   target[JointData::RShoulderRoll]  = Math::fromDegrees(-10);
-  target[JointData::LShoulderRoll]  = Math::fromDegrees(10);
-  target[JointData::RShoulderPitch] = Math::fromDegrees(90);
-  target[JointData::LShoulderPitch] = Math::fromDegrees(90);
-  target[JointData::RElbowRoll]     = Math::fromDegrees(0);
-  target[JointData::LElbowRoll]     = Math::fromDegrees(0);
-  target[JointData::RElbowYaw]      = Math::fromDegrees(0);
-  target[JointData::LElbowYaw]      = Math::fromDegrees(0);
+  target[JointData::LShoulderRoll]  = Math::fromDegrees( 10);
+  target[JointData::RShoulderPitch] = Math::fromDegrees( 90);
+  target[JointData::LShoulderPitch] = Math::fromDegrees( 90);
+  target[JointData::RElbowRoll]     = Math::fromDegrees(  0);
+  target[JointData::LElbowRoll]     = Math::fromDegrees(  0);
+  target[JointData::RElbowYaw]      = Math::fromDegrees(  0);
+  target[JointData::LElbowYaw]      = Math::fromDegrees(  0);
 
   for (int i = JointData::RShoulderRoll; i <= JointData::LElbowYaw; i++) {
     getMotorJointData().stiffness[i] = params.armStiffness;
