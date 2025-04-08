@@ -89,6 +89,7 @@ BasicTestBehavior::BasicTestBehavior()
 
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:led:debug_eye_blue_green", "set the left eye blue", false);
 
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:arms:hold", "set arms request to hold", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:arms:arms_back", "set arms request to back", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:arms:arms_down", "set arms request to down", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:arms:arms_none", "set arms request to none", false);
@@ -119,6 +120,8 @@ void BasicTestBehavior::execute()
     getSoundPlayData().soundFile = ":hello world";
   );
 
+  DEBUG_REQUEST("BasicTestBehavior:arms:hold",
+    getMotionRequest().armMotionRequest.id = ArmMotionRequest::hold;);
   DEBUG_REQUEST("BasicTestBehavior:arms:arms_back",
     getMotionRequest().armMotionRequest.id = ArmMotionRequest::arms_back;);
   DEBUG_REQUEST("BasicTestBehavior:arms:arms_down",
