@@ -1,6 +1,5 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * 
  */
 package de.naoth.rc.components.checkboxtree;
 
@@ -30,7 +29,8 @@ public class SelectableTreeNode implements MutableTreeNode, ItemListener
 
   private SelectableTreeNode parent;
   private final List<SelectableTreeNode> childNodes;
-  private JCheckBox cb = new JCheckBox();
+  private final JCheckBox cb = new JCheckBox();
+  private static final TristateCheckBoxIcon TRISTATE_CHECK_BOX_ICON = new TristateCheckBoxIcon(new Color(32,32,128));
   
   private boolean semiselected = false;
   
@@ -91,7 +91,8 @@ public class SelectableTreeNode implements MutableTreeNode, ItemListener
   private void setSemiselected(boolean value)
   {
       if(value) {
-          this.cb.setIcon(new TristateCheckBoxIcon(new Color(32,32,128)));
+          //this.cb.setIcon(new TristateCheckBoxIcon(new Color(32,32,128)));
+          this.cb.setIcon(TRISTATE_CHECK_BOX_ICON);
       } else {
           this.cb.setIcon(null);
       }
@@ -124,7 +125,8 @@ public class SelectableTreeNode implements MutableTreeNode, ItemListener
     } else if(selectedChildren > 0 || semiSelectedChildren > 0) {
         setSelected(false);
         setSemiselected(true);
-        this.cb.setIcon(new TristateCheckBoxIcon(new Color(32,32,128)));
+        //this.cb.setIcon(new TristateCheckBoxIcon(new Color(32,32,128)));
+        this.cb.setIcon(TRISTATE_CHECK_BOX_ICON);
     } else {
         setSelected(false);
         setSemiselected(false);
@@ -289,8 +291,6 @@ public class SelectableTreeNode implements MutableTreeNode, ItemListener
         cb.setEnabled(bln);
     }
   
-  
-
   @Override
   public String toString()
   {
@@ -298,10 +298,10 @@ public class SelectableTreeNode implements MutableTreeNode, ItemListener
   }
 
   
-    public class TristateCheckBoxIcon implements Icon {
+    public static class TristateCheckBoxIcon implements Icon {
         private Color color;
-        private int width, height;
-        private Icon icon;
+        private final int width, height;
+        private final Icon icon;
         
         TristateCheckBoxIcon(Color iconColor) {
             color = iconColor;
@@ -317,7 +317,6 @@ public class SelectableTreeNode implements MutableTreeNode, ItemListener
             g.fillRect(x + width - 4, y+height-4, 8, 8);
             g.setColor(new Color(32,32,64,128));
             g.fillRect(x + width - 3, y+height-3, 6, 6);
-            
         }
 
         @Override
