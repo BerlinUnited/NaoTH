@@ -25,14 +25,14 @@ InitialMotion::InitialMotion()
   theInitJoints.position[JointData::LShoulderPitch] =  Math::fromDegrees(90);
   theInitJoints.position[JointData::LShoulderRoll]  =  Math::fromDegrees(10);
   theInitJoints.position[JointData::LElbowRoll]     =  theInitJoints.max[JointData::LElbowRoll];
-  theInitJoints.position[JointData::LElbowYaw]      =  Math::fromDegrees(-90);
+  theInitJoints.position[JointData::LElbowYaw]      =  0; // Math::fromDegrees(-90); //was used in the past
   theInitJoints.position[JointData::LWristYaw]      =  0;
   theInitJoints.position[JointData::LHand]          =  0;
 
   theInitJoints.position[JointData::RShoulderPitch] =  Math::fromDegrees(90);
   theInitJoints.position[JointData::RShoulderRoll]  =  Math::fromDegrees(-10);
   theInitJoints.position[JointData::RElbowRoll]     =  theInitJoints.min[JointData::RElbowRoll];
-  theInitJoints.position[JointData::RElbowYaw]      =  Math::fromDegrees(90);
+  theInitJoints.position[JointData::RElbowYaw]      =  0; // Math::fromDegrees(90); //was used in the past
   theInitJoints.position[JointData::RWristYaw]      =  0;
   theInitJoints.position[JointData::RHand]          =  0;
 
@@ -72,11 +72,11 @@ InitialMotion::InitialMotion()
 
   //HACK: turn off the hands
   freeStiffness[JointData::LHand]      = -1;
-  safeStiffness[JointData::LHand]      = 0.3;
+  safeStiffness[JointData::LHand]      =  0.3;
   maxStiffness[JointData::LHand]       = -1;
 
   freeStiffness[JointData::RHand]      = -1;
-  safeStiffness[JointData::RHand]      = 0.3;
+  safeStiffness[JointData::RHand]      =  0.3;
   maxStiffness[JointData::RHand]       = -1;
 
   getMotionStatus().target_reached = false;

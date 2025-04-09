@@ -296,13 +296,13 @@ void ArmMotionEngine::setStiffness(double stiffness)
   getMotorJointData().stiffness[JointData::RShoulderRoll]  = stiffness;
   getMotorJointData().stiffness[JointData::RElbowYaw]      = stiffness;
   getMotorJointData().stiffness[JointData::RElbowRoll]     = stiffness;
-  getMotorJointData().stiffness[JointData::RWristYaw]       = stiffness;
+  getMotorJointData().stiffness[JointData::RWristYaw]      = stiffness;
 
   getMotorJointData().stiffness[JointData::LShoulderPitch] = stiffness;
   getMotorJointData().stiffness[JointData::LShoulderRoll]  = stiffness;
   getMotorJointData().stiffness[JointData::LElbowYaw]      = stiffness;
   getMotorJointData().stiffness[JointData::LElbowRoll]     = stiffness;
-  getMotorJointData().stiffness[JointData::LWristYaw]       = stiffness;
+  getMotorJointData().stiffness[JointData::LWristYaw]      = stiffness;
 }
 
 void ArmMotionEngine::hold() 
@@ -421,7 +421,7 @@ bool ArmMotionEngine::armsOnBack()
   return result;
 }//end armsOnBack
 
-bool ArmMotionEngine::armsSynchronisedWithWalk(){
+bool ArmMotionEngine::armsSynchronisedWithWalk() {
     return true;
 }
 
