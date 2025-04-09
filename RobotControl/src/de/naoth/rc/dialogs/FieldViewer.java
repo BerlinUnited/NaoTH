@@ -608,7 +608,6 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
   
   class LogFrameDrawer implements LogFrameListener
   {
-      
         Pose2D robotPose = null;
         
         // camera matrix for top and bottom image
@@ -619,10 +618,19 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
         // of CMs.
         boolean cmExceptionThrown = false;
         
-        // needed for projection
-        final double f = (0.5*640.0) / Math.tan(0.5 * 60.9/180.0*Math.PI);
+        // HACK: magic number
+        // TODO: calculate this based on inform from the logfile or read it 
+        //       from the logfile
+        //
+        // focal langth - needed for projection
+        // NAO4/5
+        //final double opening_angle_width = Math.toRadians( 60.9 );
+        // NAO6
+        final double opening_angle_width = Math.toRadians( 56.1628 );
+        final double resolution_width = 640.0;
+        final double f = (0.5 * resolution_width) / Math.tan(0.5 * opening_angle_width);
         
-        private void readCameraMatrix(BlackBoard b) 
+        private void readCameraMatrix(BlackBoard b)
         {
             cmBottom = null;
             cmTop = null;
