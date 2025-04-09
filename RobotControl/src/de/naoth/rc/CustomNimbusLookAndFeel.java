@@ -32,8 +32,10 @@ public class CustomNimbusLookAndFeel extends NimbusLookAndFeel
       {
         defaults.put("defaultFont", new Font(Font.SANS_SERIF, Font.PLAIN, parent.getFontSize()));
         
+        /*
+        // NOTE: add custom modifications to NimbusLookAndFeel
         defaults.put("nimbusSelectionBackground", new Color(240, 250, 255));
-        
+
         // don't change color of the expansion icon
         defaults.put("Tree[Enabled+Selected].collapsedIconPainter", defaults.get("Tree[Enabled].collapsedIconPainter"));
         defaults.put("Tree[Enabled+Selected].expandedIconPainter",  defaults.get("Tree[Enabled].expandedIconPainter"));
@@ -42,7 +44,7 @@ public class CustomNimbusLookAndFeel extends NimbusLookAndFeel
         defaults.put("Tree.selectionForeground", defaults.get("Tree.foreground"));
         defaults.put("Tree:TreeCell[Focused+Selected].textForeground", defaults.get("Tree.foreground"));
         defaults.put("Tree:TreeCell[Enabled+Selected].textForeground", defaults.get("Tree.foreground"));
-        
+        */
       }
       return defaults;
     }
