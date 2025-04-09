@@ -910,6 +910,9 @@ public class RobotControlImpl extends javax.swing.JFrame
         config.putAll(userConfig);
       }
       
+      // HACK: make sure that the default iplist is always used
+      config.setProperty("iplist", mainConfig.getProperty("iplist"));
+      
     } catch(IOException ex) {
         getLogger().info("Could not open the config file. It will be created after the first execution.");
     }
