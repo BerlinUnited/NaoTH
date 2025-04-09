@@ -1,10 +1,10 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ *
  */
 
 package de.naoth.rc.components.checkboxtree;
 
+import java.awt.Color;
 import java.awt.Component;
 import javax.swing.JCheckBox;
 import javax.swing.JTree;
@@ -16,7 +16,6 @@ import javax.swing.tree.TreeCellRenderer;
  */
 public class CheckboxTreeCellRenderer implements TreeCellRenderer
 {
-
   @Override
   public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus)
   {
@@ -28,7 +27,11 @@ public class CheckboxTreeCellRenderer implements TreeCellRenderer
         JCheckBox cb = n.getComponent();
         cb.setBackground(tree.getBackground());
         // HACK: all boxes have the same color (even diabled ones)
-        cb.setForeground(tree.getForeground());
+        if(selected) {
+            cb.setForeground(Color.WHITE);
+        } else {
+            cb.setForeground(tree.getForeground());
+        }
         return cb;
       }
     }
