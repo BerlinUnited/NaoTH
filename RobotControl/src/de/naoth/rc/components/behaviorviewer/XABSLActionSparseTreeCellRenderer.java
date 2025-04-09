@@ -17,7 +17,7 @@ import javax.swing.tree.DefaultTreeCellRenderer;
  */
 public class XABSLActionSparseTreeCellRenderer extends DefaultTreeCellRenderer 
 {
-    private StringBuilder text = new StringBuilder();
+    private final StringBuilder text = new StringBuilder();
     
     private static final Color DARK_GREEN = new Color(0, 128, 0);
     
@@ -29,8 +29,6 @@ public class XABSLActionSparseTreeCellRenderer extends DefaultTreeCellRenderer
         this.PLAIN_FONT = new Font("Sans Serif", Font.PLAIN, fontSize);
         this.BOLD_FONT = new Font("Sans Serif", Font.BOLD, fontSize);
         this.ITALIC_FONT = new Font("Sans Serif", Font.ITALIC, fontSize);
-        
-        
     }
     
     private Component makeCellRenderer(Color color, Font font, String text) {
@@ -96,6 +94,11 @@ public class XABSLActionSparseTreeCellRenderer extends DefaultTreeCellRenderer
                     .append(s.getValueAsString());
             } else {
                 text.append(n.getUserObject().toString());
+            }
+            
+            // override color for selected rows
+            if(selected) {
+                color = Color.WHITE;
             }
 
             return makeCellRenderer(color, font, text.toString());
