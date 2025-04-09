@@ -23,29 +23,38 @@ BasicMotion::BasicMotion(
   theMotorJointData(theMotorJointData),
   theStartJointData(theStartJointData) // make a copy
 {
-  const double LElbowRollMax  = Math::fromDegrees( -0.5);
-  const double RElbowRollMin  = Math::fromDegrees(  0.5);
+  const double LElbowRollMax  = Math::fromDegrees( -0.5 );
+  const double RElbowRollMin  = Math::fromDegrees(  0.5 );
   const double LKneePitchMax  = Math::fromDegrees(121.04);
   const double LAnklePitchMin = Math::fromDegrees(-68.15);
   const double RKneePitchMax  = Math::fromDegrees(121.47);
   const double RAnklePitchMin = Math::fromDegrees(-67.97);
 
+  // head
   theInitJoints.position[JointData::HeadPitch]      = 0;
   theInitJoints.position[JointData::HeadYaw]        = 0;
-  theInitJoints.position[JointData::LShoulderPitch] = Math::fromDegrees(90);
-  theInitJoints.position[JointData::LShoulderRoll]  = Math::fromDegrees(10);
+  
+  // arms
+  theInitJoints.position[JointData::LShoulderPitch] = Math::fromDegrees( 90);
+  theInitJoints.position[JointData::LShoulderRoll]  = Math::fromDegrees( 10);
   theInitJoints.position[JointData::LElbowRoll]     = LElbowRollMax;
-  theInitJoints.position[JointData::LElbowYaw]      = Math::fromDegrees(-90);
-  theInitJoints.position[JointData::RShoulderPitch] = Math::fromDegrees(90);
+  theInitJoints.position[JointData::LElbowYaw]      = Math::fromDegrees(  0);
+  theInitJoints.position[JointData::LWristYaw]      = Math::fromDegrees(  0);
+  
+  theInitJoints.position[JointData::RShoulderPitch] = Math::fromDegrees( 90);
   theInitJoints.position[JointData::RShoulderRoll]  = Math::fromDegrees(-10);
   theInitJoints.position[JointData::RElbowRoll]     = RElbowRollMin;
-  theInitJoints.position[JointData::RElbowYaw]      = Math::fromDegrees(90);
+  theInitJoints.position[JointData::RElbowYaw]      = Math::fromDegrees(  0);
+  theInitJoints.position[JointData::RWristYaw]      = Math::fromDegrees(  0);
+  
+  // legs
   theInitJoints.position[JointData::LHipYawPitch]   = 0;
   theInitJoints.position[JointData::LHipRoll]       = 0;  
   theInitJoints.position[JointData::LKneePitch]     = LKneePitchMax;
   theInitJoints.position[JointData::LAnklePitch]    = LAnklePitchMin;
   theInitJoints.position[JointData::LHipPitch]      = -theInitJoints.position[JointData::LKneePitch] - theInitJoints.position[JointData::LAnklePitch]; 
   theInitJoints.position[JointData::LAnkleRoll]     = 0;
+  
   theInitJoints.position[JointData::RHipYawPitch]   = 0;
   theInitJoints.position[JointData::RHipRoll]       = 0;
   theInitJoints.position[JointData::RKneePitch]     = RKneePitchMax;
@@ -53,12 +62,13 @@ BasicMotion::BasicMotion(
   theInitJoints.position[JointData::RHipPitch]      = -theInitJoints.position[JointData::RKneePitch] - theInitJoints.position[JointData::RAnklePitch];
   theInitJoints.position[JointData::RAnkleRoll]     = 0;
 
+
   for (int i = 0; i < JointData::numOfJoint; i++)
   {
     freeStiffness[i] = -1.0;
-    safeStiffness[i] = 0.3;
-    maxStiffness[i] = 0.7;
-  }//end for
+    safeStiffness[i] =  0.3;
+    maxStiffness[i]  =  0.7;
+  }
 
   // prevents the robot from falling down
   freeStiffness[JointData::LHipPitch] = 0.1;
@@ -67,11 +77,11 @@ BasicMotion::BasicMotion(
   // copy the starting values
   for (int i = 0; i < JointData::numOfJoint; i++)
   {
-    theMotorJointData.position[i] = theStartJointData.position[i];
+    theMotorJointData.position[i]  = theStartJointData.position[i];
     theMotorJointData.stiffness[i] = theStartJointData.stiffness[i];
   }
 
-  double maxAngleSpeed = Math::pi_4; // radiant per second
+  const double maxAngleSpeed = Math::pi_4; // radiant per second
   init_time = getDistance(theStartJointData, theInitJoints)/maxAngleSpeed*1000.0;
 
 
