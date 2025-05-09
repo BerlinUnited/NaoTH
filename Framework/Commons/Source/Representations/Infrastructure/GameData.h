@@ -12,6 +12,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 
 #include "Tools/Math/Vector2.h"
 #include "Tools/Math/Pose2D.h"
@@ -148,12 +149,12 @@ public:
       messageBudget(1200)
     {}
 
-    unsigned int teamNumber;        // unique team number
-    TeamColor teamColor;            // colour of the team
-    unsigned int score;             // team's score
-    unsigned int penaltyShot;       // penalty shot counter
-    unsigned int messageBudget;     // number of team messages the team is allowed to send for the remainder of the game
-    std::vector<RobotInfo> players; // the team's players
+    unsigned int teamNumber;             // unique team number
+    TeamColor teamColor;                 // colour of the team
+    unsigned int score;                  // team's score
+    unsigned int penaltyShot;            // penalty shot counter
+    unsigned int messageBudget;          // number of team messages the team is allowed to send for the remainder of the game
+    std::map<size_t, struct RobotInfo> players; // the team's players
 
     // NOTE: not used yet
     //unsigned int goalieNumber;      // unique goalie number
@@ -180,15 +181,21 @@ public:
   GameData();
 
   const RobotInfo& getOwnRobotInfo(size_t playerNumber) const {
-	  ASSERT(playerNumber > 0 && playerNumber <= ownTeam.players.size());
-    return ownTeam.players[playerNumber-1];
+	  print(std::cout);
+    // If not an active Player, abort
+    ASSERT(isActivePlayer(playerNumber));
+    return ownTeam.players.at(playerNumber);
+  }
+
+  inline bool isActivePlayer(size_t playerNumber) const {
+    return ownTeam.players.count(playerNumber) > 0;
   }
 
 
 public:
   bool valid; // indicates that this represenation was filled
 
-  unsigned int playersPerTeam;                 // the number of players on a team
+  unsigned int playersPerTeam;        // the number of players on a team
 
   CompetitionPhase competitionPhase;  // phase of the competition (COMPETITION_PHASE_ROUNDROBIN, COMPETITION_PHASE_PLAYOFF)
   CompetitionType  competitionType;   // type of the competition (COMPETITION_TYPE_NORMAL, COMPETITION_TYPE_1VS1_CHALLENGE, COMPETITION_TYPE_PASSING_CHALLENGE)
