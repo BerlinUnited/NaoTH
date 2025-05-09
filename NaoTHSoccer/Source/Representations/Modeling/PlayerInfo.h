@@ -59,6 +59,11 @@ public:
     // update only if player number is set correctly
     ASSERT(playerNumber > 0);
 
+    // => Not part of the team (substituted) -> ignore game states
+    if (!gameData.isActivePlayer(playerNumber)){
+      robotState = RobotState::penalized;
+      return;
+    }
     naoth::GameData::RobotInfo penaltyInfo = gameData.getOwnRobotInfo(playerNumber);
 
     if(penaltyInfo.penalty == naoth::GameData::penalty_none) {

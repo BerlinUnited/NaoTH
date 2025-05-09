@@ -150,6 +150,8 @@ void GameController::execute()
 
     // ignore information from game controller when unstiff
     if (getPlayerInfo().robotState != PlayerInfo::unstiff) {
+      // update is internally only triggered if not substittuted
+      // @see PlayerInfo::update()
       getPlayerInfo().update(getGameData());
     }
 
