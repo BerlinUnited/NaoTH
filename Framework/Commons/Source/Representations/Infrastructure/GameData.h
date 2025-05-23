@@ -181,7 +181,6 @@ public:
   GameData();
 
   const RobotInfo& getOwnRobotInfo(size_t playerNumber) const {
-	  print(std::cout);
     // If not an active Player, abort
     ASSERT(isActivePlayer(playerNumber));
     return ownTeam.players.at(playerNumber);
