@@ -16,8 +16,8 @@ Simulation::Simulation()
   DEBUG_REQUEST_REGISTER("Simulation:use_Parameters", "use the Parameters", false);
   DEBUG_REQUEST_REGISTER("Simulation:ActionTarget:None", "DrawNone", false);
   DEBUG_REQUEST_REGISTER("Simulation:ActionTarget:Short", "DrawShortKick", false);
-  DEBUG_REQUEST_REGISTER("Simulation:ActionTarget:Left", "DrawLeftKick", false);
-  DEBUG_REQUEST_REGISTER("Simulation:ActionTarget:Right", "DrawRightKick", false);
+  //DEBUG_REQUEST_REGISTER("Simulation:ActionTarget:Left", "DrawLeftKick", false);
+  //DEBUG_REQUEST_REGISTER("Simulation:ActionTarget:Right", "DrawRightKick", false);
   getDebugParameterList().add(&theParameters);
 
   //calculate the actions  
@@ -66,7 +66,7 @@ void Simulation::execute()
 
   // plot projected actions
   DEBUG_REQUEST("Simulation:ActionTarget:None", draw_action_results(actionsConsequences[0], Color(1.0, 1.0, 1.0, 0.7)););
-  DEBUG_REQUEST("Simulation:ActionTarget:Short", draw_action_results(actionsConsequences[1], Color(255.0 / 255, 172.0 / 255, 18.0 / 255, 0.7)););
+  DEBUG_REQUEST("Simulation:ActionTarget:Short", draw_action_results(actionsConsequences[1], Color(0.0, 1.0, 1.0, 0.7)););
   //DEBUG_REQUEST("Simulation:ActionTarget:Left", draw_action_results(actionsConsequences[2], Color(0.0 / 255, 13.0 / 255, 191.0 / 255, 0.7)););
   //DEBUG_REQUEST("Simulation:ActionTarget:Right", draw_action_results(actionsConsequences[3], Color(0.0 / 255, 191.0 / 255, 51.0 / 255, 0.7)););
 
@@ -233,20 +233,24 @@ void Simulation::draw_action_results(const ActionSimulator::ActionResults& actio
     Vector2d ball = getRobotPose() * ballPosition->pos();
     if (ballPosition->cat() == ActionSimulator::BallPositionCategory::INFIELD)
     {
-      PEN("000000", 1);
+      PEN("FFFFFF", 1);
       FILLOVAL(ball.x, ball.y, 50, 50);
       PEN(color, 1);
       FILLOVAL(ball.x, ball.y, 40, 40);
     }
     else if (ballPosition->cat() == ActionSimulator::BallPositionCategory::OPPGOAL)
     {
-      PEN("336600", 1);
+      PEN("FFFFFF", 1);
       FILLOVAL(ball.x, ball.y, 50, 50);
+      PEN("FF00FF", 1);
+      FILLOVAL(ball.x, ball.y, 40, 40);
     }
     else //Outside Field
     {
-      PEN("66FF33", 1);
+      PEN("FFFFFF", 1);
       FILLOVAL(ball.x, ball.y, 50, 50);
+      PEN("FF0000", 1);
+      FILLOVAL(ball.x, ball.y, 40, 40);
     }
   }
 }
