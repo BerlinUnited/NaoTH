@@ -12,6 +12,6 @@ premake5 gmake2
 
 echo "###### COMPILE ######"
 # run make in the corresponding build dir
-(cd ../build/gmake2/ && make config=optdebug_native ScriptableSimulator $@)
+(cd ../build/gmake/ && make config=optdebug_native ScriptableSimulator LogSimulator $@)
 
 echo "###### FINISH ######"
