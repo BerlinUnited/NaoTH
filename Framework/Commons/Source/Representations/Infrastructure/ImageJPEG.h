@@ -9,21 +9,37 @@
 
 #include "Image.h"
 #include <vector>
+#include <mutex>
+#include <shared_mutex>>
 
 class ImageJPEG
 {
 private:
+  // protect access to the image pointer and the corresponding jpeg byte vector
+  mutable std::shared_mutex image_mutex;
+
   //HACK: we wrap the image object here
   naoth::Image* image = nullptr;
+
+  // IDEA: would it make sense to make it a parameter?
+  // TODO: experiment with quality
+  static const int quality = 75;
+
+  mutable std::vector<uint8_t> jpeg;
+  mutable size_t jpeg_size = 0;
 
 public:
   // HACK: wrap the image
   // in the future ImageJPEG should have access to the black board
   void set(naoth::Image& image) {
+    std::unique_lock lock(image_mutex);
     this->image = &image;
   }
 
-  const naoth::Image& get() const { return *image; }
+  const naoth::Image& get() const {
+    std::shared_lock lock(image_mutex);
+    return *image; 
+  }
 
   void compressYUYV() const;
   void decompressYUYV(const std::string& data, unsigned int width, unsigned int height);
@@ -31,13 +47,6 @@ public:
   const uint8_t* getJPEG() const { return jpeg.data(); }
   size_t getJPEGSize() const { return jpeg_size; }
 
-private:
-  // IDEA: would it make sense to make it a parameter?
-  // TODO: experiment with quality
-  static const int quality = 75;
-
-  mutable std::vector<uint8_t> jpeg;
-  mutable size_t jpeg_size = 0;
 };
 
 class ImageJPEGTop: public ImageJPEG {};

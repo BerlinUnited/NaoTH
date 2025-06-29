@@ -28,6 +28,7 @@ static void term_destination (j_compress_ptr /*cinfo*/) {}
 
 void ImageJPEG::compressYUYV() const
 {
+  std::unique_lock lock(image_mutex);
   ASSERT(image != NULL);
 
   // make sure we have enough space
