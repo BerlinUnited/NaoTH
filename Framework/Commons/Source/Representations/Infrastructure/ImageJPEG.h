@@ -44,8 +44,16 @@ public:
   void compressYUYV() const;
   void decompressYUYV(const std::string& data, unsigned int width, unsigned int height);
 
-  const uint8_t* getJPEG() const { return jpeg.data(); }
-  size_t getJPEGSize() const { return jpeg_size; }
+  const uint8_t* getJPEG() const { 
+    // TODO: remove this raw access to the jpeg data, 
+    // since we can't protect it with a mutex after the pointer is returned
+    std::shared_lock lock(image_mutex);
+    return jpeg.data();
+  }
+  size_t getJPEGSize() const {
+    std::shared_lock lock(image_mutex);
+    return jpeg_size;
+  }
 
 };
 
