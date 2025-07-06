@@ -93,15 +93,9 @@ public:
     {
       process = std::async([&] 
       {
-        auto a_bot = std::async(std::launch::deferred, [&]{ getImageJPEG().compressYUYV(); } );
-        auto a_top = std::async(std::launch::deferred, [&]{ getImageJPEGTop().compressYUYV(); } );
         
         LOGSTUFF(FrameInfo);
-
-        a_bot.wait();
         LOGSTUFF(ImageJPEG);
-
-        a_top.wait();
         LOGSTUFF(ImageJPEGTop);
       });
     }

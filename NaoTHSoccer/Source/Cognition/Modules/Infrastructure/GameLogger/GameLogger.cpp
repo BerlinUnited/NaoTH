@@ -102,15 +102,7 @@ void GameLogger::execute()
       LOGSTUFF(RansacCirclePercept2018);
       
       if(params.logJPEGImages) {
-        STOPWATCH_START("GameLogger:compressYUYV::bottom");
-        getImageJPEG().compressYUYV();
-        STOPWATCH_STOP("GameLogger:compressYUYV::bottom");
         LOGSTUFF(ImageJPEG);
-
-        STOPWATCH_START("GameLogger:compressYUYV::top");
-        getImageJPEGTop().compressYUYV();
-        STOPWATCH_STOP("GameLogger:compressYUYV::top");
-
         LOGSTUFF(ImageJPEGTop);
       }
       
