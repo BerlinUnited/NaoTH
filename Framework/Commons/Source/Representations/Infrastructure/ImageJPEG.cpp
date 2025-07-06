@@ -184,11 +184,10 @@ void ImageJPEG::decompressYUYV(const std::string& data, unsigned int width, unsi
 
 void Serializer<ImageJPEG>::serialize(const ImageJPEG& parent, std::ostream& stream)
 {
+    // HACK
+  naothmessages::Image img;
+
   std::shared_lock lock(parent.image_mutex);
-
-  // HACK
-  static naothmessages::Image img;
-
 
   img.set_height(parent.image->height());
   img.set_width(parent.image->width());
@@ -208,7 +207,7 @@ void Serializer<ImageJPEG>::serialize(const ImageJPEG& parent, std::ostream& str
 void Serializer<ImageJPEG>::deserialize(std::istream& stream, ImageJPEG& representation)
 {
   // HACK
-  static naothmessages::Image img;
+  naothmessages::Image img;
 
   std::unique_lock lock(representation.image_mutex);
 
