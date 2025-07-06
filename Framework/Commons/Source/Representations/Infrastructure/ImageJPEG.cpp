@@ -31,10 +31,7 @@ void ImageJPEG::compressYUYV() const
   std::unique_lock lock(image_mutex);
   ASSERT(image != NULL);
 
-  if(!jpeg.empty()) {
-    // Every time we set a new image, the jpeg is cleared.
-    // If the jpeg vector contains data, it means we already
-    // compressed the image and can return early.
+  if(compressionValid) {
     return;
   }
 
@@ -137,6 +134,8 @@ void ImageJPEG::compressYUYV() const
   jpeg_size = (size_t)((uint8_t*)cinfo.dest->next_output_byte - jpeg.data());
 
   jpeg_destroy_compress( &cinfo );
+
+  compressionValid = true;
 }
 
 void ImageJPEG::decompressYUYV(const std::string& data, unsigned int width, unsigned int height)

@@ -11,12 +11,15 @@
 #include <vector>
 #include <mutex>
 #include <shared_mutex>
+#include <atomic>
 
 class ImageJPEG
 {
 private:
   // protect access to the image pointer and the corresponding jpeg byte vector
   mutable std::shared_mutex image_mutex;
+
+  mutable std::atomic<bool> compressionValid = false;
 
   //HACK: we wrap the image object here
   naoth::Image* image = nullptr;
@@ -42,17 +45,15 @@ public:
     jpeg.clear();
   }
 
-  void clearCompressed() {
-    std::unique_lock lock(image_mutex);
-    // Clear the vector without changing the capacity.
-    jpeg.clear();
+  void invalidateCompressed() {
+    compressionValid = false;
   }
 
   /**
    * Make sure the JPEG image is compressed. This is marked as const, because it semantically does not change the represented image.
    * But it does change the internal representation of the JPEG image.
    * By making this method accessible, you can transfer the **costly** compression to a different thread.
-   * It must return early, when the image is already compressed.
+   * It will return early, when the compressed image was still valid.
    */
   void compressYUYV() const;
   void decompressYUYV(const std::string& data, unsigned int width, unsigned int height);

@@ -65,8 +65,8 @@ public:
 
   virtual void execute()
   {
-    getImageJPEG().clearCompressed();
-    getImageJPEGTop().clearCompressed();
+    getImageJPEG().invalidateCompressed();
+    getImageJPEGTop().invalidateCompressed();
     
     // HACK: wait a bit before starting recording
     if(!logfileManager.is_ready()) {
