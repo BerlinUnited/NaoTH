@@ -10,34 +10,29 @@
 #include "Image.h"
 #include <vector>
 #include <mutex>
-#include <shared_mutex>
-#include <atomic>
 #include <future>
 
 struct JpegData {
   std::vector<uint8_t> bytes;
   size_t number_of_bytes = 0;
+  unsigned int width;
+  unsigned int height;
 };
 
 class ImageJPEG
 {
 private:
   // protect access to the image pointer and the corresponding jpeg byte vector
-  mutable std::shared_mutex image_mutex;
-
-  //HACK: we wrap the image object here
-  naoth::Image* image = nullptr;
-
-  // IDEA: would it make sense to make it a parameter?
-  // TODO: experiment with quality
-  static const int quality = 75;
-
+  mutable std::mutex image_mutex;
   mutable std::future<JpegData> futureJpegData;
   mutable JpegData jpegData;
 
-
-  // Allow access to privat members to the serializer.
-  friend class naoth::Serializer<ImageJPEG>;
+  //HACK: we wrap the image object here
+  naoth::Image* image = nullptr;
+  
+  // IDEA: would it make sense to make it a parameter?
+  // TODO: experiment with quality
+  static const int quality = 75;
 
 public:
 
@@ -51,6 +46,29 @@ public:
     invalidateCompressed();
   }
 
+  /**
+   * Get the compressed JPEG data.
+   * This waits for the background job to finish.
+   */
+  JpegData& get() const {
+    // Wait for the future and set the parent representation when finished
+    if(futureJpegData.valid()) {
+      futureJpegData.wait();
+
+      std::unique_lock lock(image_mutex);
+      if(futureJpegData.valid()) {
+        jpegData = futureJpegData.get();
+        jpegData.height = image->height();
+        jpegData.width = image->width();
+      }
+    }
+    return jpegData;
+  }
+
+  /**
+   * Mark the current JPEG data as invalid, e.g. because a new frame has begun.
+   * This will start a background thread that compresses the image.
+   */
   void invalidateCompressed();
 
   void decompressYUYV(const std::string& data, unsigned int width, unsigned int height);

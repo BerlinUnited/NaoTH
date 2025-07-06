@@ -140,6 +140,7 @@ void ImageJPEG::invalidateCompressed() {
 
 void ImageJPEG::decompressYUYV(const std::string& data, unsigned int width, unsigned int height)
 {
+  std::unique_lock lock(image_mutex);
   CameraInfo newCameraInfo;
   newCameraInfo.resolutionHeight = height;
   newCameraInfo.resolutionWidth = width;
@@ -187,23 +188,13 @@ void Serializer<ImageJPEG>::serialize(const ImageJPEG& parent, std::ostream& str
   // HACK
   naothmessages::Image img;
 
-  // Wait for the future and set the parent representation when finished
-  if(parent.futureJpegData.valid()) {
-    parent.futureJpegData.wait();
-
-    std::unique_lock lock(parent.image_mutex);
-    if(parent.futureJpegData.valid()) {
-      parent.jpegData = parent.futureJpegData.get();
-    }
-  }
+  JpegData& data = parent.get();
 
   // Write the finished data to the stream
-  std::shared_lock lock(parent.image_mutex);
-
-  img.set_height(parent.image->height());
-  img.set_width(parent.image->width());
+  img.set_height(data.height);
+  img.set_width(data.width);
   img.set_format(naothmessages::Image_Format_JPEG);
-  img.set_data(parent.jpegData.bytes.data(), parent.jpegData.number_of_bytes);
+  img.set_data(data.bytes.data(), data.number_of_bytes);
 
   google::protobuf::io::OstreamOutputStream buf(&stream);
   img.SerializeToZeroCopyStream(&buf);
@@ -213,9 +204,7 @@ void Serializer<ImageJPEG>::deserialize(std::istream& stream, ImageJPEG& represe
 {
   // HACK
   naothmessages::Image img;
-
-  std::unique_lock lock(representation.image_mutex);
-
+  
   google::protobuf::io::IstreamInputStream buf(&stream);
   img.ParseFromZeroCopyStream(&buf);
 
