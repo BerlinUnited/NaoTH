@@ -92,19 +92,8 @@ public:
         a_bot.wait();
         LOGSTUFF(ImageJPEG);
 
-        // first image: bottom
-        //imageOutFile.write((const char*)(&frameNumber), sizeof(unsigned int));
-        //imageOutFile.write((const char*)getImageJPEG().getJPEG(), getImageJPEG().getJPEGSize());
-        
-
         a_top.wait();
         LOGSTUFF(ImageJPEGTop);
-
-        // second image: top
-        //imageOutFile.write((const char*)(&frameNumber), sizeof(unsigned int));
-        //imageOutFile.write((const char*)getImageJPEGTop().getJPEG(), getImageJPEGTop().getJPEGSize());
-
-        //imageOutFile.flush();
       });
     }
   }

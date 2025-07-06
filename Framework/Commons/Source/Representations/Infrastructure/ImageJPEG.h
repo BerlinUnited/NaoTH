@@ -28,6 +28,9 @@ private:
   mutable std::vector<uint8_t> jpeg;
   mutable size_t jpeg_size = 0;
 
+  // Allow access to privat members to the serializer.
+  friend class naoth::Serializer<ImageJPEG>;
+
 public:
 
   // HACK: wrap the image
@@ -39,17 +42,6 @@ public:
     jpeg.clear();
   }
 
-
-  unsigned int getWidth() const {
-    std::shared_lock lock(image_mutex);
-    return image->width();
-  }
-
-  unsigned int getHeight() const {
-    std::shared_lock lock(image_mutex);
-    return image->height();
-  }
-
   /**
    * Make sure the JPEG image is compressed. This is marked as const, because it semantically does not change the represented image.
    * But it does change the internal representation of the JPEG image.
@@ -59,19 +51,6 @@ public:
   void compressYUYV() const;
   void decompressYUYV(const std::string& data, unsigned int width, unsigned int height);
 
-  /** 
-   * Get the compressed JPEG data. 
-   * It is made sure internally. that this is always up-to-date with the currently wrapped image.
-   * Because it might execute the actual compression, this method can be costly.
-   * You can call compressYUYV() to specify when the compression should be done.
-   */
-  const uint8_t* getJPEG() const { 
-    // TODO: remove this raw access to the jpeg data, 
-    // since we can't protect it with a mutex after the pointer is returned
-    std::shared_lock lock(image_mutex);
-
-    return jpeg.data();
-  }
 
   size_t getJPEGSize() const {
     std::shared_lock lock(image_mutex);

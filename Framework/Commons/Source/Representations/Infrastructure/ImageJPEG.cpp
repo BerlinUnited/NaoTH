@@ -185,16 +185,19 @@ void ImageJPEG::decompressYUYV(const std::string& data, unsigned int width, unsi
 
 void Serializer<ImageJPEG>::serialize(const ImageJPEG& parent, std::ostream& stream)
 {
+  std::shared_lock lock(parent.image_mutex);
+
   // HACK
   static naothmessages::Image img;
 
-  img.set_height(parent.getHeight());
-  img.set_width(parent.getWidth());
+
+  img.set_height(parent.image->height());
+  img.set_width(parent.image->width());
 
   img.set_format(naothmessages::Image_Format_JPEG);
 
   // NOTE: we might want to use .set_allocated_data
-  img.set_data(parent.getJPEG(), parent.getJPEGSize());
+  img.set_data(parent.jpeg.data(), parent.getJPEGSize());
 
   google::protobuf::io::OstreamOutputStream buf(&stream);
   img.SerializeToZeroCopyStream(&buf);
@@ -207,6 +210,8 @@ void Serializer<ImageJPEG>::deserialize(std::istream& stream, ImageJPEG& represe
 {
   // HACK
   static naothmessages::Image img;
+
+  std::unique_lock lock(representation.image_mutex);
 
   google::protobuf::io::IstreamInputStream buf(&stream);
   img.ParseFromZeroCopyStream(&buf);
