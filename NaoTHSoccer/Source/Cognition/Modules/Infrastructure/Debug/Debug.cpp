@@ -55,9 +55,6 @@ Debug::Debug() : cognitionLogger("CognitionLog")
   // modify commands
   REGISTER_DEBUG_COMMAND("DebugPlot:get", "get the plots", &getDebugPlot());
 
-  getImageJPEG().set(getImage());
-  getImageJPEGTop().set(getImageTop());
-
   // HACK: initialize the both canvases
   getDebugImageDrawings().init(getImage().width(), getImage().height());
   getDebugImageDrawingsTop().init(getImageTop().width(), getImageTop().height());
@@ -76,9 +73,6 @@ Debug::~Debug()
 
 void Debug::execute()
 {
-  getImageJPEG().clearCompressed();
-  getImageJPEGTop().clearCompressed();
-
   // log only when a ball was seen if the parameter is activated
   if(!params.log.onlyWhenBallwasSeen || getMultiBallPercept().wasSeen()) 
   {

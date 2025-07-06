@@ -66,8 +66,8 @@ BEGIN_DECLARE_MODULE(Debug)
   PROVIDE(Image)
   PROVIDE(ImageTop)
 
-  PROVIDE(ImageJPEG)
-  PROVIDE(ImageJPEGTop)
+  REQUIRE(ImageJPEG)
+  REQUIRE(ImageJPEGTop)
 
   PROVIDE(FieldInfo)
   PROVIDE(AudioControl)

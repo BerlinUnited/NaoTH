@@ -28,10 +28,11 @@ BEGIN_DECLARE_MODULE(GameImageLogger)
   REQUIRE(PlayerInfo)
   REQUIRE(MotionStatus)
 
-  REQUIRE(Image)
-  REQUIRE(ImageTop)
-  REQUIRE(ImageJPEG)
-  REQUIRE(ImageJPEGTop)
+  PROVIDE(Image)
+  PROVIDE(ImageTop)
+
+  PROVIDE(ImageJPEG)
+  PROVIDE(ImageJPEGTop)
 
 END_DECLARE_MODULE(GameImageLogger)
 
@@ -39,6 +40,11 @@ class GameImageLogger : public GameImageLoggerBase
 {
 public:
   GameImageLogger() {
+
+    // Link the image data
+    getImageJPEG().set(getImage());
+    getImageJPEGTop().set(getImageTop());
+
     const std::string imageLogPath = "/home/nao/images_jpeg.log";
     //imageOutFile.open(imageLogPath, std::ios::out | std::ios::binary);
 
@@ -59,6 +65,9 @@ public:
 
   virtual void execute()
   {
+    getImageJPEG().clearCompressed();
+    getImageJPEGTop().clearCompressed();
+    
     // HACK: wait a bit before starting recording
     if(!logfileManager.is_ready()) {
       return;
