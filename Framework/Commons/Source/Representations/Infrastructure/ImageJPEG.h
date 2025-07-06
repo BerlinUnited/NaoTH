@@ -10,7 +10,7 @@
 #include "Image.h"
 #include <vector>
 #include <mutex>
-#include <shared_mutex>>
+#include <shared_mutex>
 
 class ImageJPEG
 {
@@ -34,11 +34,18 @@ public:
   void set(naoth::Image& image) {
     std::unique_lock lock(image_mutex);
     this->image = &image;
+    // Clear the vector without changing the capacity.
+    jpeg.clear();
   }
 
-  const naoth::Image& get() const {
+  unsigned int getWidth() const {
     std::shared_lock lock(image_mutex);
-    return *image; 
+    return image->width();
+  }
+
+  unsigned int getHeight() const {
+    std::shared_lock lock(image_mutex);
+    return image->height();
   }
 
   void compressYUYV() const;
@@ -50,6 +57,7 @@ public:
     std::shared_lock lock(image_mutex);
     return jpeg.data();
   }
+
   size_t getJPEGSize() const {
     std::shared_lock lock(image_mutex);
     return jpeg_size;

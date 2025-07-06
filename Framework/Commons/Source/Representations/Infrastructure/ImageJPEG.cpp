@@ -31,6 +31,13 @@ void ImageJPEG::compressYUYV() const
   std::unique_lock lock(image_mutex);
   ASSERT(image != NULL);
 
+  if(!jpeg.empty()) {
+    // Every time we set a new image, the jpeg is cleared.
+    // If the jpeg vector contains data, it means we already
+    // compressed the image and can return early.
+    return;
+  }
+
   // make sure we have enough space
   // NOTE: the resize does not allocate new memory if there is enough memory already reserved.
   // so, the allocation should happen only the first time.
@@ -181,8 +188,8 @@ void Serializer<ImageJPEG>::serialize(const ImageJPEG& parent, std::ostream& str
   // HACK
   static naothmessages::Image img;
 
-  img.set_height(parent.get().height());
-  img.set_width(parent.get().width());
+  img.set_height(parent.getHeight());
+  img.set_width(parent.getWidth());
 
   img.set_format(naothmessages::Image_Format_JPEG);
 
