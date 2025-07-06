@@ -42,6 +42,12 @@ public:
     jpeg.clear();
   }
 
+  void clearCompressed() {
+    std::unique_lock lock(image_mutex);
+    // Clear the vector without changing the capacity.
+    jpeg.clear();
+  }
+
   /**
    * Make sure the JPEG image is compressed. This is marked as const, because it semantically does not change the represented image.
    * But it does change the internal representation of the JPEG image.

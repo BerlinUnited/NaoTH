@@ -76,6 +76,9 @@ Debug::~Debug()
 
 void Debug::execute()
 {
+  getImageJPEG().clearCompressed();
+  getImageJPEGTop().clearCompressed();
+
   // log only when a ball was seen if the parameter is activated
   if(!params.log.onlyWhenBallwasSeen || getMultiBallPercept().wasSeen()) 
   {
