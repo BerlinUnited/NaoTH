@@ -29,6 +29,7 @@ private:
   mutable size_t jpeg_size = 0;
 
 public:
+
   // HACK: wrap the image
   // in the future ImageJPEG should have access to the black board
   void set(naoth::Image& image) {
@@ -37,6 +38,7 @@ public:
     // Clear the vector without changing the capacity.
     jpeg.clear();
   }
+
 
   unsigned int getWidth() const {
     std::shared_lock lock(image_mutex);
@@ -55,6 +57,11 @@ public:
     // TODO: remove this raw access to the jpeg data, 
     // since we can't protect it with a mutex after the pointer is returned
     std::shared_lock lock(image_mutex);
+
+    // Make sure the JPEG image is compressed.
+    // This must return early if the JPEG was already compressed.
+    compressYUYV();
+
     return jpeg.data();
   }
 
@@ -62,7 +69,6 @@ public:
     std::shared_lock lock(image_mutex);
     return jpeg_size;
   }
-
 };
 
 class ImageJPEGTop: public ImageJPEG {};

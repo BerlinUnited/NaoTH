@@ -84,8 +84,6 @@ public:
     {
       process = std::async([&] 
       {
-        unsigned int frameNumber = getFrameInfo().getFrameNumber();
-
         auto a_bot = std::async(std::launch::deferred, [&]{ getImageJPEG().compressYUYV(); } );
         auto a_top = std::async(std::launch::deferred, [&]{ getImageJPEGTop().compressYUYV(); } );
         
