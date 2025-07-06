@@ -19,7 +19,7 @@ private:
   // protect access to the image pointer and the corresponding jpeg byte vector
   mutable std::shared_mutex image_mutex;
 
-  mutable bool compressionValid = false;
+  mutable std::atomic<bool> compressionValid = false;
 
   //HACK: we wrap the image object here
   naoth::Image* image = nullptr;
@@ -45,7 +45,6 @@ public:
   }
 
   void invalidateCompressed() {
-    std::unique_lock lock(image_mutex);
     compressionValid = false;
   }
 
