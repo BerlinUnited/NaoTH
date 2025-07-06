@@ -50,17 +50,25 @@ public:
     return image->height();
   }
 
+  /**
+   * Make sure the JPEG image is compressed. This is marked as const, because it semantically does not change the represented image.
+   * But it does change the internal representation of the JPEG image.
+   * By making this method accessible, you can transfer the **costly** compression to a different thread.
+   * It must return early, when the image is already compressed.
+   */
   void compressYUYV() const;
   void decompressYUYV(const std::string& data, unsigned int width, unsigned int height);
 
+  /** 
+   * Get the compressed JPEG data. 
+   * It is made sure internally. that this is always up-to-date with the currently wrapped image.
+   * Because it might execute the actual compression, this method can be costly.
+   * You can call compressYUYV() to specify when the compression should be done.
+   */
   const uint8_t* getJPEG() const { 
     // TODO: remove this raw access to the jpeg data, 
     // since we can't protect it with a mutex after the pointer is returned
     std::shared_lock lock(image_mutex);
-
-    // Make sure the JPEG image is compressed.
-    // This must return early if the JPEG was already compressed.
-    compressYUYV();
 
     return jpeg.data();
   }
