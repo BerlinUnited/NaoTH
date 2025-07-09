@@ -122,7 +122,7 @@ public:
             }
             a = (JtJ + regularizer * Eigen::MatrixXd::Identity(JtJ.rows(),JtJ.cols())).colPivHouseholderQr().solve(-J.transpose() * r + regularizer * R * x);
         } else {*/
-            a = (JtJ).colPivHouseholderQr().solve(-J.transpose() * r);
+            a = (JtJ).fullPivHouseholderQr().solve(-J.transpose() * r);
         //}
 
         if(a.hasNaN()){
@@ -244,8 +244,8 @@ public:
             a = (JtJ + this->lambda * JtJdiag         + this->regularizer * Eigen::MatrixXd::Identity(JtJ.rows(),JtJ.cols())).colPivHouseholderQr().solve(-J.transpose() * r + this->regularizer * R * x);
             b = (JtJ + this->lambda/this->v * JtJdiag + this->regularizer * Eigen::MatrixXd::Identity(JtJ.rows(),JtJ.cols())).colPivHouseholderQr().solve(-J.transpose() * r + this->regularizer * R * x);
         } else {*/
-            a = (JtJ + this->lambda * JtJdiag).colPivHouseholderQr().solve(-J.transpose() * r);
-            b = (JtJ + this->lambda/this->v * JtJdiag).colPivHouseholderQr().solve(-J.transpose() * r);
+            a = (JtJ + this->lambda * JtJdiag).fullPivHouseholderQr().solve(-J.transpose() * r);
+            b = (JtJ + this->lambda/this->v * JtJdiag).fullPivHouseholderQr().solve(-J.transpose() * r);
         //}
 
         if(a.hasNaN() || b.hasNaN()){
@@ -341,7 +341,7 @@ public:
             }
             a = (JtJ + this->lambda * JtJdiag + this->regularizer * Eigen::MatrixXd::Identity(JtJ.rows(),JtJ.cols())).colPivHouseholderQr().solve(-J.transpose() * r + this->regularizer * R * x);
         } else {*/
-            a = (JtJ + this->lambda * JtJdiag).colPivHouseholderQr().solve(-J.transpose() * r);
+            a = (JtJ + this->lambda * JtJdiag).fullPivHouseholderQr().solve(-J.transpose() * r);
         //}
 
         if(a.hasNaN()){
