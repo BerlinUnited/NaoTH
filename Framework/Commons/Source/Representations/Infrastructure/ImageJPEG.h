@@ -13,8 +13,8 @@
 #include <future>
 
 struct JpegData {
-  std::vector<uint8_t> bytes;
-  size_t number_of_bytes = 0;
+  std::vector<uint8_t> bytes; // use vector so we don't have to manually manage memory
+  size_t number_of_bytes = 0; // of compressed image
   unsigned int width;
   unsigned int height;
 };
