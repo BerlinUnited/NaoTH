@@ -36,13 +36,11 @@
 
 // tools
 #include "Tools/Debug/DebugParameterList.h"
-#include <Representations/Debug/Stopwatch.h>
 
 using namespace naoth;
 
 BEGIN_DECLARE_MODULE(GameLogger)
   PROVIDE(DebugParameterList)
-  PROVIDE(StopwatchManager)
 
   REQUIRE(FrameInfo)
   REQUIRE(PlayerInfo)
