@@ -34,9 +34,6 @@ void ImageJPEG::compressImageAsync() {
   // Immediatly start a background thread that compresses the image data
   futureJpegData = std::async([&] {
       JpegData result;
-      // make sure we have enough space
-      // NOTE: the resize does not allocate new memory if there is enough memory already reserved.
-      // so, the allocation should happen only the first time.
       result.bytes.resize(image->data_size());
 
       struct jpeg_compress_struct cinfo;
