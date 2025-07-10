@@ -26,7 +26,7 @@ static boolean empty_output_buffer (j_compress_ptr /*cinfo*/) {
 
 static void term_destination (j_compress_ptr /*cinfo*/) {}
 
-void ImageJPEG::invalidateCompressed() {
+void ImageJPEG::compressImageAsync() {
   std::unique_lock lock(image_mutex);
   jpegData.bytes.clear();
   jpegData.number_of_bytes = 0;

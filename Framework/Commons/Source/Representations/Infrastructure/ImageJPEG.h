@@ -43,7 +43,7 @@ public:
       std::unique_lock lock(image_mutex);
       this->image = &image;
     }
-    invalidateCompressed();
+    compressImageAsync();
   }
 
   /**
@@ -65,11 +65,7 @@ public:
     return jpegData;
   }
 
-  /**
-   * Mark the current JPEG data as invalid, e.g. because a new frame has begun.
-   * This will start a background thread that compresses the image.
-   */
-  void invalidateCompressed();
+  void compressImageAsync();
 
   void decompressYUYV(const std::string& data, unsigned int width, unsigned int height);
 
