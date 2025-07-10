@@ -15,7 +15,6 @@
 #include <Representations/Infrastructure/FrameInfo.h>
 
 #include <Representations/Infrastructure/Image.h>
-#include <Representations/Infrastructure/ImageJPEG.h>
 
 #include <Representations/Infrastructure/AudioControl.h>
 
@@ -65,9 +64,6 @@ BEGIN_DECLARE_MODULE(Debug)
   REQUIRE(FrameInfo)
   PROVIDE(Image)
   PROVIDE(ImageTop)
-
-  REQUIRE(ImageJPEG)
-  REQUIRE(ImageJPEGTop)
 
   PROVIDE(FieldInfo)
   PROVIDE(AudioControl)
