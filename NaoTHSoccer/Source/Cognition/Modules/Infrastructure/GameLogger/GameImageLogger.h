@@ -40,10 +40,8 @@ class GameImageLogger : public GameImageLoggerBase
 {
 public:
   GameImageLogger() {
-
-    // Link the image data
-    getImageJPEG().set(getImage());
-    getImageJPEGTop().set(getImageTop());
+    getImageJPEG().linkTo(getImage());
+    getImageJPEGTop().linkTo(getImageTop());
 
     const std::string imageLogPath = "/home/nao/images_jpeg.log";
     //imageOutFile.open(imageLogPath, std::ios::out | std::ios::binary);

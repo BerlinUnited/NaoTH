@@ -38,7 +38,7 @@ public:
 
   // HACK: wrap the image
   // in the future ImageJPEG should have access to the black board
-  void set(naoth::Image& image) {
+  void linkTo(naoth::Image& image) {
     {
       std::unique_lock lock(image_mutex);
       this->image = &image;
