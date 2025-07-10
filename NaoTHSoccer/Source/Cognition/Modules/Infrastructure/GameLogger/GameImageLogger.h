@@ -91,7 +91,6 @@ public:
     {
       process = std::async([&] 
       {
-        
         LOGSTUFF(FrameInfo);
         LOGSTUFF(ImageJPEG);
         LOGSTUFF(ImageJPEGTop);
