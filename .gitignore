@@ -8,6 +8,7 @@ backup_*/
 NaoSCP/tmp/
 XabslEditor/
 .gradle/
+gradle.properties
 
 #java project and compiled files
 build.xml
