@@ -28,10 +28,11 @@ BEGIN_DECLARE_MODULE(GameImageLogger)
   REQUIRE(PlayerInfo)
   REQUIRE(MotionStatus)
 
-  REQUIRE(Image)
-  REQUIRE(ImageTop)
-  REQUIRE(ImageJPEG)
-  REQUIRE(ImageJPEGTop)
+  PROVIDE(Image)
+  PROVIDE(ImageTop)
+
+  PROVIDE(ImageJPEG)
+  PROVIDE(ImageJPEGTop)
 
 END_DECLARE_MODULE(GameImageLogger)
 
@@ -39,6 +40,9 @@ class GameImageLogger : public GameImageLoggerBase
 {
 public:
   GameImageLogger() {
+    getImageJPEG().linkTo(getImage());
+    getImageJPEGTop().linkTo(getImageTop());
+
     const std::string imageLogPath = "/home/nao/images_jpeg.log";
     //imageOutFile.open(imageLogPath, std::ios::out | std::ios::binary);
 
@@ -59,6 +63,9 @@ public:
 
   virtual void execute()
   {
+    getImageJPEG().compressImageAsync();
+    getImageJPEGTop().compressImageAsync();
+    
     // HACK: wait a bit before starting recording
     if(!logfileManager.is_ready()) {
       return;
@@ -84,29 +91,9 @@ public:
     {
       process = std::async([&] 
       {
-        unsigned int frameNumber = getFrameInfo().getFrameNumber();
-
-        auto a_bot = std::async(std::launch::deferred, [&]{ getImageJPEG().compressYUYV(); } );
-        auto a_top = std::async(std::launch::deferred, [&]{ getImageJPEGTop().compressYUYV(); } );
-        
         LOGSTUFF(FrameInfo);
-
-        a_bot.wait();
         LOGSTUFF(ImageJPEG);
-
-        // first image: bottom
-        //imageOutFile.write((const char*)(&frameNumber), sizeof(unsigned int));
-        //imageOutFile.write((const char*)getImageJPEG().getJPEG(), getImageJPEG().getJPEGSize());
-        
-
-        a_top.wait();
         LOGSTUFF(ImageJPEGTop);
-
-        // second image: top
-        //imageOutFile.write((const char*)(&frameNumber), sizeof(unsigned int));
-        //imageOutFile.write((const char*)getImageJPEGTop().getJPEG(), getImageJPEGTop().getJPEGSize());
-
-        //imageOutFile.flush();
       });
     }
   }

@@ -108,12 +108,14 @@ public abstract class AbstractManager<T> implements Manager<T>, CommandSender
   @Override
   public void handleError(final int code)
   {
-    SwingUtilities.invokeLater(new Runnable() { 
-        @Override 
-        public void run() {
-            notifyErrorOccured("Error while receiving the message occured " + code);
-        }
-    });
+    if(getServer().isConnected()) {
+        SwingUtilities.invokeLater(new Runnable() { 
+            @Override 
+            public void run() {
+                notifyErrorOccured("Error while receiving the message occured " + code);
+            }
+        });        
+    }
   }
   
   private void notifyErrorOccured(final String message)

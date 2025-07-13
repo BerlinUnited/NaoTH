@@ -9,35 +9,66 @@
 
 #include "Image.h"
 #include <vector>
+#include <mutex>
+#include <future>
+
+struct JpegData {
+  std::vector<uint8_t> bytes; // use vector so we don't have to manually manage memory
+  size_t number_of_bytes = 0; // of compressed image
+  unsigned int width;
+  unsigned int height;
+};
 
 class ImageJPEG
 {
 private:
+  // protect access to the image pointer and the corresponding jpeg byte vector
+  mutable std::mutex image_mutex;
+  mutable std::future<JpegData> futureJpegData;
+  mutable JpegData jpegData;
+
   //HACK: we wrap the image object here
   naoth::Image* image = nullptr;
-
-public:
-  // HACK: wrap the image
-  // in the future ImageJPEG should have access to the black board
-  void set(naoth::Image& image) {
-    this->image = &image;
-  }
-
-  const naoth::Image& get() const { return *image; }
-
-  void compressYUYV() const;
-  void decompressYUYV(const std::string& data, unsigned int width, unsigned int height);
-
-  const uint8_t* getJPEG() const { return jpeg.data(); }
-  size_t getJPEGSize() const { return jpeg_size; }
-
-private:
+  
   // IDEA: would it make sense to make it a parameter?
   // TODO: experiment with quality
   static const int quality = 75;
 
-  mutable std::vector<uint8_t> jpeg;
-  mutable size_t jpeg_size = 0;
+public:
+
+  // HACK: wrap the image
+  // in the future ImageJPEG should have access to the black board
+  void linkTo(naoth::Image& image) {
+    {
+      std::unique_lock lock(image_mutex);
+      this->image = &image;
+    }
+    compressImageAsync();
+  }
+
+  /**
+   * Get the compressed JPEG data.
+   * This waits for the background job to finish.
+   */
+  JpegData& get() const {
+    // Wait for the future and set the parent representation when finished
+    if(futureJpegData.valid()) {
+      futureJpegData.wait();
+
+      std::unique_lock lock(image_mutex);
+      if(futureJpegData.valid()) {
+        jpegData = futureJpegData.get();
+        jpegData.height = image->height();
+        jpegData.width = image->width();
+      }
+    }
+    return jpegData;
+  }
+
+  void compressImageAsync();
+
+  void decompressYUYV(const std::string& data, unsigned int width, unsigned int height);
+
 };
 
 class ImageJPEGTop: public ImageJPEG {};
