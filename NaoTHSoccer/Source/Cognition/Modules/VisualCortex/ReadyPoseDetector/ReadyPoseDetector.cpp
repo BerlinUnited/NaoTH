@@ -3,7 +3,6 @@
 #include "Tools/CameraGeometry.h"
 #include <Tools/ImageProcessing/ColorModelConversions.h>
 
-
 using namespace std;
 
 ReadyPoseDetector::ReadyPoseDetector()
@@ -22,13 +21,10 @@ ReadyPoseDetector::~ReadyPoseDetector()
   getDebugParameterList().remove(&params);
 }
 
-
 void ReadyPoseDetector::execute()
 {
-
   // reset
   getWhistlePercept().readyRefereePoseDetected = false;
-
 
   if(getPlayerInfo().robotState != PlayerInfo::RobotState::standby) {
     return;
@@ -83,9 +79,7 @@ void ReadyPoseDetector::execute()
     BOX(poseInImage.x, poseInImage.y, poseInImage.x + 192, poseInImage.y + 192);
   );
 
-
   float (*inputTensor)[1][192][192][3] = reinterpret_cast<float(*)[1][192][192][3]>(exec.getInputTensor());
-
 
   // create input tensor
   Pixel pixel;
@@ -101,29 +95,16 @@ void ReadyPoseDetector::execute()
 
       ColorModelConversions::fromYCbCrToRGB(pixel.y, pixel.cb, pixel.cr, pixelRGB.a, pixelRGB.b, pixelRGB.c);
       
-      
       (*inputTensor)[0][y][x][0] = ((float)pixelRGB.a);
       (*inputTensor)[0][y][x][1] = ((float)pixelRGB.b);
       (*inputTensor)[0][y][x][2] = ((float)pixelRGB.c);
     }
   }
 
-
   exec.execute();
-
 
   // draw output
   const float (*output)[1][1][17][3] = reinterpret_cast<const float(*)[1][1][17][3]>(exec.getOutputTensor());
-
-  /*
-  for(int i = 0; i < 17; i++) {
-    for (int j = 0; j < 3; j++) {
-      std::cout << (*output)[0][0][i][j] << "\t";
-    }
-    std::cout << std::endl;
-  }
-  */
-
 
   // eyes
   float y1 = (*output)[0][0][1][0] * 192.0;
@@ -175,7 +156,4 @@ void ReadyPoseDetector::execute()
       BOX(poseInImage.x, poseInImage.y, poseInImage.x + 192, poseInImage.y + 192);
     }
   );
-
-  
 }
-
