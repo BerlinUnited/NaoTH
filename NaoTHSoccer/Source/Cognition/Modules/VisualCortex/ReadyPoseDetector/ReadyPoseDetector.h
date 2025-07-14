@@ -25,6 +25,7 @@
 
 #include "Representations/Infrastructure/FieldInfo.h"
 
+#include "Representations/Infrastructure/GameData.h"
 #include "Representations/Modeling/PlayerInfo.h"
 
 #include "tfliteexecuter.h"
@@ -50,6 +51,7 @@ BEGIN_DECLARE_MODULE(ReadyPoseDetector)
   REQUIRE(FrameInfo)
 
   REQUIRE(PlayerInfo)
+  REQUIRE(GameData)
 
   REQUIRE(CameraInfo)
   REQUIRE(CameraInfoTop)
