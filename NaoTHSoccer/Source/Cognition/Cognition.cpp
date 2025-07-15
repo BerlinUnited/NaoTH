@@ -115,6 +115,7 @@
 #include "Modules/Modeling/RoleDecision/Position/RoleDecisionPositionDynamicGoalie.h"
 #include "Modules/Modeling/RoleDecision/Assignment/RoleDecisionAssignmentStatic.h"
 #include "Modules/Modeling/RoleDecision/Assignment/RoleDecisionAssignmentDistance.h"
+#include "Modules/Modeling/RoleDecision/Position/RoleDecisionPositionDynamic.h"
 // the old striker decision (dynamic)
 #include "Modules/Modeling/RoleDecision/Dynamic/SimpleRoleDecision.h"
 #include "Modules/Modeling/RoleDecision/Dynamic/StableRoleDecision.h"
@@ -170,7 +171,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(TeamCommReceiver);
   REGISTER_MODULE(TeamCommEventReceiver);
   REGISTER_MODULE(SimpleNetworkTimeProtocol);
-  
+
   // start asynchroneous image logging
   REGISTER_MODULE(GameImageLogger);
 
@@ -186,13 +187,13 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
 
   REGISTER_MODULE(KinematicChainProvider);
   REGISTER_MODULE(CameraMatrixFinder);
-  
+
   REGISTER_MODULE(ArtificialHorizonCalculator);
-  REGISTER_MODULE(BodyContourProvider);	
+  REGISTER_MODULE(BodyContourProvider);
 
   REGISTER_MODULE(HistogramProvider);
   REGISTER_MODULE(FieldColorClassifier);
-  
+
   REGISTER_MODULE(IntegralImageProvider);
   REGISTER_MODULE(IntegralSubsamplingTest);
 
@@ -233,7 +234,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
 
   // own body
   REGISTER_MODULE(BodyStateProvider);
-  
+
   // obstacles
   REGISTER_MODULE(UltraSoundObstacleDetector);
   REGISTER_MODULE(UltrasonicDetector2020);
@@ -253,8 +254,8 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(GPS_SelfLocator);
   REGISTER_MODULE(SituationPriorProvider); // needed by the MCSL
   REGISTER_MODULE(MonteCarloSelfLocator);
-  
-  
+
+
   // team communication
   REGISTER_MODULE(TeamCommReceiveEmulator);
   REGISTER_MODULE(TeamMessageStatisticsModule);
@@ -282,6 +283,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(RoleDecisionAssignmentDistance);
   // finally, determine the dynamic role (striker, supporter, ...)
   REGISTER_MODULE(RoleDecisionDynamic);
+  REGISTER_MODULE(RoleDecisionPositionDynamic);
 
   // old striker decisions
   REGISTER_MODULE(SimpleRoleDecision);
@@ -311,7 +313,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(BatteryAlert);
   REGISTER_MODULE(UltraSoundControl);
   REGISTER_MODULE(LEDSetter);
-  
+
 
   // debug
   REGISTER_MODULE(TeamCommDebugger);
@@ -341,8 +343,8 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
     setModuleEnabled(name, active);
   }
 
-  // Check if all the keys in the config do exist as modules. 
-  // PRECEDENT: RoboCup 2023 - the ultrasound obstacle detection was 
+  // Check if all the keys in the config do exist as modules.
+  // PRECEDENT: RoboCup 2023 - the ultrasound obstacle detection was
   // not on because the module UltraSoundControl was renamed but the config was not adjusted.
   // Only remove if you have a better solution.
   bool allConfiguredModulesExist = true;
