@@ -142,7 +142,7 @@ void* motionThreadCallback(void* ref)
       std::cerr << " finished." << std::endl;
       #endif
 
-      ASSERT(false && "Cognition seems to be dead");
+      ASSERT_MSG(false, "Cognition seems to be dead");
     }//end if
     framesSinceCognitionLastSeen++;
 
