@@ -162,6 +162,7 @@ private:
 
     void decideStriker(std::map<unsigned int, Roles::Dynamic>& roles);
     void decideGoalieSupporter(std::map<unsigned int, Roles::Dynamic>& roles);
+    /** Selects the closest player to the striker as supporter. */
     void decideSupporter(std::map<unsigned int, Roles::Dynamic>& roles);
 
     void checkStriker(const TeamState::Player& player, const double& indicator, const Vector2d& ball, std::vector<Striker>& striker, bool force = false);

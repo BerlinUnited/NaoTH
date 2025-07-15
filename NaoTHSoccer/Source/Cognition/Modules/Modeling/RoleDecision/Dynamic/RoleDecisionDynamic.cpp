@@ -25,7 +25,7 @@ RoleDecisionDynamic::~RoleDecisionDynamic()
 
 void RoleDecisionDynamic::execute()
 {
-    std::map<unsigned int, Roles::Dynamic> new_roles;
+    std::map<PlayerNumber, Roles::Dynamic> new_roles;
 
     decideStriker(new_roles);
     decideGoalieSupporter(new_roles);
@@ -42,7 +42,7 @@ void RoleDecisionDynamic::execute()
     }
 }
 
-void RoleDecisionDynamic::decideStriker(std::map<unsigned int, Roles::Dynamic>& roles)
+void RoleDecisionDynamic::decideStriker(std::map<PlayerNumber, Roles::Dynamic>& roles)
 {
     /*
      * - only active
@@ -127,7 +127,7 @@ bool RoleDecisionDynamic::goalieStrikerDecisionCondition(const TeamState::Player
         // check if a striker is already defending our goal
         for(auto& s : striker) {
             // do we defend the same ball and is striker between behind the ball?
-            
+
             if(checkSameBall(s, globalBall, r)  // same ball?
                     && getTeamState().getPlayer(s.playerNumber).pose().translation.x < globalBall.x // behind the ball
                     && (defendingGoalDirectLine(globalBall, getTeamState().getPlayer(s.playerNumber).pose().translation) // between ball and goal
@@ -231,7 +231,7 @@ double RoleDecisionDynamic::strikerIndicatorTimeToBall(const TeamState::Player& 
             - strikerBonus;                                              // current striker gets a bonus!
 }
 
-void RoleDecisionDynamic::decideGoalieSupporter(std::map<unsigned int, Roles::Dynamic>& roles)
+void RoleDecisionDynamic::decideGoalieSupporter(std::map<PlayerNumber, Roles::Dynamic>& roles)
 {
     /*
      * - if goalie is inactive, someone should become "goalie"
@@ -248,19 +248,24 @@ void RoleDecisionDynamic::decideGoalieSupporter(std::map<unsigned int, Roles::Dy
     }
 }
 
-void RoleDecisionDynamic::decideSupporter(std::map<unsigned int, Roles::Dynamic>& roles)
+void RoleDecisionDynamic::decideSupporter(std::map<PlayerNumber, Roles::Dynamic>& roles)
 {
-    /*
-     * - the supporter helps the striker
-     * - eg. to receive a pass or as backup, if the goalie lost the ball or a duael
-     * - should be someone, who also sees the ball and is in a good position to help ...
-     */
-    // TODO!
-    std::vector<Striker> new_supporter;
+    // find the striker, without it we can't decide a supporter
+    PlayerNumber strikerNumber = findRole(roles, Roles::striker);
+    if(strikerNumber == 0) { return; }
+
+    // if the striker is the goalie, we don't need a striker supporter
+    if (getRoleDecisionModel().roles[strikerNumber].role == Roles::goalie) { return; }
+
+    // reuse the striker struct for the supporter
+    Striker new_supporter{0, std::numeric_limits<double>::max(), Vector2d(), 0.0};
 
     // iterate over all robots(messages)
-    for (const auto& i: getTeamState().players) {
-        if(roles.find(i.first) == roles.cend()) {
+    for (const auto& i: getTeamState().players)
+    {
+        // the current player is not a goalie and has no role yet
+        if(getRoleDecisionModel().roles[i.first].role != Roles::goalie && (roles.find(i.first) == roles.cend() || roles[i.first] == Roles::none))
+        {
             unsigned int playerNumber = i.first;
             const auto& player = i.second;
 
@@ -272,23 +277,24 @@ void RoleDecisionDynamic::decideSupporter(std::map<unsigned int, Roles::Dynamic>
 
             double ballAge = player.ballAge() + getFrameInfo().getTimeSince(player.messageFrameInfo.getTime());
 
-            // TODO: instead of using 'hard-coded' values, base this on the average receiving time!
-            // last time ball seen is too big (striker gets an additional bonus)
+            // last time ball seen is too big
             if(ballAge > params.striker_ball_lost_time) { continue; }
 
-            // goalie doesn't support, all others do!
-            if(getRoleDecisionModel().roles[playerNumber].role != Roles::goalie) {
-                //Vector2d globalBall = player.pose() * player.ballPosition();
-                //double indicator = player.ballPosition().abs();
+            // Calculate the distance between the striker and the player
+            const auto& striker = getTeamState().getPlayer(strikerNumber);
+            double distanceToStriker = (player.pose().translation - striker.pose().translation).abs2();
 
-                //checkStriker(player, indicator, globalBall, new_striker);
+            // If the distance is less than the current supporter, update the supporter
+            if(distanceToStriker < new_supporter.indicator) {
+                new_supporter.playerNumber = playerNumber;
+                new_supporter.indicator    = distanceToStriker;
             }
         }
     }
 
     // set the supporter decision to the model
-    for(const auto& s : new_supporter) {
-        roles[s.playerNumber] = Roles::supporter;
+    if (new_supporter.playerNumber != 0) {
+        roles[new_supporter.playerNumber] = Roles::supporter;
     }
 }
 
