@@ -27,6 +27,17 @@ bool RoleDecisionModel::isStriker(unsigned int playerNumber) const
     return false;
 }
 
+unsigned int RoleDecisionModel::getPlayerNumber(Roles::Dynamic role) const
+{
+    for(const auto& it : roles) {
+        if(it.second.dynamic == role) {
+            return it.first;
+        }
+    }
+
+    return 0;
+}
+
 void RoleDecisionModel::print(std::ostream& stream) const {
 
     if (firstStriker != std::numeric_limits<unsigned int>::max()) {

@@ -27,6 +27,9 @@ public:
     Roles::Role getRole(unsigned int playerNumber) const;
     Roles::Position getStaticRolePosition(Roles::Static role) const;
 
+    /** Returns the player number of the given role, 0 if not found */
+    unsigned int getPlayerNumber(Roles::Dynamic role) const;
+
     bool isStriker(unsigned int playerNumber) const;
 
     /* OLD STUFF ------------------------------------------------ */
