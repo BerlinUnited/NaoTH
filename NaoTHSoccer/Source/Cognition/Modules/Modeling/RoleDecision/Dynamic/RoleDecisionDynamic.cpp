@@ -306,3 +306,14 @@ bool RoleDecisionDynamic::defendingGoalCircle(const Vector2d& ball, const Vector
     return (player_pos - anchor).abs2() < (ball - anchor).abs2() // is player in the defender circle
             && (player_pos - ball).abs2() < (params.goalie_striker_decision_distance*params.goalie_striker_decision_distance); // is the player near the ball
 }
+
+PlayerNumber RoleDecisionDynamic::findRole(std::map<PlayerNumber, Roles::Dynamic>& roles, Roles::Dynamic role) const
+{
+    for(const auto& r : roles) {
+        if(r.second == role) {
+            return r.first;
+        }
+    }
+
+    return 0;
+}

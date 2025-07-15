@@ -182,6 +182,8 @@ private:
     /* Various evaluation functions, if another striker is already defending the goal. */
     bool defendingGoalDirectLine(const Vector2d& ball, const Vector2d& player_pos) const;
     bool defendingGoalCircle(const Vector2d& ball, const Vector2d& player_pos) const;
+
+    unsigned int findRole(std::map<unsigned int, Roles::Dynamic>& roles, Roles::Dynamic role) const;
 };
 
 #endif // ROLEDECISIONDYNAMIC_H
