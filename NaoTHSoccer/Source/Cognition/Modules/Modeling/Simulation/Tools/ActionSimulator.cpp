@@ -45,15 +45,18 @@ void ActionSimulator::simulateAction(const Action& action, ActionResults& result
   //categorizedBallPositions.reserve(static_cast<int>(theParameters.numParticles));
   result.reset();
 
+  // we have to consider everything in the planned (preview) future location on the field
+  const Pose2D robotPosePlanned(getRobotPose() + getMotionStatus().plannedMotion.hip);
+
   // current ball position
-  Vector2d globalBallStartPosition = getRobotPose() * getBallModel().positionPreview;
+  const Vector2d globalBallStartPosition = robotPosePlanned * getBallModel().positionPreview;
   
 
   // now generate predictions and categorize
   for(size_t j=0; j < numParticles; ++j)
   {
     // predict and calculate shoot line
-    Vector2d globalBallEndPosition = getRobotPose() * action.predict(getBallModel().positionPreview, true);
+    Vector2d globalBallEndPosition = robotPosePlanned * action.predict(getBallModel().positionPreview, true);
 
     // check if collision detection with goal has to be performed
     // if the ball start and end positions are inside of the field, you don't need to check
@@ -101,7 +104,7 @@ void ActionSimulator::simulateAction(const Action& action, ActionResults& result
 
     // default category
     BallPositionCategory category = classifyBallPosition(globalBallEndPosition);
-    result.add(getRobotPose() / globalBallEndPosition, category);
+    result.add(robotPosePlanned / globalBallEndPosition, category);
   }
 }
 
@@ -217,13 +220,16 @@ double ActionSimulator::evaluateAction(const Vector2d& a) const
 
 double ActionSimulator::evaluateAction(const ActionResults& results) const
 {
+  // we have to consider everything in the planned (preview) future location on the field
+  const Pose2D robotPosePlanned(getRobotPose() + getMotionStatus().plannedMotion.hip);
+
   double sumPotential = 0.0;
   double numberOfActions = 0.0;
   for(ActionResults::Positions::const_iterator p = results.positions().begin(); p != results.positions().end(); ++p)
   {
     // assumes that the potential field is well defined inside the opponent goal
     if(p->cat() == INFIELD || p->cat() == OPPGOAL) {
-      sumPotential += evaluateAction(getRobotPose() * p->pos());
+      sumPotential += evaluateAction(robotPosePlanned * p->pos());
       numberOfActions++;
     }
   }
