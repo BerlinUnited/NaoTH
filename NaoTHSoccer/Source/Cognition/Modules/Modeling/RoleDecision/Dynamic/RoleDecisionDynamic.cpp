@@ -257,6 +257,9 @@ void RoleDecisionDynamic::decideSupporter(std::map<PlayerNumber, Roles::Dynamic>
     // if the striker is the goalie, we don't need a striker supporter
     if (getRoleDecisionModel().roles[strikerNumber].role == Roles::goalie) { return; }
 
+    // get the striker
+    const auto& striker = getTeamState().getPlayer(strikerNumber);
+
     // reuse the striker struct for the supporter
     Striker new_supporter{0, std::numeric_limits<double>::max(), Vector2d(), 0.0};
 
@@ -264,28 +267,30 @@ void RoleDecisionDynamic::decideSupporter(std::map<PlayerNumber, Roles::Dynamic>
     for (const auto& i: getTeamState().players)
     {
         // the current player is not a goalie and has no role yet
-        if(getRoleDecisionModel().roles[i.first].role != Roles::goalie && (roles.find(i.first) == roles.cend() || roles[i.first] == Roles::none))
+        if (getRoleDecisionModel().roles[i.first].role != Roles::goalie && (roles.find(i.first) == roles.cend() || roles[i.first] == Roles::none))
         {
             unsigned int playerNumber = i.first;
             const auto& player = i.second;
 
             // inactive/fallen/penalized robot
-            if(!getTeamMessagePlayersState().isPlaying(playerNumber)) { continue; }
+            if (!getTeamMessagePlayersState().isPlaying(playerNumber)) { continue; }
 
-            // ball not seen
-            if(player.ballAge() < 0) { continue; }
+            if (params.supporter_use_ball)
+            {
+                // ball not seen
+                if(player.ballAge() < 0) { continue; }
 
-            double ballAge = player.ballAge() + getFrameInfo().getTimeSince(player.messageFrameInfo.getTime());
+                double ballAge = player.ballAge() + getFrameInfo().getTimeSince(player.messageFrameInfo.getTime());
 
-            // last time ball seen is too big
-            if(ballAge > params.striker_ball_lost_time) { continue; }
+                // last time ball seen is too big
+                if(ballAge > params.striker_ball_lost_time) { continue; }
+            }
 
             // Calculate the distance between the striker and the player
-            const auto& striker = getTeamState().getPlayer(strikerNumber);
             double distanceToStriker = (player.pose().translation - striker.pose().translation).abs2();
 
             // If the distance is less than the current supporter, update the supporter
-            if(distanceToStriker < new_supporter.indicator) {
+            if (distanceToStriker < new_supporter.indicator) {
                 new_supporter.playerNumber = playerNumber;
                 new_supporter.indicator    = distanceToStriker;
             }

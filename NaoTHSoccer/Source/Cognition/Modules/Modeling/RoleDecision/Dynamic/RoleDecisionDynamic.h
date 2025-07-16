@@ -81,6 +81,8 @@ private:
             PARAMETER_REGISTER(step_distance, &Parameters::setStepDistance) = 80;
             PARAMETER_REGISTER(turn_angle, &Parameters::setTurnAngle) = 30;
 
+            PARAMETER_REGISTER(supporter_use_ball) = true;
+
             // load from the file after registering all parameters
             syncWithConfig();
         }
@@ -116,6 +118,9 @@ private:
         // the calculated speeds
         double step_speed;
         double turn_speed;
+
+        // params for the supporter decision
+        bool supporter_use_ball;
 
     private:
         void setStrikerBallDifferenceFunction(std::string variant) {
