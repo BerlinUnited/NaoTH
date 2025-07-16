@@ -895,8 +895,8 @@ void PathPlanner2018::forwardKick()
     // NOTE: change the kick pose if the parameter is set
     if (params.forwardKickAdaptive) {
         kickTarget = {0.0, ballPos.x, ballPos.y};  // kick towards the ball
+        kickTarget.translation.normalize(kickTarget.translation.abs() + params.kickTargetCropOffset);
     } 
-
 
     KickStepType kickStepType = (KickStepType)params.forwardKickStepType;
     Pose2D stepTarget = kickTarget;
@@ -904,9 +904,17 @@ void PathPlanner2018::forwardKick()
         stepTarget = {0, 0, 0};
     }
 
-
+    // apply min and max kick length
+    if (kickTarget.translation.abs() >= params.maxKickLength) {
+      kickTarget.translation.normalize(params.maxKickLength);
+    } else if (kickTarget.translation.abs() <= params.minKickLength) {
+      kickTarget.translation.normalize(params.minKickLength);
+    }
+    std::cout << "kickTarget: " << kickTarget << std::endl;
     
-    double kickTime = (kickTarget.translation.abs() / params.forwardKickBaseBallDistance) * params.forwardKickVelocity;
+    //double kickTime = (kickTarget.translation.abs() / params.forwardKickBaseBallDistance) * params.forwardKickVelocity;
+    double kickTime = (kickTarget.translation.abs() / params.forwardKickVelocity);
+    std::cout << "kickTime: " << kickTime << std::endl;
 
     // The kick
     StepBufferElement forward_kick_step("forward_kick");

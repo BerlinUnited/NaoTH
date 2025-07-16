@@ -93,10 +93,10 @@ private:
       PARAMETER_REGISTER(forwardKickThreshold_far.x)            = 50; // mm
       PARAMETER_REGISTER(forwardKickThreshold_far.y)            = 25; // mm
 
-      PARAMETER_REGISTER(forwardKickThreshold.x) = 50; // mm
+      PARAMETER_REGISTER(forwardKickThreshold.x) = 30; // mm
       PARAMETER_REGISTER(forwardKickThreshold.y) = 30; // mm
 
-      PARAMETER_REGISTER(forwardKickOffset.x) = 120; // mm
+      PARAMETER_REGISTER(forwardKickOffset.x) = 160; // mm
       PARAMETER_REGISTER(forwardKickOffset.y) = 0; // mm
 
       PARAMETER_REGISTER(nearApproach_step_character) = 0.3;
@@ -106,9 +106,12 @@ private:
 
       // forwardKick()
       PARAMETER_REGISTER(forwardKickAdaptive) = true; // mm
-      PARAMETER_REGISTER(forwardKickVelocity) = 350;
-      PARAMETER_REGISTER(forwardKickBaseBallDistance) = 100.0; // mm
+      PARAMETER_REGISTER(forwardKickVelocity) = 0.4;
+      //PARAMETER_REGISTER(forwardKickBaseBallDistance) = 100.0; // mm
 
+      PARAMETER_REGISTER(kickTargetCropOffset) = 0;
+      PARAMETER_REGISTER(maxKickLength) = 200;
+      PARAMETER_REGISTER(minKickLength) = 160;
 
       PARAMETER_REGISTER(forwardKickStepType) = 0;
 
@@ -153,9 +156,13 @@ private:
     Vector2d forwardKickThreshold;
     Vector2d forwardKickOffset;
     bool forwardKickAdaptive;
-    int forwardKickVelocity;
-    double forwardKickBaseBallDistance;
+    double forwardKickVelocity;
+    //double forwardKickBaseBallDistance;
     int forwardKickStepType;
+
+    int kickTargetCropOffset;
+    int maxKickLength;
+    int minKickLength;
 
 
     double cool_rotation_factor;
