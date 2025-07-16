@@ -84,6 +84,9 @@ void Roles::print(std::ostream& stream) const
            << "Active roles ("<<active.size()<<"):\n";
     for(const auto& r : active) { stream << getName(r) << ", "; }
     stream << "\n----------------------------------------------------\n"
+           << "Default Assignments:\n";
+    for(const auto& r : assignments) { stream << r.first << ":" << getName(r.second) << ", "; }
+    stream << "\n----------------------------------------------------\n"
            << "Default role positions:\n";
 
     for(const auto& it : defaults) {

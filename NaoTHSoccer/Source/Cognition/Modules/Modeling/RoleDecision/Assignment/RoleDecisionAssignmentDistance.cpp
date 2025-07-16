@@ -25,7 +25,7 @@ void RoleDecisionAssignmentDistance::execute()
     {
         // set predefined roles
         for (const auto& i: getTeamState().players) {
-            roleChange(i.first, params.assignment_role[i.first]);
+            roleChange(i.first, getRoles().assignments.at(i.first));
         }
     } else {
         // determine the best role for each player in the team context
