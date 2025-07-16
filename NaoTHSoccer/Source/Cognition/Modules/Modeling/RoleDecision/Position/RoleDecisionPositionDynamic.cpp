@@ -3,7 +3,9 @@
 
 RoleDecisionPositionDynamic::RoleDecisionPositionDynamic()
 {
+    DEBUG_REQUEST_REGISTER("RoleDecision:Dynamic:goalie_defensive_ellipse", "draws the defensive line (ellipse), on which the goalie position itself, if the ball is in the own half", false);
     DEBUG_REQUEST_REGISTER("RoleDecision:Dynamic:supporter_position", "draws the supporter position", false);
+
     getDebugParameterList().add(&params);
 }
 
@@ -15,6 +17,11 @@ RoleDecisionPositionDynamic::~RoleDecisionPositionDynamic()
 void RoleDecisionPositionDynamic::execute()
 {
     const auto& role = getRoleDecisionModel().getRole(getPlayerInfo().playerNumber);
+
+    // handle the static role goalie separately
+    if(role.role == Roles::goalie) {
+        goalie();
+    }
 
     // only update the position for myself
     switch (role.dynamic)
@@ -30,6 +37,53 @@ void RoleDecisionPositionDynamic::execute()
             getRoleDecisionModel().dynamic_position = getRoleDecisionModel().getStaticRolePosition(role.role).home;
             break;
     }
+}
+
+void RoleDecisionPositionDynamic::goalie()
+{
+    // prevent "oscillation" when the ball is near the defense line
+    // go forward, when ball is behind min x and go back if the ball is in front of max x
+    double defense_x = params.goalie_last_active ? params.goalie_defense_max_x : params.goalie_defense_min_x;
+    // we're using the teamball, so it has to be valid
+    if(getTeamBallModel().valid && getTeamBallModel().positionOnField.x <= defense_x) {
+        // Calculates the defensive position of the goalie
+        // The position is on an ellipse within the penalty area.
+        // The position is calculated in such a way, that a direct shot to the middle of the goal is prevented
+        auto p = calculateEllipsePoint({getTeamBallModel().positionOnField.x - getFieldInfo().xPosOwnGroundline, getTeamBallModel().positionOnField.y});
+        getRoleDecisionModel().dynamic_position.x = p.x + getFieldInfo().xPosOwnGroundline;
+        getRoleDecisionModel().dynamic_position.y = p.y;
+
+        params.goalie_last_active = true;
+    } else {
+        params.goalie_last_active = false;
+        // set position to default
+        getRoleDecisionModel().dynamic_position = getRoleDecisionModel().getStaticRolePosition(Roles::goalie).home;
+    }
+
+    DEBUG_REQUEST("RoleDecision:Dynamic:goalie_defensive_ellipse",
+        FIELD_DRAWING_CONTEXT;
+        OVAL(getFieldInfo().xPosOwnGroundline, 0, params.goalie_max_come_out, getFieldInfo().goalWidth/2);
+    );
+}
+
+Vector2d RoleDecisionPositionDynamic::calculateEllipsePoint(const Vector2d& ball)
+{
+    Vector2d point;
+    // ball is NOT behind our ground line
+    if(ball.x > 0) {
+        // direct line from goal center to the ball: f(x) = mx
+        double m = ball.y / ball.x;
+        double a = params.goalie_max_come_out;
+        double b = getFieldInfo().goalWidth / 2.0;
+        // position on the ellipse: x = \frac{ab}{\sqrt{b^2 + m^2 a^2}}
+        point.x = (a*b) / std::sqrt(b*b + m*m * a*a);
+        // y = m*x
+        point.y = m*point.x;
+        // prevent walking against goal post
+        point.x = Math::clamp(point.x, 100.0, getFieldInfo().xPosOwnPenaltyArea - getFieldInfo().xPosOwnGroundline);
+        point.y = Math::clamp(point.y, getFieldInfo().yPosRightGoalpost + 100, getFieldInfo().yPosLeftGoalpost - 100);
+    }
+    return point;
 }
 
 void RoleDecisionPositionDynamic::supporter()

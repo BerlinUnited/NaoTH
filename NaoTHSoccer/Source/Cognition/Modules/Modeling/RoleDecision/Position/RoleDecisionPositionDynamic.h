@@ -38,7 +38,10 @@ public:
     virtual ~RoleDecisionPositionDynamic();
     virtual void execute();
 
+    void goalie();
     void supporter();
+
+    Vector2d calculateEllipsePoint(const Vector2d& ball);
 
 private:
     class Parameters: public ParameterList
@@ -46,11 +49,21 @@ private:
     public:
         Parameters() : ParameterList("RoleDecisionPositionDynamic")
         {
+            PARAMETER_REGISTER(goalie_max_come_out) = 300; // 600 -> penalty area
+            PARAMETER_REGISTER(goalie_defense_min_x) = -750;
+            PARAMETER_REGISTER(goalie_defense_max_x) = 0;
+
             PARAMETER_REGISTER(supporter_offset) = 1000;
             PARAMETER_REGISTER(supporter_side_offset) = 200;
+
             // load from the file after registering all parameters
             syncWithConfig();
         }
+
+        bool goalie_last_active;
+        double goalie_max_come_out;
+        double goalie_defense_min_x;
+        double goalie_defense_max_x;
 
         double supporter_offset;
         double supporter_side_offset;
