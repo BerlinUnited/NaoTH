@@ -1,10 +1,3 @@
-/**
-* @file FootStepPlanner.h
-*
-* @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
-* plan the foot step according to motion request
-*/
-
 #ifndef _ZMP_PREVIEW_CONTROLLER_H
 #define _ZMP_PREVIEW_CONTROLLER_H
 

@@ -150,7 +150,7 @@ include "Options/Test/walk/walk_forward.xabsl";
 
 // Walk Agents
 include "Options/Test/WalkAgents/dribble_agent.xabsl";
-include "Options/Test/WalkAgents/follow_ball_agent.xabsl";
+include "Options/Test/WalkAgents/follow_ball_test_agent.xabsl";
 include "Options/Test/WalkAgents/go_to_ball_with_USOA_agent.xabsl";
 include "Options/Test/WalkAgents/go_to_point_with_USOA_agent.xabsl";
 include "Options/Test/WalkAgents/intercept_agent.xabsl";
@@ -187,7 +187,7 @@ agent striker_change_test ("striker_change_test_agent",striker_change_test_agent
 agent motion_test_walk_stop_and_go_backwards("test walk stop and go backwards", test_walk_stop_and_go_backwards_agent);
 agent motion_test_walk_forth_and_back("test walk forth and back", test_walk_forth_and_back_agent);
 
-agent goto_follow_ball_test("follow_ball_test_agent", follow_ball_agent);
+agent follow_ball_test("follow_ball_test_agent", follow_ball_test_agent);
 agent goto_obstacle_test("obstacle_agent", obstacle_agent);
 agent goto_ball_with_USOA_test_agent("go_to_ball_with_USOA_test_agent", go_to_ball_with_USOA_agent);
 agent goto_point_with_USOA_test("go_to_point_with_USOA_test_agent", go_to_point_with_USOA_agent);
