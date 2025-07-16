@@ -1,5 +1,8 @@
 #include "RoleDecisionModel.h"
 #include <iomanip>
+#include <Tools/DataConversion.h>
+#include <Messages/TeamMessage.pb.h>
+#include <google/protobuf/io/zero_copy_stream_impl.h>
 
 Roles::Role RoleDecisionModel::getRole(unsigned int playerNumber) const
 {
@@ -78,4 +81,39 @@ void RoleDecisionModel::print(std::ostream& stream) const {
     stream << "\n----------------------------------------------------\n\n";
     stream << std::setw(17) << std::right << "Dynamic Position" << " : "
            << std::setw(5) << dynamic_position.x << "/" << std::setw(5) << dynamic_position.y << " \n";
+}
+
+void naoth::Serializer<RoleDecisionModel>::serialize(const RoleDecisionModel& r, std::ostream& stream)
+{
+    naothmessages::RoleDecision decision;
+
+    // we only serialize the roles, not the positions (they should be static)
+    for(auto const& it: r.roles)
+    {
+        auto role = decision.add_roles();
+        role->set_role_static((naothmessages::RobotRoleStatic)it.second.role);
+        role->set_role_dynamic((naothmessages::RobotRoleDynamic)it.second.dynamic);
+    }
+
+    // serialize the dynamic position
+    DataConversion::toMessage(r.dynamic_position, *(decision.mutable_dynamic_position()));
+
+    google::protobuf::io::OstreamOutputStream buf(&stream);
+    decision.SerializeToZeroCopyStream(&buf);
+}
+
+void naoth::Serializer<RoleDecisionModel>::deserialize(std::istream& stream, RoleDecisionModel& r)
+{
+    naothmessages::RoleDecision decision;
+
+    google::protobuf::io::IstreamInputStream buf(&stream);
+    decision.ParseFromZeroCopyStream(&buf);
+
+    for(int i=0; i < decision.roles_size(); i++)
+    {
+        const auto& msg = decision.roles(i);
+        r.roles[i] = { (Roles::Static) msg.role_static(), (Roles::Dynamic) msg.role_dynamic() };
+    }
+
+    DataConversion::fromMessage(decision.dynamic_position(), r.dynamic_position);
 }

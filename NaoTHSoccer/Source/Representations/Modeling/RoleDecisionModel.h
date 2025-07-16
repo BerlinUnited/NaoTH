@@ -13,6 +13,7 @@
 #include <map>
 
 #include "Tools/DataStructures/Printable.h"
+#include "Tools/DataStructures/Serializer.h"
 #include "Tools/Math/Vector2.h"
 #include "Representations/Infrastructure/Roles.h"
 
@@ -50,6 +51,12 @@ public:
     }
 };
 
+template<> class naoth::Serializer<RoleDecisionModel>
+{
+    public:
+        static void serialize(const RoleDecisionModel& representation, std::ostream& stream);
+        static void deserialize(std::istream& stream, RoleDecisionModel& representation);
+};
 
 #endif  /* ROLEDECISIONMODEL_H */
 
