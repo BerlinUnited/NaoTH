@@ -24,6 +24,9 @@ public:
     std::map<unsigned int, Roles::Role> roles;
     std::map<Roles::Static, Roles::Position> roles_position;
 
+    /** The dynamic position. */
+    Vector2d dynamic_position;
+
     Roles::Role getRole(unsigned int playerNumber) const;
     Roles::Position getStaticRolePosition(Roles::Static role) const;
 

@@ -26,7 +26,8 @@ void RoleDecisionPositionDynamic::execute()
             // goalieSupporter();
             break;
         default:
-            // do nothing
+            // use the static position as default
+            getRoleDecisionModel().dynamic_position = getRoleDecisionModel().getStaticRolePosition(role.role).home;
             break;
     }
 }
@@ -66,7 +67,7 @@ void RoleDecisionPositionDynamic::supporter()
     supporterPos += normal * side * params.supporter_side_offset;
 
     // Set the computed position
-    getRoleDecisionModel().roles_position[getRoleDecisionModel().getRole(getPlayerInfo().playerNumber).role].home = supporterPos;
+    getRoleDecisionModel().dynamic_position = supporterPos;
 
     // Debug drawing
     DEBUG_REQUEST("RoleDecision:Dynamic:supporter_position",

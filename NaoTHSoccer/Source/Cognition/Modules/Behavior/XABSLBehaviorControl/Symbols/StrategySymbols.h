@@ -146,6 +146,8 @@ private:
   static double getHomePositionOwnKickoffY();
   static double getHomePositionOppKickoffX();
   static double getHomePositionOppKickoffY();
+  static double getDynamicPositionX();
+  static double getDynamicPositionY();
 };//end class StrategySymbols
 
 #endif // _StrategySymbols_H_

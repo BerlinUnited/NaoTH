@@ -74,4 +74,8 @@ void RoleDecisionModel::print(std::ostream& stream) const {
                << std::setw(5) << it.second.own.x  << "/" << std::setw(5) << it.second.own.y  << ", "
                << std::setw(5) << it.second.opp.x  << "/" << std::setw(5) << it.second.opp.y  << " \n";
     }
+
+    stream << "\n----------------------------------------------------\n\n";
+    stream << std::setw(17) << std::right << "Dynamic Position" << " : "
+           << std::setw(5) << dynamic_position.x << "/" << std::setw(5) << dynamic_position.y << " \n";
 }

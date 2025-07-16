@@ -100,5 +100,8 @@ namespace strategy("Strategy Symbols") {
   // position for opp kickoff
   float input strategy.position.opp.x;
   float input strategy.position.opp.y;
+  // dynamic position
+  float input strategy.position.dynamic.x;
+  float input strategy.position.dynamic.y;
 }
   

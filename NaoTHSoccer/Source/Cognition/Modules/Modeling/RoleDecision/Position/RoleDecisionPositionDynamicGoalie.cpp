@@ -23,19 +23,15 @@ void RoleDecisionPositionDynamicGoalie::execute() {
         // The position is on an ellipse within the penalty area.
         // The position is calculated in such a way, that a direct shot to the middle of the goal is prevented
         auto p = calculateEllipsePoint({getTeamBallModel().positionOnField.x - getFieldInfo().xPosOwnGroundline, getTeamBallModel().positionOnField.y});
-        getRoleDecisionModel().roles_position[Roles::goalie].home.x = p.x + getFieldInfo().xPosOwnGroundline;
-        getRoleDecisionModel().roles_position[Roles::goalie].home.y = p.y;
+        getRoleDecisionModel().dynamic_position.x = p.x + getFieldInfo().xPosOwnGroundline;
+        getRoleDecisionModel().dynamic_position.y = p.y;
 
         lastActive = true;
     } else {
         lastActive = false;
         // set position to default
-        getRoleDecisionModel().roles_position[Roles::goalie].home = getRoles().defaults.at(Roles::goalie).home;
+        getRoleDecisionModel().dynamic_position = getRoleDecisionModel().getStaticRolePosition(Roles::goalie).home;
     }
-
-    // keep the default kickoff positions
-    getRoleDecisionModel().roles_position[Roles::goalie].own = getRoles().defaults.at(Roles::goalie).own;
-    getRoleDecisionModel().roles_position[Roles::goalie].opp = getRoles().defaults.at(Roles::goalie).opp;
 
     DEBUG_REQUEST("RoleDecision:Dynamic:goalie_defensive_ellipse",
         FIELD_DRAWING_CONTEXT;
