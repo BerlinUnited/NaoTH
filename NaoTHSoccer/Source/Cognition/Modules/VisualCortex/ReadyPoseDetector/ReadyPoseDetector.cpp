@@ -3,7 +3,6 @@
 #include "Tools/CameraGeometry.h"
 #include <Tools/ImageProcessing/ColorModelConversions.h>
 
-
 using namespace std;
 
 ReadyPoseDetector::ReadyPoseDetector()
@@ -22,22 +21,26 @@ ReadyPoseDetector::~ReadyPoseDetector()
   getDebugParameterList().remove(&params);
 }
 
-
 void ReadyPoseDetector::execute()
 {
-
   // reset
   getWhistlePercept().readyRefereePoseDetected = false;
-
 
   if(getPlayerInfo().robotState != PlayerInfo::RobotState::standby) {
     return;
   }
 
   // NOTE: maybe it's better to do it in behaior?
-  if(getPlayerInfo().playerNumber != 4 && getPlayerInfo().playerNumber != 7) {
-    return;
+  if(getGameData().playersPerTeam == 7){
+     if(getPlayerInfo().playerNumber != 4 && getPlayerInfo().playerNumber != 7) {
+      return;
+    }
+  }else{
+    if(getPlayerInfo().playerNumber != 3 && getPlayerInfo().playerNumber != 5) {
+      return;
+    }
   }
+ 
 
   /*
   // default position of the player 4
@@ -63,14 +66,16 @@ void ReadyPoseDetector::execute()
   }
   */
 
-  // this works for the player 4
+  // this works for the player 4 (and 3 for 5v5)
+  // for games with 5v5 player 3 is at the same ready position as 4
   Vector2d poseInImage(132, 110);
 
-  // flip sides for number 7
-  if(getPlayerInfo().playerNumber == 7) {
+  // flip sides for number 7 (or 5 if we play 5v5)
+  // only robots with player number 3,4,5 and 7 can reach this point
+  // for games with 5v5 player 5 is at the same ready position as 7
+  if(getPlayerInfo().playerNumber == 7 || getPlayerInfo().playerNumber == 5) {
     poseInImage.x = getImageTop().width() - 192 - poseInImage.x;
   }
-
 
   MODIFY("ReadyPoseDetector:poseInImage.x", poseInImage.x);
   MODIFY("ReadyPoseDetector:poseInImage.y", poseInImage.y);
@@ -83,9 +88,7 @@ void ReadyPoseDetector::execute()
     BOX(poseInImage.x, poseInImage.y, poseInImage.x + 192, poseInImage.y + 192);
   );
 
-
   float (*inputTensor)[1][192][192][3] = reinterpret_cast<float(*)[1][192][192][3]>(exec.getInputTensor());
-
 
   // create input tensor
   Pixel pixel;
@@ -101,29 +104,16 @@ void ReadyPoseDetector::execute()
 
       ColorModelConversions::fromYCbCrToRGB(pixel.y, pixel.cb, pixel.cr, pixelRGB.a, pixelRGB.b, pixelRGB.c);
       
-      
       (*inputTensor)[0][y][x][0] = ((float)pixelRGB.a);
       (*inputTensor)[0][y][x][1] = ((float)pixelRGB.b);
       (*inputTensor)[0][y][x][2] = ((float)pixelRGB.c);
     }
   }
 
-
   exec.execute();
-
 
   // draw output
   const float (*output)[1][1][17][3] = reinterpret_cast<const float(*)[1][1][17][3]>(exec.getOutputTensor());
-
-  /*
-  for(int i = 0; i < 17; i++) {
-    for (int j = 0; j < 3; j++) {
-      std::cout << (*output)[0][0][i][j] << "\t";
-    }
-    std::cout << std::endl;
-  }
-  */
-
 
   // eyes
   float y1 = (*output)[0][0][1][0] * 192.0;
@@ -175,7 +165,4 @@ void ReadyPoseDetector::execute()
       BOX(poseInImage.x, poseInImage.y, poseInImage.x + 192, poseInImage.y + 192);
     }
   );
-
-  
 }
-
