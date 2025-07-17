@@ -4,19 +4,18 @@
  * This contains some probabilistic functions
  *
  * @author <a href="mailto:timlaue@informatik.uni-bremen.de">Tim Laue</a>
+ * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
  */
 
 
-#ifndef __Probabilistics_h__
-#define __Probabilistics_h__
+#ifndef PROBABILISTICS_H
+#define PROBABILISTICS_H
 
 #include "Common.h"
 #include <algorithm>
 
-#define _STD	::std::
-#define _CSTD	::
-
-namespace Math {
+namespace Math 
+{
 
 /** constant for triangular distribution*/
 const double sqrt6dividedBy2 = sqrt(6.0)/2.0;
@@ -41,28 +40,30 @@ inline double randomGauss()
 // Box–Muller transform
 inline double generateGaussianNoise(double mu, double sigma)
 {
-	const double epsilon = std::numeric_limits<double>::min();
+  const double epsilon = std::numeric_limits<double>::min();
 
-	static double z0, z1;
-	static bool generate;
-	generate = !generate;
+  static double z0, z1;
+  static bool generate;
+  generate = !generate;
 
   // use the second value from the last computation
-	if (!generate) {
-	   return z1 * sigma + mu;
+  if (!generate) {
+     return z1 * sigma + mu;
   }
 
-  //create two random numbers, make sure u1 is greater than zero
-	double u1, u2;
-	do {
-	  u1 = rand() * (1.0 / RAND_MAX);
-	} while ( u1 <= epsilon );
+  // create two random numbers u1 and u2.
+  // make sure u1 is greater than zero.
+  double u1, u2;
+  do {
+    u1 = rand() * (1.0 / RAND_MAX);
+  } while ( u1 <= epsilon );
+
   u2 = rand() * (1.0 / RAND_MAX);
 
   double logu = sqrt(-2.0 * log(u1));
   z0 = logu * cos(pi2 * u2);
   z1 = logu * sin(pi2 * u2);
-	return z0 * sigma + mu;
+  return z0 * sigma + mu;
 }
 
 /**
@@ -85,8 +86,9 @@ inline double gaussianProbability(double x, double s)
 inline double sampleNormalDistribution(double b)
 {
   double result(0.0);
-  for(int i=0; i< 12; i++)
+  for(int i=0; i< 12; i++) {
     result += 2.0*((Math::random() - 0.5)*b);
+  }
   return result/2.0;
 }
 
@@ -102,12 +104,13 @@ inline int sampleNormalDistribution(int b)
   if(b != 0)
   {
     int result(0);
-    for(int i=0; i< 12; i++)
+    for(int i=0; i< 12; i++) {
       result += random(2*b) - b;
+    }
     return result/2;
   }
-  else
-    return 0;
+  
+  return 0;
 }
 
 /**
@@ -135,11 +138,11 @@ inline int sampleTriangularDistribution(int b)
   {
     int randResult = (random(2*b) - b) + (random(2*b) - b);
     return static_cast<int>(sqrt6dividedBy2 * randResult);
-  }
-  else
-    return 0;
+  } 
+  
+  return 0;
 }
 
 }//end namespace Math
 
-#endif // __Probabilistics_h__
+#endif // PROBABILISTICS_H
