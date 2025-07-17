@@ -51,6 +51,7 @@ public:
   virtual ~GameController() {}
 
 private:
+  void handleCommunicatedReadyState(int playerNumber);
   void handleDebugRequest();
   void handleButtons();
   void handleHeadButtons();

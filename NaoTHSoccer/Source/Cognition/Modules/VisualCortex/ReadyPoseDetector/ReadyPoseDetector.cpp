@@ -30,12 +30,14 @@ void ReadyPoseDetector::execute()
     return;
   }
 
-  // NOTE: maybe it's better to do it in behaior?
-  if(getGameData().playersPerTeam == 7){
+  // NOTE: maybe it's better to do it in behavior?
+  //       maybe the behavior can set a situation status?
+  // Different robots pay attention to the refree giving a ready signal depending on the team size (5 or 7)
+  if(getGameData().playersPerTeam == 7) {
      if(getPlayerInfo().playerNumber != 4 && getPlayerInfo().playerNumber != 7) {
       return;
     }
-  }else{
+  } else {
     if(getPlayerInfo().playerNumber != 3 && getPlayerInfo().playerNumber != 5) {
       return;
     }

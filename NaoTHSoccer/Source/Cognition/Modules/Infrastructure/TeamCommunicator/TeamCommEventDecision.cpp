@@ -59,8 +59,19 @@ void TeamCommEventDecision::byDistance()
       params.byDistance_lastSentTimestamp = getFrameInfo().getTime();
     }
 
+    // decide which robot is allowed to send information regarding the ready state based on the team size
+    bool can_send_ready_state = false;
+    if(getGameData().playersPerTeam == 7) {
+      // for 7v7 games
+      can_send_ready_state = (getPlayerInfo().playerNumber == 4 || getPlayerInfo().playerNumber == 7);
+    } else {
+      // default: for 5v5 games
+      can_send_ready_state = (getPlayerInfo().playerNumber == 3 || getPlayerInfo().playerNumber == 5);
+    }
+
     // send the ready state switch
-    if(getPlayerInfo().playerNumber == 4 || getPlayerInfo().playerNumber == 7) {
+    if(can_send_ready_state) 
+    {
       if (getPlayerInfo().robotState == PlayerInfo::ready && !readyChangeWasSent) {
         getTeamMessageDecision().send_state.set();
         // update timestamp for the safety condition
