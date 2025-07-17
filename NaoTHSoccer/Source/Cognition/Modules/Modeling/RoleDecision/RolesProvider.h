@@ -70,7 +70,7 @@ private:
             // the active roles are used to decide which player gets which role in a dynamic way (non-static)
             PARAMETER_REGISTER(active_str, &Parameters::parseActive) = "goalie;forward_center;defender_left;midfielder_center;defender_right;midfielder_right;midfielder_left"; //"all";
             // the assignments are used to initially set the roles for each player or for static assignment
-            PARAMETER_REGISTER(assignment_str, &Parameters::parseAssignment) = "1:goalie;2:defender_left;3:midfielder_center;4:midfielder_left;5:defender_right;6:midfielder_right;7:forward_center";
+            PARAMETER_REGISTER(assignment_str, &Parameters::parseAssignment) = "1:goalie;2:defender_left;3:forward_right;4:defender_right;5:midfielder_left;6:midfielder_right;7:forward_left";
 
             // load from the file after registering all parameters
             syncWithConfig();
