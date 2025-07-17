@@ -186,23 +186,17 @@ void GameController::execute()
       ready_by_pose_detection = true;
     } 
     
-    if(getTeamState().hasPlayer(7))
-    {
-      const TeamState::Player& p7 = getTeamState().getPlayer(7);
-      if(p7.state() == PlayerInfo::ready) {
-        getPlayerInfo().robotState = PlayerInfo::ready;
-        ready_by_pose_detection = true;
-      }
+    // update by communicated ready detection
+    if(getGameData().playersPerTeam == 7) {
+      // 7v7
+      handleCommunicatedReadyState(7);
+      handleCommunicatedReadyState(4);
+    } else {
+      // default: for 5v5 games
+      handleCommunicatedReadyState(5);
+      handleCommunicatedReadyState(3);
     }
-    
-    if(getTeamState().hasPlayer(4)) 
-    {
-      const TeamState::Player& p4 = getTeamState().getPlayer(4);
-      if(p4.state() == PlayerInfo::ready) {
-        getPlayerInfo().robotState = PlayerInfo::ready;
-        ready_by_pose_detection = true;
-      }
-    }
+
   }
 
   
@@ -248,6 +242,18 @@ void GameController::execute()
   }
 } // end execute
 
+
+void GameController::handleCommunicatedReadyState(int playerNumber) 
+{
+  if(getTeamState().hasPlayer(playerNumber)) 
+  {
+    const TeamState::Player& player = getTeamState().getPlayer(playerNumber);
+    if(player.state() == PlayerInfo::ready) {
+      getPlayerInfo().robotState = PlayerInfo::ready;
+      ready_by_pose_detection = true;
+    }
+  }
+}
 
 void GameController::handleDebugRequest()
 {
