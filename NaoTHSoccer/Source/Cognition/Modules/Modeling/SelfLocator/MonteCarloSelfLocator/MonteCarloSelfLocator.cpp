@@ -936,28 +936,30 @@ void MonteCarloSelfLocator::updateByStartPositions(SampleSet& sampleSet) const
   LineDensity rightStartingLine(startRight, endRight,  Math::pi_2, parameters.startPositionsSigmaDistance, parameters.startPositionsSigmaAngle);
 
   /*---- HACK BEGIN ----*/
+  // Decide which players are located on the left side line depending on the team size
   LineDensity startingLine;
-  if(getGameData().playersPerTeam == 7){
+  if(getGameData().playersPerTeam == 7) {
     // Localization for 7v7 games
     if(
       getPlayerInfo().playerNumber == 1 || 
       getPlayerInfo().playerNumber == 2 || 
       getPlayerInfo().playerNumber == 3 || 
-      getPlayerInfo().playerNumber == 4) {
-        startingLine = leftStartingLine;
+      getPlayerInfo().playerNumber == 4) 
+    {
+      startingLine = leftStartingLine;
     } else {
-        startingLine = rightStartingLine;
+      startingLine = rightStartingLine;
     }
-  }
-  else{
+  } else {
     // Localization for 5v5 games
     if(
       getPlayerInfo().playerNumber == 1 || 
       getPlayerInfo().playerNumber == 2 || 
-      getPlayerInfo().playerNumber == 3){
-        startingLine = leftStartingLine;
+      getPlayerInfo().playerNumber == 3)
+    {
+      startingLine = leftStartingLine;
     } else {
-        startingLine = rightStartingLine;
+      startingLine = rightStartingLine;
     }
   }
 
