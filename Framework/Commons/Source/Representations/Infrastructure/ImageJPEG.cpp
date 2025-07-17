@@ -137,7 +137,7 @@ void ImageJPEG::compressImageAsync() {
     image_mutex.unlock();
   } else {
     std::cout << "[WARN] " 
-      << "Skipping compressing the image to JPEG in this frame."
+      << "Skipping compressing the image to JPEG in this frame. "
       << "Compression from previous frame is still running." 
       << std::endl;
   }
