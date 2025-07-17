@@ -12,6 +12,8 @@ import de.naoth.rc.drawings.Text;
 import de.naoth.rc.math.Pose2D;
 import de.naoth.rc.math.Vector2D;
 import de.naoth.rc.core.messages.TeamMessageOuterClass;
+import de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRoleDynamic;
+
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
@@ -271,6 +273,18 @@ public class SPLMessage
             
             if(user.getWantsToBeStriker() && !user.getWasStriker()) {
                 drawings.add(new Pen(32, Color.YELLOW));
+                drawings.add(new Circle((int) robotPose.translation.x, (int) robotPose.translation.y, 150));
+            }
+
+            if (user.getRobotRole().getRoleDynamic() != RobotRoleDynamic.role_none)
+            {
+                switch (user.getRobotRole().getRoleDynamic())
+                {
+                    case role_striker:          drawings.add(new Pen(30, Color.red));  break;
+                    case role_supporter:        drawings.add(new Pen(30, Color.pink)); break;
+                    case role_goalie_supporter: drawings.add(new Pen(30, Color.cyan)); break;
+                    case role_none:             /* nothing to show here */                   break;
+                }
                 drawings.add(new Circle((int) robotPose.translation.x, (int) robotPose.translation.y, 150));
             }
         }
