@@ -45,31 +45,37 @@ class TorsoRotationStabilizer : private TorsoRotationStabilizerBase
   public:
     TorsoRotationStabilizer() : parameters(getWalk2018Parameters().torsoRotationStabilizerParams) {}
 
-  virtual void execute(){
-    if(getCalibrationData().calibrated && parameters.rotationStabilize) {
-      if(getStepBuffer().first().footStep.liftingFoot() == FootStep::LEFT) {
-        getTargetHipFeetPose().pose.localInRightFoot();
-      } else if(getStepBuffer().first().footStep.liftingFoot() == FootStep::RIGHT) {
-        getTargetHipFeetPose().pose.localInLeftFoot();
-      } else {
-        getTargetHipFeetPose().pose.localInHip();
-      }
-
-
-      Vector2d inertial = getInertialModel().orientation;
-      if(parameters.useSteffensInertial) {
-        inertial = getIMUData().orientation;
-      }
-      rotationStabilize(
-        inertial,
-        getGyrometerData(),
-        getRobotInfo().getBasicTimeStepInSecond(),
-        parameters.rotation.P,
-        parameters.rotation.VelocityP,
-        parameters.rotation.D,
-        getTargetHipFeetPose().pose
-      );
+  virtual void execute()
+  {
+    // the IMU needs to be calibrated and the rotation stabilization enabled
+    if(!parameters.rotationStabilize || !getCalibrationData().calibrated) {
+      return;
     }
+
+    // calculate the stable coordinate system based on the current step
+    if(getStepBuffer().first().footStep.liftingFoot() == FootStep::LEFT) {
+      getTargetHipFeetPose().pose.localInRightFoot();
+    } else if(getStepBuffer().first().footStep.liftingFoot() == FootStep::RIGHT) {
+      getTargetHipFeetPose().pose.localInLeftFoot();
+    } else {
+      getTargetHipFeetPose().pose.localInHip();
+    }
+
+    // choose the IMU model
+    Vector2d inertial = getInertialModel().orientation;
+    if(parameters.useSteffensInertial) {
+      inertial = getIMUData().orientation;
+    }
+
+    rotationStabilize(
+      inertial,
+      getGyrometerData(),
+      getRobotInfo().getBasicTimeStepInSecond(),
+      parameters.rotation.P,
+      parameters.rotation.VelocityP,
+      parameters.rotation.D,
+      getTargetHipFeetPose().pose
+    );
   }
 
   private:
@@ -89,9 +95,7 @@ class TorsoRotationStabilizer : private TorsoRotationStabilizerBase
         const double alpha = parameters.gyroFilterAlpha;
         filteredGyro = filteredGyro * (1.0f - alpha) + gyro * alpha;
 
-        const double observerMeasurementDelay = 40;
-        const int frameDelay = static_cast<int>(observerMeasurementDelay / (timeDelta*1000));
-
+        // Estimate the measured and planed rotational velocities
         static RingBuffer<Vector2d, 10> buffer;
         static Vector2d lastGyroError;
         static RotationMatrix lastBodyRotationMatrix = p.hip.rotation;
@@ -102,9 +106,9 @@ class TorsoRotationStabilizer : private TorsoRotationStabilizerBase
         const double rotationY = atan2(relativeRotation.c[2].x, relativeRotation.c[2].z);
         buffer.add(Vector2d(relativeRotation.getXAngle(), rotationY));
 
-        if(buffer.isFull() && frameDelay > 0 && frameDelay < buffer.size())
+        if(buffer.isFull() && buffer.size() > NaoInfo::actuatorSensorFrameDelay)
         {
-          const Vector2d requestedVelocity = (buffer[frameDelay-1] - buffer[frameDelay]) / timeDelta;
+          const Vector2d requestedVelocity = (buffer[NaoInfo::actuatorSensorFrameDelay-1] - buffer[NaoInfo::actuatorSensorFrameDelay]) / timeDelta;
           const Vector2d error = requestedVelocity - filteredGyro;
           const Vector2d errorDerivative = (error - lastGyroError) / timeDelta;
 
@@ -125,7 +129,7 @@ class TorsoRotationStabilizer : private TorsoRotationStabilizerBase
             p.hip.rotateX(correctionX);
             p.hip.rotateY(correctionY);
           } else {
-            double height = NaoInfo::ThighLength + NaoInfo::TibiaLength + NaoInfo::FootHeight;
+            const double height = NaoInfo::ThighLength + NaoInfo::TibiaLength + NaoInfo::FootHeight;
             p.hip.translate(0, 0, -height);
             p.hip.rotateX(correctionX);
             p.hip.rotateY(correctionY);
