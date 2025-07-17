@@ -110,6 +110,8 @@ public:
   /** Whether the behavior decided to play as striker */
   bool isPlayingStriker;
 
+  bool ballTouchedInSetPlay;
+
   static std::string toString(RobotState value);
   static std::string toString(RobotSetPlay value);
   static std::string toString(GamePhase value);

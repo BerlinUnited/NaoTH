@@ -52,6 +52,8 @@ option path_striker2024
         stay;
       else if(game.set_play != none)
         goto turn_carefully;
+      else if(!game.ballTouchedInSetPlay)
+        goto turn_carefully;
       else if(attack.best_action == kick_short)
         goto forwardkick;
       else

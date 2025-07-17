@@ -62,6 +62,9 @@ private:
   bool play_by_whistle;
 
   bool ready_by_pose_detection;
+
+  int setPlaySecondsRemaining;
+  int lastSetPlayTime;
 };
 
 #endif // GAMECONTROLLER_H

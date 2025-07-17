@@ -7,7 +7,9 @@ GameController::GameController()
   : 
   debug_whistle_heard(false),
   play_by_whistle(false),
-  ready_by_pose_detection(false)
+  ready_by_pose_detection(false),
+  setPlaySecondsRemaining(-1),
+  lastSetPlayTime(-1)
 {
   DEBUG_REQUEST_REGISTER("gamecontroller:game_state:play", "force the play state", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:game_state:penalized", "force the penalized state", false);
@@ -199,16 +201,41 @@ void GameController::execute()
 
   }
 
+
+  // checks if the ball remained untouched in a set play
+  // so careful approach can be used
+  if (getPlayerInfo().robotSetPlay != PlayerInfo::set_none) {
+      setPlaySecondsRemaining = getGameData().secondaryTime;
+      lastSetPlayTime = getGameData().secsRemaining;
+      getPlayerInfo().ballTouchedInSetPlay = false;
+  } 
+  else if (setPlaySecondsRemaining >= 2) {
+      getPlayerInfo().ballTouchedInSetPlay = true;
+  }
   
+
+  // resets the untuched idicator after 30 seconds
+  if (!getPlayerInfo().ballTouchedInSetPlay && 
+      lastSetPlayTime - getGameData().secsRemaining >= 30) {
+      getPlayerInfo().ballTouchedInSetPlay = true;
+  }
+
   if (getPlayerInfo().robotSetPlay == PlayerInfo::goal_kick) {
       const Vector2d globalBallPos = (getRobotPose() * getBallModel().position);
       // the ball is in the own half
       getPlayerInfo().kickoff = (globalBallPos.x < 0);
   }
-  if (getPlayerInfo().robotSetPlay == PlayerInfo::corner_kick) {
+  
+  if (getPlayerInfo().robotSetPlay == PlayerInfo::corner_kick || getPlayerInfo().robotSetPlay == PlayerInfo::penalty_kick) {
       const Vector2d globalBallPos = (getRobotPose() * getBallModel().position);
       // the ball is in the opponent half
       getPlayerInfo().kickoff = (globalBallPos.x > 0);
+  }
+
+  // ensures the kickoff state is set correctly at game start
+  if (getPlayerInfo().robotSetPlay == PlayerInfo::set_none) {
+      getPlayerInfo().kickoff =
+          getGameData().kickingTeam == getPlayerInfo().teamNumber;
   }
 
 

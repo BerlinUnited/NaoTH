@@ -22,8 +22,8 @@ PlayerInfo::PlayerInfo()
   robotSetPlay(set_none),
   gamePhase(normal),
   kickoff(false),
-
-  isPlayingStriker(false)
+  isPlayingStriker(false),
+  ballTouchedInSetPlay(true)
 {
 }
 
@@ -87,6 +87,7 @@ void PlayerInfo::print(ostream& stream) const
   stream << "robotState:       " << toString(robotState) << endl;
   stream << "robotSetPlay:     " << toString(robotSetPlay) << endl;
   stream << "gamephase:        " << toString(gamePhase) << endl;
-  stream << "isPlayingStriker: " << (isPlayingStriker?"yes":"no") << endl;
+  stream << "isPlayingStriker: " << (isPlayingStriker ? "yes" : "no") << endl;
+  stream << "ballTouchedInSetPlay: " << (ballTouchedInSetPlay ? "yes" : "no") << endl;
 }
 

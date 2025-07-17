@@ -206,6 +206,7 @@ GameData::Penalty GameData::penaltyFromString(const std::string& str)
   return manual;
 }
 
+
 void GameData::parseFrom(const spl::RoboCupGameControlData& data, int teamNumber)
 {
   playersPerTeam    = data.playersPerTeam;
@@ -262,6 +263,7 @@ void GameData::print(ostream& stream) const
   stream << "gamePhase = "        << toString(gamePhase) << std::endl;
   stream << "gameState = "        << toString(gameState) << std::endl;
   stream << "setPlay = "          << toString(setPlay) << std::endl;
+
 
   stream << "firstHalf = "      << firstHalf << std::endl;
   stream << "kickingTeam = "    << kickingTeam << std::endl;
