@@ -52,15 +52,14 @@ public:
    */
   JpegData& get() const {
     // Wait for the future and set the parent representation when finished
+    // Only one thread is allowed to wait for the future.
+    std::unique_lock lock(image_mutex);
     if(futureJpegData.valid()) {
       futureJpegData.wait();
 
-      std::unique_lock lock(image_mutex);
-      if(futureJpegData.valid()) {
-        jpegData = futureJpegData.get();
-        jpegData.height = image->height();
-        jpegData.width = image->width();
-      }
+      jpegData = futureJpegData.get();
+      jpegData.height = image->height();
+      jpegData.width = image->width();
     }
     return jpegData;
   }
