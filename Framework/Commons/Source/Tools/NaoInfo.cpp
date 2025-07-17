@@ -43,3 +43,5 @@ const Vector3d NaoInfo::FSRPositionsRight[naoth::FSRData::numOfFSR] =
 };
 
 const NaoInfo::RobotDimensions NaoInfo::robotDimensions;
+
+const int NaoInfo::actuatorSensorFrameDelay = 4;
