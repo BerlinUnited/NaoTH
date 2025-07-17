@@ -1,5 +1,5 @@
-#ifndef ROLEDECISIONDYNAMICGOALIE_H
-#define ROLEDECISIONDYNAMICGOALIE_H
+#ifndef ROLEDECISIONPOSITIONDYNAMIC_H
+#define ROLEDECISIONPOSITIONDYNAMIC_H
 
 #include <ModuleFramework/Module.h>
 #include <Tools/DataStructures/ParameterList.h>
@@ -12,9 +12,11 @@
 #include "Representations/Infrastructure/Roles.h"
 #include "Representations/Modeling/RoleDecisionModel.h"
 #include "Representations/Modeling/TeamBallModel.h"
+#include "Representations/Modeling/PlayerInfo.h"
+#include "Representations/Modeling/TeamState.h"
 
 
-BEGIN_DECLARE_MODULE(RoleDecisionPositionDynamicGoalie)
+BEGIN_DECLARE_MODULE(RoleDecisionPositionDynamic)
   PROVIDE(DebugRequest)
   PROVIDE(DebugDrawings)
   PROVIDE(DebugParameterList)
@@ -22,39 +24,50 @@ BEGIN_DECLARE_MODULE(RoleDecisionPositionDynamicGoalie)
   REQUIRE(FieldInfo)
   REQUIRE(Roles)
   REQUIRE(TeamBallModel)
+  REQUIRE(PlayerInfo)
+  REQUIRE(TeamState)
 
   PROVIDE(RoleDecisionModel)
-END_DECLARE_MODULE(RoleDecisionPositionDynamicGoalie);
+END_DECLARE_MODULE(RoleDecisionPositionDynamic);
 
 
-class RoleDecisionPositionDynamicGoalie : public RoleDecisionPositionDynamicGoalieBase
+class RoleDecisionPositionDynamic : public RoleDecisionPositionDynamicBase
 {
 public:
-    RoleDecisionPositionDynamicGoalie();
-    virtual ~RoleDecisionPositionDynamicGoalie();
+    RoleDecisionPositionDynamic();
+    virtual ~RoleDecisionPositionDynamic();
     virtual void execute();
+
+    void goalie();
+    void supporter();
+
+    Vector2d calculateEllipsePoint(const Vector2d& ball);
 
 private:
     class Parameters: public ParameterList
     {
     public:
-        Parameters() : ParameterList("RoleDecisionPositionDynamicGoalie")
+        Parameters() : ParameterList("RoleDecisionPositionDynamic")
         {
             PARAMETER_REGISTER(goalie_max_come_out) = 300; // 600 -> penalty area
             PARAMETER_REGISTER(goalie_defense_min_x) = -750;
             PARAMETER_REGISTER(goalie_defense_max_x) = 0;
+
+            PARAMETER_REGISTER(supporter_offset) = 1000;
+            PARAMETER_REGISTER(supporter_side_offset) = 200;
+
             // load from the file after registering all parameters
             syncWithConfig();
         }
 
+        bool goalie_last_active;
         double goalie_max_come_out;
         double goalie_defense_min_x;
         double goalie_defense_max_x;
+
+        double supporter_offset;
+        double supporter_side_offset;
     } params;
-
-    bool lastActive = false;
-
-    Vector2d calculateEllipsePoint(const Vector2d& ball);
 };
 
-#endif // ROLEDECISIONDYNAMICGOALIE_H
+#endif // ROLEDECISIONPOSITIONDYNAMIC_H

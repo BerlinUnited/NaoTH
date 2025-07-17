@@ -61,6 +61,7 @@ public:
 
     std::vector<Static> active;
     std::map<Static, Position> defaults;
+    std::map<unsigned int, Roles::Static> assignments;
 
     static std::string getName(Static role);
     static std::string getName(Dynamic role);

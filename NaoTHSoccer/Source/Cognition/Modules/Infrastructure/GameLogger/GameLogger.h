@@ -21,6 +21,7 @@
 #include <Representations/Modeling/OdometryData.h>
 #include <Representations/Perception/CameraMatrix.h>
 #include "Representations/Modeling/TeamState.h"
+#include "Representations/Modeling/RoleDecisionModel.h"
 #include "Representations/Modeling/TeamMessageDecision.h"
 #include "Representations/Modeling/BodyStatus.h"
 #include "Representations/Motion/MotionStatus.h"
@@ -53,7 +54,7 @@ BEGIN_DECLARE_MODULE(GameLogger)
   REQUIRE(ImageTop)
   REQUIRE(ImageJPEG)
   REQUIRE(ImageJPEGTop)
-  
+
   REQUIRE(OdometryData)
   REQUIRE(CameraMatrix)
   REQUIRE(CameraMatrixTop)
@@ -84,6 +85,7 @@ BEGIN_DECLARE_MODULE(GameLogger)
   REQUIRE(BallCandidatesTop)
 
   REQUIRE(TeamState)
+  REQUIRE(RoleDecisionModel)
   REQUIRE(TeamMessageDecision)
 
   REQUIRE(AudioData)
@@ -133,10 +135,10 @@ private:
   FrameInfo lastTimeImageRecorded;
 
   unsigned int lastCompleteFrameNumber;
-  
+
   PlayerInfo::RobotState oldState;
   bool firstRecording;
-  
+
   // audio data
   unsigned long lastAudioDataTimestamp;
   FrameInfo timeOfLastCapture;

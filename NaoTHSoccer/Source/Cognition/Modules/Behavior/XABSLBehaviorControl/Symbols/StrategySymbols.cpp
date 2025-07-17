@@ -98,6 +98,8 @@ void StrategySymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("strategy.position.own.y", &getHomePositionOwnKickoffY);
   engine.registerDecimalInputSymbol("strategy.position.opp.x", &getHomePositionOppKickoffX);
   engine.registerDecimalInputSymbol("strategy.position.opp.y", &getHomePositionOppKickoffY);
+  engine.registerDecimalInputSymbol("strategy.position.dynamic.x", &getDynamicPositionX);
+  engine.registerDecimalInputSymbol("strategy.position.dynamic.y", &getDynamicPositionY);
 
   engine.registerBooleanOutputSymbol("strategy.run_pose_detection", &getSoccerStrategy().run_pose_detection);
 
@@ -513,4 +515,12 @@ double StrategySymbols::getHomePositionOppKickoffY() {
     }
     // put unknown player on the "manual placement line"
     return theInstance->getFieldInfo().yLength/(theInstance->getPlayerInfo().playersPerTeam+2)*theInstance->getPlayerInfo().playerNumber-(theInstance->getFieldInfo().yLength*0.5);
+}
+
+double StrategySymbols::getDynamicPositionX() {
+  return theInstance->getRoleDecisionModel().dynamic_position.x;
+}
+
+double StrategySymbols::getDynamicPositionY() {
+  return theInstance->getRoleDecisionModel().dynamic_position.y;
 }

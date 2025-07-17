@@ -81,6 +81,8 @@ private:
             PARAMETER_REGISTER(step_distance, &Parameters::setStepDistance) = 80;
             PARAMETER_REGISTER(turn_angle, &Parameters::setTurnAngle) = 30;
 
+            PARAMETER_REGISTER(supporter_use_ball) = true;
+
             // load from the file after registering all parameters
             syncWithConfig();
         }
@@ -116,6 +118,9 @@ private:
         // the calculated speeds
         double step_speed;
         double turn_speed;
+
+        // params for the supporter decision
+        bool supporter_use_ball;
 
     private:
         void setStrikerBallDifferenceFunction(std::string variant) {
@@ -162,6 +167,7 @@ private:
 
     void decideStriker(std::map<unsigned int, Roles::Dynamic>& roles);
     void decideGoalieSupporter(std::map<unsigned int, Roles::Dynamic>& roles);
+    /** Selects the closest player to the striker as supporter. */
     void decideSupporter(std::map<unsigned int, Roles::Dynamic>& roles);
 
     void checkStriker(const TeamState::Player& player, const double& indicator, const Vector2d& ball, std::vector<Striker>& striker, bool force = false);
@@ -182,6 +188,8 @@ private:
     /* Various evaluation functions, if another striker is already defending the goal. */
     bool defendingGoalDirectLine(const Vector2d& ball, const Vector2d& player_pos) const;
     bool defendingGoalCircle(const Vector2d& ball, const Vector2d& player_pos) const;
+
+    unsigned int findRole(std::map<unsigned int, Roles::Dynamic>& roles, Roles::Dynamic role) const;
 };
 
 #endif // ROLEDECISIONDYNAMIC_H

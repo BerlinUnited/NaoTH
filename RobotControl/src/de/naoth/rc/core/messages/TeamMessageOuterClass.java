@@ -18455,6 +18455,984 @@ public final class TeamMessageOuterClass {
 
   }
 
+  public interface RoleDecisionOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:naothmessages.RoleDecision)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>repeated .naothmessages.RobotRole roles = 1;</code>
+     */
+    java.util.List<de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole> 
+        getRolesList();
+    /**
+     * <code>repeated .naothmessages.RobotRole roles = 1;</code>
+     */
+    de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole getRoles(int index);
+    /**
+     * <code>repeated .naothmessages.RobotRole roles = 1;</code>
+     */
+    int getRolesCount();
+    /**
+     * <code>repeated .naothmessages.RobotRole roles = 1;</code>
+     */
+    java.util.List<? extends de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRoleOrBuilder> 
+        getRolesOrBuilderList();
+    /**
+     * <code>repeated .naothmessages.RobotRole roles = 1;</code>
+     */
+    de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRoleOrBuilder getRolesOrBuilder(
+        int index);
+
+    /**
+     * <code>optional .naothmessages.DoubleVector2 dynamic_position = 2;</code>
+     */
+    boolean hasDynamicPosition();
+    /**
+     * <code>optional .naothmessages.DoubleVector2 dynamic_position = 2;</code>
+     */
+    de.naoth.rc.core.messages.CommonTypes.DoubleVector2 getDynamicPosition();
+    /**
+     * <code>optional .naothmessages.DoubleVector2 dynamic_position = 2;</code>
+     */
+    de.naoth.rc.core.messages.CommonTypes.DoubleVector2OrBuilder getDynamicPositionOrBuilder();
+  }
+  /**
+   * Protobuf type {@code naothmessages.RoleDecision}
+   */
+  public  static final class RoleDecision extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:naothmessages.RoleDecision)
+      RoleDecisionOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use RoleDecision.newBuilder() to construct.
+    private RoleDecision(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private RoleDecision() {
+      roles_ = java.util.Collections.emptyList();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private RoleDecision(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+                roles_ = new java.util.ArrayList<de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole>();
+                mutable_bitField0_ |= 0x00000001;
+              }
+              roles_.add(
+                  input.readMessage(de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole.PARSER, extensionRegistry));
+              break;
+            }
+            case 18: {
+              de.naoth.rc.core.messages.CommonTypes.DoubleVector2.Builder subBuilder = null;
+              if (((bitField0_ & 0x00000001) == 0x00000001)) {
+                subBuilder = dynamicPosition_.toBuilder();
+              }
+              dynamicPosition_ = input.readMessage(de.naoth.rc.core.messages.CommonTypes.DoubleVector2.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(dynamicPosition_);
+                dynamicPosition_ = subBuilder.buildPartial();
+              }
+              bitField0_ |= 0x00000001;
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+          roles_ = java.util.Collections.unmodifiableList(roles_);
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return de.naoth.rc.core.messages.TeamMessageOuterClass.internal_static_naothmessages_RoleDecision_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return de.naoth.rc.core.messages.TeamMessageOuterClass.internal_static_naothmessages_RoleDecision_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              de.naoth.rc.core.messages.TeamMessageOuterClass.RoleDecision.class, de.naoth.rc.core.messages.TeamMessageOuterClass.RoleDecision.Builder.class);
+    }
+
+    private int bitField0_;
+    public static final int ROLES_FIELD_NUMBER = 1;
+    private java.util.List<de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole> roles_;
+    /**
+     * <code>repeated .naothmessages.RobotRole roles = 1;</code>
+     */
+    public java.util.List<de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole> getRolesList() {
+      return roles_;
+    }
+    /**
+     * <code>repeated .naothmessages.RobotRole roles = 1;</code>
+     */
+    public java.util.List<? extends de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRoleOrBuilder> 
+        getRolesOrBuilderList() {
+      return roles_;
+    }
+    /**
+     * <code>repeated .naothmessages.RobotRole roles = 1;</code>
+     */
+    public int getRolesCount() {
+      return roles_.size();
+    }
+    /**
+     * <code>repeated .naothmessages.RobotRole roles = 1;</code>
+     */
+    public de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole getRoles(int index) {
+      return roles_.get(index);
+    }
+    /**
+     * <code>repeated .naothmessages.RobotRole roles = 1;</code>
+     */
+    public de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRoleOrBuilder getRolesOrBuilder(
+        int index) {
+      return roles_.get(index);
+    }
+
+    public static final int DYNAMIC_POSITION_FIELD_NUMBER = 2;
+    private de.naoth.rc.core.messages.CommonTypes.DoubleVector2 dynamicPosition_;
+    /**
+     * <code>optional .naothmessages.DoubleVector2 dynamic_position = 2;</code>
+     */
+    public boolean hasDynamicPosition() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>optional .naothmessages.DoubleVector2 dynamic_position = 2;</code>
+     */
+    public de.naoth.rc.core.messages.CommonTypes.DoubleVector2 getDynamicPosition() {
+      return dynamicPosition_ == null ? de.naoth.rc.core.messages.CommonTypes.DoubleVector2.getDefaultInstance() : dynamicPosition_;
+    }
+    /**
+     * <code>optional .naothmessages.DoubleVector2 dynamic_position = 2;</code>
+     */
+    public de.naoth.rc.core.messages.CommonTypes.DoubleVector2OrBuilder getDynamicPositionOrBuilder() {
+      return dynamicPosition_ == null ? de.naoth.rc.core.messages.CommonTypes.DoubleVector2.getDefaultInstance() : dynamicPosition_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      for (int i = 0; i < getRolesCount(); i++) {
+        if (!getRoles(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      if (hasDynamicPosition()) {
+        if (!getDynamicPosition().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      for (int i = 0; i < roles_.size(); i++) {
+        output.writeMessage(1, roles_.get(i));
+      }
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeMessage(2, getDynamicPosition());
+      }
+      unknownFields.writeTo(output);
+    }
+
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      for (int i = 0; i < roles_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(1, roles_.get(i));
+      }
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(2, getDynamicPosition());
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof de.naoth.rc.core.messages.TeamMessageOuterClass.RoleDecision)) {
+        return super.equals(obj);
+      }
+      de.naoth.rc.core.messages.TeamMessageOuterClass.RoleDecision other = (de.naoth.rc.core.messages.TeamMessageOuterClass.RoleDecision) obj;
+
+      boolean result = true;
+      result = result && getRolesList()
+          .equals(other.getRolesList());
+      result = result && (hasDynamicPosition() == other.hasDynamicPosition());
+      if (hasDynamicPosition()) {
+        result = result && getDynamicPosition()
+            .equals(other.getDynamicPosition());
+      }
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (getRolesCount() > 0) {
+        hash = (37 * hash) + ROLES_FIELD_NUMBER;
+        hash = (53 * hash) + getRolesList().hashCode();
+      }
+      if (hasDynamicPosition()) {
+        hash = (37 * hash) + DYNAMIC_POSITION_FIELD_NUMBER;
+        hash = (53 * hash) + getDynamicPosition().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static de.naoth.rc.core.messages.TeamMessageOuterClass.RoleDecision parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static de.naoth.rc.core.messages.TeamMessageOuterClass.RoleDecision parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static de.naoth.rc.core.messages.TeamMessageOuterClass.RoleDecision parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static de.naoth.rc.core.messages.TeamMessageOuterClass.RoleDecision parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static de.naoth.rc.core.messages.TeamMessageOuterClass.RoleDecision parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static de.naoth.rc.core.messages.TeamMessageOuterClass.RoleDecision parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static de.naoth.rc.core.messages.TeamMessageOuterClass.RoleDecision parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static de.naoth.rc.core.messages.TeamMessageOuterClass.RoleDecision parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static de.naoth.rc.core.messages.TeamMessageOuterClass.RoleDecision parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static de.naoth.rc.core.messages.TeamMessageOuterClass.RoleDecision parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static de.naoth.rc.core.messages.TeamMessageOuterClass.RoleDecision parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static de.naoth.rc.core.messages.TeamMessageOuterClass.RoleDecision parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(de.naoth.rc.core.messages.TeamMessageOuterClass.RoleDecision prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code naothmessages.RoleDecision}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:naothmessages.RoleDecision)
+        de.naoth.rc.core.messages.TeamMessageOuterClass.RoleDecisionOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return de.naoth.rc.core.messages.TeamMessageOuterClass.internal_static_naothmessages_RoleDecision_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return de.naoth.rc.core.messages.TeamMessageOuterClass.internal_static_naothmessages_RoleDecision_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                de.naoth.rc.core.messages.TeamMessageOuterClass.RoleDecision.class, de.naoth.rc.core.messages.TeamMessageOuterClass.RoleDecision.Builder.class);
+      }
+
+      // Construct using de.naoth.rc.core.messages.TeamMessageOuterClass.RoleDecision.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+          getRolesFieldBuilder();
+          getDynamicPositionFieldBuilder();
+        }
+      }
+      public Builder clear() {
+        super.clear();
+        if (rolesBuilder_ == null) {
+          roles_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+        } else {
+          rolesBuilder_.clear();
+        }
+        if (dynamicPositionBuilder_ == null) {
+          dynamicPosition_ = null;
+        } else {
+          dynamicPositionBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000002);
+        return this;
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return de.naoth.rc.core.messages.TeamMessageOuterClass.internal_static_naothmessages_RoleDecision_descriptor;
+      }
+
+      public de.naoth.rc.core.messages.TeamMessageOuterClass.RoleDecision getDefaultInstanceForType() {
+        return de.naoth.rc.core.messages.TeamMessageOuterClass.RoleDecision.getDefaultInstance();
+      }
+
+      public de.naoth.rc.core.messages.TeamMessageOuterClass.RoleDecision build() {
+        de.naoth.rc.core.messages.TeamMessageOuterClass.RoleDecision result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public de.naoth.rc.core.messages.TeamMessageOuterClass.RoleDecision buildPartial() {
+        de.naoth.rc.core.messages.TeamMessageOuterClass.RoleDecision result = new de.naoth.rc.core.messages.TeamMessageOuterClass.RoleDecision(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (rolesBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) == 0x00000001)) {
+            roles_ = java.util.Collections.unmodifiableList(roles_);
+            bitField0_ = (bitField0_ & ~0x00000001);
+          }
+          result.roles_ = roles_;
+        } else {
+          result.roles_ = rolesBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        if (dynamicPositionBuilder_ == null) {
+          result.dynamicPosition_ = dynamicPosition_;
+        } else {
+          result.dynamicPosition_ = dynamicPositionBuilder_.build();
+        }
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof de.naoth.rc.core.messages.TeamMessageOuterClass.RoleDecision) {
+          return mergeFrom((de.naoth.rc.core.messages.TeamMessageOuterClass.RoleDecision)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(de.naoth.rc.core.messages.TeamMessageOuterClass.RoleDecision other) {
+        if (other == de.naoth.rc.core.messages.TeamMessageOuterClass.RoleDecision.getDefaultInstance()) return this;
+        if (rolesBuilder_ == null) {
+          if (!other.roles_.isEmpty()) {
+            if (roles_.isEmpty()) {
+              roles_ = other.roles_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+            } else {
+              ensureRolesIsMutable();
+              roles_.addAll(other.roles_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.roles_.isEmpty()) {
+            if (rolesBuilder_.isEmpty()) {
+              rolesBuilder_.dispose();
+              rolesBuilder_ = null;
+              roles_ = other.roles_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+              rolesBuilder_ = 
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                   getRolesFieldBuilder() : null;
+            } else {
+              rolesBuilder_.addAllMessages(other.roles_);
+            }
+          }
+        }
+        if (other.hasDynamicPosition()) {
+          mergeDynamicPosition(other.getDynamicPosition());
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        for (int i = 0; i < getRolesCount(); i++) {
+          if (!getRoles(i).isInitialized()) {
+            return false;
+          }
+        }
+        if (hasDynamicPosition()) {
+          if (!getDynamicPosition().isInitialized()) {
+            return false;
+          }
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        de.naoth.rc.core.messages.TeamMessageOuterClass.RoleDecision parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (de.naoth.rc.core.messages.TeamMessageOuterClass.RoleDecision) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      private java.util.List<de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole> roles_ =
+        java.util.Collections.emptyList();
+      private void ensureRolesIsMutable() {
+        if (!((bitField0_ & 0x00000001) == 0x00000001)) {
+          roles_ = new java.util.ArrayList<de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole>(roles_);
+          bitField0_ |= 0x00000001;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole, de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole.Builder, de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRoleOrBuilder> rolesBuilder_;
+
+      /**
+       * <code>repeated .naothmessages.RobotRole roles = 1;</code>
+       */
+      public java.util.List<de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole> getRolesList() {
+        if (rolesBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(roles_);
+        } else {
+          return rolesBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <code>repeated .naothmessages.RobotRole roles = 1;</code>
+       */
+      public int getRolesCount() {
+        if (rolesBuilder_ == null) {
+          return roles_.size();
+        } else {
+          return rolesBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .naothmessages.RobotRole roles = 1;</code>
+       */
+      public de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole getRoles(int index) {
+        if (rolesBuilder_ == null) {
+          return roles_.get(index);
+        } else {
+          return rolesBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .naothmessages.RobotRole roles = 1;</code>
+       */
+      public Builder setRoles(
+          int index, de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole value) {
+        if (rolesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureRolesIsMutable();
+          roles_.set(index, value);
+          onChanged();
+        } else {
+          rolesBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .naothmessages.RobotRole roles = 1;</code>
+       */
+      public Builder setRoles(
+          int index, de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole.Builder builderForValue) {
+        if (rolesBuilder_ == null) {
+          ensureRolesIsMutable();
+          roles_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          rolesBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .naothmessages.RobotRole roles = 1;</code>
+       */
+      public Builder addRoles(de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole value) {
+        if (rolesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureRolesIsMutable();
+          roles_.add(value);
+          onChanged();
+        } else {
+          rolesBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .naothmessages.RobotRole roles = 1;</code>
+       */
+      public Builder addRoles(
+          int index, de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole value) {
+        if (rolesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureRolesIsMutable();
+          roles_.add(index, value);
+          onChanged();
+        } else {
+          rolesBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .naothmessages.RobotRole roles = 1;</code>
+       */
+      public Builder addRoles(
+          de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole.Builder builderForValue) {
+        if (rolesBuilder_ == null) {
+          ensureRolesIsMutable();
+          roles_.add(builderForValue.build());
+          onChanged();
+        } else {
+          rolesBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .naothmessages.RobotRole roles = 1;</code>
+       */
+      public Builder addRoles(
+          int index, de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole.Builder builderForValue) {
+        if (rolesBuilder_ == null) {
+          ensureRolesIsMutable();
+          roles_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          rolesBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .naothmessages.RobotRole roles = 1;</code>
+       */
+      public Builder addAllRoles(
+          java.lang.Iterable<? extends de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole> values) {
+        if (rolesBuilder_ == null) {
+          ensureRolesIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, roles_);
+          onChanged();
+        } else {
+          rolesBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .naothmessages.RobotRole roles = 1;</code>
+       */
+      public Builder clearRoles() {
+        if (rolesBuilder_ == null) {
+          roles_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+          onChanged();
+        } else {
+          rolesBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .naothmessages.RobotRole roles = 1;</code>
+       */
+      public Builder removeRoles(int index) {
+        if (rolesBuilder_ == null) {
+          ensureRolesIsMutable();
+          roles_.remove(index);
+          onChanged();
+        } else {
+          rolesBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .naothmessages.RobotRole roles = 1;</code>
+       */
+      public de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole.Builder getRolesBuilder(
+          int index) {
+        return getRolesFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .naothmessages.RobotRole roles = 1;</code>
+       */
+      public de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRoleOrBuilder getRolesOrBuilder(
+          int index) {
+        if (rolesBuilder_ == null) {
+          return roles_.get(index);  } else {
+          return rolesBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .naothmessages.RobotRole roles = 1;</code>
+       */
+      public java.util.List<? extends de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRoleOrBuilder> 
+           getRolesOrBuilderList() {
+        if (rolesBuilder_ != null) {
+          return rolesBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(roles_);
+        }
+      }
+      /**
+       * <code>repeated .naothmessages.RobotRole roles = 1;</code>
+       */
+      public de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole.Builder addRolesBuilder() {
+        return getRolesFieldBuilder().addBuilder(
+            de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .naothmessages.RobotRole roles = 1;</code>
+       */
+      public de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole.Builder addRolesBuilder(
+          int index) {
+        return getRolesFieldBuilder().addBuilder(
+            index, de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .naothmessages.RobotRole roles = 1;</code>
+       */
+      public java.util.List<de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole.Builder> 
+           getRolesBuilderList() {
+        return getRolesFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole, de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole.Builder, de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRoleOrBuilder> 
+          getRolesFieldBuilder() {
+        if (rolesBuilder_ == null) {
+          rolesBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+              de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole, de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRole.Builder, de.naoth.rc.core.messages.TeamMessageOuterClass.RobotRoleOrBuilder>(
+                  roles_,
+                  ((bitField0_ & 0x00000001) == 0x00000001),
+                  getParentForChildren(),
+                  isClean());
+          roles_ = null;
+        }
+        return rolesBuilder_;
+      }
+
+      private de.naoth.rc.core.messages.CommonTypes.DoubleVector2 dynamicPosition_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          de.naoth.rc.core.messages.CommonTypes.DoubleVector2, de.naoth.rc.core.messages.CommonTypes.DoubleVector2.Builder, de.naoth.rc.core.messages.CommonTypes.DoubleVector2OrBuilder> dynamicPositionBuilder_;
+      /**
+       * <code>optional .naothmessages.DoubleVector2 dynamic_position = 2;</code>
+       */
+      public boolean hasDynamicPosition() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector2 dynamic_position = 2;</code>
+       */
+      public de.naoth.rc.core.messages.CommonTypes.DoubleVector2 getDynamicPosition() {
+        if (dynamicPositionBuilder_ == null) {
+          return dynamicPosition_ == null ? de.naoth.rc.core.messages.CommonTypes.DoubleVector2.getDefaultInstance() : dynamicPosition_;
+        } else {
+          return dynamicPositionBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector2 dynamic_position = 2;</code>
+       */
+      public Builder setDynamicPosition(de.naoth.rc.core.messages.CommonTypes.DoubleVector2 value) {
+        if (dynamicPositionBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          dynamicPosition_ = value;
+          onChanged();
+        } else {
+          dynamicPositionBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000002;
+        return this;
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector2 dynamic_position = 2;</code>
+       */
+      public Builder setDynamicPosition(
+          de.naoth.rc.core.messages.CommonTypes.DoubleVector2.Builder builderForValue) {
+        if (dynamicPositionBuilder_ == null) {
+          dynamicPosition_ = builderForValue.build();
+          onChanged();
+        } else {
+          dynamicPositionBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000002;
+        return this;
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector2 dynamic_position = 2;</code>
+       */
+      public Builder mergeDynamicPosition(de.naoth.rc.core.messages.CommonTypes.DoubleVector2 value) {
+        if (dynamicPositionBuilder_ == null) {
+          if (((bitField0_ & 0x00000002) == 0x00000002) &&
+              dynamicPosition_ != null &&
+              dynamicPosition_ != de.naoth.rc.core.messages.CommonTypes.DoubleVector2.getDefaultInstance()) {
+            dynamicPosition_ =
+              de.naoth.rc.core.messages.CommonTypes.DoubleVector2.newBuilder(dynamicPosition_).mergeFrom(value).buildPartial();
+          } else {
+            dynamicPosition_ = value;
+          }
+          onChanged();
+        } else {
+          dynamicPositionBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000002;
+        return this;
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector2 dynamic_position = 2;</code>
+       */
+      public Builder clearDynamicPosition() {
+        if (dynamicPositionBuilder_ == null) {
+          dynamicPosition_ = null;
+          onChanged();
+        } else {
+          dynamicPositionBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000002);
+        return this;
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector2 dynamic_position = 2;</code>
+       */
+      public de.naoth.rc.core.messages.CommonTypes.DoubleVector2.Builder getDynamicPositionBuilder() {
+        bitField0_ |= 0x00000002;
+        onChanged();
+        return getDynamicPositionFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector2 dynamic_position = 2;</code>
+       */
+      public de.naoth.rc.core.messages.CommonTypes.DoubleVector2OrBuilder getDynamicPositionOrBuilder() {
+        if (dynamicPositionBuilder_ != null) {
+          return dynamicPositionBuilder_.getMessageOrBuilder();
+        } else {
+          return dynamicPosition_ == null ?
+              de.naoth.rc.core.messages.CommonTypes.DoubleVector2.getDefaultInstance() : dynamicPosition_;
+        }
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector2 dynamic_position = 2;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          de.naoth.rc.core.messages.CommonTypes.DoubleVector2, de.naoth.rc.core.messages.CommonTypes.DoubleVector2.Builder, de.naoth.rc.core.messages.CommonTypes.DoubleVector2OrBuilder> 
+          getDynamicPositionFieldBuilder() {
+        if (dynamicPositionBuilder_ == null) {
+          dynamicPositionBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              de.naoth.rc.core.messages.CommonTypes.DoubleVector2, de.naoth.rc.core.messages.CommonTypes.DoubleVector2.Builder, de.naoth.rc.core.messages.CommonTypes.DoubleVector2OrBuilder>(
+                  getDynamicPosition(),
+                  getParentForChildren(),
+                  isClean());
+          dynamicPosition_ = null;
+        }
+        return dynamicPositionBuilder_;
+      }
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:naothmessages.RoleDecision)
+    }
+
+    // @@protoc_insertion_point(class_scope:naothmessages.RoleDecision)
+    private static final de.naoth.rc.core.messages.TeamMessageOuterClass.RoleDecision DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new de.naoth.rc.core.messages.TeamMessageOuterClass.RoleDecision();
+    }
+
+    public static de.naoth.rc.core.messages.TeamMessageOuterClass.RoleDecision getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    @java.lang.Deprecated public static final com.google.protobuf.Parser<RoleDecision>
+        PARSER = new com.google.protobuf.AbstractParser<RoleDecision>() {
+      public RoleDecision parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+          return new RoleDecision(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<RoleDecision> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<RoleDecision> getParserForType() {
+      return PARSER;
+    }
+
+    public de.naoth.rc.core.messages.TeamMessageOuterClass.RoleDecision getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_naothmessages_RobotRole_descriptor;
   private static final 
@@ -18510,6 +19488,11 @@ public final class TeamMessageOuterClass {
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_naothmessages_TeamMessageDebug_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_naothmessages_RoleDecision_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_naothmessages_RoleDecision_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -18609,25 +19592,28 @@ public final class TeamMessageOuterClass {
       "naothmessages.DoubleVector2\022\022\n\ntimeToBal" +
       "l\030\023 \001(\r\022.\n\010teamBall\030\024 \001(\0132\034.naothmessage" +
       "s.DoubleVector2\022\031\n\nwasStriker\030\025 \001(\010:\005fal",
-      "se\022\037\n\020wantsToBeStriker\030\026 \001(\010:\005false*\262\001\n\t" +
-      "TeamColor\022\014\n\010blueTeam\020\000\022\013\n\007redTeam\020\001\022\016\n\n" +
-      "yellowTeam\020\002\022\r\n\tblackTeam\020\003\022\r\n\twhiteTeam" +
-      "\020\004\022\r\n\tgreenTeam\020\005\022\016\n\norangeTeam\020\006\022\016\n\npur" +
-      "pleTeam\020\007\022\r\n\tbrownTeam\020\010\022\014\n\010grayTeam\020\t\022\020" +
-      "\n\013invalidTeam\020\377\001*q\n\nRobotState\022\013\n\007initia" +
-      "l\020\000\022\t\n\005ready\020\001\022\007\n\003set\020\002\022\013\n\007playing\020\003\022\014\n\010" +
-      "finished\020\004\022\r\n\tpenalized\020\005\022\013\n\007unstiff\020\006\022\013" +
-      "\n\007standby\020\007*\230\002\n\017RobotRoleStatic\022\026\n\022role_" +
-      "defender_left\020\000\022\030\n\024role_defender_center\020",
-      "\001\022\027\n\023role_defender_right\020\002\022\030\n\024role_midfi" +
-      "elder_left\020\003\022\032\n\026role_midfielder_center\020\004" +
-      "\022\031\n\025role_midfielder_right\020\005\022\025\n\021role_forw" +
-      "ard_left\020\006\022\027\n\023role_forward_center\020\007\022\026\n\022r" +
-      "ole_forward_right\020\010\022\017\n\013role_goalie\020\t\022\020\n\014" +
-      "role_unknown\020\n*b\n\020RobotRoleDynamic\022\r\n\tro" +
-      "le_none\020\000\022\022\n\016role_supporter\020\001\022\031\n\025role_go" +
-      "alie_supporter\020\002\022\020\n\014role_striker\020\003B\033\n\031de" +
-      ".naoth.rc.core.messages"
+      "se\022\037\n\020wantsToBeStriker\030\026 \001(\010:\005false\"o\n\014R" +
+      "oleDecision\022\'\n\005roles\030\001 \003(\0132\030.naothmessag" +
+      "es.RobotRole\0226\n\020dynamic_position\030\002 \001(\0132\034" +
+      ".naothmessages.DoubleVector2*\262\001\n\tTeamCol" +
+      "or\022\014\n\010blueTeam\020\000\022\013\n\007redTeam\020\001\022\016\n\nyellowT" +
+      "eam\020\002\022\r\n\tblackTeam\020\003\022\r\n\twhiteTeam\020\004\022\r\n\tg" +
+      "reenTeam\020\005\022\016\n\norangeTeam\020\006\022\016\n\npurpleTeam" +
+      "\020\007\022\r\n\tbrownTeam\020\010\022\014\n\010grayTeam\020\t\022\020\n\013inval" +
+      "idTeam\020\377\001*q\n\nRobotState\022\013\n\007initial\020\000\022\t\n\005" +
+      "ready\020\001\022\007\n\003set\020\002\022\013\n\007playing\020\003\022\014\n\010finishe",
+      "d\020\004\022\r\n\tpenalized\020\005\022\013\n\007unstiff\020\006\022\013\n\007stand" +
+      "by\020\007*\230\002\n\017RobotRoleStatic\022\026\n\022role_defende" +
+      "r_left\020\000\022\030\n\024role_defender_center\020\001\022\027\n\023ro" +
+      "le_defender_right\020\002\022\030\n\024role_midfielder_l" +
+      "eft\020\003\022\032\n\026role_midfielder_center\020\004\022\031\n\025rol" +
+      "e_midfielder_right\020\005\022\025\n\021role_forward_lef" +
+      "t\020\006\022\027\n\023role_forward_center\020\007\022\026\n\022role_for" +
+      "ward_right\020\010\022\017\n\013role_goalie\020\t\022\020\n\014role_un" +
+      "known\020\n*b\n\020RobotRoleDynamic\022\r\n\trole_none" +
+      "\020\000\022\022\n\016role_supporter\020\001\022\031\n\025role_goalie_su",
+      "pporter\020\002\022\020\n\014role_striker\020\003B\033\n\031de.naoth." +
+      "rc.core.messages"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -18709,6 +19695,12 @@ public final class TeamMessageOuterClass {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_naothmessages_TeamMessageDebug_descriptor,
         new java.lang.String[] { "BodyID", "TeamNumber", "PlayerNumber", "Timestamp", "FrameInfo", "RobotState", "RobotRole", "Pose", "Fallen", "ReadyToWalk", "BatteryCharge", "Temperature", "CpuTemperature", "WhistleDetected", "WhistleCount", "BallAge", "BallPosition", "BallVelocity", "TimeToBall", "TeamBall", "WasStriker", "WantsToBeStriker", });
+    internal_static_naothmessages_RoleDecision_descriptor =
+      getDescriptor().getMessageTypes().get(9);
+    internal_static_naothmessages_RoleDecision_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_naothmessages_RoleDecision_descriptor,
+        new java.lang.String[] { "Roles", "DynamicPosition", });
     de.naoth.rc.core.messages.CommonTypes.getDescriptor();
     de.naoth.rc.core.messages.FrameworkRepresentations.getDescriptor();
   }

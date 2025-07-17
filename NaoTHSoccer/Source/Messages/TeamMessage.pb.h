@@ -49,6 +49,9 @@ extern OpponentDefaultTypeInternal _Opponent_default_instance_;
 class RobotRole;
 class RobotRoleDefaultTypeInternal;
 extern RobotRoleDefaultTypeInternal _RobotRole_default_instance_;
+class RoleDecision;
+class RoleDecisionDefaultTypeInternal;
+extern RoleDecisionDefaultTypeInternal _RoleDecision_default_instance_;
 class TeamMessage;
 class TeamMessageDefaultTypeInternal;
 extern TeamMessageDefaultTypeInternal _TeamMessage_default_instance_;
@@ -2399,6 +2402,129 @@ class TeamMessageDebug : public ::google::protobuf::Message /* @@protoc_insertio
   bool wantstobestriker_;
   float batterycharge_;
   ::google::protobuf::int32 ballage_;
+  friend struct protobuf_TeamMessage_2eproto::TableStruct;
+};
+// -------------------------------------------------------------------
+
+class RoleDecision : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:naothmessages.RoleDecision) */ {
+ public:
+  RoleDecision();
+  virtual ~RoleDecision();
+
+  RoleDecision(const RoleDecision& from);
+
+  inline RoleDecision& operator=(const RoleDecision& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  #if LANG_CXX11
+  RoleDecision(RoleDecision&& from) noexcept
+    : RoleDecision() {
+    *this = ::std::move(from);
+  }
+
+  inline RoleDecision& operator=(RoleDecision&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+  #endif
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _internal_metadata_.unknown_fields();
+  }
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return _internal_metadata_.mutable_unknown_fields();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const RoleDecision& default_instance();
+
+  static inline const RoleDecision* internal_default_instance() {
+    return reinterpret_cast<const RoleDecision*>(
+               &_RoleDecision_default_instance_);
+  }
+  static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
+    11;
+
+  void Swap(RoleDecision* other);
+  friend void swap(RoleDecision& a, RoleDecision& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline RoleDecision* New() const PROTOBUF_FINAL { return New(NULL); }
+
+  RoleDecision* New(::google::protobuf::Arena* arena) const PROTOBUF_FINAL;
+  void CopyFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void MergeFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void CopyFrom(const RoleDecision& from);
+  void MergeFrom(const RoleDecision& from);
+  void Clear() PROTOBUF_FINAL;
+  bool IsInitialized() const PROTOBUF_FINAL;
+
+  size_t ByteSizeLong() const PROTOBUF_FINAL;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) PROTOBUF_FINAL;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const PROTOBUF_FINAL;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const PROTOBUF_FINAL;
+  int GetCachedSize() const PROTOBUF_FINAL { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const PROTOBUF_FINAL;
+  void InternalSwap(RoleDecision* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const PROTOBUF_FINAL;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // repeated .naothmessages.RobotRole roles = 1;
+  int roles_size() const;
+  void clear_roles();
+  static const int kRolesFieldNumber = 1;
+  const ::naothmessages::RobotRole& roles(int index) const;
+  ::naothmessages::RobotRole* mutable_roles(int index);
+  ::naothmessages::RobotRole* add_roles();
+  ::google::protobuf::RepeatedPtrField< ::naothmessages::RobotRole >*
+      mutable_roles();
+  const ::google::protobuf::RepeatedPtrField< ::naothmessages::RobotRole >&
+      roles() const;
+
+  // optional .naothmessages.DoubleVector2 dynamic_position = 2;
+  bool has_dynamic_position() const;
+  void clear_dynamic_position();
+  static const int kDynamicPositionFieldNumber = 2;
+  const ::naothmessages::DoubleVector2& dynamic_position() const;
+  ::naothmessages::DoubleVector2* mutable_dynamic_position();
+  ::naothmessages::DoubleVector2* release_dynamic_position();
+  void set_allocated_dynamic_position(::naothmessages::DoubleVector2* dynamic_position);
+
+  // @@protoc_insertion_point(class_scope:naothmessages.RoleDecision)
+ private:
+  void set_has_dynamic_position();
+  void clear_has_dynamic_position();
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::internal::HasBits<1> _has_bits_;
+  mutable int _cached_size_;
+  ::google::protobuf::RepeatedPtrField< ::naothmessages::RobotRole > roles_;
+  ::naothmessages::DoubleVector2* dynamic_position_;
   friend struct protobuf_TeamMessage_2eproto::TableStruct;
 };
 // ===================================================================
@@ -5542,10 +5668,92 @@ inline void TeamMessageDebug::set_wantstobestriker(bool value) {
   // @@protoc_insertion_point(field_set:naothmessages.TeamMessageDebug.wantsToBeStriker)
 }
 
+// -------------------------------------------------------------------
+
+// RoleDecision
+
+// repeated .naothmessages.RobotRole roles = 1;
+inline int RoleDecision::roles_size() const {
+  return roles_.size();
+}
+inline void RoleDecision::clear_roles() {
+  roles_.Clear();
+}
+inline const ::naothmessages::RobotRole& RoleDecision::roles(int index) const {
+  // @@protoc_insertion_point(field_get:naothmessages.RoleDecision.roles)
+  return roles_.Get(index);
+}
+inline ::naothmessages::RobotRole* RoleDecision::mutable_roles(int index) {
+  // @@protoc_insertion_point(field_mutable:naothmessages.RoleDecision.roles)
+  return roles_.Mutable(index);
+}
+inline ::naothmessages::RobotRole* RoleDecision::add_roles() {
+  // @@protoc_insertion_point(field_add:naothmessages.RoleDecision.roles)
+  return roles_.Add();
+}
+inline ::google::protobuf::RepeatedPtrField< ::naothmessages::RobotRole >*
+RoleDecision::mutable_roles() {
+  // @@protoc_insertion_point(field_mutable_list:naothmessages.RoleDecision.roles)
+  return &roles_;
+}
+inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::RobotRole >&
+RoleDecision::roles() const {
+  // @@protoc_insertion_point(field_list:naothmessages.RoleDecision.roles)
+  return roles_;
+}
+
+// optional .naothmessages.DoubleVector2 dynamic_position = 2;
+inline bool RoleDecision::has_dynamic_position() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void RoleDecision::set_has_dynamic_position() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void RoleDecision::clear_has_dynamic_position() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void RoleDecision::clear_dynamic_position() {
+  if (dynamic_position_ != NULL) dynamic_position_->::naothmessages::DoubleVector2::Clear();
+  clear_has_dynamic_position();
+}
+inline const ::naothmessages::DoubleVector2& RoleDecision::dynamic_position() const {
+  const ::naothmessages::DoubleVector2* p = dynamic_position_;
+  // @@protoc_insertion_point(field_get:naothmessages.RoleDecision.dynamic_position)
+  return p != NULL ? *p : *reinterpret_cast<const ::naothmessages::DoubleVector2*>(
+      &::naothmessages::_DoubleVector2_default_instance_);
+}
+inline ::naothmessages::DoubleVector2* RoleDecision::mutable_dynamic_position() {
+  set_has_dynamic_position();
+  if (dynamic_position_ == NULL) {
+    dynamic_position_ = new ::naothmessages::DoubleVector2;
+  }
+  // @@protoc_insertion_point(field_mutable:naothmessages.RoleDecision.dynamic_position)
+  return dynamic_position_;
+}
+inline ::naothmessages::DoubleVector2* RoleDecision::release_dynamic_position() {
+  // @@protoc_insertion_point(field_release:naothmessages.RoleDecision.dynamic_position)
+  clear_has_dynamic_position();
+  ::naothmessages::DoubleVector2* temp = dynamic_position_;
+  dynamic_position_ = NULL;
+  return temp;
+}
+inline void RoleDecision::set_allocated_dynamic_position(::naothmessages::DoubleVector2* dynamic_position) {
+  delete dynamic_position_;
+  dynamic_position_ = dynamic_position;
+  if (dynamic_position) {
+    set_has_dynamic_position();
+  } else {
+    clear_has_dynamic_position();
+  }
+  // @@protoc_insertion_point(field_set_allocated:naothmessages.RoleDecision.dynamic_position)
+}
+
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
 #endif  // !PROTOBUF_INLINE_NOT_IN_HEADERS
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------
