@@ -597,8 +597,19 @@ bool PathPlanner2018::nearApproach_forwardKick(const double offsetX, const doubl
     Foot supporting_foot;
     Coordinate coordinate = Coordinate::Hip;
 
+    // decide at most 1s or if the ball has moved
+    if (getFrameInfo().getTimeSince(dribble_approach_foot_decision_frame) > 1000 || (ball_position_on_decision - getBallModel().positionPreview).abs() > 100) {
+      if(getBallModel().positionPreview.y < 0) {
+        dribble_approach_foot = Foot::RIGHT;
+      } else {
+        dribble_approach_foot = Foot::LEFT;
+      }
+      dribble_approach_foot_decision_frame = getFrameInfo();
+      ball_position_on_decision = getBallModel().positionPreview;
+    }
+
     // decide the foot to kick with
-    if (getBallModel().positionPreview.y < 0)
+    if (dribble_approach_foot == Foot::RIGHT)
     {
       kicking_foot    = Foot::RIGHT;
       supporting_foot = Foot::LEFT;
@@ -611,7 +622,7 @@ bool PathPlanner2018::nearApproach_forwardKick(const double offsetX, const doubl
       //ballPos    = getBallModel().positionPreviewInRFoot;
       //coordinate = Coordinate::RFoot;
     }
-    else if (getBallModel().positionPreview.y >= 0)
+    else if (dribble_approach_foot == Foot::LEFT)
     {
       kicking_foot    = Foot::LEFT;
       supporting_foot = Foot::RIGHT;
