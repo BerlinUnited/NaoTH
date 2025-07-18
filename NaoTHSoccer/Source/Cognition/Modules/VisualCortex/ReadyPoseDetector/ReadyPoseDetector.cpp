@@ -26,10 +26,6 @@ void ReadyPoseDetector::execute()
   // reset
   getWhistlePercept().readyRefereePoseDetected = false;
 
-  if(getPlayerInfo().robotState != PlayerInfo::RobotState::standby) {
-    return;
-  }
-
   // NOTE: maybe it's better to do it in behavior?
   //       maybe the behavior can set a situation status?
   // Different robots pay attention to the refree giving a ready signal depending on the team size (5 or 7)
@@ -42,31 +38,6 @@ void ReadyPoseDetector::execute()
       return;
     }
   }
- 
-
-  /*
-  // default position of the player 4
-  Pose2D robotPose (-Math::pi_2, -750, 3050);
-
-  DEBUG_REQUEST("ReadyPoseDetector:draw_robot_pose_on_field",
-    FIELD_DRAWING_CONTEXT;
-    ROBOT(robotPose.translation.x, robotPose.translation.y, robotPose.rotation);
-  );
-
-  // position of the referee
-  Vector3d pointInField (0.0, -3250.0, 1000);
-  Vector2i pointInImage;
-  if (CameraGeometry::relativePointToImage(getCameraMatrixTop(), getCameraInfo(), pointInField, pointInImage))
-  {
-
-    DEBUG_REQUEST("ReadyPoseDetector:draw_pose_in_image",
-      IMAGE_DRAWING_CONTEXT;
-      CANVAS("ImageTop");
-      PEN("FF0000", 1);
-      CIRCLE(pointInImage.x, pointInImage.y, 2);
-    );
-  }
-  */
 
   // this works for the player 4 (and 3 for 5v5)
   // for games with 5v5 player 3 is at the same ready position as 4
@@ -89,6 +60,11 @@ void ReadyPoseDetector::execute()
 
     BOX(poseInImage.x, poseInImage.y, poseInImage.x + 192, poseInImage.y + 192);
   );
+
+  // dont do anything if we are not in standby - but wen can draw the detection area without being in standby
+  if(getPlayerInfo().robotState != PlayerInfo::RobotState::standby) {
+    return;
+  }
 
   float (*inputTensor)[1][192][192][3] = reinterpret_cast<float(*)[1][192][192][3]>(exec.getInputTensor());
 
