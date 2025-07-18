@@ -56,8 +56,8 @@ option path_striker2024
         //   this seems like a good idea, but it doesn't work well.
         //   there is no check if the ball is positioned well in front of the foot.
         //   this is handled better by the approach_dribble.
-        else if(vector.abs(x=ball.future.preview.x, y=ball.future.preview.y) < 300 && attack.best_action == kick_short)
-          goto forwardkick;
+        //else if(vector.abs(x=ball.future.preview.x, y=ball.future.preview.y) < 300 && attack.best_action == kick_short)
+        //  goto forwardkick;
         else
           goto approach_dribble;
       } 

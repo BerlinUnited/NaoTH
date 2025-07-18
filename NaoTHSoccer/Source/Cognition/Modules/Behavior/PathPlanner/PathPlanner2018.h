@@ -182,6 +182,10 @@ private:
     NONE
   };
 
+  Foot dribble_approach_foot = Foot::NONE;
+  FrameInfo dribble_approach_foot_decision_frame;
+  Vector2d ball_position_on_decision;
+
   // helper method: calculates if a foot is movable based on the MotionStatus
   bool isFootMovable(Foot foot) const
   {
