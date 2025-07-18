@@ -7,9 +7,8 @@ using namespace std;
 
 ReadyPoseDetector::ReadyPoseDetector()
 {
-  DEBUG_REQUEST_REGISTER("ReadyPoseDetector:draw_robot_pose_on_field", "draw pose", false);
-  DEBUG_REQUEST_REGISTER("ReadyPoseDetector:draw_pose_in_image", "draw pose", false);
-  DEBUG_REQUEST_REGISTER("ReadyPoseDetector:draw_detection_area", "draw pose", false);
+  DEBUG_REQUEST_REGISTER("Vision:ReadyPoseDetector:draw_pose_in_image", "draw pose", false);
+  DEBUG_REQUEST_REGISTER("Vision:ReadyPoseDetector:draw_detection_area", "draw pose", false);
   
   exec.loadModelFromFile("Config/movenet_lightning.tflite", {1, 192, 192, 3}, 1);
 
@@ -50,10 +49,10 @@ void ReadyPoseDetector::execute()
     poseInImage.x = getImageTop().width() - 192 - poseInImage.x;
   }
 
-  MODIFY("ReadyPoseDetector:poseInImage.x", poseInImage.x);
-  MODIFY("ReadyPoseDetector:poseInImage.y", poseInImage.y);
+  MODIFY("Vision:ReadyPoseDetector:poseInImage.x", poseInImage.x);
+  MODIFY("Vision:ReadyPoseDetector:poseInImage.y", poseInImage.y);
 
-  DEBUG_REQUEST("ReadyPoseDetector:draw_detection_area",
+  DEBUG_REQUEST("Vision:ReadyPoseDetector:draw_detection_area",
     IMAGE_DRAWING_CONTEXT;
     CANVAS("ImageTop");
     PEN("FF0000", 1);
@@ -62,6 +61,8 @@ void ReadyPoseDetector::execute()
   );
 
   // dont do anything if we are not in standby - but wen can draw the detection area without being in standby
+
+
   if(getPlayerInfo().robotState != PlayerInfo::RobotState::standby) {
     return;
   }
@@ -113,7 +114,7 @@ void ReadyPoseDetector::execute()
 
 
   //y,x und conf. y
-  DEBUG_REQUEST("ReadyPoseDetector:draw_detection_area",
+  DEBUG_REQUEST("ReadyPoseDetector:draw_pose_in_image",
     IMAGE_DRAWING_CONTEXT;
     CANVAS("ImageTop");
 
