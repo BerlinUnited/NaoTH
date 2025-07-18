@@ -131,9 +131,12 @@ void ReadyPoseDetector::execute()
     TEXT_DRAWING2(poseInImage.x + (int)x4, poseInImage.y + (int)y4, 0.1, (int)(c4*100.0));
   );
 
-  // FIXME
+  // check confidence of eyes and make sure that average of hand position are above the average of eye positions
   if( c1 > 0.45 && c2 > 0.45 && (y3 + y4) * 0.5 < (y1 + y2) * 0.5 - 5) {
-    getWhistlePercept().readyRefereePoseDetected = true;
+    // check that head is high enough
+    if((y1 + y2) * 0.5 < 192 * 0.5){
+      getWhistlePercept().readyRefereePoseDetected = true;
+    }
   }
 
   DEBUG_REQUEST("ReadyPoseDetector:draw_detection_area",
