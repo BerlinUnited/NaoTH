@@ -114,7 +114,7 @@ void ReadyPoseDetector::execute()
 
 
   //y,x und conf. y
-  DEBUG_REQUEST("ReadyPoseDetector:draw_pose_in_image",
+  DEBUG_REQUEST("Vision:ReadyPoseDetector:draw_pose_in_image",
     IMAGE_DRAWING_CONTEXT;
     CANVAS("ImageTop");
 
@@ -139,7 +139,7 @@ void ReadyPoseDetector::execute()
     }
   }
 
-  DEBUG_REQUEST("ReadyPoseDetector:draw_detection_area",
+  DEBUG_REQUEST("Vision:ReadyPoseDetector:draw_detection_area",
     IMAGE_DRAWING_CONTEXT;
     CANVAS("ImageTop");
     PEN("00FF00", 3);
