@@ -7,9 +7,8 @@ using namespace std;
 
 ReadyPoseDetector::ReadyPoseDetector()
 {
-  DEBUG_REQUEST_REGISTER("ReadyPoseDetector:draw_robot_pose_on_field", "draw pose", false);
-  DEBUG_REQUEST_REGISTER("ReadyPoseDetector:draw_pose_in_image", "draw pose", false);
-  DEBUG_REQUEST_REGISTER("ReadyPoseDetector:draw_detection_area", "draw pose", false);
+  DEBUG_REQUEST_REGISTER("Vision:ReadyPoseDetector:draw_pose_in_image", "draw pose", false);
+  DEBUG_REQUEST_REGISTER("Vision:ReadyPoseDetector:draw_detection_area", "draw pose", false);
   
   exec.loadModelFromFile("Config/movenet_lightning.tflite", {1, 192, 192, 3}, 1);
 
@@ -26,10 +25,6 @@ void ReadyPoseDetector::execute()
   // reset
   getWhistlePercept().readyRefereePoseDetected = false;
 
-  if(getPlayerInfo().robotState != PlayerInfo::RobotState::standby) {
-    return;
-  }
-
   // NOTE: maybe it's better to do it in behavior?
   //       maybe the behavior can set a situation status?
   // Different robots pay attention to the refree giving a ready signal depending on the team size (5 or 7)
@@ -42,31 +37,6 @@ void ReadyPoseDetector::execute()
       return;
     }
   }
- 
-
-  /*
-  // default position of the player 4
-  Pose2D robotPose (-Math::pi_2, -750, 3050);
-
-  DEBUG_REQUEST("ReadyPoseDetector:draw_robot_pose_on_field",
-    FIELD_DRAWING_CONTEXT;
-    ROBOT(robotPose.translation.x, robotPose.translation.y, robotPose.rotation);
-  );
-
-  // position of the referee
-  Vector3d pointInField (0.0, -3250.0, 1000);
-  Vector2i pointInImage;
-  if (CameraGeometry::relativePointToImage(getCameraMatrixTop(), getCameraInfo(), pointInField, pointInImage))
-  {
-
-    DEBUG_REQUEST("ReadyPoseDetector:draw_pose_in_image",
-      IMAGE_DRAWING_CONTEXT;
-      CANVAS("ImageTop");
-      PEN("FF0000", 1);
-      CIRCLE(pointInImage.x, pointInImage.y, 2);
-    );
-  }
-  */
 
   // this works for the player 4 (and 3 for 5v5)
   // for games with 5v5 player 3 is at the same ready position as 4
@@ -79,16 +49,23 @@ void ReadyPoseDetector::execute()
     poseInImage.x = getImageTop().width() - 192 - poseInImage.x;
   }
 
-  MODIFY("ReadyPoseDetector:poseInImage.x", poseInImage.x);
-  MODIFY("ReadyPoseDetector:poseInImage.y", poseInImage.y);
+  MODIFY("Vision:ReadyPoseDetector:poseInImage.x", poseInImage.x);
+  MODIFY("Vision:ReadyPoseDetector:poseInImage.y", poseInImage.y);
 
-  DEBUG_REQUEST("ReadyPoseDetector:draw_detection_area",
+  DEBUG_REQUEST("Vision:ReadyPoseDetector:draw_detection_area",
     IMAGE_DRAWING_CONTEXT;
     CANVAS("ImageTop");
     PEN("FF0000", 1);
 
     BOX(poseInImage.x, poseInImage.y, poseInImage.x + 192, poseInImage.y + 192);
   );
+
+  // dont do anything if we are not in standby - but wen can draw the detection area without being in standby
+
+
+  if(getPlayerInfo().robotState != PlayerInfo::RobotState::standby) {
+    return;
+  }
 
   float (*inputTensor)[1][192][192][3] = reinterpret_cast<float(*)[1][192][192][3]>(exec.getInputTensor());
 
@@ -137,7 +114,7 @@ void ReadyPoseDetector::execute()
 
 
   //y,x und conf. y
-  DEBUG_REQUEST("ReadyPoseDetector:draw_detection_area",
+  DEBUG_REQUEST("Vision:ReadyPoseDetector:draw_pose_in_image",
     IMAGE_DRAWING_CONTEXT;
     CANVAS("ImageTop");
 
@@ -154,11 +131,15 @@ void ReadyPoseDetector::execute()
     TEXT_DRAWING2(poseInImage.x + (int)x4, poseInImage.y + (int)y4, 0.1, (int)(c4*100.0));
   );
 
-  if( c1 > 0.45 && c2 > 0.45 && (y3 + y4) * 0.5 < (y1 + y1) * 0.5 - 5) {
-    getWhistlePercept().readyRefereePoseDetected = true;
+  // check confidence of eyes and make sure that average of hand position are above the average of eye positions
+  if( c1 > 0.45 && c2 > 0.45 && (y3 + y4) * 0.5 < (y1 + y2) * 0.5 - 5) {
+    // check that head is high enough
+    if((y1 + y2) * 0.5 < 192 * 0.5){
+      getWhistlePercept().readyRefereePoseDetected = true;
+    }
   }
 
-  DEBUG_REQUEST("ReadyPoseDetector:draw_detection_area",
+  DEBUG_REQUEST("Vision:ReadyPoseDetector:draw_detection_area",
     IMAGE_DRAWING_CONTEXT;
     CANVAS("ImageTop");
     PEN("00FF00", 3);
