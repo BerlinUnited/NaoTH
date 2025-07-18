@@ -37,10 +37,10 @@ import naoscp.tools.*;
  */
 public class NaoSCP extends javax.swing.JPanel {
 
-    public static final String VERSION = "1.1";
-    
+    public static final String VERSION = "1.2";
+
     private final DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
-    
+
     private final String projectPath = getBasePath();
     private final String utilsPath = projectPath + "/Utils";
 
@@ -65,7 +65,7 @@ public class NaoSCP extends javax.swing.JPanel {
         Logger.getGlobal().log(Level.INFO,
                 "Could not open the config file. It will be created after the first execution.");
       }
-        
+
       try {
         final String fontSizeProp = config.getProperty("naoscp.font-size");
         if (fontSizeProp != null) {
@@ -83,7 +83,7 @@ public class NaoSCP extends javax.swing.JPanel {
         Logger.getGlobal().log(Level.INFO,
                 "Could not set look and feel/font size.");
       }
-      
+
       initComponents();
 
       Logger.getGlobal().addHandler(logTextPanel.getLogHandler());
@@ -420,7 +420,7 @@ public class NaoSCP extends javax.swing.JPanel {
                             Scp scp = new Scp(robotIp, "nao", "nao");
                             scp.setProgressMonitor(new BarProgressMonitor(jProgressBar));
                             Scp.CommandStream shell = scp.getShell();
-                            
+
                             //NaoSCP.this.setEnabledAll(false);
                             naoTHPanel.getAction().run(deployDir);
 
@@ -481,12 +481,12 @@ public class NaoSCP extends javax.swing.JPanel {
         NetwokPanel.NetworkConfig cfg = netwokPanel.getNetworkConfig();
 
         String lan = cfg.getLan().subnet + "." + txtRobotNumber.getText();
-        
+
         Logger.getGlobal().log(Level.INFO, "check " + lan);
-        
+
         try{
             InetAddress iAddr = InetAddress.getByName(lan);
-            
+
             if (!iAddr.isReachable(2500)) {
                 Logger.getGlobal().log(Level.WARNING, lan + " not reachable");
             } else {
@@ -498,8 +498,8 @@ public class NaoSCP extends javax.swing.JPanel {
 
         String wlan = cfg.getWlan().subnet + "." + txtRobotNumber.getText();
         Logger.getGlobal().log(Level.INFO, "check " + wlan);
-        
-        try{        
+
+        try{
             InetAddress iAddr2 = InetAddress.getByName(wlan);
             if (!iAddr2.isReachable(2500)) {
                 Logger.getGlobal().log(Level.WARNING, wlan + " not reachable");
@@ -512,84 +512,67 @@ public class NaoSCP extends javax.swing.JPanel {
 
         throw new NaoSCPException("Robot is not reachable.");
     }
-    
+
 
     private void btWriteToStickActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btWriteToStickActionPerformed
-          
+
         this.logTextPanel.clear();
-        
+
         final DeployDialog deployDialog = new DeployDialog(getParentFrame());
 
         if (deployDialog.showOpenDialog(this) == DeployDialog.OPTION.APPROVE) {
-            
+
             final File targetDir = deployDialog.getSelectedFile();
 
             new Thread(() -> {
                 setEnabledAll(false);
-                
+
                 Logger.getGlobal().log(Level.INFO, "----" + dateFormat.format(new Date()) + "---");
                 Logger.getGlobal().log(Level.INFO, "Write to USB: " + targetDir);
-                
+
                 try {
+                    File deployZip = new File(targetDir, "deploy.zip");
                     // STEP 1: create the deploy directory for the playerNumber
-                    File deployDir = new File(targetDir, "deploy");
-                    
+                    File deployDir = Files.createTempDirectory("naoscp_").toFile();
+
                     // delete the target directory if it's existing,
                     // so we have a fresh new directory
-                    if (deployDir.isDirectory()) {
-                        // backup
-                        File commentFile = new File(deployDir, "comment.txt");
-                        if (commentFile.exists()) {
-                            String backup_name = FileUtils.readFile(commentFile);
-                            
-                            File backup_dir = new File(targetDir, backup_name);
-                            if(backup_dir.exists()) {
-                                Logger.getGlobal().log(Level.WARNING, String.format("Could not back up the deploy directory, file already exists: %s", backup_dir.getAbsolutePath()));
-                            } else if (deployDir.renameTo(backup_dir)) {
-                                deployDir = new File(targetDir, "deploy");
-                            } else {
-                                Logger.getGlobal().log(Level.WARNING, String.format("Could not back up the deploy directory %s to %s", deployDir.getAbsolutePath(), backup_dir.getAbsolutePath()));
-                            }
-                        } else {
-                            FileUtils.deleteDir(deployDir);
-                        }
+                    if (deployZip.exists()) {
+                        FileUtils.renameZipByComment(deployZip);
                     }
-                    
-                    if (!deployDir.mkdirs()) {
-                        //Logger.getGlobal().log(Level.SEVERE, "Could not create deploy out directory");
-                        throw new NaoSCPException("Could not create deploy out directory");
-                    }
-                    
+
                     //NaoSCP.this.setEnabledAll(false);
                     naoTHPanel.getAction().run(deployDir);
                     FileUtils.copyFiles(new File(deployStickScriptPath), targetDir);
                     //NaoSCP.this.setEnabledAll(true);
-                    
+
                     // get the current date and time
                     //String ISO_DATE_FORMAT = "yyyy-MM-dd";
                     String ISO_DATE_TIME_FORMAT = "yyyy-MM-dd-HH-mm-ss";
                     SimpleDateFormat s = new SimpleDateFormat(ISO_DATE_TIME_FORMAT);
                     String backup_tag = s.format(new Date());
-                    
+
                     // create a tag file
                     String tag = txtDeployTag.getText();
                     if (tag != null && !tag.isEmpty()) {
                         backup_tag += "-" + tag;
                     }
-                    
+
                     FileUtils.writeToFile(backup_tag, new File(deployDir, "comment.txt"));
-                    
+
+                    FileUtils.zipDirectory(deployDir, deployZip, "", backup_tag);
+
                     // unmount usb storage device if selected
                     deployDialog.closeUSBStorageDevice();
-                    
+
                     Logger.getGlobal().log(Level.INFO, "DONE");
                 } catch (NaoSCPException | IOException ex) {
                     Logger.getGlobal().log(Level.SEVERE, ex.getMessage());
                 }
-                
+
                 setEnabledAll(true);
             }).start();
-        }    
+        }
     }//GEN-LAST:event_btWriteToStickActionPerformed
 
     private void btInintRobotActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btInintRobotActionPerformed
@@ -663,7 +646,7 @@ public class NaoSCP extends javax.swing.JPanel {
                         // copy binaries
                         File sysBinDir = new File(libDir.getParentFile(), "bin");
                         FileUtils.copyFiles(sysBinDir, new File(setupDir + "/deploy", "/home/nao/bin"));
-                        
+
                         // adjust network configuration
                         NetwokPanel.NetworkConfig cfg = netwokPanel.getNetworkConfig();
 
@@ -679,13 +662,13 @@ public class NaoSCP extends javax.swing.JPanel {
                         networkScript = networkScript.replaceAll("NETWORK_ETH_BROADCAST=\".*\"", "NETWORK_ETH_BROADCAST=\""+cfg.getLan().broadcast+"\"");
 
                         FileUtils.writeToFile(networkScript, new File(setupDir, "startBrainwashing.sh"));
-                        
-                        
+
+
                         // zip the deploy directory for faster network transfer
                         File setupZip = new File(tmpDir, "setup.zip");
                         Logger.getGlobal().log(Level.INFO, "ZIP files to " + setupZip.getPath());
                         FileUtils.zipDirectory(setupDir, setupZip);
-                        
+
                         // try to connect to the robot
                         Scp scp = null;
                         String ip = null;
@@ -706,7 +689,7 @@ public class NaoSCP extends javax.swing.JPanel {
 
                         scp.mkdir("/home/nao/tmp");
                         scp.cleardir("/home/nao/tmp");
-                        
+
                         // copy files
                         //scp.put(setupDir, "/home/nao/tmp");
                         scp.put(setupZip, "/home/nao/tmp/setup.zip");
@@ -764,12 +747,12 @@ public class NaoSCP extends javax.swing.JPanel {
             setEnabledAll(false);
             try {
                 File setupDir = new File(tmpDir, "setup");
-                
+
                 if (setupDir.isDirectory()) {
                     //Logger.getGlobal().log(Level.SEVERE, "Could not clean the setup directory: " + setupDir.getAbsolutePath());
                     FileUtils.deleteDir(setupDir);
                 }
-                
+
                 if (!setupDir.mkdirs()) {
                     Logger.getGlobal().log(Level.SEVERE, "Could not create setup directory: " + setupDir.getAbsolutePath());
                 } else {
@@ -787,7 +770,7 @@ public class NaoSCP extends javax.swing.JPanel {
                     networkScript = networkScript.replaceAll("NETWORK_ETH_BROADCAST=\".*\"", "NETWORK_ETH_BROADCAST=\""+cfg.getLan().broadcast+"\"");
 
                     FileUtils.writeToFile(networkScript, new File(setupDir, "startBrainwashing.sh"));
-                    
+
                     // copy to robot
                     String ip = JOptionPane.showInputDialog(NaoSCP.this, "Robot ip address");
                     if(ip == null || ip.trim().isEmpty()) {
@@ -797,11 +780,11 @@ public class NaoSCP extends javax.swing.JPanel {
                     }
                     Scp scp = new Scp(ip, "nao", "nao");
                     scp.setProgressMonitor(new BarProgressMonitor(jProgressBar));
-                    
+
                     scp.mkdir("/home/nao/tmp");
                     scp.cleardir("/home/nao/tmp");
                     scp.put(setupDir, "/home/nao/tmp");
-                    
+
                     scp.chmod(755, "/home/nao/tmp/startBrainwashing.sh");
 
                     Scp.CommandStream shell = scp.getShell();
@@ -810,9 +793,9 @@ public class NaoSCP extends javax.swing.JPanel {
                     shell.run("cd /home/nao/tmp/");
                     shell.run("./startBrainwashing.sh", "DONE");
                     // TODO: scp doesn't notice connection loss!
-                    
+
                     scp.disconnect();
-                    
+
                     Logger.getGlobal().log(Level.INFO, "DONE");
                 }
             } catch (IOException | NaoSCPException | JSchException | SftpException ex) {
@@ -909,7 +892,7 @@ public class NaoSCP extends javax.swing.JPanel {
 
     /**
      * Executes a single command on the robot.
-     * 
+     *
      * @param cmd the command to execute
      * @param expectedOutputPattern the expected output from the command. It can be 'null'.
      * @param logBeforeCmd the log message, which should be shown before the command execution. It can be 'null'.
@@ -984,7 +967,7 @@ public class NaoSCP extends javax.swing.JPanel {
             Logger.getGlobal().log(Level.SEVERE, "Could not write config file.", ex);
         }
     }
-    
+
     /**
      * Returns the Frame this panel belongs to.
      * If the parent container isn't a Frame and there wasn't set any parent frame, then 'null' is returned.
@@ -993,7 +976,7 @@ public class NaoSCP extends javax.swing.JPanel {
     public Frame getParentFrame() {
         return parentFrame==null?((getParent() instanceof Frame)?(Frame)getParent():null):parentFrame;
     }
-    
+
     /**
      * Sets the parent frame of this panel.
      * @param f the frame this panel should belong to
@@ -1001,7 +984,7 @@ public class NaoSCP extends javax.swing.JPanel {
     public void setParentFrame(Frame f) {
         parentFrame = f;
     }
-    
+
     /**
      * Creates a temporary directory in systems 'temp' folder with the given prefix.
      * @param prefix the temporary directory should prepend with.
@@ -1013,7 +996,7 @@ public class NaoSCP extends javax.swing.JPanel {
         } catch (IOException ex) {
             Logger.getGlobal().log(Level.SEVERE, "Can not create temporary directory in systems temp directory.");
         }
-        return null; 
+        return null;
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
