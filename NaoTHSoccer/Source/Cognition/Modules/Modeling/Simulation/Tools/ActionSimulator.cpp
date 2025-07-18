@@ -60,7 +60,7 @@ void ActionSimulator::simulateAction(const Action& action, ActionResults& result
     // check if collision detection with goal has to be performed
     // if the ball start and end positions are inside of the field, you don't need to check
     if(!getFieldInfo().fieldRect.inside(globalBallEndPosition) || !getFieldInfo().fieldRect.inside(globalBallStartPosition))
-	  {
+    {
       // calculate if there is a collision with the opponent goal and where the ball would stop
       bool collisionWithOppGoal = calculateCollision(oppGoalBackSides, globalBallStartPosition, globalBallEndPosition, globalBallEndPosition);
       bool collisionWithOwnGoal = calculateCollision(ownGoalBackSides, globalBallStartPosition, globalBallEndPosition, globalBallEndPosition);
@@ -180,18 +180,18 @@ ActionSimulator::BallPositionCategory ActionSimulator::classifyBallPosition( con
 // TODO unify with ballmodel
 Vector2d ActionSimulator::Action::predict(const Vector2d& ball, bool noise) const
 {
-	double gforce = Math::g*1e3; // mm/s^2
-	double distance;
-	double angle;
-	if (noise) {
+  double gforce = Math::g*1e3; // mm/s^2
+  double distance;
+  double angle;
+  if (noise) {
     // todo: maybe replace by std::normal_distribution (?)
-		double speed = Math::generateGaussianNoise(action_speed, action_speed_std);
-		angle   = Math::generateGaussianNoise(Math::fromDegrees(action_angle), Math::fromDegrees(action_angle_std));
-		distance = speed*speed / friction / gforce / 2.0; // friction*mass*gforce*distance = 1/2*mass*speed*speed
-	} else {
-		distance = action_speed*action_speed / friction / gforce / 2.0; // friction*mass*gforce*distance = 1/2*mass*speed*speed
-		angle    = Math::fromDegrees(action_angle);
-	}  
+    double speed = Math::generateGaussianNoise(action_speed, action_speed_std);
+    angle   = Math::generateGaussianNoise(Math::fromDegrees(action_angle), Math::fromDegrees(action_angle_std));
+    distance = speed*speed / friction / gforce / 2.0; // friction*mass*gforce*distance = 1/2*mass*speed*speed
+  } else {
+    distance = action_speed*action_speed / friction / gforce / 2.0; // friction*mass*gforce*distance = 1/2*mass*speed*speed
+    angle    = Math::fromDegrees(action_angle);
+  }  
   Vector2d predictedAction(distance, 0.0);
   predictedAction.rotate(angle);
 

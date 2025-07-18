@@ -37,7 +37,7 @@ inline double randomGauss()
   return v1*fac;
 }
 
-// Box–Muller transform
+// Box-Muller transform
 inline double generateGaussianNoise(double mu, double sigma)
 {
   const double epsilon = std::numeric_limits<double>::min();
