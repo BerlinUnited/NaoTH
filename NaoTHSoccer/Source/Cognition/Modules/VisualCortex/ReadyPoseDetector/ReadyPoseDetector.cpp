@@ -131,7 +131,8 @@ void ReadyPoseDetector::execute()
     TEXT_DRAWING2(poseInImage.x + (int)x4, poseInImage.y + (int)y4, 0.1, (int)(c4*100.0));
   );
 
-  if( c1 > 0.45 && c2 > 0.45 && (y3 + y4) * 0.5 < (y1 + y1) * 0.5 - 5) {
+  // FIXME
+  if( c1 > 0.45 && c2 > 0.45 && (y3 + y4) * 0.5 < (y1 + y2) * 0.5 - 5) {
     getWhistlePercept().readyRefereePoseDetected = true;
   }
 
