@@ -81,7 +81,7 @@ private:
             PARAMETER_REGISTER(step_distance, &Parameters::setStepDistance) = 80;
             PARAMETER_REGISTER(turn_angle, &Parameters::setTurnAngle) = 30;
 
-            PARAMETER_REGISTER(supporter_use_ball) = true;
+            PARAMETER_REGISTER(supporter_use_ball) = false; // the ball is not stable enough to use it for supporter decision
 
             // load from the file after registering all parameters
             syncWithConfig();

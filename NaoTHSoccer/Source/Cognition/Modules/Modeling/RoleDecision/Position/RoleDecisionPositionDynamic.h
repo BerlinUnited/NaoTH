@@ -14,7 +14,9 @@
 #include "Representations/Modeling/TeamBallModel.h"
 #include "Representations/Modeling/PlayerInfo.h"
 #include "Representations/Modeling/TeamState.h"
-
+#include "Representations/Infrastructure/GameData.h"
+#include "Representations/Modeling/BallModel.h"
+#include "Representations/Modeling/RobotPose.h"
 
 BEGIN_DECLARE_MODULE(RoleDecisionPositionDynamic)
   PROVIDE(DebugRequest)
@@ -26,6 +28,9 @@ BEGIN_DECLARE_MODULE(RoleDecisionPositionDynamic)
   REQUIRE(TeamBallModel)
   REQUIRE(PlayerInfo)
   REQUIRE(TeamState)
+  REQUIRE(GameData)
+  REQUIRE(BallModel)
+  REQUIRE(RobotPose)
 
   PROVIDE(RoleDecisionModel)
 END_DECLARE_MODULE(RoleDecisionPositionDynamic);
@@ -56,6 +61,9 @@ private:
             PARAMETER_REGISTER(supporter_offset) = 1000;
             PARAMETER_REGISTER(supporter_side_offset) = 200;
 
+            PARAMETER_REGISTER(setplay_second_defender_offset) = 500;
+            PARAMETER_REGISTER(setplay_second_defender_scaling) = 4.0;
+
             // load from the file after registering all parameters
             syncWithConfig();
         }
@@ -67,7 +75,14 @@ private:
 
         double supporter_offset;
         double supporter_side_offset;
+
+        double setplay_second_defender_offset;
+        double setplay_second_defender_scaling;
     } params;
+
+    bool isDefendingSetPlay();
+    void positionBetweenBallAndGoal();
+    void positionOrthogonalToBall();
 };
 
 #endif // ROLEDECISIONPOSITIONDYNAMIC_H
