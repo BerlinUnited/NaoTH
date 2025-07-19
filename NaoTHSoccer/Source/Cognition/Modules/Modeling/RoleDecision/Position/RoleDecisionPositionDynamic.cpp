@@ -148,51 +148,41 @@ Vector2d RoleDecisionPositionDynamic::calculateEllipsePoint(const Vector2d& ball
 
 void RoleDecisionPositionDynamic::striker()
 {
-    if (isDefendingSetPlay()) {
+    if (isDefendingSetPlay())
+    {
         positionBetweenBallAndGoal();
     }
 }
 
 void RoleDecisionPositionDynamic::supporter()
 {
-    if (isDefendingSetPlay()) {
-        positionOrthogonalToBall();
-        return;
-    }
-
     // Get the striker's player number and position
     PlayerNumber strikerNumber = getRoleDecisionModel().getPlayerNumber(Roles::striker);
     if(strikerNumber == 0) { return; }
 
     const auto& strikerPlayer = getTeamState().getPlayer(strikerNumber);
     Vector2d strikerPos = strikerPlayer.pose().translation;
-
-    // Get the supporter's position
-    const auto& supporterPlayer = getTeamState().getPlayer(getPlayerInfo().playerNumber);
-    Vector2d supporterPosCurrent = supporterPlayer.pose().translation;
-
-    // Direction from own goal to striker
     Vector2d ownGoal(getFieldInfo().xPosOwnGroundline, 0);
-    Vector2d strikerToGoal = (strikerPos - ownGoal).normalize();
+    Vector2d strikerToGoal = ownGoal - strikerPos;
 
-    // Vector from striker to supporter
-    Vector2d strikerToSupporter = supporterPosCurrent - strikerPos;
-    double distanceToStriker = strikerToSupporter.abs();
+    // Calculate the direction from ball to goal
+    Vector2d strikerToGoalDir = strikerToGoal.normalize();
 
-    // Target position: offset behind striker
-    double offset = std::max(params.supporter_offset, distanceToStriker);
-    Vector2d supporterPos = strikerPos - strikerToGoal * offset;
+    // Calculate the orthogonal direction (perpendicular to ball-goal line)
+    Vector2d orthogonalDir(-strikerToGoalDir.y, strikerToGoalDir.x); // 90 degree rotation
 
-    // Compute the normal (perpendicular) vector to the defending line
-    Vector2d normal(-strikerToGoal.y, strikerToGoal.x); // 90 degree rotation
+    // Position the robot orthogonal to the ball-goal line, at least center circle distance
+    double scalingFactor = 1 + (params.supporter_offense_scaling - 1) * strikerPos.x * 2.0 / getFieldInfo().xFieldLength;
+    Vector2d supporterBasePos = strikerPos + strikerToGoalDir * (params.supporter_offset * std::max(scalingFactor, 1.0));
 
-    // Determine which side the supporter is currently on
-    double side = (strikerToGoal.x * strikerToSupporter.y - strikerToGoal.y * strikerToSupporter.x) >= 0 ? 1.0 : -1.0;
+    double fieldSideY = strikerPos.y >= 0 ? 1.0 : -1.0;
+    Vector2d supporterPos = supporterBasePos + orthogonalDir * params.supporter_offset_side * fieldSideY;
 
-    // Offset along the normal (left/right of the line)
-    supporterPos += normal * side * params.supporter_side_offset;
+    // Ensure the position is within the field
+    supporterPos.x = Math::clamp(supporterPos.x, getFieldInfo().xPosOwnGroundline + 500, getFieldInfo().xPosOpponentGroundline - 500);
+    supporterPos.y = Math::clamp(supporterPos.y, getFieldInfo().yPosRightSideline + 500, getFieldInfo().yPosLeftSideline - 500);
 
-    // Set the computed position
+    // Set the dynamic position
     getRoleDecisionModel().dynamic_position = supporterPos;
 
     // Debug drawing
@@ -213,7 +203,7 @@ void RoleDecisionPositionDynamic::supporter()
 
 void RoleDecisionPositionDynamic::positionBetweenBallAndGoal()
 {
-    Vector2d globalBall = getRobotPose() * getBallModel().position; // getTeamBallModel().positionOnField
+    Vector2d globalBall = getRobotPose() * getBallModel().last_known_ball; // getTeamBallModel().positionOnField
     Vector2d ownGoal(getFieldInfo().xPosOwnGroundline, 0);
     Vector2d ballToGoal = ownGoal - globalBall;
 

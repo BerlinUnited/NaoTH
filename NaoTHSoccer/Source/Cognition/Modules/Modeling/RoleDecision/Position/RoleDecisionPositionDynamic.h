@@ -60,7 +60,8 @@ private:
             PARAMETER_REGISTER(goalie_defense_max_x) = 0;
 
             PARAMETER_REGISTER(supporter_offset) = 1000;
-            PARAMETER_REGISTER(supporter_side_offset) = 200;
+            PARAMETER_REGISTER(supporter_offset_side) = 200;
+            PARAMETER_REGISTER(supporter_offense_scaling) = 2.0; // how far the supporter should be in the oppnent half
 
             PARAMETER_REGISTER(setplay_second_defender_offset) = 500;
             PARAMETER_REGISTER(setplay_second_defender_scaling) = 4.0;
@@ -75,7 +76,8 @@ private:
         double goalie_defense_max_x;
 
         double supporter_offset;
-        double supporter_side_offset;
+        double supporter_offset_side;
+        double supporter_offense_scaling;
 
         double setplay_second_defender_offset;
         double setplay_second_defender_scaling;
