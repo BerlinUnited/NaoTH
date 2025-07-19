@@ -70,9 +70,6 @@ option free_kick_simple
          x=strategy.position.dynamic.x,
          y=strategy.position.dynamic.y,
          rot=atan2(y = ball.team.position_field.y - strategy.position.dynamic.y, x = ball.team.position_field.x - strategy.position.dynamic.x));
-         // ball.team.position_field.x - strategy.position.dynamic.x
-         // ball.team.position_field.y - strategy.position.dynamic.y
-         // atan2(y = ball.team.position_field.y - strategy.position.dynamic.y, x = ball.team.position_field.x - strategy.position.dynamic.x)
      }
   }
 
