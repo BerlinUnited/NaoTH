@@ -91,7 +91,7 @@ option search_ball
     }
     action {
       search_ball_turning(search_direction = left);
-      motion.walk.style = stable;
+      //motion.walk.style = stable;
     }
   }
 
@@ -105,7 +105,7 @@ option search_ball
     }
     action {
       search_ball_turning(search_direction = right);
-      motion.walk.style = stable;
+      //motion.walk.style = stable;
     }
   }
 

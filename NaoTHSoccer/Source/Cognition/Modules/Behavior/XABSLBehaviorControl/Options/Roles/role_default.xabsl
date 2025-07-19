@@ -141,7 +141,6 @@ option role_default
     }
     action {
       search_ball();
-      motion.walk.style = stable;
     }
   }
   
