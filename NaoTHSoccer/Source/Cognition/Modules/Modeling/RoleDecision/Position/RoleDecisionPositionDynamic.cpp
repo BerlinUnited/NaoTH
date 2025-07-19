@@ -6,7 +6,6 @@ RoleDecisionPositionDynamic::RoleDecisionPositionDynamic()
     DEBUG_REQUEST_REGISTER("RoleDecision:Dynamic:goalie_defensive_ellipse", "draws the defensive line (ellipse), on which the goalie position itself, if the ball is in the own half", false);
     DEBUG_REQUEST_REGISTER("RoleDecision:Dynamic:supporter_position", "draws the supporter position", false);
     DEBUG_REQUEST_REGISTER("RoleDecision:Dynamic:defending_set_play_position", "draws the defending set play position (between ball and own goal)", false);
-    DEBUG_REQUEST_REGISTER("RoleDecision:Dynamic:orthogonal_defensive_position", "draws the orthogonal defensive position (perpendicular to ball-goal line)", false);
 
     getDebugParameterList().add(&params);
 }
@@ -28,6 +27,9 @@ void RoleDecisionPositionDynamic::execute()
     // only update the position for myself
     switch (role.dynamic)
     {
+        case Roles::striker:
+            striker();
+            break;
         case Roles::supporter:
             supporter();
             break;
@@ -38,45 +40,6 @@ void RoleDecisionPositionDynamic::execute()
             // use the static position as default
             getRoleDecisionModel().dynamic_position = getRoleDecisionModel().getStaticRolePosition(role.role).home;
             break;
-    }
-
-    // if we see the ball, defending a set play
-    if (isDefendingSetPlay())
-    {
-        // Find the two players closest to the ball -- calculate distances for all team players
-        std::vector<std::pair<PlayerNumber, double>> playerDistances;
-        for (const auto& playerPair : getTeamState().players)
-        {
-            PlayerNumber playerNumber = playerPair.first;
-            const auto& player = playerPair.second;
-
-            // skip goalie -- he is not part of the set play defense
-            if (getRoleDecisionModel().getRole(playerNumber).role == Roles::goalie) continue;
-
-            Vector2d playerPos = player.pose().translation;
-            double distance = (playerPos - getTeamBallModel().positionOnField).abs();
-            playerDistances.push_back({playerNumber, distance});
-        }
-
-        // Sort by distance (closest first)
-        std::sort(playerDistances.begin(), playerDistances.end(),
-                  [](const auto& a, const auto& b) { return a.second < b.second; });
-
-        if (playerDistances.size() >= 1 && getPlayerInfo().playerNumber == playerDistances[0].first)
-        {
-            // first position: on direct line between ball and goal
-            positionBetweenBallAndGoal();
-        }
-        else if(playerDistances.size() >= 2 && getPlayerInfo().playerNumber == playerDistances[1].first)
-        {
-            // second position: orthogonal to y-axis and on x-axis to ball
-            positionOrthogonalToBall();
-        }
-        else
-        {
-            // use the static position as default
-            getRoleDecisionModel().dynamic_position = getRoleDecisionModel().getStaticRolePosition(role.role).home;
-        }
     }
 }
 
@@ -183,8 +146,20 @@ Vector2d RoleDecisionPositionDynamic::calculateEllipsePoint(const Vector2d& ball
     return point;
 }
 
+void RoleDecisionPositionDynamic::striker()
+{
+    if (isDefendingSetPlay()) {
+        positionBetweenBallAndGoal();
+    }
+}
+
 void RoleDecisionPositionDynamic::supporter()
 {
+    if (isDefendingSetPlay()) {
+        positionOrthogonalToBall();
+        return;
+    }
+
     // Get the striker's player number and position
     PlayerNumber strikerNumber = getRoleDecisionModel().getPlayerNumber(Roles::striker);
     if(strikerNumber == 0) { return; }
@@ -238,7 +213,7 @@ void RoleDecisionPositionDynamic::supporter()
 
 void RoleDecisionPositionDynamic::positionBetweenBallAndGoal()
 {
-    Vector2d globalBall = getTeamBallModel().positionOnField;
+    Vector2d globalBall = getRobotPose() * getBallModel().position; // getTeamBallModel().positionOnField
     Vector2d ownGoal(getFieldInfo().xPosOwnGroundline, 0);
     Vector2d ballToGoal = ownGoal - globalBall;
 
@@ -294,7 +269,7 @@ void RoleDecisionPositionDynamic::positionOrthogonalToBall()
     getRoleDecisionModel().dynamic_position = orthogonalPosition;
 
     // Debug drawing
-    DEBUG_REQUEST("RoleDecision:Dynamic:orthogonal_defensive_position",
+    DEBUG_REQUEST("RoleDecision:Dynamic:defending_set_play_position",
         FIELD_DRAWING_CONTEXT;
         PEN("ff00ff", 20);
         CIRCLE(globalBall.x, globalBall.y, 100);

@@ -44,6 +44,7 @@ public:
     virtual void execute();
 
     void goalie();
+    void striker();
     void supporter();
 
     Vector2d calculateEllipsePoint(const Vector2d& ball);
