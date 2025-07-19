@@ -5,7 +5,7 @@ RoleDecisionPositionDynamic::RoleDecisionPositionDynamic()
 {
     DEBUG_REQUEST_REGISTER("RoleDecision:Dynamic:goalie_defensive_ellipse", "draws the defensive line (ellipse), on which the goalie position itself, if the ball is in the own half", false);
     DEBUG_REQUEST_REGISTER("RoleDecision:Dynamic:supporter_position", "draws the supporter position", false);
-    DEBUG_REQUEST_REGISTER("RoleDecision:Dynamic:defending_set_play_position", "draws the defending set play position (between ball and own goal)", false);
+    DEBUG_REQUEST_REGISTER("RoleDecision:Dynamic:striker_set_play_position", "draws the defending set play position of the striker", false);
 
     getDebugParameterList().add(&params);
 }
@@ -22,6 +22,7 @@ void RoleDecisionPositionDynamic::execute()
     // handle the static role goalie separately
     if(role.role == Roles::goalie) {
         goalie();
+        return;
     }
 
     // only update the position for myself
@@ -150,7 +151,58 @@ void RoleDecisionPositionDynamic::striker()
 {
     if (isDefendingSetPlay())
     {
-        positionBetweenBallAndGoal();
+        Vector2d globalBall = getRobotPose() * getBallModel().last_known_ball; // getTeamBallModel().positionOnField
+        Vector2d ownGoal(getFieldInfo().xPosOwnGroundline, 0);
+        Vector2d robotPos = getRobotPose().translation;
+
+        // Check if the robot is already behind the ball relative to the ball-goal line
+        Vector2d ballToGoal = ownGoal - globalBall;
+        Vector2d ballToGoalDir = ballToGoal.normalize();
+        Vector2d robotToBall = globalBall - robotPos;
+
+        // Calculate the projection of robot-to-ball vector onto the ball-to-goal direction
+        // If this projection is positive, the robot is behind the ball
+        double behindTheBall = robotToBall * ballToGoalDir;
+
+        Vector2d defensivePosition;
+        if (behindTheBall > params.striker_avoidence_threshold)
+        {
+            // Robot is behind the ball, position to the side to avoid overrunning
+            // Calculate the orthogonal direction (perpendicular to ball-goal line)
+            Vector2d orthogonalDir(-ballToGoalDir.y, ballToGoalDir.x);
+
+            // Choose side based on robot's current position relative to ball-goal line
+            // Use the cross product to determine which side the robot is on
+            double side = ballToGoalDir.x * robotToBall.y - ballToGoalDir.y * robotToBall.x;
+
+            // Position the robot to the side of the ball, maintaining defensive distance
+            defensivePosition = globalBall + orthogonalDir * (getFieldInfo().centerCircleRadius * 1.1 * ((side >= 0) ? -1.0 : 1.0));
+        } else {
+            // Robot is in front of the ball, can safely move between ball and goal
+            defensivePosition = globalBall + ballToGoalDir * (getFieldInfo().centerCircleRadius * 1.1);
+        }
+
+        // Ensure the position is within the field
+        defensivePosition.x = Math::clamp(defensivePosition.x, getFieldInfo().xPosOwnGroundline + 500, getFieldInfo().xPosOpponentGroundline - 500);
+        defensivePosition.y = Math::clamp(defensivePosition.y, getFieldInfo().yPosRightSideline + 500, getFieldInfo().yPosLeftSideline - 500);
+
+        // Set the dynamic position
+        getRoleDecisionModel().dynamic_position = defensivePosition;
+
+        // Debug drawing
+        DEBUG_REQUEST("RoleDecision:Dynamic:striker_set_play_position",
+            FIELD_DRAWING_CONTEXT;
+            PEN("ff00ff", 20);
+            CIRCLE(globalBall.x, globalBall.y, 100);
+            PEN("00ff00", 20);
+            CIRCLE(defensivePosition.x, defensivePosition.y, 100);
+            PEN("ffff00", 10);
+            LINE(globalBall.x, globalBall.y, ownGoal.x, ownGoal.y);
+            PEN("00ffff", 10);
+            LINE(defensivePosition.x, defensivePosition.y, globalBall.x, globalBall.y);
+            PEN("0000ff", 10);
+            CIRCLE(globalBall.x, globalBall.y, getFieldInfo().centerCircleRadius);
+        );
     }
 }
 
@@ -198,82 +250,5 @@ void RoleDecisionPositionDynamic::supporter()
         CIRCLE(ownGoal.x, ownGoal.y, 100);
         LINE(ownGoal.x, ownGoal.y, strikerPos.x, strikerPos.y);
         LINE(supporterPos.x, supporterPos.y, strikerPos.x, strikerPos.y);
-    );
-}
-
-void RoleDecisionPositionDynamic::positionBetweenBallAndGoal()
-{
-    Vector2d globalBall = getRobotPose() * getBallModel().last_known_ball; // getTeamBallModel().positionOnField
-    Vector2d ownGoal(getFieldInfo().xPosOwnGroundline, 0);
-    Vector2d ballToGoal = ownGoal - globalBall;
-
-    // Position the robot at a certain distance from the ball towards the goal
-    // This creates a defensive line between the ball and the goal
-    Vector2d defensivePosition = globalBall + ballToGoal.normalize() * (getFieldInfo().centerCircleRadius * 1.1);
-
-    // Ensure the position is within the field
-    defensivePosition.x = Math::clamp(defensivePosition.x, getFieldInfo().xPosOwnGroundline + 500, getFieldInfo().xPosOpponentGroundline - 500);
-    defensivePosition.y = Math::clamp(defensivePosition.y, getFieldInfo().yPosRightSideline + 500, getFieldInfo().yPosLeftSideline - 500);
-
-    // Set the dynamic position
-    getRoleDecisionModel().dynamic_position = defensivePosition;
-
-    // Debug drawing
-    DEBUG_REQUEST("RoleDecision:Dynamic:defending_set_play_position",
-        FIELD_DRAWING_CONTEXT;
-        PEN("ff00ff", 20);
-        CIRCLE(globalBall.x, globalBall.y, 100);
-        PEN("00ff00", 20);
-        CIRCLE(defensivePosition.x, defensivePosition.y, 100);
-        PEN("ffff00", 10);
-        LINE(globalBall.x, globalBall.y, ownGoal.x, ownGoal.y);
-        PEN("00ffff", 10);
-        LINE(defensivePosition.x, defensivePosition.y, globalBall.x, globalBall.y);
-        PEN("0000ff", 10);
-        CIRCLE(globalBall.x, globalBall.y, getFieldInfo().centerCircleRadius);
-    );
-}
-
-void RoleDecisionPositionDynamic::positionOrthogonalToBall()
-{
-    Vector2d globalBall = getTeamBallModel().positionOnField;
-    Vector2d ownGoal(getFieldInfo().xPosOwnGroundline, 0);
-    Vector2d ballToGoal = ownGoal - globalBall;
-
-    // Calculate the direction from ball to goal
-    Vector2d ballToGoalDir = ballToGoal.normalize();
-
-    // Calculate the orthogonal direction (perpendicular to ball-goal line)
-    Vector2d orthogonalDir(-ballToGoalDir.y, ballToGoalDir.x); // 90 degree rotation
-
-    // Position the robot orthogonal to the ball-goal line, at least center circle distance
-    double scalingFactor = 1 + (params.setplay_second_defender_scaling - 1) * globalBall.x * 2.0 / getFieldInfo().xFieldLength;
-    Vector2d ballGoalLine =       globalBall + ballToGoalDir * (getFieldInfo().centerCircleRadius * std::max(scalingFactor, 2.0));
-    Vector2d orthogonalPosition = ballGoalLine + orthogonalDir * params.setplay_second_defender_offset;
-
-    // Ensure the position is within the field
-    orthogonalPosition.x = Math::clamp(orthogonalPosition.x, getFieldInfo().xPosOwnGroundline + 500, getFieldInfo().xPosOpponentGroundline - 500);
-    orthogonalPosition.y = Math::clamp(orthogonalPosition.y, getFieldInfo().yPosRightSideline + 500, getFieldInfo().yPosLeftSideline - 500);
-
-    // Set the dynamic position
-    getRoleDecisionModel().dynamic_position = orthogonalPosition;
-
-    // Debug drawing
-    DEBUG_REQUEST("RoleDecision:Dynamic:defending_set_play_position",
-        FIELD_DRAWING_CONTEXT;
-        PEN("ff00ff", 20);
-        CIRCLE(globalBall.x, globalBall.y, 100);
-        PEN("00ff00", 20);
-        CIRCLE(orthogonalPosition.x, orthogonalPosition.y, 100);
-        PEN("ffff00", 10);
-        LINE(globalBall.x, globalBall.y, ownGoal.x, ownGoal.y);
-        PEN("00ffff", 10);
-        LINE(orthogonalPosition.x, orthogonalPosition.y, globalBall.x, globalBall.y);
-        PEN("0000ff", 10);
-        CIRCLE(globalBall.x, globalBall.y, getFieldInfo().centerCircleRadius);
-        PEN("0f0f0f", 10);
-        LINE(ballGoalLine.x, ballGoalLine.y, globalBall.x, globalBall.y);
-        PEN("f0f0f0", 10);
-        LINE(orthogonalPosition.x, orthogonalPosition.y, ballGoalLine.x, ballGoalLine.y);
     );
 }

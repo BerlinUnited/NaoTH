@@ -47,8 +47,6 @@ public:
     void striker();
     void supporter();
 
-    Vector2d calculateEllipsePoint(const Vector2d& ball);
-
 private:
     class Parameters: public ParameterList
     {
@@ -59,12 +57,11 @@ private:
             PARAMETER_REGISTER(goalie_defense_min_x) = -750;
             PARAMETER_REGISTER(goalie_defense_max_x) = 0;
 
-            PARAMETER_REGISTER(supporter_offset) = 1000;
-            PARAMETER_REGISTER(supporter_offset_side) = 200;
-            PARAMETER_REGISTER(supporter_offense_scaling) = 2.0; // how far the supporter should be in the oppnent half
+            PARAMETER_REGISTER(striker_avoidence_threshold) = 140; // in a set play, we avoid the ball in case we're behind it
 
-            PARAMETER_REGISTER(setplay_second_defender_offset) = 500;
-            PARAMETER_REGISTER(setplay_second_defender_scaling) = 4.0;
+            PARAMETER_REGISTER(supporter_offset) = 1000;
+            PARAMETER_REGISTER(supporter_offset_side) = 500;
+            PARAMETER_REGISTER(supporter_offense_scaling) = 2.0; // how far the supporter should be in the oppnent half
 
             // load from the file after registering all parameters
             syncWithConfig();
@@ -75,17 +72,15 @@ private:
         double goalie_defense_min_x;
         double goalie_defense_max_x;
 
+        double striker_avoidence_threshold;
+
         double supporter_offset;
         double supporter_offset_side;
         double supporter_offense_scaling;
-
-        double setplay_second_defender_offset;
-        double setplay_second_defender_scaling;
     } params;
 
     bool isDefendingSetPlay();
-    void positionBetweenBallAndGoal();
-    void positionOrthogonalToBall();
+    Vector2d calculateEllipsePoint(const Vector2d& ball);
 };
 
 #endif // ROLEDECISIONPOSITIONDYNAMIC_H
