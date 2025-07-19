@@ -27,6 +27,7 @@
 #include "Representations/Modeling/KinematicChain.h"
 
 // debug
+#include <Tools/Debug/DebugParameterList.h>
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugDrawings3D.h"
 #include "Tools/Debug/DebugImageDrawings.h"
@@ -42,6 +43,7 @@ BEGIN_DECLARE_MODULE(BodyContourProvider)
   PROVIDE(DebugImageDrawings)
   PROVIDE(DebugImageDrawingsTop)
   PROVIDE(DebugModify)
+  PROVIDE(DebugParameterList)
 
   REQUIRE(FrameInfo)
   REQUIRE(CameraInfo)
@@ -69,7 +71,7 @@ class BodyContourProvider : public BodyContourProviderBase
 public:
 
   BodyContourProvider();
-  virtual ~BodyContourProvider(){}
+  virtual ~BodyContourProvider();
 
   virtual void execute()
   {
@@ -78,6 +80,27 @@ public:
   }
 
   void execute(CameraInfo::CameraID id);
+
+
+  class Parameters : public ParameterList
+  {
+  public:
+    Parameters() : ParameterList("BodyContourProvider")
+    {
+      // frequency band to look for the whistle
+      PARAMETER_REGISTER(offsetHeadY)   = 0;
+      PARAMETER_REGISTER(offsetCameraY) = 0;
+      PARAMETER_REGISTER(useOffsetParameters) = false;
+
+      syncWithConfig();
+    }
+    
+    double offsetHeadY;
+    double offsetCameraY;
+    bool useOffsetParameters;
+
+  } params;
+
 
 private:
 
