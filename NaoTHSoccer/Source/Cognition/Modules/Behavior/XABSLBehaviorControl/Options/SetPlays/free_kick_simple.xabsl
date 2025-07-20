@@ -17,7 +17,7 @@ option free_kick_simple
           else
             goto opp_free_kick_search_ball_right;
         else
-          goto opp_free_kick_turn_to_ball;
+          goto opp_free_kick_go_to_strategy_point;
     }
     action {
     }
@@ -29,7 +29,7 @@ option free_kick_simple
       if(game.own_kickoff)
         goto own_free_kick;
       else if (ball.know_where_itis)
-        goto opp_free_kick_turn_to_ball;
+        goto opp_free_kick_go_to_strategy_point;
       else
         stay;
     }
@@ -44,7 +44,7 @@ option free_kick_simple
       if(game.own_kickoff)
         goto own_free_kick;
       else if (ball.know_where_itis)
-        goto opp_free_kick_turn_to_ball;
+        goto opp_free_kick_go_to_strategy_point;
       else
         stay;
     }
@@ -53,53 +53,34 @@ option free_kick_simple
     }
   }
 
-  state opp_free_kick_turn_to_ball
+  state opp_free_kick_go_to_strategy_point
   {
-    decision {
-      if(game.own_kickoff)
-        goto own_free_kick;
-      else if (abs(value = atan2(y = ball.preview.y, x = ball.preview.x)) < 10)
-        goto opp_free_kick_move_away;
-      else
-        stay;
-    }
-    
-    action {
-      head.control_mode = search_for_ball;
-      
-      motion.type = walk;
-      motion.walk_speed.x = 0;
-      motion.walk_speed.y = 0;
-      motion.walk_speed.rot = atan2(y = ball.preview.y, x = ball.preview.x);
-    }
-  }
-
-  state opp_free_kick_move_away
-  {
-    decision {
-      // TODO: input symbol for self-loc security margin
-      if(game.own_kickoff)
-        goto own_free_kick;
-      else if (ball.preview.x > field.centerCircleRadius + 300) // self-loc security margin
+     decision 
+     {
+       if(game.own_kickoff)
+         goto own_free_kick;
+       else if (action_done)
         goto opp_free_kick_watch_ball;
-      else
-        stay;
-    }
-    
-    action {
-      head.control_mode = search_for_ball;
-
-      motion.type = walk;
-      motion.walk_speed.x = -100;
-    }
+       else
+         stay;
+     }
+     action {
+       head.control_mode = search_for_ball;
+       go_to_point_with_USOA(
+         x=strategy.position.dynamic.x,
+         y=strategy.position.dynamic.y,
+         rot=atan2(y = ball.team.position_field.y - strategy.position.dynamic.y, x = ball.team.position_field.x - strategy.position.dynamic.x));
+     }
   }
 
   state opp_free_kick_watch_ball
   {
     decision
     {
-      if(game.own_kickoff)
-        goto own_free_kick;
+      if (!ball.know_where_itis)
+        goto decide;
+      else if (vector.abs(x=robot_pose.planned.x - strategy.position.dynamic.x, y=robot_pose.planned.y - strategy.position.dynamic.y) > 300)
+        goto opp_free_kick_go_to_strategy_point;
       else
         stay;
     }
