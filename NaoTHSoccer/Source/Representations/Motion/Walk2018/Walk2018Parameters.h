@@ -336,14 +336,19 @@ class ZMPPreviewControllerParameter : public ParameterList {
         {
             PARAMETER_REGISTER(stationary_threshold.velocity) = 3;
             PARAMETER_REGISTER(stationary_threshold.acceleration) = 100;
+
+            PARAMETER_REGISTER(zmp_parameter_file) = "previewControl.prm";
             syncWithConfig();
-            loadParameter();
+
+            loadParameter(zmp_parameter_file);
         }
 
         struct {
             double velocity;
             double acceleration;
         } stationary_threshold;
+
+        std::string zmp_parameter_file;
 
         struct Parameters {
             double Ki;
@@ -363,12 +368,14 @@ class ZMPPreviewControllerParameter : public ParameterList {
         }
 
     private:
-        void loadParameter() {
+        void loadParameter(const std::string file_name) 
+        {
             // generate the file name
             std::string path = naoth::Platform::getInstance().getConfigPaths().directory;
             path += "platform/";
             path += naoth::Platform::getInstance().getConfigPaths().platform;
-            path += "/previewControl.prm";
+            path += "/";
+            path += file_name;
 
             // open the stream
             std::ifstream ifs(path.c_str());
