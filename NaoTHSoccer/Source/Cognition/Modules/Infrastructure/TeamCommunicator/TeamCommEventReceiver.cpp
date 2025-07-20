@@ -3,6 +3,7 @@
 
 TeamCommEventReceiver::TeamCommEventReceiver()
 {
+  DEBUG_REQUEST_REGISTER("TeamCommEventReceiver:clear_team_state", "Clear the team state", false);
   getDebugParameterList().add(&parameters);
 }
 
@@ -39,6 +40,11 @@ void TeamCommEventReceiver::execute()
   // marking the begin of the outgoing message
   getTeamMessageData().frameInfo = getFrameInfo();
   */
+
+
+  DEBUG_REQUEST("TeamCommEventReceiver:clear_team_state",
+    getTeamState().players.clear();
+  );
 }
 
 void TeamCommEventReceiver::handleMessage(const std::string& data)
