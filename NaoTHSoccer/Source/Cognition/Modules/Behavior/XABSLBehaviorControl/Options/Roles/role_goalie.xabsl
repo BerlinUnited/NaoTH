@@ -90,7 +90,9 @@ option role_goalie
     decision {
       else if(strategy.role_dynamic == striker)
         goto clear_ball;
-      else if(vector.abs(x=locator.field_to_relative.x(x=strategy.position.home.x, y=strategy.position.home.y), y=locator.field_to_relative.y(x=strategy.position.home.x, y=strategy.position.home.y)) >= 300)
+      else if(vector.abs(x=locator.field_to_relative.x(x=strategy.position.home.x, y=strategy.position.home.y),
+                         y=locator.field_to_relative.y(x=strategy.position.home.x, y=strategy.position.home.y)) >= 300
+              || abs(value = robot_pose.planned.rotation) > 10)
         goto go_to_strategy_point_search_for_ball;
       else 
         stay;
