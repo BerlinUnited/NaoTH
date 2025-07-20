@@ -29,16 +29,23 @@ naoth stop
 
 DEPLOY_DIR="./deploy"
 
+# check if both deploy directory and deploy.zip file exist
+if [ -d "./deploy" ] && [ -f "./deploy.zip" ]; then
+  echo "[deploy] ERROR: Both ./deploy directory and ./deploy.zip file exist. Please keep only one!"
+  su nao -c "/usr/bin/paplay /home/nao/naoqi/Media/error_missing_usb_brainwasher_script.wav"
+fi
+
 # check deployment variant and prepare deploy directory
 echo "[deploy] checking deployment variant..."
-if [ -d "./deploy" ]; then
-  echo "[deploy] found deploy directory"
-elif [ -f "./deploy.zip" ]; then
+if [ -f "./deploy.zip" ]; then
   echo "[deploy] found deploy.zip, extracting to temporary directory..."
   rm -rf /tmp/deploy_temp
   unzip -q ./deploy.zip -d /tmp/deploy_temp
   echo "[deploy] deploy.zip extracted successfully"
   DEPLOY_DIR="/tmp/deploy_temp"
+elif [ -d "./deploy" ]; then
+  echo "[deploy] found deploy directory"
+  DEPLOY_DIR="./deploy"
 fi
 
 # backup the stuff from the robot
