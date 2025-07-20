@@ -27,7 +27,7 @@ void TeamBallLocatorCanopyCluster::execute() {
         if(params.enablePlayingCheck && !getTeamMessagePlayersState().isPlaying(playerNumber)) { continue; }
 
         // ballage + network delay
-        double ballAge = player.ballAge();
+        double ballAge = player.ballAge() + getFrameInfo().getTimeSince(player.ballAge.time());
         if(params.enableNtpAdjustment && getTeamMessageNTP().isNtpActive(playerNumber)) {
             ballAge += static_cast<double>(getTeamMessageNTP().getTimeInMilliSeconds(playerNumber) - player.messageTimestamp);
         }

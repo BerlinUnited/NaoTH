@@ -66,7 +66,7 @@ void RoleDecisionDynamic::decideStriker(std::map<PlayerNumber, Roles::Dynamic>& 
         // ball not seen
         if(player.ballAge() < 0) { continue; }
 
-        double ballAge = player.ballAge() + getFrameInfo().getTimeSince(player.messageFrameInfo.getTime());
+        double ballAge = player.ballAge() + getFrameInfo().getTimeSince(player.ballAge.time());
         double timeBonus = getRoleDecisionModel().isStriker(playerNumber) ? params.striker_ball_bonus_time : 0.0;
 
         // TODO: instead of using 'hard-coded' values, base this on the average receiving time!
@@ -280,7 +280,7 @@ void RoleDecisionDynamic::decideSupporter(std::map<PlayerNumber, Roles::Dynamic>
                 // ball not seen
                 if(player.ballAge() < 0) { continue; }
 
-                double ballAge = player.ballAge() + getFrameInfo().getTimeSince(player.messageFrameInfo.getTime());
+                double ballAge = player.ballAge() + getFrameInfo().getTimeSince(player.ballAge.time());
 
                 // last time ball seen is too big
                 if(ballAge > params.striker_ball_lost_time) { continue; }

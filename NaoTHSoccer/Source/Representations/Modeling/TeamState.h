@@ -64,7 +64,9 @@ public:
         TimestampedData<Pose2D> pose;
 
         // TODO: why ballAge is double, but timeToBall unsigned int?
-        /** ms since this robot last saw the ball. -1 if we haven't seen it */
+        /** ms since this robot last saw the ball. -1 if we haven't seen it
+         * ATTENTION: ball age must be corrected for the time an update was received!
+         */
         TimestampedData<double> ballAge = -1.0;
         /** position of ball relative to the robot coordinates in millimeters; 0,0 is in centre of the robot */
         TimestampedData<Vector2d> ballPosition;
