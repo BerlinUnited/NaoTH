@@ -14,7 +14,9 @@
 #include "Representations/Modeling/TeamBallModel.h"
 #include "Representations/Modeling/PlayerInfo.h"
 #include "Representations/Modeling/TeamState.h"
-
+#include "Representations/Infrastructure/GameData.h"
+#include "Representations/Modeling/BallModel.h"
+#include "Representations/Modeling/RobotPose.h"
 
 BEGIN_DECLARE_MODULE(RoleDecisionPositionDynamic)
   PROVIDE(DebugRequest)
@@ -26,6 +28,9 @@ BEGIN_DECLARE_MODULE(RoleDecisionPositionDynamic)
   REQUIRE(TeamBallModel)
   REQUIRE(PlayerInfo)
   REQUIRE(TeamState)
+  REQUIRE(GameData)
+  REQUIRE(BallModel)
+  REQUIRE(RobotPose)
 
   PROVIDE(RoleDecisionModel)
 END_DECLARE_MODULE(RoleDecisionPositionDynamic);
@@ -39,9 +44,8 @@ public:
     virtual void execute();
 
     void goalie();
+    void striker();
     void supporter();
-
-    Vector2d calculateEllipsePoint(const Vector2d& ball);
 
 private:
     class Parameters: public ParameterList
@@ -53,8 +57,11 @@ private:
             PARAMETER_REGISTER(goalie_defense_min_x) = -750;
             PARAMETER_REGISTER(goalie_defense_max_x) = 0;
 
+            PARAMETER_REGISTER(striker_avoidence_threshold) = 140; // in a set play, we avoid the ball in case we're behind it
+
             PARAMETER_REGISTER(supporter_offset) = 1000;
-            PARAMETER_REGISTER(supporter_side_offset) = 200;
+            PARAMETER_REGISTER(supporter_offset_side) = 500;
+            PARAMETER_REGISTER(supporter_offense_scaling) = 2.0; // how far the supporter should be in the oppnent half
 
             // load from the file after registering all parameters
             syncWithConfig();
@@ -65,9 +72,15 @@ private:
         double goalie_defense_min_x;
         double goalie_defense_max_x;
 
+        double striker_avoidence_threshold;
+
         double supporter_offset;
-        double supporter_side_offset;
+        double supporter_offset_side;
+        double supporter_offense_scaling;
     } params;
+
+    bool isDefendingSetPlay();
+    Vector2d calculateEllipsePoint(const Vector2d& ball);
 };
 
 #endif // ROLEDECISIONPOSITIONDYNAMIC_H
