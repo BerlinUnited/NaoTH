@@ -537,6 +537,30 @@ public class NaoSCP extends javax.swing.JPanel {
 
                     // delete the target directory if it's existing,
                     // so we have a fresh new directory
+                    File oldDeployDir = new File(targetDir, "deploy");
+                    if (oldDeployDir.isDirectory()) {
+                        // backup
+                        File commentFile = new File(oldDeployDir, "comment.txt");
+                        if (commentFile.exists()) {
+                            String backup_name = FileUtils.readFile(commentFile);
+
+                            File backup_dir = new File(targetDir, backup_name);
+                            if (backup_dir.exists()) {
+                                Logger.getGlobal().log(Level.WARNING,
+                                        String.format("Could not back up the deploy directory, file already exists: %s",
+                                                backup_dir.getAbsolutePath()));
+                            } else if (oldDeployDir.renameTo(backup_dir)) {
+                                oldDeployDir = new File(targetDir, "deploy");
+                            } else {
+                                Logger.getGlobal().log(Level.WARNING,
+                                        String.format("Could not back up the deploy directory %s to %s",
+                                        oldDeployDir.getAbsolutePath(), backup_dir.getAbsolutePath()));
+                            }
+                        } else {
+                            FileUtils.deleteDir(oldDeployDir);
+                        }
+                    }
+                    // also rename the zip file if it exists
                     if (deployZip.exists()) {
                         FileUtils.renameZipByComment(deployZip);
                     }
