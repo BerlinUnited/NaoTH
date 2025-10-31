@@ -21,14 +21,14 @@ public class FieldDrawingNaoTHLabor implements Drawable{
     int xPenaltyAreaLength = 550;
     int yPenaltyAreaLength = 2100;
 
-    int centerCircleRadius = 725;
+    int centerCircleRadius = 750;
 
     int xCrossOffset = 1250;
     int crossSize = 100;
     int fieldLinesWidth = 50;
 
     // goals
-    int goalWidth = 1400;
+    int goalWidth = 1600;
     int goalpostRadius = 50;
     int goalDepth = 400 + 2*goalpostRadius;
 
