@@ -7,19 +7,36 @@
 using namespace naoth;
 using namespace std;
 
-void BallPatchDetector::execute() {
-  execute(CameraInfo::CameraID::Bottom);
-  execute(CameraInfo::CameraID::Top);
+BallPatchDetector::BallPatchDetector() : cameraID(CameraInfo::Bottom)
+{
+  DEBUG_REQUEST_REGISTER("Vision:BallPatchDetector:draw_value", "", false);
+  DEBUG_REQUEST_REGISTER("Vision:BallPatchDetector:drawPatches", "draw ball key points", false);
+  DEBUG_REQUEST_REGISTER("Vision:BallPatchDetector:drawPatches_px", "draw ball key points in the raw image", false);
+
+  getDebugParameterList().add(&params);
 }
 
-void BallPatchDetector::execute(const CameraInfo::CameraID id) {
+BallPatchDetector::~BallPatchDetector() 
+{
+  getDebugParameterList().remove(&params);
+}
+
+void BallPatchDetector::execute(const CameraInfo::CameraID id) 
+{
   cameraID = id;
   getBestPatchList().clear();
 
   calculateKeyPointsFast(getBallDetectorIntegralImage(), getBestPatchList());
 
-
   DEBUG_REQUEST("Vision:BallPatchDetector:drawPatches",
+    CANVAS(((cameraID == CameraInfo::Top)?"ImageTop":"ImageBottom"));
+    PEN("FF0000", 1);
+    for(BestPatchList::reverse_iterator i = getBestPatchList().rbegin(); i != getBestPatchList().rend(); ++i) {
+      BOX((*i).min.x, (*i).min.y, (*i).max.x, (*i).max.y);
+    }
+  );
+
+  DEBUG_REQUEST("Vision:BallPatchDetector:drawPatches_px",
     for(BestPatchList::reverse_iterator i = getBestPatchList().rbegin(); i != getBestPatchList().rend(); ++i) {
       RECT_PX(ColorClasses::red, (*i).min.x, (*i).min.y, (*i).max.x, (*i).max.y);
     }

@@ -75,18 +75,14 @@ END_DECLARE_MODULE(BallPatchDetector)
 class BallPatchDetector : public BallPatchDetectorBase
 {
 public:
-  virtual void execute();
+  BallPatchDetector();
+  virtual ~BallPatchDetector();
 
-  BallPatchDetector() : cameraID(CameraInfo::Bottom)
+
+  virtual void execute() 
   {
-    DEBUG_REQUEST_REGISTER("Vision:BallPatchDetector:draw_value","", false);
-    DEBUG_REQUEST_REGISTER("Vision:BallPatchDetector:drawPatches", "draw ball key points", false);
-
-    getDebugParameterList().add(&params);
-  }
-
-  virtual ~BallPatchDetector() {
-      getDebugParameterList().remove(&params);
+    execute(CameraInfo::CameraID::Bottom);
+    execute(CameraInfo::CameraID::Top);
   }
 
 private:
