@@ -180,9 +180,9 @@ void NaoController::readNaoInfo()
   }
   else
   {
-    is >> robotInfo.headId
-       >> robotInfo.bodyId 
+    is >> robotInfo.bodyId 
        >> robotInfo.bodyNickName
+       >> robotInfo.headId
        >> robotInfo.robotName
        >> robotInfo.platform;
   }
