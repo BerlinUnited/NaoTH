@@ -48,9 +48,9 @@ void LolaAdaptor::writeNaoInfo(const std::string& bodyId, const std::string& hea
     std::ofstream os("/tmp/nao.info");
     ASSERT(os.good());
     
-    os << headId                                 << std::endl
-       << bodyId                                 << std::endl 
+    os << bodyId                                 << std::endl
        << NaoInfoTools::makeBodyNickName(bodyId) << std::endl
+       << headId                                 << std::endl
        << NaoInfoTools::readRobotName()          << std::endl
        << "Nao6"                                 << std::endl; // platform name
        
