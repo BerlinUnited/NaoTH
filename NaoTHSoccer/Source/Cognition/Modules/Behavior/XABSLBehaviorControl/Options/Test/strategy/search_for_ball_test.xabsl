@@ -34,13 +34,14 @@ option search_for_ball_test
   state search
   {
     decision {
-      else if(action_done)
+      else if(ball.see_where_itis)
         goto look_at_ball;
       else
         stay;
     }
     action {
-      head.control_mode = search_for_ball_goalie;
+      head.control_mode = search_for_ball;
+      motion.type = stand;
     }
   }
 
