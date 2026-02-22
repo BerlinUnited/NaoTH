@@ -23,10 +23,9 @@
 using namespace naoth;
 using namespace std;
 
-// a semaphore for sychronization with the DCM
-sem_t* dcm_sem = SEM_FAILED;
 
 std::atomic_int framesSinceCognitionLastSeen(0);
+
 // control variable for the motion and cognition threads
 std::atomic_bool running(true); 
 std::atomic_bool already_got_signal(false);
@@ -37,12 +36,7 @@ void got_signal(int sigid)
   // notify all threads to stop
   running = false;
   
-  // raise the semaphore, so that the motion thread can stop gracefully
-  if (sem_post(dcm_sem) == -1) {
-    std::cerr << "dcm_sem lock errno: " << errno << std::endl;
-  }
-
-  system("/usr/bin/paplay Media/naoth_stop.wav");
+  //system("/usr/bin/paplay Media/naoth_stop.wav");
 
   if(sigid == SIGTERM || sigid == SIGINT) // graceful stop
   {
@@ -80,85 +74,6 @@ void got_signal(int sigid)
 
 }//end got_signal
 
-/* 
-// Just some experiments with the RT-Threads
-// not used yet
-class TestThread : public RtThread
-{
-	public:
-    TestThread(){}
-    ~TestThread(){}
-    BoosterController* theController;
-
-    virtual void *execute()
-    {
-      Stopwatch stopwatch;
-      while(true)
-      {
-        theController->callMotion();
-    
-        if(sem_wait(dcm_sem) == -1)
-        {
-          std::cerr << "lock errno: " << errno << endl;
-        }
-
-        StopwatchManager::getInstance().notifyStop(stopwatch);
-        StopwatchManager::getInstance().notifyStart(stopwatch);
-        PLOT("_MotionCycle", stopwatch.lastValue);
-      }//end while
-
-      return NULL;
-    }
-    virtual void postExecute(){}
-    virtual void preExecute(){}
-} motionRtThread;
-*/
-
-void* motionThreadCallback(void* ref)
-{
-  std::cout << "[BoosterRobot] start motion thread" << std::endl;
-  
-  framesSinceCognitionLastSeen = 0;
-
-  BoosterController* theController = static_cast<BoosterController*> (ref);
-
-  //Stopwatch stopwatch;
-  while(running)
-  {
-    if(framesSinceCognitionLastSeen > 4000)
-    {
-      std::cerr << std::endl;
-      std::cerr << "+==================================+" << std::endl;
-      std::cerr << "| NO MORE MESSAGES FROM COGNITION! |" << std::endl;
-      std::cerr << "+==================================+" << std::endl;
-      std::cerr << "dumping traces" << std::endl;
-      Trace::getInstance().dump();
-      //StopwatchManager::getInstance().dump("cognition");
-
-      #ifndef WIN32
-      std::cerr << "syncing file system..." ;
-      sync();
-      std::cerr << " finished." << std::endl;
-      #endif
-
-      ASSERT_MSG(false, "Cognition seems to be dead");
-    }//end if
-    framesSinceCognitionLastSeen++;
-
-    theController->runMotion();
-    
-    if(sem_wait(dcm_sem) == -1) {
-      std::cerr << "dcm_sem lock errno: " << errno << std::endl;
-    }
-
-    //stopwatch.stop();
-    //stopwatch.start();
-  }//end while
-
-  std::cout << "[BoosterRobot] stop motion thread" << std::endl;
-  
-  return NULL;
-}//end motionThreadCallback
 
 
 #define TO_STRING_INT(x) #x
@@ -185,6 +100,7 @@ int main(int /*argc*/, char **/*argv[]*/)
   // init glib
   g_type_init();
 
+
   //
   // react on "kill" and segmentation fault:
   // Signal     Value     Action   Comment
@@ -204,44 +120,20 @@ int main(int /*argc*/, char **/*argv[]*/)
     std::cerr << "Could not change working directory" << std::endl;
   }
 
-  // O_CREAT - create a new semaphore if not existing
-  // open semaphore
-  if((dcm_sem = sem_open("motion_trigger", O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, 0)) == SEM_FAILED)
-  {
-    perror("BoosterController: sem_open");
-    exit(-1);
-  }
-
   // create the controller
   BoosterController theController;
   naoth::init_agent(theController);
 
 
-  // waiting for the first rise of the semaphore
-  // bevore starting the threads
-  std::cerr << "[BoosterRobot] wait for DCM" << std::endl;
-  sem_wait(dcm_sem);
+  std::thread motionThread = std::thread([&theController]
+  {
+    while(running) {
+      theController.runMotion();
+      std::this_thread::yield();
+    }
+  });
+  ThreadUtil::setName(motionThread, "Motion");
 
-
-  // create the motion thread
-  // !!we use here a pthread directly, because std::thread doesn't support priorities
-  pthread_t motionThread;
-  int err = pthread_create(&motionThread, NULL, motionThreadCallback, (void*)&theController);
-  if (err != 0) {
-    handle_error_en(err, "create motionThread");
-  }
-  
-  // set the pririty of the motion thread to 20
-  // Heinrich: was changed from 50, because lola has 36
-  sched_param param;
-  param.sched_priority = 20;
-  err = pthread_setschedparam(motionThread, SCHED_FIFO, &param);
-  if (err != 0) {
-    handle_error_en(err, "set priority motionThread");
-  }
-  
-  pthread_setname_np(motionThread, "Motion");
-  
   
   std::thread cognitionThread = std::thread([&theController]
   {
@@ -254,9 +146,8 @@ int main(int /*argc*/, char **/*argv[]*/)
   
   ThreadUtil::setName(cognitionThread, "Cognition");
 
-  //if(motionThread != NULL)
-  {
-    pthread_join(motionThread, NULL);
+  if(motionThread.joinable()) {
+    motionThread.join();
   }
   std::cout << "[BoosterRobot] Motion thread joined. " << std::endl;
 
