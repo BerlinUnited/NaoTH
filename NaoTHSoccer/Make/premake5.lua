@@ -261,6 +261,12 @@ workspace "NaoTHSoccer"
         links { "NaoTHSoccer", "Commons"}
         vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/LolaAdaptor" }
       
+        
+        dofile (FRAMEWORK_PATH .. "/Platforms/Make/BoosterRobot.lua")
+        kind "ConsoleApp"
+        links { "NaoTHSoccer", "Commons", naoth_links}
+        vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/BoosterRobot" }
+      
     -- generate tests if required
     if _OPTIONS["Test"] ~= nil then
       group "Test"
@@ -329,6 +335,11 @@ workspace "NaoTHSoccer"
         links { "NaoTHSoccer", "Commons", naoth_links}
         vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/Webots" }
         debugargs { "--sync" }
+        
+      dofile (FRAMEWORK_PATH .. "/Platforms/Make/BoosterRobot.lua")
+        kind "ConsoleApp"
+        links { "NaoTHSoccer", "Commons", naoth_links}
+        vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/BoosterRobot" }
       
     -- generate tests if required
     if _OPTIONS["Test"] ~= nil then
