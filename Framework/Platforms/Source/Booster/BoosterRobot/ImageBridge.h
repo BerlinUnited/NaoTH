@@ -61,7 +61,7 @@ class ImageBridge
             if (errno == EINTR) { 
               continue; 
             }
-            std::cerr << "[IMAGE_BRIDGE] recv_exact error:" << std::strerror(errno) << std::endl;
+            std::cerr << "[IMAGE_BRIDGE] recv_exact error: " << std::strerror(errno) << std::endl;
             return r;
           }
           got += static_cast<size_t>(r);
@@ -78,7 +78,7 @@ class ImageBridge
     void connectSocket() 
     {
       if ( (fd = socket(AF_UNIX, SOCK_STREAM, 0)) == -1) {
-        std::cerr << "[IMAGE_BRIDGE] socket error:" << std::strerror(errno) << std::endl;
+        std::cerr << "[IMAGE_BRIDGE] socket error: " << std::strerror(errno) << std::endl;
         //exit(-1);
         error = true;
         return;
@@ -89,8 +89,9 @@ class ImageBridge
       addr.sun_family = AF_UNIX;
       strncpy(addr.sun_path, "/tmp/naoth_image", sizeof(addr.sun_path)-1);
 
+      std::cerr << "[IMAGE_BRIDGE] connect to socket: " << addr.sun_path << std::endl;
       if (connect(fd, (struct sockaddr*)&addr, sizeof(addr)) == -1) {
-        std::cerr << "[IMAGE_BRIDGE] connect error:" << std::strerror(errno) << std::endl;
+        std::cerr << "[IMAGE_BRIDGE] connect error: " << std::strerror(errno) << std::endl;
         //exit(-1);
         error = true;
         return ;
