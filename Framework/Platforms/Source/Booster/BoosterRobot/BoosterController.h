@@ -56,9 +56,12 @@
 
 
 // local tools
-#include "Tools/SharedMemoryIO.h"
+//#include "Tools/SharedMemoryIO.h"
+
 #include "Tools/NaoTime.h"
 #include "Tools/FileUtils.h"
+
+#include "ImageBridge.h"
 
 namespace naoth
 {
@@ -78,10 +81,10 @@ public:
   
   // camera stuff
   void get(Image& data) { 
-    
+    //imageBridge.readImage(data);
   }
   void get(ImageTop& data) { 
-    
+    imageBridge.readImage(data);
   }
   
   void get(CurrentCameraSettings& data) { 
@@ -143,6 +146,8 @@ public:
     //TODO: use naoSensorData.data().timeStamp
     data.setTime(NaoTime::getNaoTimeInMilliSeconds());
     data.setFrameNumber(data.getFrameNumber()+1);
+
+    std::cout << data << std::endl;
   }
 
   // read directly from the shared memory
@@ -170,28 +175,26 @@ public:
 
   void set(const AudioControl& data) { /*theAudioRecorder.set(data);*/ }
 
-
+  /*
   virtual void getMotionInput()
   {
-    /*
     //STOPWATCH_START("getMotionInput");
     // try to get some data from the DCM
     if ( !naoSensorData.swapReading() )
     {
       std::cerr << "[NaoController] didn't get new sensor data" << std::endl;
     }
-    */
     PlatformInterface::getMotionInput();
     //STOPWATCH_STOP("getMotionInput");
   }
-
-
+  
   virtual void setMotionOutput()
   {
     //STOPWATCH_START("setMotionOutput");
     PlatformInterface::setMotionOutput();
     //STOPWATCH_STOP("setMotionOutput");
   }
+  */
 
 
   virtual void getCognitionInput()
@@ -200,7 +203,6 @@ public:
     PlatformInterface::getCognitionInput();
     //STOPWATCH_STOP("getCognitionInput");
   }
-
 
   virtual void setCognitionOutput()
   {
@@ -216,8 +218,8 @@ private:
 protected:
   virtual MessageQueue* createMessageQueue(const std::string& name)
   {
-    //return new MessageQueue4Threads();
-    return new MessageQueue4Process(name);
+    return new MessageQueue4Threads();
+    //return new MessageQueue4Process(name);
   }
 
 protected:
@@ -251,6 +253,7 @@ protected:
   SPLGameController* theGameController;
   DebugServer* theDebugServer;
 
+  ImageBridge imageBridge;
 };
 
 } // end namespace naoth

@@ -9,6 +9,8 @@
 #include "Tools/ThreadUtil.h"
 #include "Tools/FileUtils.h"
 
+#include <filesystem>
+
 #include <glib.h>
 #include <glib-object.h>
 #include <csignal>
@@ -59,8 +61,11 @@ void got_signal(int sigid)
     Trace::getInstance().dump();
     //StopwatchManager::getInstance().dump("cognition");
 
+    // TODO: maybe this is not needed
     std::cout << "syncing file system..." ;
+#ifdef NAO
     sync();
+#endif
     std::cout << " finished." << std::endl;
   } 
   else
@@ -115,16 +120,34 @@ int main(int /*argc*/, char **/*argv[]*/)
   std::signal(SIGINT,  got_signal);
   std::signal(SIGSEGV, got_signal);
   
-  // TODO: why do we need that?
+  // change the working directory to the home path 
+  /*
+#ifdef NAO
+  try {
+    std::filesystem::current_path("~");
+  } catch (const std::filesystem::filesystem_error& e) {
+    std::cerr << "[BoosterRobot] Error changing directory: " << e.what() << std::endl;
+  }
+#endif
+*/
+  /*
   if(chdir("~") != 0) {
     std::cerr << "Could not change working directory" << std::endl;
   }
+  */
 
   // create the controller
   BoosterController theController;
-  naoth::init_agent(theController);
+  
+  // creates and registers Cognition and Motion
+  //naoth::init_agent(theController);
+  Cognition* theCognition = createCognition();
+  theController.registerCognition((naoth::Callable*)(theCognition));
 
-
+  //Motion* theMotion = createMotion();
+  //theController.registerCognition((naoth::Callable*)(theMotion));
+  
+  /*
   std::thread motionThread = std::thread([&theController]
   {
     while(running) {
@@ -133,7 +156,7 @@ int main(int /*argc*/, char **/*argv[]*/)
     }
   });
   ThreadUtil::setName(motionThread, "Motion");
-
+  */
   
   std::thread cognitionThread = std::thread([&theController]
   {
@@ -146,10 +169,12 @@ int main(int /*argc*/, char **/*argv[]*/)
   
   ThreadUtil::setName(cognitionThread, "Cognition");
 
+  /*
   if(motionThread.joinable()) {
     motionThread.join();
   }
   std::cout << "[BoosterRobot] Motion thread joined. " << std::endl;
+  */
 
   if(cognitionThread.joinable()) {
     cognitionThread.join();

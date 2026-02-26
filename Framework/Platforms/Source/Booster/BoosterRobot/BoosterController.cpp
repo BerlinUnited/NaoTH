@@ -26,6 +26,11 @@ BoosterController::BoosterController()
     theRemoteCommandListener(NULL),
     theDebugServer(NULL)
 {
+  imageBridge.connectSocket();
+  if(imageBridge.hasError()) {
+    exit(-1);
+  }
+
   // init shared memory
   // sensor data
   //naoSensorData.open("/nao_sensor_data");
@@ -40,6 +45,12 @@ BoosterController::BoosterController()
   //readNaoInfo();
   //robotInfo.print(std::cout);
   
+  robotInfo.bodyId        = "boo41";
+  robotInfo.bodyNickName  = "boo41";
+  robotInfo.headId        = "boo41";
+  robotInfo.robotName     = "boo41";
+  robotInfo.platform      = "Booster-K1";
+  robotInfo.basicTimeStep = 20;
 
   /*  REGISTER IO  */
   // camera
