@@ -24,6 +24,8 @@
 
 #include <sstream>
 #include <iostream>
+#include <cerrno>
+#include <cstring>
 
 /** 
   Client for the UNIX socket on the NAO robot
@@ -51,7 +53,7 @@ class ImageBridge
           
           // peer closed
           if (r == 0) { 
-            return false; 
+            return r; 
           }    
           
           // interrupted -> retry
@@ -59,7 +61,8 @@ class ImageBridge
             if (errno == EINTR) { 
               continue; 
             }
-            return false;
+            std::cerr << "[IMAGE_BRIDGE] recv_exact error:" << std::strerror(errno) << std::endl;
+            return r;
           }
           got += static_cast<size_t>(r);
       }
@@ -75,7 +78,7 @@ class ImageBridge
     void connectSocket() 
     {
       if ( (fd = socket(AF_UNIX, SOCK_STREAM, 0)) == -1) {
-        std::cerr << "[IMAGE_BRIDGE] socket error" << std::endl;
+        std::cerr << "[IMAGE_BRIDGE] socket error:" << std::strerror(errno) << std::endl;
         //exit(-1);
         error = true;
         return;
@@ -87,7 +90,7 @@ class ImageBridge
       strncpy(addr.sun_path, "/tmp/naoth_image", sizeof(addr.sun_path)-1);
 
       if (connect(fd, (struct sockaddr*)&addr, sizeof(addr)) == -1) {
-        std::cerr << "[IMAGE_BRIDGE] connect error" << std::endl;
+        std::cerr << "[IMAGE_BRIDGE] connect error:" << std::strerror(errno) << std::endl;
         //exit(-1);
         error = true;
         return ;
