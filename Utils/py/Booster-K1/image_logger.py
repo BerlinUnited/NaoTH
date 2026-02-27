@@ -37,6 +37,10 @@ ros2 topic echo /booster_camera_bridge/image_left_raw/camera_info
 ros2 topic echo /booster_camera_bridge/image_right_raw
 
 ros2 topic echo /booster_camera_bridge/StereoNetNode/rectified_image
+
+
+ros2 topic type /head_pose_stamped
+ros2 topic info /head_pose_stamped
 ```
 
 '''
@@ -48,13 +52,14 @@ import numpy as np
 import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import Image
+from geometry_msgs.msg import PoseStamped
 
-from message_filters import Subscriber, TimeSynchronizer
+from message_filters import Subscriber, TimeSynchronizer, ApproximateTimeSynchronizer
 from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSHistoryPolicy, QoSDurabilityPolicy
 
 
 # naoth
-from naoth.log import Reader as LogReader
+from naoth.log import Reader as LogReader, Frame as LogFrame
 import naoth.pb.Framework_Representations_pb2 as framework_pb2
 
 
@@ -72,6 +77,8 @@ class ImageLogger(Node):
     
     self.left_sub  = Subscriber(self, Image, '/booster_camera_bridge/image_left_raw' , qos_profile = qos_logger)
     self.right_sub = Subscriber(self, Image, '/booster_camera_bridge/image_right_raw', qos_profile = qos_logger)
+    
+    self.head_pose = Subscriber(self, PoseStamped, '/head_pose_stamped', qos_profile = qos_logger)
 
     self.sync = ApproximateTimeSynchronizer(
         [self.left_sub, self.right_sub],
@@ -88,13 +95,19 @@ class ImageLogger(Node):
 
     self.sync.registerCallback(self.stereo_callback)
 
+    self.ts = TimeSynchronizer([self.head_pose], 10)
+    self.ts.registerCallback(self.head_pose_callback)
+
+
     self.frame_number = 0
+    self.current_pose = None
     self.output_path = output_path
     self.output = None
     
     # automatically generate a name for the logile if it was not set
     if self.output_path is None:
       timestamp = self.get_clock().now().to_msg().sec
+      self.save_dir = '.'
       self.output_path = os.path.join(self.save_dir, f'booster_image_lr_{timestamp}.log')
     
     
@@ -110,7 +123,7 @@ class ImageLogger(Node):
     return False
 
 
-  def image_to_proto(self, msg)
+  def image_to_proto(self, msg):
   
     # msg is sensor_msgs.msg.Image
     pb = framework_pb2.Image()
@@ -206,14 +219,22 @@ class ImageLogger(Node):
     
   def stereo_callback(self, left_msg, right_msg):
     
+    print(f"Frame {self.frame_number}")
+    
     # Create a new log frame that is not attached to a LogReader
-    frame = LogReader.Frame(frame_start = 0, frame_number = self.frame_number, scanner = None, parser = None)
+    frame = LogFrame(frame_start = 0, frame_number = self.frame_number, scanner = None, parser = None)
     
     # generate image messages
     imageLeft  = self.image_to_proto(left_msg)
     imageRight = self.image_to_proto(right_msg)
     frame.add_field("ImageLeft", imageLeft)
     frame.add_field("ImageRight", imageRight)
+    
+    # HACK: NAO image format
+    imageTop    = self.image_to_proto_nao(left_msg)
+    imageBottom = self.image_to_proto_nao(right_msg)
+    frame.add_field("ImageTop", imageTop)
+    frame.add_field("Image"   , imageBottom)
     
     # generate FrameInfo
     frameInfo = framework_pb2.FrameInfo()
@@ -232,12 +253,9 @@ class ImageLogger(Node):
         robotInfo.robotName = "41";
         frame.add_field("RobotInfo", robotInfo)
     
-    # HACK: NAO image format
-    #imageTop    = self.image_to_proto_nao(left_msg)
-    #imageBottom = self.image_to_proto_nao(right_msg)
-    #frame.add_field("ImageTop", imageTop)
-    #frame.add_field("Image"   , imageBottom)
-   
+    if self.current_pose is not None:
+        frame.add_field("HeadPose", self.current_pose)
+    
     # write log frame to file
     self.output.write(bytes(frame))
     
@@ -250,6 +268,35 @@ class ImageLogger(Node):
     diff_ns  = left_ns - right_ns
     if diff_ns > 0:
       self.get_logger().info("Stereo sync diff (ns) = {}".format(diff_ns))
+    
+    
+  def pose_stamped_to_headpose_pb(self, msg: PoseStamped) -> framework_pb2.HeadPose:
+    pb = framework_pb2.HeadPose()
+
+    # translation
+    pb.pose.translation.x = float(msg.pose.position.x)
+    pb.pose.translation.y = float(msg.pose.position.y)
+    pb.pose.translation.z = float(msg.pose.position.z)
+
+    # rotation quaternion (optional in your schema, but we’ll fill it)
+    pb.pose.rotation_quaternion.x = float(msg.pose.orientation.x)
+    pb.pose.rotation_quaternion.y = float(msg.pose.orientation.y)
+    pb.pose.rotation_quaternion.z = float(msg.pose.orientation.z)
+    pb.pose.rotation_quaternion.w = float(msg.pose.orientation.w)
+
+    # timestamp (optional uint64): ROS2 builtin_interfaces/Time -> uint64 nanoseconds
+    # msg.header.stamp has sec + nanosec
+    ts_ns = (int(msg.header.stamp.sec) * 1_000_000_000) + int(msg.header.stamp.nanosec)
+    pb.timestamp = ts_ns
+
+    return pb
+    
+  def head_pose_callback(self, head_pose_msg):
+    
+    self.current_pose = self.pose_stamped_to_headpose_pb(head_pose_msg)
+    print(self.current_pose.timestamp)
+    
+    
     
     
 def main(args=None):
