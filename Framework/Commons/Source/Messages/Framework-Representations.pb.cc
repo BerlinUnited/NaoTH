@@ -78,13 +78,18 @@ public:
  ::google::protobuf::internal::ExplicitlyConstructed<ButtonData>
      _instance;
 } _ButtonData_default_instance_;
+class HeadPoseDefaultTypeInternal {
+public:
+ ::google::protobuf::internal::ExplicitlyConstructed<HeadPose>
+     _instance;
+} _HeadPose_default_instance_;
 
 namespace protobuf_Framework_2dRepresentations_2eproto {
 
 
 namespace {
 
-::google::protobuf::Metadata file_level_metadata[12];
+::google::protobuf::Metadata file_level_metadata[13];
 const ::google::protobuf::EnumDescriptor* file_level_enum_descriptors[2];
 
 }  // namespace
@@ -100,6 +105,7 @@ PROTOBUF_CONSTEXPR_VAR ::google::protobuf::internal::AuxillaryParseTableField
 };
 PROTOBUF_CONSTEXPR_VAR ::google::protobuf::internal::ParseTable const
     TableStruct::schema[] GOOGLE_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
+  { NULL, NULL, 0, -1, -1, -1, -1, NULL, false },
   { NULL, NULL, 0, -1, -1, -1, -1, NULL, false },
   { NULL, NULL, 0, -1, -1, -1, -1, NULL, false },
   { NULL, NULL, 0, -1, -1, -1, -1, NULL, false },
@@ -291,6 +297,15 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_ATTRIBUTE_SECTION
   ~0u,
   ~0u,
   ~0u,
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(HeadPose, _has_bits_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(HeadPose, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(HeadPose, pose_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(HeadPose, timestamp_),
+  0,
+  1,
 };
 static const ::google::protobuf::internal::MigrationSchema schemas[] GOOGLE_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
   { 0, 11, sizeof(Image)},
@@ -305,6 +320,7 @@ static const ::google::protobuf::internal::MigrationSchema schemas[] GOOGLE_ATTR
   { 143, 152, sizeof(GyrometerData)},
   { 156, 163, sizeof(InertialSensorData)},
   { 165, 173, sizeof(ButtonData)},
+  { 176, 183, sizeof(HeadPose)},
 };
 
 static ::google::protobuf::Message const * const file_default_instances[] = {
@@ -320,6 +336,7 @@ static ::google::protobuf::Message const * const file_default_instances[] = {
   reinterpret_cast<const ::google::protobuf::Message*>(&_GyrometerData_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&_InertialSensorData_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&_ButtonData_default_instance_),
+  reinterpret_cast<const ::google::protobuf::Message*>(&_HeadPose_default_instance_),
 };
 
 namespace {
@@ -340,7 +357,7 @@ void protobuf_AssignDescriptorsOnce() {
 void protobuf_RegisterTypes(const ::std::string&) GOOGLE_ATTRIBUTE_COLD;
 void protobuf_RegisterTypes(const ::std::string&) {
   protobuf_AssignDescriptorsOnce();
-  ::google::protobuf::internal::RegisterAllTypes(file_level_metadata, 12);
+  ::google::protobuf::internal::RegisterAllTypes(file_level_metadata, 13);
 }
 
 }  // namespace
@@ -373,7 +390,9 @@ void TableStruct::InitDefaultsImpl() {
   ::google::protobuf::internal::OnShutdownDestroyMessage(
       &_InertialSensorData_default_instance_);_ButtonData_default_instance_._instance.DefaultConstruct();
   ::google::protobuf::internal::OnShutdownDestroyMessage(
-      &_ButtonData_default_instance_);_Image_default_instance_._instance.get_mutable()->camerainfo_ = const_cast< ::naothmessages::CameraInfo*>(
+      &_ButtonData_default_instance_);_HeadPose_default_instance_._instance.DefaultConstruct();
+  ::google::protobuf::internal::OnShutdownDestroyMessage(
+      &_HeadPose_default_instance_);_Image_default_instance_._instance.get_mutable()->camerainfo_ = const_cast< ::naothmessages::CameraInfo*>(
       ::naothmessages::CameraInfo::internal_default_instance());
   _SensorJointData_default_instance_._instance.get_mutable()->jointdata_ = const_cast< ::naothmessages::JointData*>(
       ::naothmessages::JointData::internal_default_instance());
@@ -387,6 +406,8 @@ void TableStruct::InitDefaultsImpl() {
       ::naothmessages::DoubleVector3::internal_default_instance());
   _InertialSensorData_default_instance_._instance.get_mutable()->data_ = const_cast< ::naothmessages::DoubleVector2*>(
       ::naothmessages::DoubleVector2::internal_default_instance());
+  _HeadPose_default_instance_._instance.get_mutable()->pose_ = const_cast< ::naothmessages::Pose3D*>(
+      ::naothmessages::Pose3D::internal_default_instance());
 }
 
 void InitDefaults() {
@@ -398,63 +419,65 @@ void AddDescriptorsImpl() {
   InitDefaults();
   static const char descriptor[] GOOGLE_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
       "\n\037Framework-Representations.proto\022\rnaoth"
-      "messages\032\021CommonTypes.proto\"\333\001\n\005Image\022\014\n"
+      "messages\032\021CommonTypes.proto\"\354\001\n\005Image\022\014\n"
       "\004data\030\001 \002(\014\022\022\n\005width\030\002 \001(\r:\003640\022\023\n\006heigh"
       "t\030\003 \001(\r:\003480\022-\n\ncameraInfo\030\004 \001(\0132\031.naoth"
       "messages.CameraInfo\0220\n\006format\030\005 \001(\0162\033.na"
       "othmessages.Image.Format:\003YUV\022\021\n\ttimesta"
-      "mp\030\006 \001(\r\"\'\n\006Format\022\007\n\003YUV\020\000\022\n\n\006YUV422\020\001\022"
-      "\010\n\004JPEG\020\002\"\322\004\n\nCameraInfo\022\027\n\017resolutionWi"
-      "dth\030\001 \002(\r\022\030\n\020resolutionHeight\030\002 \002(\r\0221\n\010c"
-      "ameraID\030\004 \001(\0162\027.naothmessages.CameraID:\006"
-      "bottom\022\027\n\013focalLength\030\005 \001(\001B\002\030\001\022\035\n\021openi"
-      "ngAngleWidth\030\006 \001(\001B\002\030\001\022\036\n\022openingAngleHe"
-      "ight\030\007 \001(\001B\002\030\001\022\032\n\016opticalCenterX\030\010 \001(\001B\002"
-      "\030\001\022\032\n\016opticalCenterY\030\t \001(\001B\002\030\001\022\020\n\004size\030\n"
-      " \001(\003B\002\030\001\022\026\n\nmemorysize\030\013 \001(\003B\002\030\001\022\034\n\020came"
-      "raRollOffset\030\014 \001(\001B\002\030\001\022\034\n\020cameraTiltOffs"
-      "et\030\r \001(\001B\002\030\001\022:\n\020correctionOffset\030\022 \003(\0132\034"
-      ".naothmessages.DoubleVector2B\002\030\001\0229\n\017head"
-      "JointOffset\030\023 \003(\0132\034.naothmessages.Double"
-      "Vector2B\002\030\001\0221\n\016transformation\030\016 \003(\0132\025.na"
-      "othmessages.Pose3DB\002\030\001\022\034\n\024openingAngleDi"
-      "agonal\030\017 \001(\001\022\021\n\tpixelSize\030\020 \001(\001\022\r\n\005focus"
-      "\030\021 \001(\001\"I\n\tJointData\022\020\n\010position\030\001 \003(\001\022\021\n"
-      "\tstiffness\030\002 \003(\001\022\n\n\002dp\030\003 \003(\001\022\013\n\003ddp\030\004 \003("
-      "\001\"l\n\017SensorJointData\022+\n\tjointData\030\001 \002(\0132"
-      "\030.naothmessages.JointData\022\023\n\013temperature"
-      "\030\002 \003(\001\022\027\n\017electricCurrent\030\003 \003(\001\"i\n\025Ultra"
-      "SoundReceiveData\022\032\n\022ultraSoundTimeStep\030\001"
-      " \001(\r\022\017\n\007rawdata\030\002 \002(\001\022\020\n\010dataLeft\030\003 \003(\001\022"
-      "\021\n\tdataRight\030\004 \003(\001\".\n\tFrameInfo\022\023\n\013frame"
-      "Number\030\001 \002(\r\022\014\n\004time\030\002 \002(\r\"}\n\tRobotInfo\022"
-      "\020\n\010platform\030\001 \001(\t\022\024\n\014bodyNickName\030\002 \001(\t\022"
-      "\016\n\006headId\030\003 \001(\t\022\016\n\006bodyId\030\004 \001(\t\022\025\n\rbasic"
-      "TimeStep\030\005 \001(\r\022\021\n\trobotName\030\006 \001(\t\"=\n\007FSR"
-      "Data\022\021\n\005force\030\001 \003(\001B\002\030\001\022\014\n\004data\030\002 \003(\001\022\021\n"
-      "\005valid\030\003 \003(\010B\002\030\001\"\214\001\n\021AccelerometerData\022\034"
-      "\n\020legacyPackedData\030\001 \003(\001B\002\030\001\022*\n\004data\030\002 \001"
-      "(\0132\034.naothmessages.DoubleVector3\022-\n\007rawD"
-      "ata\030\003 \001(\0132\034.naothmessages.DoubleVector3\""
-      "\225\001\n\rGyrometerData\022\034\n\020legacyPackedData\030\001 "
-      "\003(\001B\002\030\001\022*\n\004data\030\002 \001(\0132\034.naothmessages.Do"
-      "ubleVector3\022-\n\007rawData\030\003 \001(\0132\034.naothmess"
-      "ages.DoubleVector3\022\013\n\003ref\030\004 \001(\001\"^\n\022Inert"
-      "ialSensorData\022\034\n\020legacyPackedData\030\001 \003(\001B"
-      "\002\030\001\022*\n\004data\030\002 \001(\0132\034.naothmessages.Double"
-      "Vector2\"\323\002\n\nButtonData\022\021\n\tisPressed\030\001 \003("
-      "\010\022\032\n\022numOfFramesPressed\030\002 \003(\r\022\024\n\014eventCo"
-      "unter\030\003 \003(\r\"\377\001\n\010ButtonID\022\t\n\005Chest\020\000\022\020\n\014L"
-      "eftFootLeft\020\001\022\021\n\rLeftFootRight\020\002\022\021\n\rRigh"
-      "tFootLeft\020\003\022\022\n\016RightFootRight\020\004\022\r\n\tHeadF"
-      "ront\020\005\022\016\n\nHeadMiddle\020\006\022\014\n\010HeadRear\020\007\022\020\n\014"
-      "LeftHandBack\020\010\022\020\n\014LeftHandLeft\020\t\022\021\n\rLeft"
-      "HandRight\020\n\022\021\n\rRightHandBack\020\013\022\021\n\rRightH"
-      "andLeft\020\014\022\022\n\016RightHandRight\020\rB\033\n\031de.naot"
-      "h.rc.core.messages"
+      "mp\030\006 \001(\r\"8\n\006Format\022\007\n\003YUV\020\000\022\n\n\006YUV422\020\001\022"
+      "\010\n\004JPEG\020\002\022\017\n\013YUV420_NV12\020\003\"\322\004\n\nCameraInf"
+      "o\022\027\n\017resolutionWidth\030\001 \002(\r\022\030\n\020resolution"
+      "Height\030\002 \002(\r\0221\n\010cameraID\030\004 \001(\0162\027.naothme"
+      "ssages.CameraID:\006bottom\022\027\n\013focalLength\030\005"
+      " \001(\001B\002\030\001\022\035\n\021openingAngleWidth\030\006 \001(\001B\002\030\001\022"
+      "\036\n\022openingAngleHeight\030\007 \001(\001B\002\030\001\022\032\n\016optic"
+      "alCenterX\030\010 \001(\001B\002\030\001\022\032\n\016opticalCenterY\030\t "
+      "\001(\001B\002\030\001\022\020\n\004size\030\n \001(\003B\002\030\001\022\026\n\nmemorysize\030"
+      "\013 \001(\003B\002\030\001\022\034\n\020cameraRollOffset\030\014 \001(\001B\002\030\001\022"
+      "\034\n\020cameraTiltOffset\030\r \001(\001B\002\030\001\022:\n\020correct"
+      "ionOffset\030\022 \003(\0132\034.naothmessages.DoubleVe"
+      "ctor2B\002\030\001\0229\n\017headJointOffset\030\023 \003(\0132\034.nao"
+      "thmessages.DoubleVector2B\002\030\001\0221\n\016transfor"
+      "mation\030\016 \003(\0132\025.naothmessages.Pose3DB\002\030\001\022"
+      "\034\n\024openingAngleDiagonal\030\017 \001(\001\022\021\n\tpixelSi"
+      "ze\030\020 \001(\001\022\r\n\005focus\030\021 \001(\001\"I\n\tJointData\022\020\n\010"
+      "position\030\001 \003(\001\022\021\n\tstiffness\030\002 \003(\001\022\n\n\002dp\030"
+      "\003 \003(\001\022\013\n\003ddp\030\004 \003(\001\"l\n\017SensorJointData\022+\n"
+      "\tjointData\030\001 \002(\0132\030.naothmessages.JointDa"
+      "ta\022\023\n\013temperature\030\002 \003(\001\022\027\n\017electricCurre"
+      "nt\030\003 \003(\001\"i\n\025UltraSoundReceiveData\022\032\n\022ult"
+      "raSoundTimeStep\030\001 \001(\r\022\017\n\007rawdata\030\002 \002(\001\022\020"
+      "\n\010dataLeft\030\003 \003(\001\022\021\n\tdataRight\030\004 \003(\001\".\n\tF"
+      "rameInfo\022\023\n\013frameNumber\030\001 \002(\r\022\014\n\004time\030\002 "
+      "\002(\r\"}\n\tRobotInfo\022\020\n\010platform\030\001 \001(\t\022\024\n\014bo"
+      "dyNickName\030\002 \001(\t\022\016\n\006headId\030\003 \001(\t\022\016\n\006body"
+      "Id\030\004 \001(\t\022\025\n\rbasicTimeStep\030\005 \001(\r\022\021\n\trobot"
+      "Name\030\006 \001(\t\"=\n\007FSRData\022\021\n\005force\030\001 \003(\001B\002\030\001"
+      "\022\014\n\004data\030\002 \003(\001\022\021\n\005valid\030\003 \003(\010B\002\030\001\"\214\001\n\021Ac"
+      "celerometerData\022\034\n\020legacyPackedData\030\001 \003("
+      "\001B\002\030\001\022*\n\004data\030\002 \001(\0132\034.naothmessages.Doub"
+      "leVector3\022-\n\007rawData\030\003 \001(\0132\034.naothmessag"
+      "es.DoubleVector3\"\225\001\n\rGyrometerData\022\034\n\020le"
+      "gacyPackedData\030\001 \003(\001B\002\030\001\022*\n\004data\030\002 \001(\0132\034"
+      ".naothmessages.DoubleVector3\022-\n\007rawData\030"
+      "\003 \001(\0132\034.naothmessages.DoubleVector3\022\013\n\003r"
+      "ef\030\004 \001(\001\"^\n\022InertialSensorData\022\034\n\020legacy"
+      "PackedData\030\001 \003(\001B\002\030\001\022*\n\004data\030\002 \001(\0132\034.nao"
+      "thmessages.DoubleVector2\"\323\002\n\nButtonData\022"
+      "\021\n\tisPressed\030\001 \003(\010\022\032\n\022numOfFramesPressed"
+      "\030\002 \003(\r\022\024\n\014eventCounter\030\003 \003(\r\"\377\001\n\010ButtonI"
+      "D\022\t\n\005Chest\020\000\022\020\n\014LeftFootLeft\020\001\022\021\n\rLeftFo"
+      "otRight\020\002\022\021\n\rRightFootLeft\020\003\022\022\n\016RightFoo"
+      "tRight\020\004\022\r\n\tHeadFront\020\005\022\016\n\nHeadMiddle\020\006\022"
+      "\014\n\010HeadRear\020\007\022\020\n\014LeftHandBack\020\010\022\020\n\014LeftH"
+      "andLeft\020\t\022\021\n\rLeftHandRight\020\n\022\021\n\rRightHan"
+      "dBack\020\013\022\021\n\rRightHandLeft\020\014\022\022\n\016RightHandR"
+      "ight\020\r\"B\n\010HeadPose\022#\n\004pose\030\001 \002(\0132\025.naoth"
+      "messages.Pose3D\022\021\n\ttimestamp\030\002 \001(\004B\033\n\031de"
+      ".naoth.rc.core.messages"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 2178);
+      descriptor, 2263);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Framework-Representations.proto", &protobuf_RegisterTypes);
   ::naothmessages::protobuf_CommonTypes_2eproto::AddDescriptors();
@@ -483,6 +506,7 @@ bool Image_Format_IsValid(int value) {
     case 0:
     case 1:
     case 2:
+    case 3:
       return true;
     default:
       return false;
@@ -493,6 +517,7 @@ bool Image_Format_IsValid(int value) {
 const Image_Format Image::YUV;
 const Image_Format Image::YUV422;
 const Image_Format Image::JPEG;
+const Image_Format Image::YUV420_NV12;
 const Image_Format Image::Format_MIN;
 const Image_Format Image::Format_MAX;
 const int Image::Format_ARRAYSIZE;
@@ -7522,6 +7547,377 @@ ButtonData::eventcounter() const {
 ButtonData::mutable_eventcounter() {
   // @@protoc_insertion_point(field_mutable_list:naothmessages.ButtonData.eventCounter)
   return &eventcounter_;
+}
+
+#endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
+
+// ===================================================================
+
+#if !defined(_MSC_VER) || _MSC_VER >= 1900
+const int HeadPose::kPoseFieldNumber;
+const int HeadPose::kTimestampFieldNumber;
+#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+
+HeadPose::HeadPose()
+  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
+  if (GOOGLE_PREDICT_TRUE(this != internal_default_instance())) {
+    protobuf_Framework_2dRepresentations_2eproto::InitDefaults();
+  }
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:naothmessages.HeadPose)
+}
+HeadPose::HeadPose(const HeadPose& from)
+  : ::google::protobuf::Message(),
+      _internal_metadata_(NULL),
+      _has_bits_(from._has_bits_),
+      _cached_size_(0) {
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  if (from.has_pose()) {
+    pose_ = new ::naothmessages::Pose3D(*from.pose_);
+  } else {
+    pose_ = NULL;
+  }
+  timestamp_ = from.timestamp_;
+  // @@protoc_insertion_point(copy_constructor:naothmessages.HeadPose)
+}
+
+void HeadPose::SharedCtor() {
+  _cached_size_ = 0;
+  ::memset(&pose_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&timestamp_) -
+      reinterpret_cast<char*>(&pose_)) + sizeof(timestamp_));
+}
+
+HeadPose::~HeadPose() {
+  // @@protoc_insertion_point(destructor:naothmessages.HeadPose)
+  SharedDtor();
+}
+
+void HeadPose::SharedDtor() {
+  if (this != internal_default_instance()) delete pose_;
+}
+
+void HeadPose::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* HeadPose::descriptor() {
+  protobuf_Framework_2dRepresentations_2eproto::protobuf_AssignDescriptorsOnce();
+  return protobuf_Framework_2dRepresentations_2eproto::file_level_metadata[kIndexInFileMessages].descriptor;
+}
+
+const HeadPose& HeadPose::default_instance() {
+  protobuf_Framework_2dRepresentations_2eproto::InitDefaults();
+  return *internal_default_instance();
+}
+
+HeadPose* HeadPose::New(::google::protobuf::Arena* arena) const {
+  HeadPose* n = new HeadPose;
+  if (arena != NULL) {
+    arena->Own(n);
+  }
+  return n;
+}
+
+void HeadPose::Clear() {
+// @@protoc_insertion_point(message_clear_start:naothmessages.HeadPose)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  if (has_pose()) {
+    GOOGLE_DCHECK(pose_ != NULL);
+    pose_->::naothmessages::Pose3D::Clear();
+  }
+  timestamp_ = GOOGLE_ULONGLONG(0);
+  _has_bits_.Clear();
+  _internal_metadata_.Clear();
+}
+
+bool HeadPose::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:naothmessages.HeadPose)
+  for (;;) {
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // required .naothmessages.Pose3D pose = 1;
+      case 1: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(10u /* 10 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_pose()));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // optional uint64 timestamp = 2;
+      case 2: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(16u /* 16 & 0xFF */)) {
+          set_has_timestamp();
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint64, ::google::protobuf::internal::WireFormatLite::TYPE_UINT64>(
+                 input, &timestamp_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, _internal_metadata_.mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+success:
+  // @@protoc_insertion_point(parse_success:naothmessages.HeadPose)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:naothmessages.HeadPose)
+  return false;
+#undef DO_
+}
+
+void HeadPose::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:naothmessages.HeadPose)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  cached_has_bits = _has_bits_[0];
+  // required .naothmessages.Pose3D pose = 1;
+  if (cached_has_bits & 0x00000001u) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, *this->pose_, output);
+  }
+
+  // optional uint64 timestamp = 2;
+  if (cached_has_bits & 0x00000002u) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt64(2, this->timestamp(), output);
+  }
+
+  if (_internal_metadata_.have_unknown_fields()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        _internal_metadata_.unknown_fields(), output);
+  }
+  // @@protoc_insertion_point(serialize_end:naothmessages.HeadPose)
+}
+
+::google::protobuf::uint8* HeadPose::InternalSerializeWithCachedSizesToArray(
+    bool deterministic, ::google::protobuf::uint8* target) const {
+  (void)deterministic; // Unused
+  // @@protoc_insertion_point(serialize_to_array_start:naothmessages.HeadPose)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  cached_has_bits = _has_bits_[0];
+  // required .naothmessages.Pose3D pose = 1;
+  if (cached_has_bits & 0x00000001u) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageNoVirtualToArray(
+        1, *this->pose_, deterministic, target);
+  }
+
+  // optional uint64 timestamp = 2;
+  if (cached_has_bits & 0x00000002u) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt64ToArray(2, this->timestamp(), target);
+  }
+
+  if (_internal_metadata_.have_unknown_fields()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields(), target);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:naothmessages.HeadPose)
+  return target;
+}
+
+size_t HeadPose::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:naothmessages.HeadPose)
+  size_t total_size = 0;
+
+  if (_internal_metadata_.have_unknown_fields()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        _internal_metadata_.unknown_fields());
+  }
+  // required .naothmessages.Pose3D pose = 1;
+  if (has_pose()) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+        *this->pose_);
+  }
+  // optional uint64 timestamp = 2;
+  if (has_timestamp()) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::UInt64Size(
+        this->timestamp());
+  }
+
+  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = cached_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void HeadPose::MergeFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:naothmessages.HeadPose)
+  GOOGLE_DCHECK_NE(&from, this);
+  const HeadPose* source =
+      ::google::protobuf::internal::DynamicCastToGenerated<const HeadPose>(
+          &from);
+  if (source == NULL) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:naothmessages.HeadPose)
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:naothmessages.HeadPose)
+    MergeFrom(*source);
+  }
+}
+
+void HeadPose::MergeFrom(const HeadPose& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:naothmessages.HeadPose)
+  GOOGLE_DCHECK_NE(&from, this);
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  cached_has_bits = from._has_bits_[0];
+  if (cached_has_bits & 3u) {
+    if (cached_has_bits & 0x00000001u) {
+      mutable_pose()->::naothmessages::Pose3D::MergeFrom(from.pose());
+    }
+    if (cached_has_bits & 0x00000002u) {
+      timestamp_ = from.timestamp_;
+    }
+    _has_bits_[0] |= cached_has_bits;
+  }
+}
+
+void HeadPose::CopyFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:naothmessages.HeadPose)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void HeadPose::CopyFrom(const HeadPose& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:naothmessages.HeadPose)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool HeadPose::IsInitialized() const {
+  if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
+  if (has_pose()) {
+    if (!this->pose_->IsInitialized()) return false;
+  }
+  return true;
+}
+
+void HeadPose::Swap(HeadPose* other) {
+  if (other == this) return;
+  InternalSwap(other);
+}
+void HeadPose::InternalSwap(HeadPose* other) {
+  using std::swap;
+  swap(pose_, other->pose_);
+  swap(timestamp_, other->timestamp_);
+  swap(_has_bits_[0], other->_has_bits_[0]);
+  _internal_metadata_.Swap(&other->_internal_metadata_);
+  swap(_cached_size_, other->_cached_size_);
+}
+
+::google::protobuf::Metadata HeadPose::GetMetadata() const {
+  protobuf_Framework_2dRepresentations_2eproto::protobuf_AssignDescriptorsOnce();
+  return protobuf_Framework_2dRepresentations_2eproto::file_level_metadata[kIndexInFileMessages];
+}
+
+#if PROTOBUF_INLINE_NOT_IN_HEADERS
+// HeadPose
+
+// required .naothmessages.Pose3D pose = 1;
+bool HeadPose::has_pose() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+void HeadPose::set_has_pose() {
+  _has_bits_[0] |= 0x00000001u;
+}
+void HeadPose::clear_has_pose() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+void HeadPose::clear_pose() {
+  if (pose_ != NULL) pose_->::naothmessages::Pose3D::Clear();
+  clear_has_pose();
+}
+const ::naothmessages::Pose3D& HeadPose::pose() const {
+  const ::naothmessages::Pose3D* p = pose_;
+  // @@protoc_insertion_point(field_get:naothmessages.HeadPose.pose)
+  return p != NULL ? *p : *reinterpret_cast<const ::naothmessages::Pose3D*>(
+      &::naothmessages::_Pose3D_default_instance_);
+}
+::naothmessages::Pose3D* HeadPose::mutable_pose() {
+  set_has_pose();
+  if (pose_ == NULL) {
+    pose_ = new ::naothmessages::Pose3D;
+  }
+  // @@protoc_insertion_point(field_mutable:naothmessages.HeadPose.pose)
+  return pose_;
+}
+::naothmessages::Pose3D* HeadPose::release_pose() {
+  // @@protoc_insertion_point(field_release:naothmessages.HeadPose.pose)
+  clear_has_pose();
+  ::naothmessages::Pose3D* temp = pose_;
+  pose_ = NULL;
+  return temp;
+}
+void HeadPose::set_allocated_pose(::naothmessages::Pose3D* pose) {
+  delete pose_;
+  pose_ = pose;
+  if (pose) {
+    set_has_pose();
+  } else {
+    clear_has_pose();
+  }
+  // @@protoc_insertion_point(field_set_allocated:naothmessages.HeadPose.pose)
+}
+
+// optional uint64 timestamp = 2;
+bool HeadPose::has_timestamp() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+void HeadPose::set_has_timestamp() {
+  _has_bits_[0] |= 0x00000002u;
+}
+void HeadPose::clear_has_timestamp() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+void HeadPose::clear_timestamp() {
+  timestamp_ = GOOGLE_ULONGLONG(0);
+  clear_has_timestamp();
+}
+::google::protobuf::uint64 HeadPose::timestamp() const {
+  // @@protoc_insertion_point(field_get:naothmessages.HeadPose.timestamp)
+  return timestamp_;
+}
+void HeadPose::set_timestamp(::google::protobuf::uint64 value) {
+  set_has_timestamp();
+  timestamp_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.HeadPose.timestamp)
 }
 
 #endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
