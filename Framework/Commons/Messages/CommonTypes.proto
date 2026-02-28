@@ -88,9 +88,17 @@ message DoubleVector {
   repeated double v = 1;
 }
 
+message DoubleQuaternion {
+  required double x = 1;
+  required double y = 2;
+  required double z = 3;
+  required double w = 4;
+}
+
 message Pose3D {
   required DoubleVector3 translation = 1;
   repeated DoubleVector3 rotation = 2;
+  optional DoubleQuaternion rotation_quaternion = 3;
 }
 
 // Line.h
