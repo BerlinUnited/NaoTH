@@ -13,6 +13,7 @@ import javax.imageio.ImageReader;
 //import java.awt.GraphicsConfiguration;
 //import java.awt.GraphicsEnvironment;
 import java.awt.image.DataBuffer;
+import java.nio.ByteBuffer;
 
 /**
  *
@@ -63,6 +64,91 @@ public class ImageConversions {
         }
         return null;
       }
+    
+    public static void convertNV12toYUV888(ByteString bs, BufferedImage image) {
+        int width = image.getWidth();
+        int height = image.getHeight();
+
+        int yPlaneSize = width * height;
+        int expectedSize = yPlaneSize + (yPlaneSize / 2); // NV12 = 1.5 bytes per pixel
+
+        if (bs.size() != expectedSize) {
+            throw new DimensionMismatchException();
+        }
+
+        int[] buf = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
+
+        // Y plane: [0 .. yPlaneSize-1]
+        // UV plane starts at yPlaneSize, interleaved UV, width bytes per UV row,
+        // and there are height/2 UV rows.
+        int uvBase = yPlaneSize;
+
+        for (int y = 0; y < height; y++) {
+            int yRow = y * width;
+            int uvRow = (y / 2) * width; // because UV has half vertical resolution
+
+            for (int x = 0; x < width; x++) {
+                int Y = 0xFF & bs.byteAt(yRow + x);
+
+                // Each UV pair covers 2 horizontal pixels => use (x & ~1) to get even column
+                int uvIndex = uvBase + uvRow + (x & ~1);
+                int U = 0xFF & bs.byteAt(uvIndex);
+                int V = 0xFF & bs.byteAt(uvIndex + 1);
+
+                // Pack as 0x00YYUUVV (same packing style as your 422 code: (Y<<16)|(U<<8)|V)
+                buf[yRow + x] = (Y << 16) | (U << 8) | V;
+            }
+        }
+    }
+    
+    // HACK: for testing
+    private static byte[] data = new byte[0];
+    public static void convertNV12toYUV888Fast(ByteString bs, BufferedImage image) 
+    {
+        int width = image.getWidth();
+        int height = image.getHeight();
+
+        int yPlaneSize = width * height;
+        int expectedSize = yPlaneSize + (yPlaneSize / 2);
+        if (bs.size() != expectedSize) {
+            throw new DimensionMismatchException();
+        }
+        
+        // NOTE: this makes a copy, but the access is faster
+        if(data.length != bs.size()) {
+            data = new byte[bs.size()];
+        }
+        // copy to a raw array to accelerate pixel access
+        bs.copyTo(data, 0);
+
+        int[] buf = ((java.awt.image.DataBufferInt) image.getRaster().getDataBuffer()).getData();
+        int uvBase = yPlaneSize;
+
+        for (int y = 0; y < height; y += 2) 
+        {
+            int yRow0 = y * width;
+            int yRow1 = yRow0 + width;
+            int uvRowStart = uvBase + (y / 2) * width;
+
+            for (int x = 0; x < width; x += 2) 
+            {
+                int uvIndex = uvRowStart + x;
+                int U = data[uvIndex] & 0xFF;
+                int V = data[uvIndex + 1] & 0xFF;
+                int uvPacked = (U << 8) | V;
+
+                int i00 = yRow0 + x;
+                int i01 = i00 + 1;
+                int i10 = yRow1 + x;
+                int i11 = i10 + 1;
+
+                buf[i00] = ((data[i00] & 0xFF) << 16) | uvPacked;
+                buf[i01] = ((data[i01] & 0xFF) << 16) | uvPacked;
+                buf[i10] = ((data[i10] & 0xFF) << 16) | uvPacked;
+                buf[i11] = ((data[i11] & 0xFF) << 16) | uvPacked;
+            }
+        }
+    }
     
     public static void convertYUV422toYUV888(ByteString bs, BufferedImage image) {
         // we should have exactly 2 bytes per pixel
