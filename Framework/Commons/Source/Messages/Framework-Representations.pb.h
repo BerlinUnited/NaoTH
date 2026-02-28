@@ -51,6 +51,9 @@ extern FrameInfoDefaultTypeInternal _FrameInfo_default_instance_;
 class GyrometerData;
 class GyrometerDataDefaultTypeInternal;
 extern GyrometerDataDefaultTypeInternal _GyrometerData_default_instance_;
+class HeadPose;
+class HeadPoseDefaultTypeInternal;
+extern HeadPoseDefaultTypeInternal _HeadPose_default_instance_;
 class Image;
 class ImageDefaultTypeInternal;
 extern ImageDefaultTypeInternal _Image_default_instance_;
@@ -91,11 +94,12 @@ void InitDefaults();
 enum Image_Format {
   Image_Format_YUV = 0,
   Image_Format_YUV422 = 1,
-  Image_Format_JPEG = 2
+  Image_Format_JPEG = 2,
+  Image_Format_YUV420_NV12 = 3
 };
 bool Image_Format_IsValid(int value);
 const Image_Format Image_Format_Format_MIN = Image_Format_YUV;
-const Image_Format Image_Format_Format_MAX = Image_Format_JPEG;
+const Image_Format Image_Format_Format_MAX = Image_Format_YUV420_NV12;
 const int Image_Format_Format_ARRAYSIZE = Image_Format_Format_MAX + 1;
 
 const ::google::protobuf::EnumDescriptor* Image_Format_descriptor();
@@ -234,6 +238,8 @@ class Image : public ::google::protobuf::Message /* @@protoc_insertion_point(cla
     Image_Format_YUV422;
   static const Format JPEG =
     Image_Format_JPEG;
+  static const Format YUV420_NV12 =
+    Image_Format_YUV420_NV12;
   static inline bool Format_IsValid(int value) {
     return Image_Format_IsValid(value);
   }
@@ -2099,6 +2105,126 @@ class ButtonData : public ::google::protobuf::Message /* @@protoc_insertion_poin
   ::google::protobuf::RepeatedField< bool > ispressed_;
   ::google::protobuf::RepeatedField< ::google::protobuf::uint32 > numofframespressed_;
   ::google::protobuf::RepeatedField< ::google::protobuf::uint32 > eventcounter_;
+  friend struct protobuf_Framework_2dRepresentations_2eproto::TableStruct;
+};
+// -------------------------------------------------------------------
+
+class HeadPose : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:naothmessages.HeadPose) */ {
+ public:
+  HeadPose();
+  virtual ~HeadPose();
+
+  HeadPose(const HeadPose& from);
+
+  inline HeadPose& operator=(const HeadPose& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  #if LANG_CXX11
+  HeadPose(HeadPose&& from) noexcept
+    : HeadPose() {
+    *this = ::std::move(from);
+  }
+
+  inline HeadPose& operator=(HeadPose&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+  #endif
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _internal_metadata_.unknown_fields();
+  }
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return _internal_metadata_.mutable_unknown_fields();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const HeadPose& default_instance();
+
+  static inline const HeadPose* internal_default_instance() {
+    return reinterpret_cast<const HeadPose*>(
+               &_HeadPose_default_instance_);
+  }
+  static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
+    12;
+
+  void Swap(HeadPose* other);
+  friend void swap(HeadPose& a, HeadPose& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline HeadPose* New() const PROTOBUF_FINAL { return New(NULL); }
+
+  HeadPose* New(::google::protobuf::Arena* arena) const PROTOBUF_FINAL;
+  void CopyFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void MergeFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void CopyFrom(const HeadPose& from);
+  void MergeFrom(const HeadPose& from);
+  void Clear() PROTOBUF_FINAL;
+  bool IsInitialized() const PROTOBUF_FINAL;
+
+  size_t ByteSizeLong() const PROTOBUF_FINAL;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) PROTOBUF_FINAL;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const PROTOBUF_FINAL;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const PROTOBUF_FINAL;
+  int GetCachedSize() const PROTOBUF_FINAL { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const PROTOBUF_FINAL;
+  void InternalSwap(HeadPose* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const PROTOBUF_FINAL;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // required .naothmessages.Pose3D pose = 1;
+  bool has_pose() const;
+  void clear_pose();
+  static const int kPoseFieldNumber = 1;
+  const ::naothmessages::Pose3D& pose() const;
+  ::naothmessages::Pose3D* mutable_pose();
+  ::naothmessages::Pose3D* release_pose();
+  void set_allocated_pose(::naothmessages::Pose3D* pose);
+
+  // optional uint64 timestamp = 2;
+  bool has_timestamp() const;
+  void clear_timestamp();
+  static const int kTimestampFieldNumber = 2;
+  ::google::protobuf::uint64 timestamp() const;
+  void set_timestamp(::google::protobuf::uint64 value);
+
+  // @@protoc_insertion_point(class_scope:naothmessages.HeadPose)
+ private:
+  void set_has_pose();
+  void clear_has_pose();
+  void set_has_timestamp();
+  void clear_has_timestamp();
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::internal::HasBits<1> _has_bits_;
+  mutable int _cached_size_;
+  ::naothmessages::Pose3D* pose_;
+  ::google::protobuf::uint64 timestamp_;
   friend struct protobuf_Framework_2dRepresentations_2eproto::TableStruct;
 };
 // ===================================================================
@@ -4059,10 +4185,86 @@ ButtonData::mutable_eventcounter() {
   return &eventcounter_;
 }
 
+// -------------------------------------------------------------------
+
+// HeadPose
+
+// required .naothmessages.Pose3D pose = 1;
+inline bool HeadPose::has_pose() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void HeadPose::set_has_pose() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void HeadPose::clear_has_pose() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void HeadPose::clear_pose() {
+  if (pose_ != NULL) pose_->::naothmessages::Pose3D::Clear();
+  clear_has_pose();
+}
+inline const ::naothmessages::Pose3D& HeadPose::pose() const {
+  const ::naothmessages::Pose3D* p = pose_;
+  // @@protoc_insertion_point(field_get:naothmessages.HeadPose.pose)
+  return p != NULL ? *p : *reinterpret_cast<const ::naothmessages::Pose3D*>(
+      &::naothmessages::_Pose3D_default_instance_);
+}
+inline ::naothmessages::Pose3D* HeadPose::mutable_pose() {
+  set_has_pose();
+  if (pose_ == NULL) {
+    pose_ = new ::naothmessages::Pose3D;
+  }
+  // @@protoc_insertion_point(field_mutable:naothmessages.HeadPose.pose)
+  return pose_;
+}
+inline ::naothmessages::Pose3D* HeadPose::release_pose() {
+  // @@protoc_insertion_point(field_release:naothmessages.HeadPose.pose)
+  clear_has_pose();
+  ::naothmessages::Pose3D* temp = pose_;
+  pose_ = NULL;
+  return temp;
+}
+inline void HeadPose::set_allocated_pose(::naothmessages::Pose3D* pose) {
+  delete pose_;
+  pose_ = pose;
+  if (pose) {
+    set_has_pose();
+  } else {
+    clear_has_pose();
+  }
+  // @@protoc_insertion_point(field_set_allocated:naothmessages.HeadPose.pose)
+}
+
+// optional uint64 timestamp = 2;
+inline bool HeadPose::has_timestamp() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void HeadPose::set_has_timestamp() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void HeadPose::clear_has_timestamp() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void HeadPose::clear_timestamp() {
+  timestamp_ = GOOGLE_ULONGLONG(0);
+  clear_has_timestamp();
+}
+inline ::google::protobuf::uint64 HeadPose::timestamp() const {
+  // @@protoc_insertion_point(field_get:naothmessages.HeadPose.timestamp)
+  return timestamp_;
+}
+inline void HeadPose::set_timestamp(::google::protobuf::uint64 value) {
+  set_has_timestamp();
+  timestamp_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.HeadPose.timestamp)
+}
+
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
 #endif  // !PROTOBUF_INLINE_NOT_IN_HEADERS
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------

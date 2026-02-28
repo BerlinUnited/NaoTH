@@ -48,6 +48,11 @@ public:
  ::google::protobuf::internal::ExplicitlyConstructed<DoubleVector>
      _instance;
 } _DoubleVector_default_instance_;
+class DoubleQuaternionDefaultTypeInternal {
+public:
+ ::google::protobuf::internal::ExplicitlyConstructed<DoubleQuaternion>
+     _instance;
+} _DoubleQuaternion_default_instance_;
 class Pose3DDefaultTypeInternal {
 public:
  ::google::protobuf::internal::ExplicitlyConstructed<Pose3D>
@@ -64,7 +69,7 @@ namespace protobuf_CommonTypes_2eproto {
 
 namespace {
 
-::google::protobuf::Metadata file_level_metadata[8];
+::google::protobuf::Metadata file_level_metadata[9];
 const ::google::protobuf::EnumDescriptor* file_level_enum_descriptors[3];
 
 }  // namespace
@@ -80,6 +85,7 @@ PROTOBUF_CONSTEXPR_VAR ::google::protobuf::internal::AuxillaryParseTableField
 };
 PROTOBUF_CONSTEXPR_VAR ::google::protobuf::internal::ParseTable const
     TableStruct::schema[] GOOGLE_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
+  { NULL, NULL, 0, -1, -1, -1, -1, NULL, false },
   { NULL, NULL, 0, -1, -1, -1, -1, NULL, false },
   { NULL, NULL, 0, -1, -1, -1, -1, NULL, false },
   { NULL, NULL, 0, -1, -1, -1, -1, NULL, false },
@@ -145,6 +151,19 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_ATTRIBUTE_SECTION
   ~0u,  // no _weak_field_map_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(DoubleVector, v_),
   ~0u,
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(DoubleQuaternion, _has_bits_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(DoubleQuaternion, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(DoubleQuaternion, x_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(DoubleQuaternion, y_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(DoubleQuaternion, z_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(DoubleQuaternion, w_),
+  0,
+  1,
+  2,
+  3,
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Pose3D, _has_bits_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Pose3D, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -152,8 +171,10 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_ATTRIBUTE_SECTION
   ~0u,  // no _weak_field_map_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Pose3D, translation_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Pose3D, rotation_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Pose3D, rotation_quaternion_),
   0,
   ~0u,
+  1,
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(LineSegment, _has_bits_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(LineSegment, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -173,8 +194,9 @@ static const ::google::protobuf::internal::MigrationSchema schemas[] GOOGLE_ATTR
   { 27, 34, sizeof(Pose2D)},
   { 36, 44, sizeof(DoubleVector3)},
   { 47, 53, sizeof(DoubleVector)},
-  { 54, 61, sizeof(Pose3D)},
-  { 63, 71, sizeof(LineSegment)},
+  { 54, 63, sizeof(DoubleQuaternion)},
+  { 67, 75, sizeof(Pose3D)},
+  { 78, 86, sizeof(LineSegment)},
 };
 
 static ::google::protobuf::Message const * const file_default_instances[] = {
@@ -184,6 +206,7 @@ static ::google::protobuf::Message const * const file_default_instances[] = {
   reinterpret_cast<const ::google::protobuf::Message*>(&_Pose2D_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&_DoubleVector3_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&_DoubleVector_default_instance_),
+  reinterpret_cast<const ::google::protobuf::Message*>(&_DoubleQuaternion_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&_Pose3D_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&_LineSegment_default_instance_),
 };
@@ -206,7 +229,7 @@ void protobuf_AssignDescriptorsOnce() {
 void protobuf_RegisterTypes(const ::std::string&) GOOGLE_ATTRIBUTE_COLD;
 void protobuf_RegisterTypes(const ::std::string&) {
   protobuf_AssignDescriptorsOnce();
-  ::google::protobuf::internal::RegisterAllTypes(file_level_metadata, 8);
+  ::google::protobuf::internal::RegisterAllTypes(file_level_metadata, 9);
 }
 
 }  // namespace
@@ -226,7 +249,9 @@ void TableStruct::InitDefaultsImpl() {
   ::google::protobuf::internal::OnShutdownDestroyMessage(
       &_DoubleVector3_default_instance_);_DoubleVector_default_instance_._instance.DefaultConstruct();
   ::google::protobuf::internal::OnShutdownDestroyMessage(
-      &_DoubleVector_default_instance_);_Pose3D_default_instance_._instance.DefaultConstruct();
+      &_DoubleVector_default_instance_);_DoubleQuaternion_default_instance_._instance.DefaultConstruct();
+  ::google::protobuf::internal::OnShutdownDestroyMessage(
+      &_DoubleQuaternion_default_instance_);_Pose3D_default_instance_._instance.DefaultConstruct();
   ::google::protobuf::internal::OnShutdownDestroyMessage(
       &_Pose3D_default_instance_);_LineSegment_default_instance_._instance.DefaultConstruct();
   ::google::protobuf::internal::OnShutdownDestroyMessage(
@@ -234,6 +259,8 @@ void TableStruct::InitDefaultsImpl() {
       ::naothmessages::DoubleVector2::internal_default_instance());
   _Pose3D_default_instance_._instance.get_mutable()->translation_ = const_cast< ::naothmessages::DoubleVector3*>(
       ::naothmessages::DoubleVector3::internal_default_instance());
+  _Pose3D_default_instance_._instance.get_mutable()->rotation_quaternion_ = const_cast< ::naothmessages::DoubleQuaternion*>(
+      ::naothmessages::DoubleQuaternion::internal_default_instance());
   _LineSegment_default_instance_._instance.get_mutable()->base_ = const_cast< ::naothmessages::DoubleVector2*>(
       ::naothmessages::DoubleVector2::internal_default_instance());
   _LineSegment_default_instance_._instance.get_mutable()->direction_ = const_cast< ::naothmessages::DoubleVector2*>(
@@ -255,32 +282,35 @@ void AddDescriptorsImpl() {
       "\013translation\030\001 \002(\0132\034.naothmessages.Doubl"
       "eVector2\022\020\n\010rotation\030\002 \002(\001\"0\n\rDoubleVect"
       "or3\022\t\n\001x\030\001 \002(\001\022\t\n\001y\030\002 \002(\001\022\t\n\001z\030\003 \002(\001\"\031\n\014"
-      "DoubleVector\022\t\n\001v\030\001 \003(\001\"k\n\006Pose3D\0221\n\013tra"
-      "nslation\030\001 \002(\0132\034.naothmessages.DoubleVec"
-      "tor3\022.\n\010rotation\030\002 \003(\0132\034.naothmessages.D"
-      "oubleVector3\"z\n\013LineSegment\022*\n\004base\030\001 \002("
-      "\0132\034.naothmessages.DoubleVector2\022/\n\tdirec"
-      "tion\030\002 \002(\0132\034.naothmessages.DoubleVector2"
-      "\022\016\n\006length\030\003 \002(\001*\220\001\n\005Color\022\010\n\004none\020\000\022\n\n\006"
-      "orange\020\001\022\n\n\006yellow\020\002\022\013\n\007skyblue\020\003\022\t\n\005whi"
-      "te\020\004\022\007\n\003red\020\005\022\010\n\004blue\020\006\022\t\n\005green\020\007\022\t\n\005bl"
-      "ack\020\010\022\010\n\004pink\020\t\022\010\n\004gray\020\n\022\020\n\014yellowOrang"
-      "e\020\013*\037\n\010CameraID\022\007\n\003top\020\000\022\n\n\006bottom\020\001*\245\003\n"
-      "\007JointID\022\r\n\tHeadPitch\020\000\022\013\n\007HeadYaw\020\001\022\021\n\r"
-      "RShoulderRoll\020\002\022\021\n\rLShoulderRoll\020\003\022\022\n\016RS"
-      "houlderPitch\020\004\022\022\n\016LShoulderPitch\020\005\022\016\n\nRE"
-      "lbowRoll\020\006\022\016\n\nLElbowRoll\020\007\022\r\n\tRElbowYaw\020"
-      "\010\022\r\n\tLElbowYaw\020\t\022\020\n\014RHipYawPitch\020\n\022\020\n\014LH"
-      "ipYawPitch\020\013\022\r\n\tRHipPitch\020\014\022\r\n\tLHipPitch"
-      "\020\r\022\014\n\010RHipRoll\020\016\022\014\n\010LHipRoll\020\017\022\016\n\nRKneeP"
-      "itch\020\020\022\016\n\nLKneePitch\020\021\022\017\n\013RAnklePitch\020\022\022"
-      "\017\n\013LAnklePitch\020\023\022\016\n\nRAnkleRoll\020\024\022\016\n\nLAnk"
-      "leRoll\020\025\022\r\n\tLWristYaw\020\026\022\r\n\tRWristYaw\020\027\022\t"
-      "\n\005LHand\020\030\022\t\n\005RHand\020\031B\033\n\031de.naoth.rc.core"
-      ".messages"
+      "DoubleVector\022\t\n\001v\030\001 \003(\001\">\n\020DoubleQuatern"
+      "ion\022\t\n\001x\030\001 \002(\001\022\t\n\001y\030\002 \002(\001\022\t\n\001z\030\003 \002(\001\022\t\n\001"
+      "w\030\004 \002(\001\"\251\001\n\006Pose3D\0221\n\013translation\030\001 \002(\0132"
+      "\034.naothmessages.DoubleVector3\022.\n\010rotatio"
+      "n\030\002 \003(\0132\034.naothmessages.DoubleVector3\022<\n"
+      "\023rotation_quaternion\030\003 \001(\0132\037.naothmessag"
+      "es.DoubleQuaternion\"z\n\013LineSegment\022*\n\004ba"
+      "se\030\001 \002(\0132\034.naothmessages.DoubleVector2\022/"
+      "\n\tdirection\030\002 \002(\0132\034.naothmessages.Double"
+      "Vector2\022\016\n\006length\030\003 \002(\001*\220\001\n\005Color\022\010\n\004non"
+      "e\020\000\022\n\n\006orange\020\001\022\n\n\006yellow\020\002\022\013\n\007skyblue\020\003"
+      "\022\t\n\005white\020\004\022\007\n\003red\020\005\022\010\n\004blue\020\006\022\t\n\005green\020"
+      "\007\022\t\n\005black\020\010\022\010\n\004pink\020\t\022\010\n\004gray\020\n\022\020\n\014yell"
+      "owOrange\020\013*\037\n\010CameraID\022\007\n\003top\020\000\022\n\n\006botto"
+      "m\020\001*\245\003\n\007JointID\022\r\n\tHeadPitch\020\000\022\013\n\007HeadYa"
+      "w\020\001\022\021\n\rRShoulderRoll\020\002\022\021\n\rLShoulderRoll\020"
+      "\003\022\022\n\016RShoulderPitch\020\004\022\022\n\016LShoulderPitch\020"
+      "\005\022\016\n\nRElbowRoll\020\006\022\016\n\nLElbowRoll\020\007\022\r\n\tREl"
+      "bowYaw\020\010\022\r\n\tLElbowYaw\020\t\022\020\n\014RHipYawPitch\020"
+      "\n\022\020\n\014LHipYawPitch\020\013\022\r\n\tRHipPitch\020\014\022\r\n\tLH"
+      "ipPitch\020\r\022\014\n\010RHipRoll\020\016\022\014\n\010LHipRoll\020\017\022\016\n"
+      "\nRKneePitch\020\020\022\016\n\nLKneePitch\020\021\022\017\n\013RAnkleP"
+      "itch\020\022\022\017\n\013LAnklePitch\020\023\022\016\n\nRAnkleRoll\020\024\022"
+      "\016\n\nLAnkleRoll\020\025\022\r\n\tLWristYaw\020\026\022\r\n\tRWrist"
+      "Yaw\020\027\022\t\n\005LHand\020\030\022\t\n\005RHand\020\031B\033\n\031de.naoth."
+      "rc.core.messages"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 1169);
+      descriptor, 1296);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "CommonTypes.proto", &protobuf_RegisterTypes);
 }
@@ -2533,8 +2563,486 @@ DoubleVector::mutable_v() {
 // ===================================================================
 
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
+const int DoubleQuaternion::kXFieldNumber;
+const int DoubleQuaternion::kYFieldNumber;
+const int DoubleQuaternion::kZFieldNumber;
+const int DoubleQuaternion::kWFieldNumber;
+#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+
+DoubleQuaternion::DoubleQuaternion()
+  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
+  if (GOOGLE_PREDICT_TRUE(this != internal_default_instance())) {
+    protobuf_CommonTypes_2eproto::InitDefaults();
+  }
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:naothmessages.DoubleQuaternion)
+}
+DoubleQuaternion::DoubleQuaternion(const DoubleQuaternion& from)
+  : ::google::protobuf::Message(),
+      _internal_metadata_(NULL),
+      _has_bits_(from._has_bits_),
+      _cached_size_(0) {
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  ::memcpy(&x_, &from.x_,
+    static_cast<size_t>(reinterpret_cast<char*>(&w_) -
+    reinterpret_cast<char*>(&x_)) + sizeof(w_));
+  // @@protoc_insertion_point(copy_constructor:naothmessages.DoubleQuaternion)
+}
+
+void DoubleQuaternion::SharedCtor() {
+  _cached_size_ = 0;
+  ::memset(&x_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&w_) -
+      reinterpret_cast<char*>(&x_)) + sizeof(w_));
+}
+
+DoubleQuaternion::~DoubleQuaternion() {
+  // @@protoc_insertion_point(destructor:naothmessages.DoubleQuaternion)
+  SharedDtor();
+}
+
+void DoubleQuaternion::SharedDtor() {
+}
+
+void DoubleQuaternion::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* DoubleQuaternion::descriptor() {
+  protobuf_CommonTypes_2eproto::protobuf_AssignDescriptorsOnce();
+  return protobuf_CommonTypes_2eproto::file_level_metadata[kIndexInFileMessages].descriptor;
+}
+
+const DoubleQuaternion& DoubleQuaternion::default_instance() {
+  protobuf_CommonTypes_2eproto::InitDefaults();
+  return *internal_default_instance();
+}
+
+DoubleQuaternion* DoubleQuaternion::New(::google::protobuf::Arena* arena) const {
+  DoubleQuaternion* n = new DoubleQuaternion;
+  if (arena != NULL) {
+    arena->Own(n);
+  }
+  return n;
+}
+
+void DoubleQuaternion::Clear() {
+// @@protoc_insertion_point(message_clear_start:naothmessages.DoubleQuaternion)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _has_bits_[0];
+  if (cached_has_bits & 15u) {
+    ::memset(&x_, 0, static_cast<size_t>(
+        reinterpret_cast<char*>(&w_) -
+        reinterpret_cast<char*>(&x_)) + sizeof(w_));
+  }
+  _has_bits_.Clear();
+  _internal_metadata_.Clear();
+}
+
+bool DoubleQuaternion::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:naothmessages.DoubleQuaternion)
+  for (;;) {
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // required double x = 1;
+      case 1: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(9u /* 9 & 0xFF */)) {
+          set_has_x();
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 input, &x_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // required double y = 2;
+      case 2: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(17u /* 17 & 0xFF */)) {
+          set_has_y();
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 input, &y_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // required double z = 3;
+      case 3: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(25u /* 25 & 0xFF */)) {
+          set_has_z();
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 input, &z_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // required double w = 4;
+      case 4: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(33u /* 33 & 0xFF */)) {
+          set_has_w();
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 input, &w_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, _internal_metadata_.mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+success:
+  // @@protoc_insertion_point(parse_success:naothmessages.DoubleQuaternion)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:naothmessages.DoubleQuaternion)
+  return false;
+#undef DO_
+}
+
+void DoubleQuaternion::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:naothmessages.DoubleQuaternion)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  cached_has_bits = _has_bits_[0];
+  // required double x = 1;
+  if (cached_has_bits & 0x00000001u) {
+    ::google::protobuf::internal::WireFormatLite::WriteDouble(1, this->x(), output);
+  }
+
+  // required double y = 2;
+  if (cached_has_bits & 0x00000002u) {
+    ::google::protobuf::internal::WireFormatLite::WriteDouble(2, this->y(), output);
+  }
+
+  // required double z = 3;
+  if (cached_has_bits & 0x00000004u) {
+    ::google::protobuf::internal::WireFormatLite::WriteDouble(3, this->z(), output);
+  }
+
+  // required double w = 4;
+  if (cached_has_bits & 0x00000008u) {
+    ::google::protobuf::internal::WireFormatLite::WriteDouble(4, this->w(), output);
+  }
+
+  if (_internal_metadata_.have_unknown_fields()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        _internal_metadata_.unknown_fields(), output);
+  }
+  // @@protoc_insertion_point(serialize_end:naothmessages.DoubleQuaternion)
+}
+
+::google::protobuf::uint8* DoubleQuaternion::InternalSerializeWithCachedSizesToArray(
+    bool deterministic, ::google::protobuf::uint8* target) const {
+  (void)deterministic; // Unused
+  // @@protoc_insertion_point(serialize_to_array_start:naothmessages.DoubleQuaternion)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  cached_has_bits = _has_bits_[0];
+  // required double x = 1;
+  if (cached_has_bits & 0x00000001u) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(1, this->x(), target);
+  }
+
+  // required double y = 2;
+  if (cached_has_bits & 0x00000002u) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(2, this->y(), target);
+  }
+
+  // required double z = 3;
+  if (cached_has_bits & 0x00000004u) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(3, this->z(), target);
+  }
+
+  // required double w = 4;
+  if (cached_has_bits & 0x00000008u) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(4, this->w(), target);
+  }
+
+  if (_internal_metadata_.have_unknown_fields()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields(), target);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:naothmessages.DoubleQuaternion)
+  return target;
+}
+
+size_t DoubleQuaternion::RequiredFieldsByteSizeFallback() const {
+// @@protoc_insertion_point(required_fields_byte_size_fallback_start:naothmessages.DoubleQuaternion)
+  size_t total_size = 0;
+
+  if (has_x()) {
+    // required double x = 1;
+    total_size += 1 + 8;
+  }
+
+  if (has_y()) {
+    // required double y = 2;
+    total_size += 1 + 8;
+  }
+
+  if (has_z()) {
+    // required double z = 3;
+    total_size += 1 + 8;
+  }
+
+  if (has_w()) {
+    // required double w = 4;
+    total_size += 1 + 8;
+  }
+
+  return total_size;
+}
+size_t DoubleQuaternion::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:naothmessages.DoubleQuaternion)
+  size_t total_size = 0;
+
+  if (_internal_metadata_.have_unknown_fields()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        _internal_metadata_.unknown_fields());
+  }
+  if (((_has_bits_[0] & 0x0000000f) ^ 0x0000000f) == 0) {  // All required fields are present.
+    // required double x = 1;
+    total_size += 1 + 8;
+
+    // required double y = 2;
+    total_size += 1 + 8;
+
+    // required double z = 3;
+    total_size += 1 + 8;
+
+    // required double w = 4;
+    total_size += 1 + 8;
+
+  } else {
+    total_size += RequiredFieldsByteSizeFallback();
+  }
+  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = cached_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void DoubleQuaternion::MergeFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:naothmessages.DoubleQuaternion)
+  GOOGLE_DCHECK_NE(&from, this);
+  const DoubleQuaternion* source =
+      ::google::protobuf::internal::DynamicCastToGenerated<const DoubleQuaternion>(
+          &from);
+  if (source == NULL) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:naothmessages.DoubleQuaternion)
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:naothmessages.DoubleQuaternion)
+    MergeFrom(*source);
+  }
+}
+
+void DoubleQuaternion::MergeFrom(const DoubleQuaternion& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:naothmessages.DoubleQuaternion)
+  GOOGLE_DCHECK_NE(&from, this);
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  cached_has_bits = from._has_bits_[0];
+  if (cached_has_bits & 15u) {
+    if (cached_has_bits & 0x00000001u) {
+      x_ = from.x_;
+    }
+    if (cached_has_bits & 0x00000002u) {
+      y_ = from.y_;
+    }
+    if (cached_has_bits & 0x00000004u) {
+      z_ = from.z_;
+    }
+    if (cached_has_bits & 0x00000008u) {
+      w_ = from.w_;
+    }
+    _has_bits_[0] |= cached_has_bits;
+  }
+}
+
+void DoubleQuaternion::CopyFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:naothmessages.DoubleQuaternion)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void DoubleQuaternion::CopyFrom(const DoubleQuaternion& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:naothmessages.DoubleQuaternion)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool DoubleQuaternion::IsInitialized() const {
+  if ((_has_bits_[0] & 0x0000000f) != 0x0000000f) return false;
+  return true;
+}
+
+void DoubleQuaternion::Swap(DoubleQuaternion* other) {
+  if (other == this) return;
+  InternalSwap(other);
+}
+void DoubleQuaternion::InternalSwap(DoubleQuaternion* other) {
+  using std::swap;
+  swap(x_, other->x_);
+  swap(y_, other->y_);
+  swap(z_, other->z_);
+  swap(w_, other->w_);
+  swap(_has_bits_[0], other->_has_bits_[0]);
+  _internal_metadata_.Swap(&other->_internal_metadata_);
+  swap(_cached_size_, other->_cached_size_);
+}
+
+::google::protobuf::Metadata DoubleQuaternion::GetMetadata() const {
+  protobuf_CommonTypes_2eproto::protobuf_AssignDescriptorsOnce();
+  return protobuf_CommonTypes_2eproto::file_level_metadata[kIndexInFileMessages];
+}
+
+#if PROTOBUF_INLINE_NOT_IN_HEADERS
+// DoubleQuaternion
+
+// required double x = 1;
+bool DoubleQuaternion::has_x() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+void DoubleQuaternion::set_has_x() {
+  _has_bits_[0] |= 0x00000001u;
+}
+void DoubleQuaternion::clear_has_x() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+void DoubleQuaternion::clear_x() {
+  x_ = 0;
+  clear_has_x();
+}
+double DoubleQuaternion::x() const {
+  // @@protoc_insertion_point(field_get:naothmessages.DoubleQuaternion.x)
+  return x_;
+}
+void DoubleQuaternion::set_x(double value) {
+  set_has_x();
+  x_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.DoubleQuaternion.x)
+}
+
+// required double y = 2;
+bool DoubleQuaternion::has_y() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+void DoubleQuaternion::set_has_y() {
+  _has_bits_[0] |= 0x00000002u;
+}
+void DoubleQuaternion::clear_has_y() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+void DoubleQuaternion::clear_y() {
+  y_ = 0;
+  clear_has_y();
+}
+double DoubleQuaternion::y() const {
+  // @@protoc_insertion_point(field_get:naothmessages.DoubleQuaternion.y)
+  return y_;
+}
+void DoubleQuaternion::set_y(double value) {
+  set_has_y();
+  y_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.DoubleQuaternion.y)
+}
+
+// required double z = 3;
+bool DoubleQuaternion::has_z() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+void DoubleQuaternion::set_has_z() {
+  _has_bits_[0] |= 0x00000004u;
+}
+void DoubleQuaternion::clear_has_z() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+void DoubleQuaternion::clear_z() {
+  z_ = 0;
+  clear_has_z();
+}
+double DoubleQuaternion::z() const {
+  // @@protoc_insertion_point(field_get:naothmessages.DoubleQuaternion.z)
+  return z_;
+}
+void DoubleQuaternion::set_z(double value) {
+  set_has_z();
+  z_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.DoubleQuaternion.z)
+}
+
+// required double w = 4;
+bool DoubleQuaternion::has_w() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+void DoubleQuaternion::set_has_w() {
+  _has_bits_[0] |= 0x00000008u;
+}
+void DoubleQuaternion::clear_has_w() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+void DoubleQuaternion::clear_w() {
+  w_ = 0;
+  clear_has_w();
+}
+double DoubleQuaternion::w() const {
+  // @@protoc_insertion_point(field_get:naothmessages.DoubleQuaternion.w)
+  return w_;
+}
+void DoubleQuaternion::set_w(double value) {
+  set_has_w();
+  w_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.DoubleQuaternion.w)
+}
+
+#endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
+
+// ===================================================================
+
+#if !defined(_MSC_VER) || _MSC_VER >= 1900
 const int Pose3D::kTranslationFieldNumber;
 const int Pose3D::kRotationFieldNumber;
+const int Pose3D::kRotationQuaternionFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 Pose3D::Pose3D()
@@ -2557,12 +3065,19 @@ Pose3D::Pose3D(const Pose3D& from)
   } else {
     translation_ = NULL;
   }
+  if (from.has_rotation_quaternion()) {
+    rotation_quaternion_ = new ::naothmessages::DoubleQuaternion(*from.rotation_quaternion_);
+  } else {
+    rotation_quaternion_ = NULL;
+  }
   // @@protoc_insertion_point(copy_constructor:naothmessages.Pose3D)
 }
 
 void Pose3D::SharedCtor() {
   _cached_size_ = 0;
-  translation_ = NULL;
+  ::memset(&translation_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&rotation_quaternion_) -
+      reinterpret_cast<char*>(&translation_)) + sizeof(rotation_quaternion_));
 }
 
 Pose3D::~Pose3D() {
@@ -2572,6 +3087,7 @@ Pose3D::~Pose3D() {
 
 void Pose3D::SharedDtor() {
   if (this != internal_default_instance()) delete translation_;
+  if (this != internal_default_instance()) delete rotation_quaternion_;
 }
 
 void Pose3D::SetCachedSize(int size) const {
@@ -2604,9 +3120,16 @@ void Pose3D::Clear() {
   (void) cached_has_bits;
 
   rotation_.Clear();
-  if (has_translation()) {
-    GOOGLE_DCHECK(translation_ != NULL);
-    translation_->::naothmessages::DoubleVector3::Clear();
+  cached_has_bits = _has_bits_[0];
+  if (cached_has_bits & 3u) {
+    if (cached_has_bits & 0x00000001u) {
+      GOOGLE_DCHECK(translation_ != NULL);
+      translation_->::naothmessages::DoubleVector3::Clear();
+    }
+    if (cached_has_bits & 0x00000002u) {
+      GOOGLE_DCHECK(rotation_quaternion_ != NULL);
+      rotation_quaternion_->::naothmessages::DoubleQuaternion::Clear();
+    }
   }
   _has_bits_.Clear();
   _internal_metadata_.Clear();
@@ -2640,6 +3163,18 @@ bool Pose3D::MergePartialFromCodedStream(
             static_cast< ::google::protobuf::uint8>(18u /* 18 & 0xFF */)) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                 input, add_rotation()));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // optional .naothmessages.DoubleQuaternion rotation_quaternion = 3;
+      case 3: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(26u /* 26 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_rotation_quaternion()));
         } else {
           goto handle_unusual;
         }
@@ -2686,6 +3221,12 @@ void Pose3D::SerializeWithCachedSizes(
       2, this->rotation(static_cast<int>(i)), output);
   }
 
+  // optional .naothmessages.DoubleQuaternion rotation_quaternion = 3;
+  if (cached_has_bits & 0x00000002u) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      3, *this->rotation_quaternion_, output);
+  }
+
   if (_internal_metadata_.have_unknown_fields()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         _internal_metadata_.unknown_fields(), output);
@@ -2714,6 +3255,13 @@ void Pose3D::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageNoVirtualToArray(
         2, this->rotation(static_cast<int>(i)), deterministic, target);
+  }
+
+  // optional .naothmessages.DoubleQuaternion rotation_quaternion = 3;
+  if (cached_has_bits & 0x00000002u) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageNoVirtualToArray(
+        3, *this->rotation_quaternion_, deterministic, target);
   }
 
   if (_internal_metadata_.have_unknown_fields()) {
@@ -2750,6 +3298,13 @@ size_t Pose3D::ByteSizeLong() const {
     }
   }
 
+  // optional .naothmessages.DoubleQuaternion rotation_quaternion = 3;
+  if (has_rotation_quaternion()) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+        *this->rotation_quaternion_);
+  }
+
   int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
   GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
   _cached_size_ = cached_size;
@@ -2780,8 +3335,14 @@ void Pose3D::MergeFrom(const Pose3D& from) {
   (void) cached_has_bits;
 
   rotation_.MergeFrom(from.rotation_);
-  if (from.has_translation()) {
-    mutable_translation()->::naothmessages::DoubleVector3::MergeFrom(from.translation());
+  cached_has_bits = from._has_bits_[0];
+  if (cached_has_bits & 3u) {
+    if (cached_has_bits & 0x00000001u) {
+      mutable_translation()->::naothmessages::DoubleVector3::MergeFrom(from.translation());
+    }
+    if (cached_has_bits & 0x00000002u) {
+      mutable_rotation_quaternion()->::naothmessages::DoubleQuaternion::MergeFrom(from.rotation_quaternion());
+    }
   }
 }
 
@@ -2805,6 +3366,9 @@ bool Pose3D::IsInitialized() const {
   if (has_translation()) {
     if (!this->translation_->IsInitialized()) return false;
   }
+  if (has_rotation_quaternion()) {
+    if (!this->rotation_quaternion_->IsInitialized()) return false;
+  }
   return true;
 }
 
@@ -2816,6 +3380,7 @@ void Pose3D::InternalSwap(Pose3D* other) {
   using std::swap;
   rotation_.InternalSwap(&other->rotation_);
   swap(translation_, other->translation_);
+  swap(rotation_quaternion_, other->rotation_quaternion_);
   swap(_has_bits_[0], other->_has_bits_[0]);
   _internal_metadata_.Swap(&other->_internal_metadata_);
   swap(_cached_size_, other->_cached_size_);
@@ -2903,6 +3468,52 @@ const ::google::protobuf::RepeatedPtrField< ::naothmessages::DoubleVector3 >&
 Pose3D::rotation() const {
   // @@protoc_insertion_point(field_list:naothmessages.Pose3D.rotation)
   return rotation_;
+}
+
+// optional .naothmessages.DoubleQuaternion rotation_quaternion = 3;
+bool Pose3D::has_rotation_quaternion() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+void Pose3D::set_has_rotation_quaternion() {
+  _has_bits_[0] |= 0x00000002u;
+}
+void Pose3D::clear_has_rotation_quaternion() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+void Pose3D::clear_rotation_quaternion() {
+  if (rotation_quaternion_ != NULL) rotation_quaternion_->::naothmessages::DoubleQuaternion::Clear();
+  clear_has_rotation_quaternion();
+}
+const ::naothmessages::DoubleQuaternion& Pose3D::rotation_quaternion() const {
+  const ::naothmessages::DoubleQuaternion* p = rotation_quaternion_;
+  // @@protoc_insertion_point(field_get:naothmessages.Pose3D.rotation_quaternion)
+  return p != NULL ? *p : *reinterpret_cast<const ::naothmessages::DoubleQuaternion*>(
+      &::naothmessages::_DoubleQuaternion_default_instance_);
+}
+::naothmessages::DoubleQuaternion* Pose3D::mutable_rotation_quaternion() {
+  set_has_rotation_quaternion();
+  if (rotation_quaternion_ == NULL) {
+    rotation_quaternion_ = new ::naothmessages::DoubleQuaternion;
+  }
+  // @@protoc_insertion_point(field_mutable:naothmessages.Pose3D.rotation_quaternion)
+  return rotation_quaternion_;
+}
+::naothmessages::DoubleQuaternion* Pose3D::release_rotation_quaternion() {
+  // @@protoc_insertion_point(field_release:naothmessages.Pose3D.rotation_quaternion)
+  clear_has_rotation_quaternion();
+  ::naothmessages::DoubleQuaternion* temp = rotation_quaternion_;
+  rotation_quaternion_ = NULL;
+  return temp;
+}
+void Pose3D::set_allocated_rotation_quaternion(::naothmessages::DoubleQuaternion* rotation_quaternion) {
+  delete rotation_quaternion_;
+  rotation_quaternion_ = rotation_quaternion;
+  if (rotation_quaternion) {
+    set_has_rotation_quaternion();
+  } else {
+    clear_has_rotation_quaternion();
+  }
+  // @@protoc_insertion_point(field_set_allocated:naothmessages.Pose3D.rotation_quaternion)
 }
 
 #endif  // PROTOBUF_INLINE_NOT_IN_HEADERS

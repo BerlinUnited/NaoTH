@@ -202,10 +202,18 @@ public final class FrameworkRepresentations {
     public enum Format
         implements com.google.protobuf.ProtocolMessageEnum {
       /**
+       * <pre>
+       * YUV 4:4:4, 3 bytes per pixel interleaved
+       * </pre>
+       *
        * <code>YUV = 0;</code>
        */
       YUV(0),
       /**
+       * <pre>
+       * YUYV, 2 bytes per pixel interleaved (NAO robots)
+       * </pre>
+       *
        * <code>YUV422 = 1;</code>
        */
       YUV422(1),
@@ -213,13 +221,29 @@ public final class FrameworkRepresentations {
        * <code>JPEG = 2;</code>
        */
       JPEG(2),
+      /**
+       * <pre>
+       * YUV 4:2:0 semi-planar, UV interleaved (NV12) (Booster K1, 2026)
+       * </pre>
+       *
+       * <code>YUV420_NV12 = 3;</code>
+       */
+      YUV420_NV12(3),
       ;
 
       /**
+       * <pre>
+       * YUV 4:4:4, 3 bytes per pixel interleaved
+       * </pre>
+       *
        * <code>YUV = 0;</code>
        */
       public static final int YUV_VALUE = 0;
       /**
+       * <pre>
+       * YUYV, 2 bytes per pixel interleaved (NAO robots)
+       * </pre>
+       *
        * <code>YUV422 = 1;</code>
        */
       public static final int YUV422_VALUE = 1;
@@ -227,6 +251,14 @@ public final class FrameworkRepresentations {
        * <code>JPEG = 2;</code>
        */
       public static final int JPEG_VALUE = 2;
+      /**
+       * <pre>
+       * YUV 4:2:0 semi-planar, UV interleaved (NV12) (Booster K1, 2026)
+       * </pre>
+       *
+       * <code>YUV420_NV12 = 3;</code>
+       */
+      public static final int YUV420_NV12_VALUE = 3;
 
 
       public final int getNumber() {
@@ -246,6 +278,7 @@ public final class FrameworkRepresentations {
           case 0: return YUV;
           case 1: return YUV422;
           case 2: return JPEG;
+          case 3: return YUV420_NV12;
           default: return null;
         }
       }
@@ -13648,6 +13681,697 @@ public final class FrameworkRepresentations {
 
   }
 
+  public interface HeadPoseOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:naothmessages.HeadPose)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>required .naothmessages.Pose3D pose = 1;</code>
+     */
+    boolean hasPose();
+    /**
+     * <code>required .naothmessages.Pose3D pose = 1;</code>
+     */
+    de.naoth.rc.core.messages.CommonTypes.Pose3D getPose();
+    /**
+     * <code>required .naothmessages.Pose3D pose = 1;</code>
+     */
+    de.naoth.rc.core.messages.CommonTypes.Pose3DOrBuilder getPoseOrBuilder();
+
+    /**
+     * <code>optional uint64 timestamp = 2;</code>
+     */
+    boolean hasTimestamp();
+    /**
+     * <code>optional uint64 timestamp = 2;</code>
+     */
+    long getTimestamp();
+  }
+  /**
+   * Protobuf type {@code naothmessages.HeadPose}
+   */
+  public  static final class HeadPose extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:naothmessages.HeadPose)
+      HeadPoseOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use HeadPose.newBuilder() to construct.
+    private HeadPose(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private HeadPose() {
+      timestamp_ = 0L;
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private HeadPose(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              de.naoth.rc.core.messages.CommonTypes.Pose3D.Builder subBuilder = null;
+              if (((bitField0_ & 0x00000001) == 0x00000001)) {
+                subBuilder = pose_.toBuilder();
+              }
+              pose_ = input.readMessage(de.naoth.rc.core.messages.CommonTypes.Pose3D.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(pose_);
+                pose_ = subBuilder.buildPartial();
+              }
+              bitField0_ |= 0x00000001;
+              break;
+            }
+            case 16: {
+              bitField0_ |= 0x00000002;
+              timestamp_ = input.readUInt64();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return de.naoth.rc.core.messages.FrameworkRepresentations.internal_static_naothmessages_HeadPose_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return de.naoth.rc.core.messages.FrameworkRepresentations.internal_static_naothmessages_HeadPose_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              de.naoth.rc.core.messages.FrameworkRepresentations.HeadPose.class, de.naoth.rc.core.messages.FrameworkRepresentations.HeadPose.Builder.class);
+    }
+
+    private int bitField0_;
+    public static final int POSE_FIELD_NUMBER = 1;
+    private de.naoth.rc.core.messages.CommonTypes.Pose3D pose_;
+    /**
+     * <code>required .naothmessages.Pose3D pose = 1;</code>
+     */
+    public boolean hasPose() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>required .naothmessages.Pose3D pose = 1;</code>
+     */
+    public de.naoth.rc.core.messages.CommonTypes.Pose3D getPose() {
+      return pose_ == null ? de.naoth.rc.core.messages.CommonTypes.Pose3D.getDefaultInstance() : pose_;
+    }
+    /**
+     * <code>required .naothmessages.Pose3D pose = 1;</code>
+     */
+    public de.naoth.rc.core.messages.CommonTypes.Pose3DOrBuilder getPoseOrBuilder() {
+      return pose_ == null ? de.naoth.rc.core.messages.CommonTypes.Pose3D.getDefaultInstance() : pose_;
+    }
+
+    public static final int TIMESTAMP_FIELD_NUMBER = 2;
+    private long timestamp_;
+    /**
+     * <code>optional uint64 timestamp = 2;</code>
+     */
+    public boolean hasTimestamp() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>optional uint64 timestamp = 2;</code>
+     */
+    public long getTimestamp() {
+      return timestamp_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      if (!hasPose()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!getPose().isInitialized()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeMessage(1, getPose());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeUInt64(2, timestamp_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(1, getPose());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt64Size(2, timestamp_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof de.naoth.rc.core.messages.FrameworkRepresentations.HeadPose)) {
+        return super.equals(obj);
+      }
+      de.naoth.rc.core.messages.FrameworkRepresentations.HeadPose other = (de.naoth.rc.core.messages.FrameworkRepresentations.HeadPose) obj;
+
+      boolean result = true;
+      result = result && (hasPose() == other.hasPose());
+      if (hasPose()) {
+        result = result && getPose()
+            .equals(other.getPose());
+      }
+      result = result && (hasTimestamp() == other.hasTimestamp());
+      if (hasTimestamp()) {
+        result = result && (getTimestamp()
+            == other.getTimestamp());
+      }
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (hasPose()) {
+        hash = (37 * hash) + POSE_FIELD_NUMBER;
+        hash = (53 * hash) + getPose().hashCode();
+      }
+      if (hasTimestamp()) {
+        hash = (37 * hash) + TIMESTAMP_FIELD_NUMBER;
+        hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+            getTimestamp());
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static de.naoth.rc.core.messages.FrameworkRepresentations.HeadPose parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static de.naoth.rc.core.messages.FrameworkRepresentations.HeadPose parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static de.naoth.rc.core.messages.FrameworkRepresentations.HeadPose parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static de.naoth.rc.core.messages.FrameworkRepresentations.HeadPose parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static de.naoth.rc.core.messages.FrameworkRepresentations.HeadPose parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static de.naoth.rc.core.messages.FrameworkRepresentations.HeadPose parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static de.naoth.rc.core.messages.FrameworkRepresentations.HeadPose parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static de.naoth.rc.core.messages.FrameworkRepresentations.HeadPose parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static de.naoth.rc.core.messages.FrameworkRepresentations.HeadPose parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static de.naoth.rc.core.messages.FrameworkRepresentations.HeadPose parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static de.naoth.rc.core.messages.FrameworkRepresentations.HeadPose parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static de.naoth.rc.core.messages.FrameworkRepresentations.HeadPose parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(de.naoth.rc.core.messages.FrameworkRepresentations.HeadPose prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code naothmessages.HeadPose}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:naothmessages.HeadPose)
+        de.naoth.rc.core.messages.FrameworkRepresentations.HeadPoseOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return de.naoth.rc.core.messages.FrameworkRepresentations.internal_static_naothmessages_HeadPose_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return de.naoth.rc.core.messages.FrameworkRepresentations.internal_static_naothmessages_HeadPose_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                de.naoth.rc.core.messages.FrameworkRepresentations.HeadPose.class, de.naoth.rc.core.messages.FrameworkRepresentations.HeadPose.Builder.class);
+      }
+
+      // Construct using de.naoth.rc.core.messages.FrameworkRepresentations.HeadPose.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+          getPoseFieldBuilder();
+        }
+      }
+      public Builder clear() {
+        super.clear();
+        if (poseBuilder_ == null) {
+          pose_ = null;
+        } else {
+          poseBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000001);
+        timestamp_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        return this;
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return de.naoth.rc.core.messages.FrameworkRepresentations.internal_static_naothmessages_HeadPose_descriptor;
+      }
+
+      public de.naoth.rc.core.messages.FrameworkRepresentations.HeadPose getDefaultInstanceForType() {
+        return de.naoth.rc.core.messages.FrameworkRepresentations.HeadPose.getDefaultInstance();
+      }
+
+      public de.naoth.rc.core.messages.FrameworkRepresentations.HeadPose build() {
+        de.naoth.rc.core.messages.FrameworkRepresentations.HeadPose result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public de.naoth.rc.core.messages.FrameworkRepresentations.HeadPose buildPartial() {
+        de.naoth.rc.core.messages.FrameworkRepresentations.HeadPose result = new de.naoth.rc.core.messages.FrameworkRepresentations.HeadPose(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        if (poseBuilder_ == null) {
+          result.pose_ = pose_;
+        } else {
+          result.pose_ = poseBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.timestamp_ = timestamp_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof de.naoth.rc.core.messages.FrameworkRepresentations.HeadPose) {
+          return mergeFrom((de.naoth.rc.core.messages.FrameworkRepresentations.HeadPose)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(de.naoth.rc.core.messages.FrameworkRepresentations.HeadPose other) {
+        if (other == de.naoth.rc.core.messages.FrameworkRepresentations.HeadPose.getDefaultInstance()) return this;
+        if (other.hasPose()) {
+          mergePose(other.getPose());
+        }
+        if (other.hasTimestamp()) {
+          setTimestamp(other.getTimestamp());
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        if (!hasPose()) {
+          return false;
+        }
+        if (!getPose().isInitialized()) {
+          return false;
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        de.naoth.rc.core.messages.FrameworkRepresentations.HeadPose parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (de.naoth.rc.core.messages.FrameworkRepresentations.HeadPose) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      private de.naoth.rc.core.messages.CommonTypes.Pose3D pose_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          de.naoth.rc.core.messages.CommonTypes.Pose3D, de.naoth.rc.core.messages.CommonTypes.Pose3D.Builder, de.naoth.rc.core.messages.CommonTypes.Pose3DOrBuilder> poseBuilder_;
+      /**
+       * <code>required .naothmessages.Pose3D pose = 1;</code>
+       */
+      public boolean hasPose() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>required .naothmessages.Pose3D pose = 1;</code>
+       */
+      public de.naoth.rc.core.messages.CommonTypes.Pose3D getPose() {
+        if (poseBuilder_ == null) {
+          return pose_ == null ? de.naoth.rc.core.messages.CommonTypes.Pose3D.getDefaultInstance() : pose_;
+        } else {
+          return poseBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>required .naothmessages.Pose3D pose = 1;</code>
+       */
+      public Builder setPose(de.naoth.rc.core.messages.CommonTypes.Pose3D value) {
+        if (poseBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          pose_ = value;
+          onChanged();
+        } else {
+          poseBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000001;
+        return this;
+      }
+      /**
+       * <code>required .naothmessages.Pose3D pose = 1;</code>
+       */
+      public Builder setPose(
+          de.naoth.rc.core.messages.CommonTypes.Pose3D.Builder builderForValue) {
+        if (poseBuilder_ == null) {
+          pose_ = builderForValue.build();
+          onChanged();
+        } else {
+          poseBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000001;
+        return this;
+      }
+      /**
+       * <code>required .naothmessages.Pose3D pose = 1;</code>
+       */
+      public Builder mergePose(de.naoth.rc.core.messages.CommonTypes.Pose3D value) {
+        if (poseBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) == 0x00000001) &&
+              pose_ != null &&
+              pose_ != de.naoth.rc.core.messages.CommonTypes.Pose3D.getDefaultInstance()) {
+            pose_ =
+              de.naoth.rc.core.messages.CommonTypes.Pose3D.newBuilder(pose_).mergeFrom(value).buildPartial();
+          } else {
+            pose_ = value;
+          }
+          onChanged();
+        } else {
+          poseBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000001;
+        return this;
+      }
+      /**
+       * <code>required .naothmessages.Pose3D pose = 1;</code>
+       */
+      public Builder clearPose() {
+        if (poseBuilder_ == null) {
+          pose_ = null;
+          onChanged();
+        } else {
+          poseBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000001);
+        return this;
+      }
+      /**
+       * <code>required .naothmessages.Pose3D pose = 1;</code>
+       */
+      public de.naoth.rc.core.messages.CommonTypes.Pose3D.Builder getPoseBuilder() {
+        bitField0_ |= 0x00000001;
+        onChanged();
+        return getPoseFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>required .naothmessages.Pose3D pose = 1;</code>
+       */
+      public de.naoth.rc.core.messages.CommonTypes.Pose3DOrBuilder getPoseOrBuilder() {
+        if (poseBuilder_ != null) {
+          return poseBuilder_.getMessageOrBuilder();
+        } else {
+          return pose_ == null ?
+              de.naoth.rc.core.messages.CommonTypes.Pose3D.getDefaultInstance() : pose_;
+        }
+      }
+      /**
+       * <code>required .naothmessages.Pose3D pose = 1;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          de.naoth.rc.core.messages.CommonTypes.Pose3D, de.naoth.rc.core.messages.CommonTypes.Pose3D.Builder, de.naoth.rc.core.messages.CommonTypes.Pose3DOrBuilder> 
+          getPoseFieldBuilder() {
+        if (poseBuilder_ == null) {
+          poseBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              de.naoth.rc.core.messages.CommonTypes.Pose3D, de.naoth.rc.core.messages.CommonTypes.Pose3D.Builder, de.naoth.rc.core.messages.CommonTypes.Pose3DOrBuilder>(
+                  getPose(),
+                  getParentForChildren(),
+                  isClean());
+          pose_ = null;
+        }
+        return poseBuilder_;
+      }
+
+      private long timestamp_ ;
+      /**
+       * <code>optional uint64 timestamp = 2;</code>
+       */
+      public boolean hasTimestamp() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>optional uint64 timestamp = 2;</code>
+       */
+      public long getTimestamp() {
+        return timestamp_;
+      }
+      /**
+       * <code>optional uint64 timestamp = 2;</code>
+       */
+      public Builder setTimestamp(long value) {
+        bitField0_ |= 0x00000002;
+        timestamp_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional uint64 timestamp = 2;</code>
+       */
+      public Builder clearTimestamp() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        timestamp_ = 0L;
+        onChanged();
+        return this;
+      }
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:naothmessages.HeadPose)
+    }
+
+    // @@protoc_insertion_point(class_scope:naothmessages.HeadPose)
+    private static final de.naoth.rc.core.messages.FrameworkRepresentations.HeadPose DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new de.naoth.rc.core.messages.FrameworkRepresentations.HeadPose();
+    }
+
+    public static de.naoth.rc.core.messages.FrameworkRepresentations.HeadPose getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    @java.lang.Deprecated public static final com.google.protobuf.Parser<HeadPose>
+        PARSER = new com.google.protobuf.AbstractParser<HeadPose>() {
+      public HeadPose parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+          return new HeadPose(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<HeadPose> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<HeadPose> getParserForType() {
+      return PARSER;
+    }
+
+    public de.naoth.rc.core.messages.FrameworkRepresentations.HeadPose getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_naothmessages_Image_descriptor;
   private static final 
@@ -13708,6 +14432,11 @@ public final class FrameworkRepresentations {
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_naothmessages_ButtonData_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_naothmessages_HeadPose_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_naothmessages_HeadPose_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -13718,60 +14447,62 @@ public final class FrameworkRepresentations {
   static {
     java.lang.String[] descriptorData = {
       "\n\037Framework-Representations.proto\022\rnaoth" +
-      "messages\032\021CommonTypes.proto\"\333\001\n\005Image\022\014\n" +
+      "messages\032\021CommonTypes.proto\"\354\001\n\005Image\022\014\n" +
       "\004data\030\001 \002(\014\022\022\n\005width\030\002 \001(\r:\003640\022\023\n\006heigh" +
       "t\030\003 \001(\r:\003480\022-\n\ncameraInfo\030\004 \001(\0132\031.naoth" +
       "messages.CameraInfo\0220\n\006format\030\005 \001(\0162\033.na" +
       "othmessages.Image.Format:\003YUV\022\021\n\ttimesta" +
-      "mp\030\006 \001(\r\"\'\n\006Format\022\007\n\003YUV\020\000\022\n\n\006YUV422\020\001\022" +
-      "\010\n\004JPEG\020\002\"\322\004\n\nCameraInfo\022\027\n\017resolutionWi" +
-      "dth\030\001 \002(\r\022\030\n\020resolutionHeight\030\002 \002(\r\0221\n\010c" +
-      "ameraID\030\004 \001(\0162\027.naothmessages.CameraID:\006",
-      "bottom\022\027\n\013focalLength\030\005 \001(\001B\002\030\001\022\035\n\021openi" +
-      "ngAngleWidth\030\006 \001(\001B\002\030\001\022\036\n\022openingAngleHe" +
-      "ight\030\007 \001(\001B\002\030\001\022\032\n\016opticalCenterX\030\010 \001(\001B\002" +
-      "\030\001\022\032\n\016opticalCenterY\030\t \001(\001B\002\030\001\022\020\n\004size\030\n" +
-      " \001(\003B\002\030\001\022\026\n\nmemorysize\030\013 \001(\003B\002\030\001\022\034\n\020came" +
-      "raRollOffset\030\014 \001(\001B\002\030\001\022\034\n\020cameraTiltOffs" +
-      "et\030\r \001(\001B\002\030\001\022:\n\020correctionOffset\030\022 \003(\0132\034" +
-      ".naothmessages.DoubleVector2B\002\030\001\0229\n\017head" +
-      "JointOffset\030\023 \003(\0132\034.naothmessages.Double" +
-      "Vector2B\002\030\001\0221\n\016transformation\030\016 \003(\0132\025.na",
-      "othmessages.Pose3DB\002\030\001\022\034\n\024openingAngleDi" +
-      "agonal\030\017 \001(\001\022\021\n\tpixelSize\030\020 \001(\001\022\r\n\005focus" +
-      "\030\021 \001(\001\"I\n\tJointData\022\020\n\010position\030\001 \003(\001\022\021\n" +
-      "\tstiffness\030\002 \003(\001\022\n\n\002dp\030\003 \003(\001\022\013\n\003ddp\030\004 \003(" +
-      "\001\"l\n\017SensorJointData\022+\n\tjointData\030\001 \002(\0132" +
-      "\030.naothmessages.JointData\022\023\n\013temperature" +
-      "\030\002 \003(\001\022\027\n\017electricCurrent\030\003 \003(\001\"i\n\025Ultra" +
-      "SoundReceiveData\022\032\n\022ultraSoundTimeStep\030\001" +
-      " \001(\r\022\017\n\007rawdata\030\002 \002(\001\022\020\n\010dataLeft\030\003 \003(\001\022" +
-      "\021\n\tdataRight\030\004 \003(\001\".\n\tFrameInfo\022\023\n\013frame",
-      "Number\030\001 \002(\r\022\014\n\004time\030\002 \002(\r\"}\n\tRobotInfo\022" +
-      "\020\n\010platform\030\001 \001(\t\022\024\n\014bodyNickName\030\002 \001(\t\022" +
-      "\016\n\006headId\030\003 \001(\t\022\016\n\006bodyId\030\004 \001(\t\022\025\n\rbasic" +
-      "TimeStep\030\005 \001(\r\022\021\n\trobotName\030\006 \001(\t\"=\n\007FSR" +
-      "Data\022\021\n\005force\030\001 \003(\001B\002\030\001\022\014\n\004data\030\002 \003(\001\022\021\n" +
-      "\005valid\030\003 \003(\010B\002\030\001\"\214\001\n\021AccelerometerData\022\034" +
-      "\n\020legacyPackedData\030\001 \003(\001B\002\030\001\022*\n\004data\030\002 \001" +
-      "(\0132\034.naothmessages.DoubleVector3\022-\n\007rawD" +
-      "ata\030\003 \001(\0132\034.naothmessages.DoubleVector3\"" +
-      "\225\001\n\rGyrometerData\022\034\n\020legacyPackedData\030\001 ",
-      "\003(\001B\002\030\001\022*\n\004data\030\002 \001(\0132\034.naothmessages.Do" +
-      "ubleVector3\022-\n\007rawData\030\003 \001(\0132\034.naothmess" +
-      "ages.DoubleVector3\022\013\n\003ref\030\004 \001(\001\"^\n\022Inert" +
-      "ialSensorData\022\034\n\020legacyPackedData\030\001 \003(\001B" +
-      "\002\030\001\022*\n\004data\030\002 \001(\0132\034.naothmessages.Double" +
-      "Vector2\"\323\002\n\nButtonData\022\021\n\tisPressed\030\001 \003(" +
-      "\010\022\032\n\022numOfFramesPressed\030\002 \003(\r\022\024\n\014eventCo" +
-      "unter\030\003 \003(\r\"\377\001\n\010ButtonID\022\t\n\005Chest\020\000\022\020\n\014L" +
-      "eftFootLeft\020\001\022\021\n\rLeftFootRight\020\002\022\021\n\rRigh" +
-      "tFootLeft\020\003\022\022\n\016RightFootRight\020\004\022\r\n\tHeadF",
-      "ront\020\005\022\016\n\nHeadMiddle\020\006\022\014\n\010HeadRear\020\007\022\020\n\014" +
-      "LeftHandBack\020\010\022\020\n\014LeftHandLeft\020\t\022\021\n\rLeft" +
-      "HandRight\020\n\022\021\n\rRightHandBack\020\013\022\021\n\rRightH" +
-      "andLeft\020\014\022\022\n\016RightHandRight\020\rB\033\n\031de.naot" +
-      "h.rc.core.messages"
+      "mp\030\006 \001(\r\"8\n\006Format\022\007\n\003YUV\020\000\022\n\n\006YUV422\020\001\022" +
+      "\010\n\004JPEG\020\002\022\017\n\013YUV420_NV12\020\003\"\322\004\n\nCameraInf" +
+      "o\022\027\n\017resolutionWidth\030\001 \002(\r\022\030\n\020resolution" +
+      "Height\030\002 \002(\r\0221\n\010cameraID\030\004 \001(\0162\027.naothme",
+      "ssages.CameraID:\006bottom\022\027\n\013focalLength\030\005" +
+      " \001(\001B\002\030\001\022\035\n\021openingAngleWidth\030\006 \001(\001B\002\030\001\022" +
+      "\036\n\022openingAngleHeight\030\007 \001(\001B\002\030\001\022\032\n\016optic" +
+      "alCenterX\030\010 \001(\001B\002\030\001\022\032\n\016opticalCenterY\030\t " +
+      "\001(\001B\002\030\001\022\020\n\004size\030\n \001(\003B\002\030\001\022\026\n\nmemorysize\030" +
+      "\013 \001(\003B\002\030\001\022\034\n\020cameraRollOffset\030\014 \001(\001B\002\030\001\022" +
+      "\034\n\020cameraTiltOffset\030\r \001(\001B\002\030\001\022:\n\020correct" +
+      "ionOffset\030\022 \003(\0132\034.naothmessages.DoubleVe" +
+      "ctor2B\002\030\001\0229\n\017headJointOffset\030\023 \003(\0132\034.nao" +
+      "thmessages.DoubleVector2B\002\030\001\0221\n\016transfor",
+      "mation\030\016 \003(\0132\025.naothmessages.Pose3DB\002\030\001\022" +
+      "\034\n\024openingAngleDiagonal\030\017 \001(\001\022\021\n\tpixelSi" +
+      "ze\030\020 \001(\001\022\r\n\005focus\030\021 \001(\001\"I\n\tJointData\022\020\n\010" +
+      "position\030\001 \003(\001\022\021\n\tstiffness\030\002 \003(\001\022\n\n\002dp\030" +
+      "\003 \003(\001\022\013\n\003ddp\030\004 \003(\001\"l\n\017SensorJointData\022+\n" +
+      "\tjointData\030\001 \002(\0132\030.naothmessages.JointDa" +
+      "ta\022\023\n\013temperature\030\002 \003(\001\022\027\n\017electricCurre" +
+      "nt\030\003 \003(\001\"i\n\025UltraSoundReceiveData\022\032\n\022ult" +
+      "raSoundTimeStep\030\001 \001(\r\022\017\n\007rawdata\030\002 \002(\001\022\020" +
+      "\n\010dataLeft\030\003 \003(\001\022\021\n\tdataRight\030\004 \003(\001\".\n\tF",
+      "rameInfo\022\023\n\013frameNumber\030\001 \002(\r\022\014\n\004time\030\002 " +
+      "\002(\r\"}\n\tRobotInfo\022\020\n\010platform\030\001 \001(\t\022\024\n\014bo" +
+      "dyNickName\030\002 \001(\t\022\016\n\006headId\030\003 \001(\t\022\016\n\006body" +
+      "Id\030\004 \001(\t\022\025\n\rbasicTimeStep\030\005 \001(\r\022\021\n\trobot" +
+      "Name\030\006 \001(\t\"=\n\007FSRData\022\021\n\005force\030\001 \003(\001B\002\030\001" +
+      "\022\014\n\004data\030\002 \003(\001\022\021\n\005valid\030\003 \003(\010B\002\030\001\"\214\001\n\021Ac" +
+      "celerometerData\022\034\n\020legacyPackedData\030\001 \003(" +
+      "\001B\002\030\001\022*\n\004data\030\002 \001(\0132\034.naothmessages.Doub" +
+      "leVector3\022-\n\007rawData\030\003 \001(\0132\034.naothmessag" +
+      "es.DoubleVector3\"\225\001\n\rGyrometerData\022\034\n\020le",
+      "gacyPackedData\030\001 \003(\001B\002\030\001\022*\n\004data\030\002 \001(\0132\034" +
+      ".naothmessages.DoubleVector3\022-\n\007rawData\030" +
+      "\003 \001(\0132\034.naothmessages.DoubleVector3\022\013\n\003r" +
+      "ef\030\004 \001(\001\"^\n\022InertialSensorData\022\034\n\020legacy" +
+      "PackedData\030\001 \003(\001B\002\030\001\022*\n\004data\030\002 \001(\0132\034.nao" +
+      "thmessages.DoubleVector2\"\323\002\n\nButtonData\022" +
+      "\021\n\tisPressed\030\001 \003(\010\022\032\n\022numOfFramesPressed" +
+      "\030\002 \003(\r\022\024\n\014eventCounter\030\003 \003(\r\"\377\001\n\010ButtonI" +
+      "D\022\t\n\005Chest\020\000\022\020\n\014LeftFootLeft\020\001\022\021\n\rLeftFo" +
+      "otRight\020\002\022\021\n\rRightFootLeft\020\003\022\022\n\016RightFoo",
+      "tRight\020\004\022\r\n\tHeadFront\020\005\022\016\n\nHeadMiddle\020\006\022" +
+      "\014\n\010HeadRear\020\007\022\020\n\014LeftHandBack\020\010\022\020\n\014LeftH" +
+      "andLeft\020\t\022\021\n\rLeftHandRight\020\n\022\021\n\rRightHan" +
+      "dBack\020\013\022\021\n\rRightHandLeft\020\014\022\022\n\016RightHandR" +
+      "ight\020\r\"B\n\010HeadPose\022#\n\004pose\030\001 \002(\0132\025.naoth" +
+      "messages.Pose3D\022\021\n\ttimestamp\030\002 \001(\004B\033\n\031de" +
+      ".naoth.rc.core.messages"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -13858,6 +14589,12 @@ public final class FrameworkRepresentations {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_naothmessages_ButtonData_descriptor,
         new java.lang.String[] { "IsPressed", "NumOfFramesPressed", "EventCounter", });
+    internal_static_naothmessages_HeadPose_descriptor =
+      getDescriptor().getMessageTypes().get(12);
+    internal_static_naothmessages_HeadPose_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_naothmessages_HeadPose_descriptor,
+        new java.lang.String[] { "Pose", "Timestamp", });
     de.naoth.rc.core.messages.CommonTypes.getDescriptor();
   }
 
