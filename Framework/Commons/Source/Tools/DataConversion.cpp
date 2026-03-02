@@ -46,7 +46,7 @@ void toMessage(const Vector3d& data, naothmessages::DoubleVector3& msg)
   msg.set_z(data.z);
 }
 
-void fromMessage(const naothmessages::DoubleVector3& msg, Vector3<double>& data)
+void fromMessage(const naothmessages::DoubleVector3& msg, Vector3d& data)
 {
   data.x = msg.x();
   data.y = msg.y();
@@ -76,8 +76,21 @@ void toMessage(const Pose3D& data, naothmessages::Pose3D& msg)
 void fromMessage(const naothmessages::Pose3D& msg, Pose3D& data)
 {
   fromMessage(msg.translation(), data.translation);
-  for(int i=0; i<3; i++) {
-    fromMessage(msg.rotation(i), data.rotation[i]);
+
+  if(msg.has_rotation_quaternion()) {
+    data.rotation = RotationMatrix::fromQuaternion({
+        msg.rotation_quaternion().x(),
+        msg.rotation_quaternion().y(),
+        msg.rotation_quaternion().z(),
+      }, 
+      msg.rotation_quaternion().w()
+    );
+    msg.rotation_quaternion();
+  } else {
+    ASSERT(msg.rotation_size() == 3);
+    for(int i=0; i < 3; i++) {
+      fromMessage(msg.rotation(i), data.rotation[i]);
+    }
   }
 }
 

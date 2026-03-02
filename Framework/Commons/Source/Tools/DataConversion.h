@@ -24,7 +24,7 @@ namespace DataConversion
 {
   // Vector2d
   void toMessage(const Vector2d& data, naothmessages::DoubleVector2& msg);
-  void fromMessage(const naothmessages::DoubleVector2& msg, Vector2<double>& data);
+  void fromMessage(const naothmessages::DoubleVector2& msg, Vector2d& data);
 
   // Vector2i
   void toMessage(const Vector2i &data, naothmessages::IntVector2& msg);
@@ -32,7 +32,7 @@ namespace DataConversion
 
   // Vector3d
   void toMessage(const Vector3d &data, naothmessages::DoubleVector3& msg);
-  void fromMessage(const naothmessages::DoubleVector3& msg, Vector3<double>& data);
+  void fromMessage(const naothmessages::DoubleVector3& msg, Vector3d& data);
 
   // Pose2D
   void toMessage(const Pose2D& data, naothmessages::Pose2D& msg);
