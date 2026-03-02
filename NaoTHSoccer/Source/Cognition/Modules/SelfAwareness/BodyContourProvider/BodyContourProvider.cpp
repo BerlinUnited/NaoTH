@@ -1,10 +1,11 @@
 /*
-*@file BodyContourProvider.h
+* @file BodyContourProvider.h
 * Module implementation for providing the robot's contour in the image. 
 * The Body Contour is used to exclude robot's limbs from image, so that they
 * couldn't be confused with other objects
 *
-*@author Kirill Yasinovskiy
+* @author Kirill Yasinovskiy
+* @author Heinrich Mellmann
 */
 
 #include "BodyContourProvider.h"
@@ -26,54 +27,54 @@ BodyContourProvider::BodyContourProvider()
 
   // load contour parameters
   // torso
-  bodyparts.torso.push_back(Vector3d(-60,  17, 80));
-  bodyparts.torso.push_back(Vector3d(-53,  45, 80));
-  bodyparts.torso.push_back(Vector3d(-35,  58, 100));
-  bodyparts.torso.push_back(Vector3d(-32,  75, 115));
-  bodyparts.torso.push_back(Vector3d( 32,  75, 115));
-  bodyparts.torso.push_back(Vector3d( 35,  58, 100));
-  bodyparts.torso.push_back(Vector3d( 51,  45, 80));
-  bodyparts.torso.push_back(Vector3d( 59,  17, 80));
-  bodyparts.torso.push_back(Vector3d( 59, -17, 80));
-  bodyparts.torso.push_back(Vector3d( 51, -45, 80));
-  bodyparts.torso.push_back(Vector3d( 35, -58, 100));
-  bodyparts.torso.push_back(Vector3d( 32, -75, 115));
-  bodyparts.torso.push_back(Vector3d(-32, -75, 115));
-  bodyparts.torso.push_back(Vector3d(-35, -58, 100));
-  bodyparts.torso.push_back(Vector3d(-53, -45, 80));
-  bodyparts.torso.push_back(Vector3d(-60, -17, 80));   
+  bodyparts.torso.push_back({-60,  17,  80});
+  bodyparts.torso.push_back({-53,  45,  80});
+  bodyparts.torso.push_back({-35,  58, 100});
+  bodyparts.torso.push_back({-32,  75, 115});
+  bodyparts.torso.push_back({ 32,  75, 115});
+  bodyparts.torso.push_back({ 35,  58, 100});
+  bodyparts.torso.push_back({ 51,  45,  80});
+  bodyparts.torso.push_back({ 59,  17,  80});
+  bodyparts.torso.push_back({ 59, -17,  80});
+  bodyparts.torso.push_back({ 51, -45,  80});
+  bodyparts.torso.push_back({ 35, -58, 100});
+  bodyparts.torso.push_back({ 32, -75, 115});
+  bodyparts.torso.push_back({-32, -75, 115});
+  bodyparts.torso.push_back({-35, -58, 100});
+  bodyparts.torso.push_back({-53, -45,  80});
+  bodyparts.torso.push_back({-60, -17,  80});   
   // upper arm
-  bodyparts.upperArm.push_back(Vector3d(  15,  -5, -60));
-  bodyparts.upperArm.push_back(Vector3d(  10,   5, -60));
-  bodyparts.upperArm.push_back(Vector3d( -25,   5, -40));
-  bodyparts.upperArm.push_back(Vector3d( -30,  25, -30));
-  bodyparts.upperArm.push_back(Vector3d( -40,  25, -10));
-  bodyparts.upperArm.push_back(Vector3d( -45,  20,   5));
-  bodyparts.upperArm.push_back(Vector3d( -35,  10,  30));
-  bodyparts.upperArm.push_back(Vector3d( -20, -10,  42));
-  bodyparts.upperArm.push_back(Vector3d(   0, -22,  47));
-  bodyparts.upperArm.push_back(Vector3d( 120, -22,  47));
+  bodyparts.upperArm.push_back({  15,  -5, -60});
+  bodyparts.upperArm.push_back({  10,   5, -60});
+  bodyparts.upperArm.push_back({ -25,   5, -40});
+  bodyparts.upperArm.push_back({ -30,  25, -30});
+  bodyparts.upperArm.push_back({ -40,  25, -10});
+  bodyparts.upperArm.push_back({ -45,  20,   5});
+  bodyparts.upperArm.push_back({ -35,  10,  30});
+  bodyparts.upperArm.push_back({ -20, -10,  42});
+  bodyparts.upperArm.push_back({   0, -22,  47});
+  bodyparts.upperArm.push_back({ 120, -22,  47});
   // lower arm
-  bodyparts.lowerArm.push_back(Vector3d(-20,  30, 25));
-  bodyparts.lowerArm.push_back(Vector3d(120,  30, 45));
-  bodyparts.lowerArm.push_back(Vector3d(120, -40, 40));
+  bodyparts.lowerArm.push_back({-20,  30, 25});
+  bodyparts.lowerArm.push_back({120,  30, 45});
+  bodyparts.lowerArm.push_back({120, -40, 40});
   // upper leg
-  bodyparts.upperLeg.push_back(Vector3d( 50,  30,    0));
-  bodyparts.upperLeg.push_back(Vector3d( 50,  50, -115));
-  bodyparts.upperLeg.push_back(Vector3d(-60,  45, -160));
-  bodyparts.upperLeg.push_back(Vector3d(-60, -38, -160));
-  bodyparts.upperLeg.push_back(Vector3d( 50, -42, -115));
-  bodyparts.upperLeg.push_back(Vector3d( 50, -30,    0));
+  bodyparts.upperLeg.push_back({ 50,  30,    0});
+  bodyparts.upperLeg.push_back({ 50,  50, -115});
+  bodyparts.upperLeg.push_back({-60,  45, -160});
+  bodyparts.upperLeg.push_back({-60, -38, -160});
+  bodyparts.upperLeg.push_back({ 50, -42, -115});
+  bodyparts.upperLeg.push_back({ 50, -30,    0});
   // lower leg
-  bodyparts.lowerLeg.push_back(Vector3d(50,  50, -115));
-  bodyparts.lowerLeg.push_back(Vector3d(50, -42, -115));
+  bodyparts.lowerLeg.push_back({50,  50, -115});
+  bodyparts.lowerLeg.push_back({50, -42, -115});
   // foot
-  bodyparts.foot.push_back(Vector3d(-20,  50, -35));
-  bodyparts.foot.push_back(Vector3d( 65,  50, -35));
-  bodyparts.foot.push_back(Vector3d(105,  20, -35));
-  bodyparts.foot.push_back(Vector3d(105, -20, -35));
-  bodyparts.foot.push_back(Vector3d( 80, -40, -35));
-  bodyparts.foot.push_back(Vector3d(-20, -40, -35));
+  bodyparts.foot.push_back({-20,  50, -35});
+  bodyparts.foot.push_back({ 65,  50, -35});
+  bodyparts.foot.push_back({105,  20, -35});
+  bodyparts.foot.push_back({105, -20, -35});
+  bodyparts.foot.push_back({ 80, -40, -35});
+  bodyparts.foot.push_back({-20, -40, -35});
   
   DEBUG_REQUEST_REGISTER("BodyContourProvider:draw_3d:feet", "draw 3D body contour of the feet", false);
   DEBUG_REQUEST_REGISTER("BodyContourProvider:draw_3d:legs", "draw 3D body contour of the legs", false);
@@ -83,6 +84,8 @@ BodyContourProvider::BodyContourProvider()
 
   DEBUG_REQUEST_REGISTER("BodyContourProvider:draw_projected_contour_lines", "draw body contour on the image based on lines", false);
   DEBUG_REQUEST_REGISTER("BodyContourProvider:draw_activated_cells", "draws activated cells", false);
+
+  getDebugParameterList().add(&params);
 }
 
 void BodyContourProvider::execute(CameraInfo::CameraID id)
@@ -107,8 +110,6 @@ void BodyContourProvider::execute(CameraInfo::CameraID id)
 
   // draw some debug stuff
   debug();
-
-  getDebugParameterList().add(&params);
 }// end execute
 
 

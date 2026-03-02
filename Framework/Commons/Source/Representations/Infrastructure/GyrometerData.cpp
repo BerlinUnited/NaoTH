@@ -1,4 +1,5 @@
-#include "Representations/Infrastructure/GyrometerData.h"
+
+#include "GyrometerData.h"
 #include "Messages/Framework-Representations.pb.h"
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 
