@@ -75,7 +75,7 @@ public:
 
   ~InputChanelAction()
   {
-    PRINT_DEBUG("destruct OutputChanelAction " << typeid(T).name());
+    PRINT_DEBUG("destruct InputChanelAction " << typeid(T).name());
   }
       
   void execute()
@@ -90,7 +90,7 @@ public:
       }
       std::stringstream ss(msg);
       ST::deserialize(ss, data);
-    }//end if
+    }
   }//end execute
 };//end class InputChanelAction
 

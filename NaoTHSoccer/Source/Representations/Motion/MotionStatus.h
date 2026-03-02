@@ -11,9 +11,11 @@
 
 #include "Tools/Math/Vector2.h"
 #include "Tools/Math/Pose2D.h"
-#include "Tools/DataStructures/Printable.h"
 #include "Request/MotionID.h"
 #include "Request/HeadMotionRequest.h"
+
+#include <Tools/DataStructures/Printable.h>
+#include <Tools/DataStructures/Serializer.h>
 
 #include <string>
 

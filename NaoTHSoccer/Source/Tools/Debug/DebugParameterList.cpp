@@ -96,10 +96,13 @@ void DebugParameterList::executeDebugCommand(
 
 void DebugParameterList::add(ParameterList* pl)
 {
+  ASSERT_MSG(paramlists.find(pl->getName()) == paramlists.end(), "ParameterList: " << pl->getName() << " already registered.");
   paramlists[pl->getName()] = pl;
 }
 
 void DebugParameterList::remove(ParameterList* pl)
 {
-  paramlists.erase(paramlists.find(pl->getName()));
+  ParameterMap::iterator listIterator = paramlists.find(pl->getName());
+  ASSERT_MSG(listIterator != paramlists.end(), "ParameterList: " << pl->getName() << " was not registered.");
+  paramlists.erase(listIterator);
 }

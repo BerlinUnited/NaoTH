@@ -20,7 +20,7 @@ namespace FileUtils
 static inline bool writeStringToFile(const std::string& content, const std::string& filename)
 {
   FILE* file = NULL;
-#ifdef WIN32
+#ifdef _WIN32
   fopen_s(&file, filename.c_str(), "wb");
 #else
   file = fopen(filename.c_str(), "wb");
