@@ -372,7 +372,8 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
 
 void Cognition::call()
 {
-  std::cout << "[Cognition] call" << std::endl;
+  // debug
+  //std::cout << "[Cognition] call" << std::endl;
 
   // BEGIN cognition frame rate measuring
   stopwatch.stop();
@@ -392,7 +393,8 @@ void Cognition::call()
     {
       std::string name(module->getModule()->getName());
       GT_TRACE("executing " << name);
-      std::cout << "[Cognition] executing " << name << std::endl;
+      // debug
+      //std::cout << "[Cognition] executing " << name << std::endl;
       module->execute();
     }
   }
