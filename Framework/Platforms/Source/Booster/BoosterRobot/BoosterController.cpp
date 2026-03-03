@@ -26,11 +26,6 @@ BoosterController::BoosterController()
     theRemoteCommandListener(NULL),
     theDebugServer(NULL)
 {
-  imageBridge.connectSocket();
-  if(imageBridge.hasError()) {
-    exit(-1);
-  }
-
   // init shared memory
   // sensor data
   //naoSensorData.open("/nao_sensor_data");
@@ -106,9 +101,12 @@ BoosterController::BoosterController()
   std::cout << "[BoosterController] " << "Init Platform" << endl;
   Platform::getInstance().init(this);
 
-  // create the teamcomm
-  std::cout << "[BoosterController] " << "Init TeamComm" << endl;
+  // shortcut for configuration
   const naoth::Configuration& config = naoth::Platform::getInstance().theConfiguration;
+
+  // create the teamcomm
+  /*
+  std::cout << "[BoosterController] " << "Init TeamComm" << endl;
   string interfaceName = "wlan0";
   if(config.hasKey("teamcomm", "interface"))
   {
@@ -120,6 +118,7 @@ BoosterController::BoosterController()
   theTeamCommListener = new UDPReceiver(teamcomm_port, TEAMCOMM_MAX_MSG_SIZE);
 
   theRemoteCommandListener = new UDPReceiver(10401, 4096);
+  */
 
   // start the debug server at the default debug port
   std::cout << "[NaoController] " << "Init DebugServer" << endl;
@@ -128,6 +127,7 @@ BoosterController::BoosterController()
   theDebugServer = new DebugServer();
   theDebugServer->start(static_cast<unsigned short>(debug_port));
   
+  /*
   string debugIp = "127.0.0.1";
   unsigned int debugPort = 10704;
   if(config.hasKey("TeamCommDebugger", "host"))
@@ -142,8 +142,13 @@ BoosterController::BoosterController()
 
   std::cout << "[BoosterController] " << "Init SPLGameController"<<endl;
   theGameController = new SPLGameController();
+  */
 
-  // TODO: camera things
+  // activate the image bridge
+  imageBridge.connectSocket();
+  if(imageBridge.hasError()) {
+    exit(-1);
+  }
 }
 
 BoosterController::~BoosterController()
