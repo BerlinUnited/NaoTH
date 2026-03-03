@@ -68,7 +68,7 @@ public:
     :
     PlatformDataInterface(environment)
   {
-    PRINT_DEBUG("[PlatformInterface] NaoTH " << getName() << " starting...");
+    PRINT_DEBUG("[PlatformInterface] NaoTH " << getPlatformName() << " starting...");
       
     //
     environment.channelActionCreator.setMessageQueueHandler(this);
