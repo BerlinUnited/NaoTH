@@ -98,6 +98,12 @@ BoosterController::BoosterController()
   // shortcut for configuration
   const naoth::Configuration& config = naoth::Platform::getInstance().theConfiguration;
 
+  /* 
+  * ------------
+  *   NETWORK
+  * ------------
+  */
+
   // create the teamcomm
   /*
   std::cout << "[BoosterController] " << "Init TeamComm" << endl;
@@ -138,6 +144,13 @@ BoosterController::BoosterController()
   theGameController = new SPLGameController();
   */
 
+
+  /* 
+  * ------------
+  *   Image
+  * ------------
+  */
+
   // activate the image bridge
   imageBridge.connectSocket();
   if(imageBridge.hasError()) {
@@ -149,9 +162,10 @@ BoosterController::~BoosterController()
 {
   std::cout << "[BoosterController] destruct" << std::endl;
 
+  delete theTeamCommDebugger;
   delete theTeamCommSender;
   delete theTeamCommListener;
-  delete theTeamCommDebugger;
+  delete theRemoteCommandListener;
   delete theGameController;
   delete theDebugServer;
 }

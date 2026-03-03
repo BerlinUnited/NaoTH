@@ -69,7 +69,6 @@ namespace naoth
 class BoosterController : public PlatformInterface
 {
 public:
-  int didx = 0;
 
   BoosterController();
   virtual ~BoosterController();
@@ -82,33 +81,27 @@ public:
   virtual unsigned int getBasicTimeStep() const { return robotInfo.basicTimeStep; }
 
   // camera stuff
-  void get(Image& data) { 
-    std::cout << "[BoosterController] Image" << std::endl;
+  void get(Image& data) {
     //imageBridge.readImage(data);
   }
-  void get(ImageTop& data) { 
-    std::cout << "[BoosterController] ImageTop" << std::endl;
+  void get(ImageTop& data) {
     imageBridge.readImage(data);
   }
 
   void get(CurrentCameraSettings& data) {
-    std::cout << "[BoosterController] CurrentCameraSettings" << std::endl;
     //theBottomCameraHandler.getCameraSettings(data);
   }
-  void get(CurrentCameraSettingsTop& data) { 
-    std::cout << "[BoosterController] CurrentCameraSettingsTop" << std::endl;
+  void get(CurrentCameraSettingsTop& data) {
     //theTopCameraHandler.getCameraSettings(data);
   }
 
   void set(const CameraSettingsRequest &request) {
-    std::cout << "[BoosterController] CameraSettingsRequest" << std::endl;
     // FIXME: CameraSettings are assembled and copied in every frame 
     //CameraSettings settings = request.getCameraSettings();
     //theBottomCameraHandler.setAllCameraParams(settings);
   }
 
   void set(const CameraSettingsRequestTop &request) {
-    std::cout << "[BoosterController] CameraSettingsRequestTop" << std::endl;
     // FIXME: CameraSettings are assembled and copied in every frame
     //CameraSettings settings = request.getCameraSettings();
     //theTopCameraHandler.setAllCameraParams(settings);
@@ -116,40 +109,34 @@ public:
 
   // sound
   void set(const SoundPlayData& data) {
-    std::cout << "[BoosterController] SoundPlayData" << std::endl;
     //theSoundHandler.setSoundData(data);
   }
 
   // teamcomm stuff
-  void get(TeamMessageDataIn& data) { 
-    std::cout << "[BoosterController] TeamMessageDataIn" << std::endl;
+  void get(TeamMessageDataIn& data) {
     if(theTeamCommListener != nullptr) { 
       theTeamCommListener->receive(data.data); 
     } 
   }
   void set(const TeamMessageDataOut& data) {
-    std::cout << "[BoosterController] TeamMessageDataOut" << std::endl;
     if(theTeamCommSender != nullptr) { 
       theTeamCommSender->send(data.data); 
     }
   }
 
-  void get(RemoteMessageDataIn& data) { 
-    std::cout << "[BoosterController] RemoteMessageDataIn" << std::endl;
+  void get(RemoteMessageDataIn& data) {
     if (theRemoteCommandListener != nullptr) {
       theRemoteCommandListener->receive(data.data); 
     }
   }
 
   // gamecontroller stuff
-  void get(GameData& data){ 
-    std::cout << "[BoosterController] GameData" << std::endl;
+  void get(GameData& data) {
     if(theGameController != nullptr) {
       theGameController->get(data); 
     }
   }
-  void set(const GameReturnData& data) { 
-    std::cout << "[BoosterController] GameReturnData" << std::endl;
+  void set(const GameReturnData& data) {
     if(theGameController != nullptr) {
       theGameController->set(data); 
     }
@@ -158,8 +145,6 @@ public:
   // team debug stuff
   void set(const TeamMessageDebug& data)
   {
-    std::cout << "[BoosterController] TeamMessageDebug" << std::endl;
-
     if(theTeamCommDebugger == nullptr) {
       return;
     }
@@ -176,57 +161,50 @@ public:
   }
 
   // debug comm
-  void get(DebugMessageInCognition& data) { 
-    std::cout << "[BoosterController] DebugMessageInCognition" << std::endl;
+  void get(DebugMessageInCognition& data) {
     if(theDebugServer != nullptr) { theDebugServer->getDebugMessageInCognition(data); } 
   }
-  void get(DebugMessageInMotion& data) { 
-    std::cout << "[BoosterController] DebugMessageInMotion" << std::endl;
+  void get(DebugMessageInMotion& data) {
     if(theDebugServer != nullptr) { theDebugServer->getDebugMessageInMotion(data); } 
   }
-  void set(const DebugMessageOut& data) { 
-    std::cout << "[BoosterController] DebugMessageOut" << std::endl;
+  void set(const DebugMessageOut& data) {
     if(theDebugServer != nullptr) { theDebugServer->setDebugMessageOut(data); } 
   }
 
   // time
   void get(FrameInfo& data)
   {
-    std::cout << "[BoosterController] FrameInfo" << std::endl;
-    //TODO: use naoSensorData.data().timeStamp
     data.setTime(NaoTime::getNaoTimeInMilliSeconds());
-    data.setFrameNumber(data.getFrameNumber()+1);
+    data.setFrameNumber(data.getFrameNumber() + 1);
 
-    std::cout << data << std::endl;
-    std::cout << "[BoosterController] FrameInfo" << std::endl;
+    // debug
+    //std::cout << data << std::endl;
   }
 
   // read directly from the shared memory
-  void get(SensorJointData& data) {       /*naoSensorData.get(data);*/ std::cout << "[BoosterController] SensorJointData" << std::endl; }
-  void get(AccelerometerData& data) {     /*naoSensorData.get(data);*/ std::cout << "[BoosterController] AccelerometerData" << std::endl; }
-  void get(GyrometerData& data) {         /*naoSensorData.get(data);*/ std::cout << "[BoosterController] GyrometerData" << std::endl; }
-  void get(FSRData& data) {               /*naoSensorData.get(data);*/ std::cout << "[BoosterController] FSRData" << std::endl; }
-  void get(InertialSensorData& data) {    /*naoSensorData.get(data);*/ std::cout << "[BoosterController] InertialSensorData" << std::endl; }
-  void get(ButtonData& data) {            /*naoSensorData.get(data);*/ std::cout << "[BoosterController] ButtonData" << std::endl; }
-  void get(BatteryData& data) {           /*naoSensorData.get(data);*/ std::cout << "[BoosterController] BatteryData" << std::endl; }
-  void get(UltraSoundReceiveData& data) { /*naoSensorData.get(data);*/ std::cout << "[BoosterController] UltraSoundReceiveData" << std::endl; }
+  void get(SensorJointData& data) {       /*naoSensorData.get(data);*/ }
+  void get(AccelerometerData& data) {     /*naoSensorData.get(data);*/ }
+  void get(GyrometerData& data) {         /*naoSensorData.get(data);*/ }
+  void get(FSRData& data) {               /*naoSensorData.get(data);*/ }
+  void get(InertialSensorData& data) {    /*naoSensorData.get(data);*/ }
+  void get(ButtonData& data) {            /*naoSensorData.get(data);*/ }
+  void get(BatteryData& data) {           /*naoSensorData.get(data);*/ }
+  void get(UltraSoundReceiveData& data) { /*naoSensorData.get(data);*/ }
 
-  void get(AudioData& data) { 
-    std::cout << "[BoosterController] AudioData" << std::endl;
+  void get(AudioData& data) {
     //theAudioRecorder.get(data); 
   }
-  void get(CpuData& data) { 
-    std::cout << "[BoosterController] CpuData" << std::endl;
+  void get(CpuData& data) {
     //theCPUTemperatureReader.get(data); 
   }
 
   // write directly to the shared memory
   // ACHTUNG: each set calls swapWriting()
-  void set(const MotorJointData& data) { /*naoCommandMotorJointData.set(data);*/ std::cout << "[BoosterController] MotorJointData" << std::endl; }
-  void set(const LEDData& data) { /*naoCommandLEDData.set(data);*/ std::cout << "[BoosterController] LEDData" << std::endl; }
-  void set(const UltraSoundSendData& data) { /*naoCommandUltraSoundSendData.set(data);*/ std::cout << "[BoosterController] UltraSoundSendData" << std::endl; }
+  void set(const MotorJointData& data) { /*naoCommandMotorJointData.set(data);*/ }
+  void set(const LEDData& data) { /*naoCommandLEDData.set(data);*/ }
+  void set(const UltraSoundSendData& data) { /*naoCommandUltraSoundSendData.set(data);*/ }
 
-  void set(const AudioControl& data) { /*theAudioRecorder.set(data);*/ std::cout << "[BoosterController] AudioControl" << std::endl; }
+  void set(const AudioControl& data) { /*theAudioRecorder.set(data);*/ }
 
   /*
   virtual void getMotionInput()
@@ -299,12 +277,12 @@ protected:
   //CPUTemperatureReader theCPUTemperatureReader;
   
   // communication
-  UDPSender* theTeamCommDebugger          = nullptr;
-  BroadCaster* theTeamCommSender          = nullptr;
-  UDPReceiver* theTeamCommListener        = nullptr;
-  UDPReceiver* theRemoteCommandListener   = nullptr;
-  SPLGameController* theGameController    = nullptr;
-  DebugServer* theDebugServer             = nullptr;
+  UDPSender* theTeamCommDebugger        = nullptr;
+  BroadCaster* theTeamCommSender        = nullptr;
+  UDPReceiver* theTeamCommListener      = nullptr;
+  UDPReceiver* theRemoteCommandListener = nullptr;
+  SPLGameController* theGameController  = nullptr;
+  DebugServer* theDebugServer           = nullptr;
 
   ImageBridge imageBridge;
 };
