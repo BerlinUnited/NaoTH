@@ -15,7 +15,7 @@
 #include "Representations/Infrastructure/Image.h"
 
 // this is needed for communication with the UNIX socket on NAO
-#ifdef NAO
+#ifndef _WIN32
   #include <ext/stdio_filebuf.h>
   #include <sys/socket.h>
   #include <sys/un.h>
@@ -30,7 +30,17 @@
 /** 
   Client for the UNIX socket on the NAO robot
 */
-#ifdef NAO
+#ifdef _WIN32
+
+class ImageBridge 
+{
+public:
+  inline void connectSocket() {}
+  inline bool hasError() { return false; }
+  inline void readImage(naoth::Image& image){}
+};
+
+#else
 class ImageBridge 
 {
   // POSIX file descriptor for the UNIX Socket on NAO
@@ -132,4 +142,4 @@ class ImageBridge
 #endif
 
 
-#endif //IMAGE_BRIDGE_H
+#endif // IMAGE_BRIDGE_H
