@@ -80,35 +80,35 @@ public:
   virtual std::string getRobotName() const      { return robotInfo.robotName;     } // name of the robot, e.g., nao12
   virtual std::string getPlatformName() const   { return robotInfo.platform;      } // e.g., 
   virtual unsigned int getBasicTimeStep() const { return robotInfo.basicTimeStep; }
-  
+
   // camera stuff
   void get(Image& data) { 
-    std::cout << "[BoosterController]" << (didx++) << std::endl;
+    std::cout << "[BoosterController] Image" << std::endl;
     //imageBridge.readImage(data);
   }
   void get(ImageTop& data) { 
-    std::cout << "[BoosterController]" << (didx++) << std::endl;
+    std::cout << "[BoosterController] ImageTop" << std::endl;
     imageBridge.readImage(data);
   }
-  
+
   void get(CurrentCameraSettings& data) {
-    std::cout << "[BoosterController]" << (didx++) << std::endl;
+    std::cout << "[BoosterController] CurrentCameraSettings" << std::endl;
     //theBottomCameraHandler.getCameraSettings(data);
   }
   void get(CurrentCameraSettingsTop& data) { 
-    std::cout << "[BoosterController]" << (didx++) << std::endl;
+    std::cout << "[BoosterController] CurrentCameraSettingsTop" << std::endl;
     //theTopCameraHandler.getCameraSettings(data);
   }
-  
+
   void set(const CameraSettingsRequest &request) {
-    std::cout << "[BoosterController]" << (didx++) << std::endl;
+    std::cout << "[BoosterController] CameraSettingsRequest" << std::endl;
     // FIXME: CameraSettings are assembled and copied in every frame 
     //CameraSettings settings = request.getCameraSettings();
     //theBottomCameraHandler.setAllCameraParams(settings);
   }
 
   void set(const CameraSettingsRequestTop &request) {
-    std::cout << "[BoosterController]" << (didx++) << std::endl;
+    std::cout << "[BoosterController] CameraSettingsRequestTop" << std::endl;
     // FIXME: CameraSettings are assembled and copied in every frame
     //CameraSettings settings = request.getCameraSettings();
     //theTopCameraHandler.setAllCameraParams(settings);
@@ -116,26 +116,26 @@ public:
 
   // sound
   void set(const SoundPlayData& data) {
-    std::cout << "[BoosterController]" << (didx++) << std::endl;
+    std::cout << "[BoosterController] SoundPlayData" << std::endl;
     //theSoundHandler.setSoundData(data);
   }
 
   // teamcomm stuff
   void get(TeamMessageDataIn& data) { 
-    std::cout << "[BoosterController]" << (didx++) << std::endl;
+    std::cout << "[BoosterController] TeamMessageDataIn" << std::endl;
     if(theTeamCommListener != nullptr) { 
       theTeamCommListener->receive(data.data); 
     } 
   }
   void set(const TeamMessageDataOut& data) {
-    std::cout << "[BoosterController]" << (didx++) << std::endl;
+    std::cout << "[BoosterController] TeamMessageDataOut" << std::endl;
     if(theTeamCommSender != nullptr) { 
       theTeamCommSender->send(data.data); 
     }
   }
 
   void get(RemoteMessageDataIn& data) { 
-    std::cout << "[BoosterController]" << (didx++) << std::endl;
+    std::cout << "[BoosterController] RemoteMessageDataIn" << std::endl;
     if (theRemoteCommandListener != nullptr) {
       theRemoteCommandListener->receive(data.data); 
     }
@@ -143,13 +143,13 @@ public:
 
   // gamecontroller stuff
   void get(GameData& data){ 
-    std::cout << "[BoosterController]" << (didx++) << std::endl;
+    std::cout << "[BoosterController] GameData" << std::endl;
     if(theGameController != nullptr) {
       theGameController->get(data); 
     }
   }
   void set(const GameReturnData& data) { 
-    std::cout << "[BoosterController]" << (didx++) << std::endl;
+    std::cout << "[BoosterController] GameReturnData" << std::endl;
     if(theGameController != nullptr) {
       theGameController->set(data); 
     }
@@ -158,7 +158,7 @@ public:
   // team debug stuff
   void set(const TeamMessageDebug& data)
   {
-    std::cout << "[BoosterController]" << (didx++) << std::endl;
+    std::cout << "[BoosterController] TeamMessageDebug" << std::endl;
 
     if(theTeamCommDebugger == nullptr) {
       return;
@@ -177,56 +177,56 @@ public:
 
   // debug comm
   void get(DebugMessageInCognition& data) { 
-    std::cout << "[BoosterController]" << (didx++) << std::endl;
+    std::cout << "[BoosterController] DebugMessageInCognition" << std::endl;
     if(theDebugServer != nullptr) { theDebugServer->getDebugMessageInCognition(data); } 
   }
   void get(DebugMessageInMotion& data) { 
-    std::cout << "[BoosterController]" << (didx++) << std::endl;
+    std::cout << "[BoosterController] DebugMessageInMotion" << std::endl;
     if(theDebugServer != nullptr) { theDebugServer->getDebugMessageInMotion(data); } 
   }
   void set(const DebugMessageOut& data) { 
-    std::cout << "[BoosterController]" << (didx++) << std::endl;
+    std::cout << "[BoosterController] DebugMessageOut" << std::endl;
     if(theDebugServer != nullptr) { theDebugServer->setDebugMessageOut(data); } 
   }
 
   // time
   void get(FrameInfo& data)
   {
-    std::cout << "[BoosterController]" << (didx++) << std::endl;
+    std::cout << "[BoosterController] FrameInfo" << std::endl;
     //TODO: use naoSensorData.data().timeStamp
     data.setTime(NaoTime::getNaoTimeInMilliSeconds());
     data.setFrameNumber(data.getFrameNumber()+1);
 
     std::cout << data << std::endl;
-    std::cout << "[BoosterController]" << (didx++) << std::endl;
+    std::cout << "[BoosterController] FrameInfo" << std::endl;
   }
 
   // read directly from the shared memory
-  void get(SensorJointData& data) {       /*naoSensorData.get(data);*/ std::cout << "[BoosterController]" << (didx++) << std::endl;}
-  void get(AccelerometerData& data) {     /*naoSensorData.get(data);*/ std::cout << "[BoosterController]" << (didx++) << std::endl;}
-  void get(GyrometerData& data) {         /*naoSensorData.get(data);*/ std::cout << "[BoosterController]" << (didx++) << std::endl;}
-  void get(FSRData& data) {               /*naoSensorData.get(data);*/ std::cout << "[BoosterController]" << (didx++) << std::endl;}
-  void get(InertialSensorData& data) {    /*naoSensorData.get(data);*/ std::cout << "[BoosterController]" << (didx++) << std::endl;}
-  void get(ButtonData& data) {            /*naoSensorData.get(data);*/ std::cout << "[BoosterController]" << (didx++) << std::endl;}
-  void get(BatteryData& data) {           /*naoSensorData.get(data);*/ std::cout << "[BoosterController]" << (didx++) << std::endl;}
-  void get(UltraSoundReceiveData& data) { /*naoSensorData.get(data);*/ std::cout << "[BoosterController]" << (didx++) << std::endl;}
-  
+  void get(SensorJointData& data) {       /*naoSensorData.get(data);*/ std::cout << "[BoosterController] SensorJointData" << std::endl; }
+  void get(AccelerometerData& data) {     /*naoSensorData.get(data);*/ std::cout << "[BoosterController] AccelerometerData" << std::endl; }
+  void get(GyrometerData& data) {         /*naoSensorData.get(data);*/ std::cout << "[BoosterController] GyrometerData" << std::endl; }
+  void get(FSRData& data) {               /*naoSensorData.get(data);*/ std::cout << "[BoosterController] FSRData" << std::endl; }
+  void get(InertialSensorData& data) {    /*naoSensorData.get(data);*/ std::cout << "[BoosterController] InertialSensorData" << std::endl; }
+  void get(ButtonData& data) {            /*naoSensorData.get(data);*/ std::cout << "[BoosterController] ButtonData" << std::endl; }
+  void get(BatteryData& data) {           /*naoSensorData.get(data);*/ std::cout << "[BoosterController] BatteryData" << std::endl; }
+  void get(UltraSoundReceiveData& data) { /*naoSensorData.get(data);*/ std::cout << "[BoosterController] UltraSoundReceiveData" << std::endl; }
+
   void get(AudioData& data) { 
-    std::cout << "[BoosterController]" << (didx++) << std::endl;
+    std::cout << "[BoosterController] AudioData" << std::endl;
     //theAudioRecorder.get(data); 
   }
   void get(CpuData& data) { 
-    std::cout << "[BoosterController]" << (didx++) << std::endl;
+    std::cout << "[BoosterController] CpuData" << std::endl;
     //theCPUTemperatureReader.get(data); 
   }
 
   // write directly to the shared memory
   // ACHTUNG: each set calls swapWriting()
-  void set(const MotorJointData& data) { /*naoCommandMotorJointData.set(data);*/ std::cout << "[BoosterController]" << (didx++) << std::endl;}
-  void set(const LEDData& data) { /*naoCommandLEDData.set(data);*/ std::cout << "[BoosterController]" << (didx++) << std::endl;}
-  void set(const UltraSoundSendData& data) { /*naoCommandUltraSoundSendData.set(data);*/ std::cout << "[BoosterController]" << (didx++) << std::endl;}
+  void set(const MotorJointData& data) { /*naoCommandMotorJointData.set(data);*/ std::cout << "[BoosterController] MotorJointData" << std::endl; }
+  void set(const LEDData& data) { /*naoCommandLEDData.set(data);*/ std::cout << "[BoosterController] LEDData" << std::endl; }
+  void set(const UltraSoundSendData& data) { /*naoCommandUltraSoundSendData.set(data);*/ std::cout << "[BoosterController] UltraSoundSendData" << std::endl; }
 
-  void set(const AudioControl& data) { /*theAudioRecorder.set(data);*/ std::cout << "[BoosterController]" << (didx++) << std::endl;}
+  void set(const AudioControl& data) { /*theAudioRecorder.set(data);*/ std::cout << "[BoosterController] AudioControl" << std::endl; }
 
   /*
   virtual void getMotionInput()
