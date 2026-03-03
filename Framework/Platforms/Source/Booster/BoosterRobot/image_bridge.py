@@ -5,6 +5,11 @@ import time
 import cv2
 import numpy as np
 
+# static images for testing
+
+IMAGE_PATH = "./images_left_right_raw_02/raw_image_left_1771442554.png"
+FPS = 10
+
 img_files = [
 ("raw_image_left_1771442554.png", "raw_image_right_1771442554.png"),
 ("raw_image_left_1771442555.png", "raw_image_right_1771442555.png"),
@@ -69,11 +74,6 @@ def scale_to_nao(img):
     return out
 
 
-
-IMAGE_PATH = "./images_left_right_raw_02/raw_image_left_1771442554.png"
-FPS = 10
-
-
 class RosUnixImageServer:
     def __init__(self, sock_path):
         # Create listening socket
@@ -95,11 +95,13 @@ class RosUnixImageServer:
         self.conn, _ = self.srv.accept()  # blocking
         print("Client connected.")
 
-
     def send_image(self, img):
-        
         data = scale_to_nao(img)
-        self.conn.sendall(data)
+        print(data.shape)
+        self.conn.sendall(data.tobytes())
+        
+    def send_image_bytes(self, img_bytes):
+        self.conn.sendall(img_bytes)
 
     def close(self):
         self.conn.close()
@@ -107,25 +109,25 @@ class RosUnixImageServer:
         os.unlink(self.sock_path)
 
 
+if __name__ == '__main__':
+    # ---- send loop ----
 
-# ---- send loop ----
+    server = RosUnixImageServer("/tmp/naoth_image")
 
-server = RosUnixImageServer("/tmp/naoth_image")
+    try:
+        number = 0
+        while True:
+            left_image, right_image = img_files[number]
+            img = cv2.imread("images_left_right_raw_02/" + left_image, cv2.IMREAD_COLOR)
+            server.send_image(img)
+            
+            number = (number + 1) % len(img_files)
+            
+            print(f"Sent frame: {number}")
+            time.sleep(1.0 / FPS)
 
-try:
-    number = 0
-    while True:
-        left_image, right_image = img_files[number]
-        img = cv2.imread("images_left_right_raw_02/" + left_image, cv2.IMREAD_COLOR)
-        server.send_image(img)
-        
-        number = (number + 1) % len(img_files)
-        
-        print(f"Sent frame: {number}")
-        time.sleep(1.0 / FPS)
+    except (BrokenPipeError, ConnectionResetError):
+        print("Client disconnected")
 
-except (BrokenPipeError, ConnectionResetError):
-    print("Client disconnected")
-
-finally:
-    server.close()
+    finally:
+        server.close()
