@@ -299,12 +299,12 @@ protected:
   //CPUTemperatureReader theCPUTemperatureReader;
   
   // communication
-  UDPSender* theTeamCommDebugger;
-  BroadCaster* theTeamCommSender;
-  UDPReceiver* theTeamCommListener;
-  UDPReceiver* theRemoteCommandListener;
-  SPLGameController* theGameController;
-  DebugServer* theDebugServer;
+  UDPSender* theTeamCommDebugger          = nullptr;
+  BroadCaster* theTeamCommSender          = nullptr;
+  UDPReceiver* theTeamCommListener        = nullptr;
+  UDPReceiver* theRemoteCommandListener   = nullptr;
+  SPLGameController* theGameController    = nullptr;
+  DebugServer* theDebugServer             = nullptr;
 
   ImageBridge imageBridge;
 };

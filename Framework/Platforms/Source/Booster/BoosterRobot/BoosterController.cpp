@@ -19,12 +19,6 @@ using namespace naoth;
 #define TEAMCOMM_MAX_MSG_SIZE 4096
 
 BoosterController::BoosterController()
-    : 
-    theTeamCommDebugger(NULL),
-    theTeamCommSender(NULL),
-    theTeamCommListener(NULL),
-    theRemoteCommandListener(NULL),
-    theDebugServer(NULL)
 {
   // init shared memory
   // sensor data
