@@ -13,7 +13,7 @@
 
 #undef PRINT_DEBUG
 #ifdef DEBUG_PLATFORM
-#  define PRINT_DEBUG(m) std::err << m << std::endl
+#  define PRINT_DEBUG(m) std::cerr << m << std::endl
 #else
 #  define PRINT_DEBUG(m) ((void)0)
 #endif
