@@ -50,7 +50,6 @@ public:
 
 private:
   Stopwatch stopwatch;
-
 };
 
 #endif  /* COGNITION_H */
