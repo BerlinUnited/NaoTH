@@ -143,6 +143,8 @@ int main(int /*argc*/, char **/*argv[]*/)
   //naoth::init_agent(theController);
   Cognition* theCognition = createCognition();
   theController.registerCognition((naoth::Callable*)(theCognition));
+  Motion2026* theMotion = createMotion2026();
+  theController.registerMotion((naoth::Callable*)(theMotion));
 
   //Motion* theMotion = createMotion();
   //theController.registerCognition((naoth::Callable*)(theMotion));
@@ -160,8 +162,12 @@ int main(int /*argc*/, char **/*argv[]*/)
   
   std::thread cognitionThread = std::thread([&theController]
   {
-    while(running) {
+    while(running) 
+    {
       theController.runCognition();
+
+      theController.runMotion();
+
       framesSinceCognitionLastSeen = 0;
       std::this_thread::yield();
     }
@@ -182,5 +188,8 @@ int main(int /*argc*/, char **/*argv[]*/)
   std::cout << "[BoosterRobot] Cognition thread joined. " << std::endl;
   std::cout << "[BoosterRobot] Main stopped. " << std::endl;
   
+  deleteCognition(theCognition);
+  deleteMotion2026(theMotion);
+
   return 0;
 }//end main
