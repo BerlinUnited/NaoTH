@@ -39,7 +39,7 @@ BoosterController::BoosterController()
   robotInfo.headId        = "boo41";
   robotInfo.robotName     = "boo41";
   robotInfo.platform      = "Booster-K1";
-  robotInfo.basicTimeStep = 20;
+  robotInfo.basicTimeStep = 10;
 
   /*  REGISTER IO  */
   // camera

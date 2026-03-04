@@ -26,9 +26,10 @@
 #include <iostream>
 #include <cerrno>
 #include <cstring>
+#include <thread>
 
 /** 
-  Client for the UNIX socket on the NAO robot
+Client for the UNIX socket on the NAO robot
 */
 #ifdef _WIN32
 
@@ -37,7 +38,10 @@ class ImageBridge
 public:
   inline void connectSocket() {}
   inline bool hasError() { return false; }
-  inline void readImage(naoth::Image& image){}
+  inline void readImage(naoth::Image& image) {
+    // for testing: simulate 30fps
+    std::this_thread::sleep_for(std::chrono::milliseconds(33));
+  }
 };
 
 #else
@@ -47,97 +51,97 @@ class ImageBridge
   int fd;
   // C-style file pointer to fd used to write by msgpack::fbuffer
   //FILE* fp;
-  
+
   // indicated that the LOLA client is in the error state
   bool error = false;
-  
-  private:
-  
-    static inline int recv_exact(int fd, void* buf, size_t n) 
+
+private:
+
+  static inline int recv_exact(int fd, void* buf, size_t n) 
+  {
+    auto* p = static_cast<char*>(buf);
+    size_t got = 0;
+    while (got < n) 
     {
-      auto* p = static_cast<char*>(buf);
-      size_t got = 0;
-      while (got < n) 
-      {
-          ssize_t r = ::recv(fd, p + got, n - got, 0);
-          
-          // peer closed
-          if (r == 0) { 
-            return r; 
-          }    
-          
-          // interrupted -> retry
-          if (r < 0) {
-            if (errno == EINTR) { 
-              continue; 
-            }
-            std::cerr << "[IMAGE_BRIDGE] recv_exact error: " << std::strerror(errno) << std::endl;
-            return r;
-          }
-          got += static_cast<size_t>(r);
+      ssize_t r = ::recv(fd, p + got, n - got, 0);
+
+      // peer closed
+      if (r == 0) { 
+        return r; 
+      }    
+
+      // interrupted -> retry
+      if (r < 0) {
+        if (errno == EINTR) { 
+          continue; 
+        }
+        std::cerr << "[IMAGE_BRIDGE] recv_exact error: " << std::strerror(errno) << std::endl;
+        return r;
       }
-      return got;
+      got += static_cast<size_t>(r);
     }
-  
-  
-  
-  public:
-  
-    ImageBridge() {}  
+    return got;
+  }
 
-    void connectSocket() 
-    {
-      if ( (fd = socket(AF_UNIX, SOCK_STREAM, 0)) == -1) {
-        std::cerr << "[IMAGE_BRIDGE] socket error: " << std::strerror(errno) << std::endl;
-        //exit(-1);
-        error = true;
-        return;
-      }
 
-      struct sockaddr_un addr;
-      memset(&addr, 0, sizeof(addr));
-      addr.sun_family = AF_UNIX;
-      strncpy(addr.sun_path, "/tmp/naoth_image", sizeof(addr.sun_path)-1);
 
-      std::cerr << "[IMAGE_BRIDGE] connect to socket: " << addr.sun_path << std::endl;
-      if (connect(fd, (struct sockaddr*)&addr, sizeof(addr)) == -1) {
-        std::cerr << "[IMAGE_BRIDGE] connect error: " << std::strerror(errno) << std::endl;
-        //exit(-1);
-        error = true;
-        return ;
-      }
+public:
 
-      //open the file for writing
-      //fp = fdopen(fd, "w");
+  ImageBridge() {}  
+
+  void connectSocket() 
+  {
+    if ( (fd = socket(AF_UNIX, SOCK_STREAM, 0)) == -1) {
+      std::cerr << "[IMAGE_BRIDGE] socket error: " << std::strerror(errno) << std::endl;
+      //exit(-1);
+      error = true;
+      return;
     }
 
-    bool hasError() {
-      return error;
+    struct sockaddr_un addr;
+    memset(&addr, 0, sizeof(addr));
+    addr.sun_family = AF_UNIX;
+    strncpy(addr.sun_path, "/tmp/naoth_image", sizeof(addr.sun_path)-1);
+
+    std::cerr << "[IMAGE_BRIDGE] connect to socket: " << addr.sun_path << std::endl;
+    if (connect(fd, (struct sockaddr*)&addr, sizeof(addr)) == -1) {
+      std::cerr << "[IMAGE_BRIDGE] connect error: " << std::strerror(errno) << std::endl;
+      //exit(-1);
+      error = true;
+      return ;
     }
-  
-    /*
-    void writeActuators(const ActuatorData& data) 
-    {
-      // DEBUG: check size
-      //std::stringstream sbuf;
-      //msgpack::pack(sbuf, data);
-      //assert(sbuf.str().size() == PACKET_SIZE_ACTUATOR);
-      
-      msgpack::fbuffer fbuf(fp);
-      msgpack::pack(fbuf, data);
-      fflush(fp);
+
+    //open the file for writing
+    //fp = fdopen(fd, "w");
+  }
+
+  bool hasError() {
+    return error;
+  }
+
+  /*
+  void writeActuators(const ActuatorData& data) 
+  {
+  // DEBUG: check size
+  //std::stringstream sbuf;
+  //msgpack::pack(sbuf, data);
+  //assert(sbuf.str().size() == PACKET_SIZE_ACTUATOR);
+
+  msgpack::fbuffer fbuf(fp);
+  msgpack::pack(fbuf, data);
+  fflush(fp);
+  }
+  */
+
+  void readImage(naoth::Image& image)
+  {
+    // read from the soccet (POSIX style)
+    size_t bytes = recv_exact(fd, image.data(), image.data_size());
+
+    if(bytes != image.data_size()) {
+      std::cerr << "[IMAGE_BRIDGE] wrong message size: " << bytes << " expected " << image.data_size() << std::endl;
     }
-    */
-    
-    void readImage(naoth::Image& image)
-    {
-      // read from the soccet (POSIX style)
-      size_t bytes = recv_exact(fd, image.data(), image.data_size());
-      
-      if(bytes != image.data_size()) {
-        std::cerr << "[IMAGE_BRIDGE] wrong message size: " << bytes << " expected " << image.data_size() << std::endl;
-      }
-    }
+  }
 };
 #endif
 

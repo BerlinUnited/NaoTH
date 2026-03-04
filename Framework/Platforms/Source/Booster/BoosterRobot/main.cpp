@@ -8,6 +8,7 @@
 
 #include "Tools/ThreadUtil.h"
 #include "Tools/FileUtils.h"
+#include "Tools/Math/Common.h"
 
 #include <filesystem>
 
@@ -149,24 +150,27 @@ int main(int /*argc*/, char **/*argv[]*/)
   //Motion* theMotion = createMotion();
   //theController.registerCognition((naoth::Callable*)(theMotion));
   
-  /*
+
   std::thread motionThread = std::thread([&theController]
   {
     while(running) {
+      unsigned int startTime = NaoTime::getNaoTimeInMilliSeconds();
+
       theController.runMotion();
-      std::this_thread::yield();
+      
+      unsigned int calculationTime = NaoTime::getNaoTimeInMilliSeconds() - startTime;
+      // wait at least 1ms but max basic time step
+      unsigned int waitTime = Math::clamp(theController.getBasicTimeStep() - calculationTime, 1u, theController.getBasicTimeStep());
+      std::this_thread::sleep_for(chrono::milliseconds(theController.getBasicTimeStep()));
     }
   });
   ThreadUtil::setName(motionThread, "Motion");
-  */
   
   std::thread cognitionThread = std::thread([&theController]
   {
     while(running) 
     {
       theController.runCognition();
-
-      theController.runMotion();
 
       framesSinceCognitionLastSeen = 0;
       std::this_thread::yield();
@@ -175,17 +179,16 @@ int main(int /*argc*/, char **/*argv[]*/)
   
   ThreadUtil::setName(cognitionThread, "Cognition");
 
-  /*
   if(motionThread.joinable()) {
     motionThread.join();
   }
   std::cout << "[BoosterRobot] Motion thread joined. " << std::endl;
-  */
 
   if(cognitionThread.joinable()) {
     cognitionThread.join();
   }
   std::cout << "[BoosterRobot] Cognition thread joined. " << std::endl;
+
   std::cout << "[BoosterRobot] Main stopped. " << std::endl;
   
   deleteCognition(theCognition);

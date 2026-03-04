@@ -182,13 +182,13 @@ public:
   }
 
   // read directly from the shared memory
-  void get(SensorJointData& data) {       /*naoSensorData.get(data);*/ }
-  void get(AccelerometerData& data) {     /*naoSensorData.get(data);*/ }
-  void get(GyrometerData& data) {         /*naoSensorData.get(data);*/ }
-  void get(FSRData& data) {               /*naoSensorData.get(data);*/ }
-  void get(InertialSensorData& data) {    /*naoSensorData.get(data);*/ }
-  void get(ButtonData& data) {            /*naoSensorData.get(data);*/ }
-  void get(BatteryData& data) {           /*naoSensorData.get(data);*/ }
+  void get(SensorJointData& data)       { /*naoSensorData.get(data);*/ }
+  void get(AccelerometerData& data)     { /*naoSensorData.get(data);*/ }
+  void get(GyrometerData& data)         { /*naoSensorData.get(data);*/ }
+  void get(FSRData& data)               { /*naoSensorData.get(data);*/ }
+  void get(InertialSensorData& data)    { /*naoSensorData.get(data);*/ }
+  void get(ButtonData& data)            { /*naoSensorData.get(data);*/ }
+  void get(BatteryData& data)           { /*naoSensorData.get(data);*/ }
   void get(UltraSoundReceiveData& data) { /*naoSensorData.get(data);*/ }
 
   void get(AudioData& data) {
