@@ -15,6 +15,10 @@
 #include <Tools/Debug/ModuleManagerWithDebug.h>
 
 
+// modules
+#include "Engine/HeadMotion/HeadMotionEngine.h"
+
+
 // representations
 #include <Representations/Infrastructure/FrameInfo.h>
 #include <Representations/Infrastructure/JointData.h>
@@ -143,6 +147,8 @@ private:
 private: // motion modules
   // HACK: needs a better solution
   AbstractModuleCreator* theLogProvider;
+
+  ModuleCreator<HeadMotionEngine>* theHeadMotionEngine;
 
   Logger motionLogger;
   Stopwatch cycleStopwatch;

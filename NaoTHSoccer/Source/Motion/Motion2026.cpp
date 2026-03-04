@@ -20,6 +20,17 @@ Motion2026::Motion2026()
   REGISTER_DEBUG_COMMAND(motionLogger.getCommand(), motionLogger.getDescription(), &motionLogger);
   registerLogableRepresentationList();
 
+  REGISTER_DEBUG_COMMAND("DebugPlot:get", "get the plots", &getDebugPlot());
+
+  // parameter
+  REGISTER_DEBUG_COMMAND("ParameterList:list", "list all registered parameters", &getDebugParameterList());
+  REGISTER_DEBUG_COMMAND("ParameterList:get", "get the parameter list with the given name", &getDebugParameterList());
+  REGISTER_DEBUG_COMMAND("ParameterList:set", "set the parameter list with the given name", &getDebugParameterList());
+
+
+  theHeadMotionEngine = registerModule<HeadMotionEngine>("HeadMotionEngine", true);
+
+
   getDebugParameterList().add(&parameter);
 }
 
@@ -109,23 +120,30 @@ void Motion2026::call()
   /**
   * run the motion engine
   */
+  theHeadMotionEngine->execute();
+
+  double head_pitch = getMotorJointData().position[JointData::HeadPitch];
+  double head_yaw = getMotorJointData().position[JointData::HeadYaw];
+
+  PLOT("Motion:head_pitch", head_pitch);
+  PLOT("Motion:head_yaw", head_yaw);
 
 
   // logger
   motionLogger.log(getFrameInfo().getFrameNumber());
 
 
-  // todo: execute debug commands => find a better place for this
+  // execute debug commands
+  // DOTO: find a better place for this
   getDebugMessageOut().reset();
 
-  for(std::list<DebugMessageIn::Message>::const_iterator iter = getDebugMessageInMotion().messages.begin();
-      iter != getDebugMessageInMotion().messages.end(); ++iter)
+  for(const DebugMessageIn::Message& msg: getDebugMessageInMotion().messages)
   {
     debug_answer_stream.clear();
     debug_answer_stream.str("");
 
-    getDebugCommandManager().handleCommand(iter->command, iter->arguments, debug_answer_stream);
-    getDebugMessageOut().addResponse(iter->id, debug_answer_stream);
+    getDebugCommandManager().handleCommand(msg.command, msg.arguments, debug_answer_stream);
+    getDebugMessageOut().addResponse(msg.id, debug_answer_stream);
   }
 
   // HACK: reset all the debug stuff before executing the modules
