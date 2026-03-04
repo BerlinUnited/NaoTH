@@ -95,21 +95,21 @@ void ReadyPoseDetector::execute()
   const float (*output)[1][1][17][3] = reinterpret_cast<const float(*)[1][1][17][3]>(exec.getOutputTensor());
 
   // eyes
-  float y1 = (*output)[0][0][1][0] * 192.0;
-  float x1 = (*output)[0][0][1][1] * 192.0;
+  float y1 = (*output)[0][0][1][0] * 192.0f;
+  float x1 = (*output)[0][0][1][1] * 192.0f;
   float c1 = (*output)[0][0][1][2];
 
-  float y2 = (*output)[0][0][2][0] * 192.0;
-  float x2 = (*output)[0][0][2][1] * 192.0;
+  float y2 = (*output)[0][0][2][0] * 192.0f;
+  float x2 = (*output)[0][0][2][1] * 192.0f;
   float c2 = (*output)[0][0][2][2];
 
   // hands
-  float y3 = (*output)[0][0][9][0] * 192.0;
-  float x3 = (*output)[0][0][9][1] * 192.0;
+  float y3 = (*output)[0][0][9][0] * 192.0f;
+  float x3 = (*output)[0][0][9][1] * 192.0f;
   float c3 = (*output)[0][0][9][2];
 
-  float y4 = (*output)[0][0][10][0] * 192.0;
-  float x4 = (*output)[0][0][10][1] * 192.0;
+  float y4 = (*output)[0][0][10][0] * 192.0f;
+  float x4 = (*output)[0][0][10][1] * 192.0f;
   float c4 = (*output)[0][0][10][2];
 
 
