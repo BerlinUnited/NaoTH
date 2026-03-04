@@ -1,5 +1,5 @@
 /**
-* @file LolaData.h
+* @file ImageBridge.h
 *
 * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Mellmann, Heinrich</a>
 *
