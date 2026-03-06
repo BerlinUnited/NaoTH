@@ -71,7 +71,7 @@ bool RoleDecisionPositionDynamic::isDefendingSetPlay()
 
             return false;
         }
-        case PlayerInfo::pushing_free_kick:
+        case PlayerInfo::direct_free_kick:
             // always defend, since we don't know if it's ours
             return true;
         case PlayerInfo::corner_kick:
@@ -90,7 +90,7 @@ bool RoleDecisionPositionDynamic::isDefendingSetPlay()
 
             return false;
         }
-        case PlayerInfo::kick_in:
+        case PlayerInfo::indirect_free_kick:
             // always defend, since we don't know if it's ours
             return true;
         case PlayerInfo::penalty_kick:

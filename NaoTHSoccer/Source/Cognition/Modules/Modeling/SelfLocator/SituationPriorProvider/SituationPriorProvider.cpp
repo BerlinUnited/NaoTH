@@ -76,7 +76,7 @@ void SituationPriorProvider::execute()
   else if( lastRobotState == PlayerInfo::penalized )
   {
     // robot was penalized in set
-    if(reasonForLastPenalized == GameData::illegal_motion_in_set)
+    if(reasonForLastPenalized == GameData::motion_in_set)
     {
       if(getPlayerInfo().playerNumber == 1) {
         // The Goalie will be in the own goal if manually placed in set

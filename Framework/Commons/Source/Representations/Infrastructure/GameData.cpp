@@ -16,8 +16,7 @@ GameData::GameData()
   valid(false),
   playersPerTeam(0),
 
-  competitionPhase(roundrobin),
-  competitionType(competition_normal),
+  competitionType(competition_type_small),
   gamePhase(normal),
   gameState(unknown_game_state),
   setPlay(set_none),
@@ -54,30 +53,14 @@ std::string GameData::toString(TeamColor value)
   return "invalid TeamColor";
 }
 
-std::string GameData::toString(CompetitionPhase value)
-{
-  switch (value)
-  {
-    RETURN_VALUE_TO_STR(roundrobin);
-    RETURN_VALUE_TO_STR(playoff);
-  }
-  
-  ASSERT(false);
-  return "invalid CompetitionPhase";
-}
 
 std::string GameData::toString(CompetitionType value)
 {
   switch (value)
   {
-    RETURN_VALUE_TO_STR(competition_normal);
-    //RETURN_VALUE_TO_STR(COMPETITION_TYPE_CHALLENGE_SHIELD); // deprecated since 2023
-    //RETURN_VALUE_TO_STR(COMPETITION_TYPE_7V7); // deprecated since 2023
-    //RETURN_VALUE_TO_STR(COMPETITION_TYPE_DYNAMIC_BALL_HANDLING); // deprecated since 2024
-    RETURN_VALUE_TO_STR(competition_type_shared_autonomy);
-    //RETURN_VALUE_TO_STR(competition_1v1); // deprecated since 2022
-    //RETURN_VALUE_TO_STR(competition_passing); // deprecated since 2022
-    //RETURN_VALUE_TO_STR(competition_mixed); // deprecated since 2021
+    RETURN_VALUE_TO_STR(competition_type_small);
+    RETURN_VALUE_TO_STR(competition_type_middle);
+    RETURN_VALUE_TO_STR(competition_type_large);
   }
   
   ASSERT(false);
@@ -107,7 +90,6 @@ std::string GameData::toString(GameState value)
     RETURN_VALUE_TO_STR(set);
     RETURN_VALUE_TO_STR(playing);
     RETURN_VALUE_TO_STR(finished);
-    RETURN_VALUE_TO_STR(standby);
     RETURN_VALUE_TO_STR(unknown_game_state);
   }
   
@@ -120,11 +102,12 @@ std::string GameData::toString(SetPlay value)
   switch (value)
   {
     RETURN_VALUE_TO_STR(set_none);
-    RETURN_VALUE_TO_STR(goal_kick);
-    RETURN_VALUE_TO_STR(pushing_free_kick);
-    RETURN_VALUE_TO_STR(corner_kick);
-    RETURN_VALUE_TO_STR(kick_in);
+    RETURN_VALUE_TO_STR(direct_free_kick);
+    RETURN_VALUE_TO_STR(indirect_free_kick);
     RETURN_VALUE_TO_STR(penalty_kick);
+    RETURN_VALUE_TO_STR(throw_in);
+    RETURN_VALUE_TO_STR(goal_kick);
+    RETURN_VALUE_TO_STR(corner_kick);
   }
   
   ASSERT(false);
@@ -137,19 +120,18 @@ std::string GameData::toString(Penalty value)
   switch (value)
   {
     RETURN_VALUE_TO_STR(penalty_none);
-    RETURN_VALUE_TO_STR(illegal_ball_contact);
-    RETURN_VALUE_TO_STR(player_pushing);
-    RETURN_VALUE_TO_STR(illegal_motion_in_set);
-    RETURN_VALUE_TO_STR(inactive_player);
-    RETURN_VALUE_TO_STR(illegal_position);
-    RETURN_VALUE_TO_STR(leaving_the_field);
-    RETURN_VALUE_TO_STR(request_for_pickup);
+   
+    RETURN_VALUE_TO_STR(illegal_positioning);
+    RETURN_VALUE_TO_STR(motion_in_set);
     RETURN_VALUE_TO_STR(local_game_stuck);
-    RETURN_VALUE_TO_STR(illegal_position_in_set);
-    RETURN_VALUE_TO_STR(player_stance);
-    RETURN_VALUE_TO_STR(illegal_motion_in_standby);
+    RETURN_VALUE_TO_STR(incapable_robot);
+    RETURN_VALUE_TO_STR(pickup);
+    RETURN_VALUE_TO_STR(ball_holding);
+    RETURN_VALUE_TO_STR(leaving_the_field);
+    RETURN_VALUE_TO_STR(playing_with_arms_hands);
+    RETURN_VALUE_TO_STR(pushing);
+    RETURN_VALUE_TO_STR(sent_off);
     RETURN_VALUE_TO_STR(substitute);
-    RETURN_VALUE_TO_STR(manual);
   }
   
   ASSERT(false);
@@ -188,31 +170,29 @@ GameData::GameState GameData::gameStateFromString(const std::string& str)
 GameData::Penalty GameData::penaltyFromString(const std::string& str)
 {
   RETURN_STING_TO_VALUE(penalty_none, str);
-  RETURN_STING_TO_VALUE(illegal_ball_contact, str);
-  RETURN_STING_TO_VALUE(player_pushing, str);
-  RETURN_STING_TO_VALUE(illegal_motion_in_set, str);
-  RETURN_STING_TO_VALUE(inactive_player, str);
-  RETURN_STING_TO_VALUE(illegal_position, str);
-  RETURN_STING_TO_VALUE(leaving_the_field, str);
-  RETURN_STING_TO_VALUE(request_for_pickup, str);
+   
+  RETURN_STING_TO_VALUE(illegal_positioning, str);
+  RETURN_STING_TO_VALUE(motion_in_set, str);
   RETURN_STING_TO_VALUE(local_game_stuck, str);
-  RETURN_STING_TO_VALUE(illegal_position_in_set, str);
-  RETURN_STING_TO_VALUE(player_stance, str);
-  RETURN_STING_TO_VALUE(illegal_motion_in_standby, str);
+  RETURN_STING_TO_VALUE(incapable_robot, str);
+  RETURN_STING_TO_VALUE(pickup, str);
+  RETURN_STING_TO_VALUE(ball_holding, str);
+  RETURN_STING_TO_VALUE(leaving_the_field, str);
+  RETURN_STING_TO_VALUE(playing_with_arms_hands, str);
+  RETURN_STING_TO_VALUE(pushing, str);
+  RETURN_STING_TO_VALUE(sent_off, str);
   RETURN_STING_TO_VALUE(substitute, str);
-  RETURN_STING_TO_VALUE(manual, str);
 
   ASSERT(false);
   return manual;
 }
 
 
-void GameData::parseFrom(const spl::RoboCupGameControlData& data, int teamNumber)
+void GameData::parseFrom(const hsl::RoboCupGameControlData& data, int teamNumber)
 {
   playersPerTeam    = data.playersPerTeam;
 
   competitionType   = (CompetitionType) data.competitionType;
-  competitionPhase  = (CompetitionPhase) data.competitionPhase;
   gamePhase         = (GamePhase) data.gamePhase;
   gameState         = (GameState) data.state;
   setPlay           = (SetPlay) data.setPlay;
@@ -236,7 +216,7 @@ void GameData::parseFrom(const spl::RoboCupGameControlData& data, int teamNumber
   }
 }
 
-void GameData::parseTeamInfo(TeamInfo& teamInfoDst, const spl::TeamInfo& teamInfoSrc) const
+void GameData::parseTeamInfo(TeamInfo& teamInfoDst, const hsl::TeamInfo& teamInfoSrc) const
 {
   teamInfoDst.penaltyShot   = teamInfoSrc.penaltyShot;
   teamInfoDst.score         = teamInfoSrc.score;
@@ -258,7 +238,6 @@ void GameData::print(ostream& stream) const
 {
   stream << "playersPerTeam = " << playersPerTeam << std::endl;
   
-  stream << "competitionPhase = " << toString(competitionPhase) << std::endl;
   stream << "competitionType = "  << toString(competitionType) << std::endl;
   stream << "gamePhase = "        << toString(gamePhase) << std::endl;
   stream << "gameState = "        << toString(gameState) << std::endl;
@@ -308,7 +287,7 @@ std::string GameReturnData::toString(FallenState value)
   return "invalide fallen state";
 }
 
-void GameReturnData::writeTo(spl::RoboCupGameControlReturnData& data) const 
+void GameReturnData::writeTo(hsl::RoboCupGameControlReturnData& data) const 
 {
   data.playerNum = static_cast<uint8_t>(playerNum);
   data.teamNum   = static_cast<uint8_t>(teamNum);

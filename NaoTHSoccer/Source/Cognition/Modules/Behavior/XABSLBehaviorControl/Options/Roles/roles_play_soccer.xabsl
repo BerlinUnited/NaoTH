@@ -239,7 +239,7 @@ option roles_play_soccer
   {
     decision
     {
-      else if (game.set_play != pushing_free_kick || game.msecsRemainingSecondary <= 5000)
+      else if (game.set_play != direct_free_kick || game.msecsRemainingSecondary <= 5000)
         goto play;
       else
         stay;
@@ -253,7 +253,7 @@ option roles_play_soccer
   {
     decision
     {
-      else if (game.set_play != pushing_free_kick)
+      else if (game.set_play != direct_free_kick)
         goto play;
       else
         stay;
@@ -267,7 +267,7 @@ option roles_play_soccer
   {
     decision
     {
-      else if (game.set_play != kick_in || game.msecsRemainingSecondary <= 5000)
+      else if (game.set_play != indirect_free_kick || game.msecsRemainingSecondary <= 5000)
         goto play;
       else
         stay;
@@ -281,7 +281,7 @@ option roles_play_soccer
   {
     decision
     {
-      else if (game.set_play != kick_in)
+      else if (game.set_play != indirect_free_kick)
         goto play;
       else
         stay;

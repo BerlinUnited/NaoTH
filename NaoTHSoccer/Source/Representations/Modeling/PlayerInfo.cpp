@@ -51,11 +51,12 @@ std::string PlayerInfo::toString(RobotSetPlay value)
   switch (value)
   {
     RETURN_VALUE_TO_STR(set_none);
-    RETURN_VALUE_TO_STR(goal_kick);
-    RETURN_VALUE_TO_STR(pushing_free_kick);
-    RETURN_VALUE_TO_STR(corner_kick);
-    RETURN_VALUE_TO_STR(kick_in);
+    RETURN_VALUE_TO_STR(direct_free_kick);
+    RETURN_VALUE_TO_STR(indirect_free_kick);
     RETURN_VALUE_TO_STR(penalty_kick);
+    RETURN_VALUE_TO_STR(throw_in);
+    RETURN_VALUE_TO_STR(goal_kick);
+    RETURN_VALUE_TO_STR(corner_kick);
   }
 
   ASSERT(false);
