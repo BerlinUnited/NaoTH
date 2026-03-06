@@ -222,11 +222,13 @@ class ImageServer(Node):
   
   
   def stereo_callback(self, left_msg, right_msg):
-    #img_left = self.msg2img(left_msg)
-    #self.socket.send_image(img_left)
-    nao_img_bytes = self.nv12_544x448_to_yuyv_640x480_centered(left_msg.data)
-    print(len(nao_img_bytes))
-    self.socket.send_image_bytes(nao_img_bytes)
+    # send scaled
+    img_left = self.msg2img(left_msg)
+    self.socket.send_image(img_left)
+    
+    # send centered
+    #nao_img_bytes = self.nv12_544x448_to_yuyv_640x480_centered(left_msg.data)
+    #self.socket.send_image_bytes(nao_img_bytes)
     
     
     '''
