@@ -156,6 +156,17 @@ BoosterController::BoosterController()
   if(imageBridge.hasError()) {
     exit(-1);
   }
+  
+  /* 
+  * ------------
+  *   Body
+  * ------------
+  */
+  // activate the image bridge
+  bodyBridge.connectSocket();
+  if(bodyBridge.hasError()) {
+    exit(-1);
+  }
 }
 
 BoosterController::~BoosterController()
