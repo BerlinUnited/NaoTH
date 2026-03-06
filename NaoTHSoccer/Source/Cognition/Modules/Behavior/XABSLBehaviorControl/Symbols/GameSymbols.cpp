@@ -33,6 +33,7 @@ void GameSymbols::registerSymbols(xabsl::Engine& engine)
   // current game state
   engine.registerEnumeratedInputSymbol("game.state", "game.state", &getGameState);
 
+  engine.registerBooleanInputSymbol("game.stopped", &getStopped);
 
   engine.registerDecimalInputSymbol("game.player_number", &getPlayerNumber);
   engine.registerDecimalInputSymbol("game.msecsRemaining", &getMsecsRemaining);
@@ -112,4 +113,8 @@ int GameSymbols::getSetPlay() {
 
 int GameSymbols::getGamePhase(){
   return theInstance->getPlayerInfo().gamePhase;
+}
+
+bool GameSymbols::getStopped() {
+  return theInstance->getGameData().stopped;
 }

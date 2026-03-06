@@ -25,6 +25,7 @@ GameData::GameData()
   kickingTeam(0),
   secsRemaining(0),
   secondaryTime(0),
+  stopped(false),
   // HACK: for more info see declaration
   newPlayerNumber(0)
 {
@@ -197,6 +198,8 @@ void GameData::parseFrom(const hsl::RoboCupGameControlData& data, int teamNumber
   gameState         = (GameState) data.state;
   setPlay           = (SetPlay) data.setPlay;
 
+  stopped           = data.stopped;
+
   firstHalf         = (data.firstHalf == 1);
   kickingTeam       = data.kickingTeam;
 
@@ -241,6 +244,7 @@ void GameData::print(ostream& stream) const
   stream << "competitionType = "  << toString(competitionType) << std::endl;
   stream << "gamePhase = "        << toString(gamePhase) << std::endl;
   stream << "gameState = "        << toString(gameState) << std::endl;
+  stream << "stopped = "          << stopped << std::endl;
   stream << "setPlay = "          << toString(setPlay) << std::endl;
 
 

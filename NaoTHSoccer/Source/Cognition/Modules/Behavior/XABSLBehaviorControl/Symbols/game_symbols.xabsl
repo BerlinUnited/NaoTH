@@ -27,6 +27,9 @@ namespace game_symbols("Game Control Symbols")
   /* State of the game */
   enum game.state input game.state;
 
+  /* If true, an emergency stop is active */
+  bool input game.stopped;
+
   /* my number */
   float input game.player_number;
 

@@ -130,11 +130,6 @@ public:
     unsigned int penaltyShot;       // penalty shot counter
     unsigned int messageBudget;     // number of team messages the team is allowed to send for the remainder of the game
     std::vector<RobotInfo> players; // the team's players
-
-    // NOTE: not used yet
-    //unsigned int goalieNumber;      // unique goalie number
-    //TeamColor goalieColor;          // colour of the goalie
-    //uint16_t singleShots;     // bits represent penalty shot success
   };
 
   void updateSetPlayState();
@@ -180,6 +175,9 @@ public:
   
   TeamInfo ownTeam;
   TeamInfo oppTeam;
+
+
+  bool stopped; // Emergency stop that is not part of any state, but a global flag.
 
   // HACK: this is only provided by SimSpark - find a better solution
   // if this is set to anything other than 0, the actual player number will change
