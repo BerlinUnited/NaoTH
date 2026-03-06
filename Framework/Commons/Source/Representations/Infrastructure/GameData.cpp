@@ -12,7 +12,7 @@ using namespace naoth;
 using namespace std;
 
 GameData::GameData()
-  : 
+  :
   valid(false),
   playersPerTeam(0),
 
@@ -63,7 +63,7 @@ std::string GameData::toString(CompetitionType value)
     RETURN_VALUE_TO_STR(competition_type_middle);
     RETURN_VALUE_TO_STR(competition_type_large);
   }
-  
+
   ASSERT(false);
   return "invalid CompetitionType";
 }
@@ -77,7 +77,7 @@ std::string GameData::toString(GamePhase value)
     RETURN_VALUE_TO_STR(overtime);
     RETURN_VALUE_TO_STR(timeout);
   }
-  
+
   ASSERT(false);
   return "invalid SecondaryGameState";
 }
@@ -93,7 +93,7 @@ std::string GameData::toString(GameState value)
     RETURN_VALUE_TO_STR(finished);
     RETURN_VALUE_TO_STR(unknown_game_state);
   }
-  
+
   ASSERT(false);
   return "invalid GameState";
 }
@@ -110,7 +110,7 @@ std::string GameData::toString(SetPlay value)
     RETURN_VALUE_TO_STR(goal_kick);
     RETURN_VALUE_TO_STR(corner_kick);
   }
-  
+
   ASSERT(false);
   return "invalid SetPlay";
 }
@@ -121,7 +121,7 @@ std::string GameData::toString(Penalty value)
   switch (value)
   {
     RETURN_VALUE_TO_STR(penalty_none);
-   
+
     RETURN_VALUE_TO_STR(illegal_positioning);
     RETURN_VALUE_TO_STR(motion_in_set);
     RETURN_VALUE_TO_STR(local_game_stuck);
@@ -133,8 +133,9 @@ std::string GameData::toString(Penalty value)
     RETURN_VALUE_TO_STR(pushing);
     RETURN_VALUE_TO_STR(sent_off);
     RETURN_VALUE_TO_STR(substitute);
+    RETURN_VALUE_TO_STR(manual);
   }
-  
+
   ASSERT(false);
   return "invalid Penalty";
 }
@@ -171,7 +172,7 @@ GameData::GameState GameData::gameStateFromString(const std::string& str)
 GameData::Penalty GameData::penaltyFromString(const std::string& str)
 {
   RETURN_STING_TO_VALUE(penalty_none, str);
-   
+
   RETURN_STING_TO_VALUE(illegal_positioning, str);
   RETURN_STING_TO_VALUE(motion_in_set, str);
   RETURN_STING_TO_VALUE(local_game_stuck, str);
@@ -183,6 +184,7 @@ GameData::Penalty GameData::penaltyFromString(const std::string& str)
   RETURN_STING_TO_VALUE(pushing, str);
   RETURN_STING_TO_VALUE(sent_off, str);
   RETURN_STING_TO_VALUE(substitute, str);
+  RETURN_STING_TO_VALUE(manual, str);
 
   ASSERT(false);
   return manual;
@@ -206,7 +208,7 @@ void GameData::parseFrom(const hsl::RoboCupGameControlData& data, int teamNumber
   // ACHTUNG: casting to signed values - game time can be negative (!)
   secsRemaining     = (int16_t)data.secsRemaining;
   secondaryTime     = (int16_t)data.secondaryTime;
-  
+
   // team info
   if(data.teams[0].teamNumber == teamNumber) {
     parseTeamInfo(ownTeam, data.teams[0]);
@@ -240,7 +242,7 @@ void GameData::parseTeamInfo(TeamInfo& teamInfoDst, const hsl::TeamInfo& teamInf
 void GameData::print(ostream& stream) const
 {
   stream << "playersPerTeam = " << playersPerTeam << std::endl;
-  
+
   stream << "competitionType = "  << toString(competitionType) << std::endl;
   stream << "gamePhase = "        << toString(gamePhase) << std::endl;
   stream << "gameState = "        << toString(gameState) << std::endl;
@@ -286,12 +288,12 @@ std::string GameReturnData::toString(FallenState value)
     RETURN_VALUE_TO_STR(ROBOT_CAN_PLAY);
     RETURN_VALUE_TO_STR(ROBOT_FALLEN);
   }
-  
+
   ASSERT(false);
   return "invalide fallen state";
 }
 
-void GameReturnData::writeTo(hsl::RoboCupGameControlReturnData& data) const 
+void GameReturnData::writeTo(hsl::RoboCupGameControlReturnData& data) const
 {
   data.playerNum = static_cast<uint8_t>(playerNum);
   data.teamNum   = static_cast<uint8_t>(teamNum);
@@ -310,6 +312,3 @@ void GameReturnData::writeTo(hsl::RoboCupGameControlReturnData& data) const
   data.ball[0]   = static_cast<float>(ballPosition.x);
   data.ball[1]   = static_cast<float>(ballPosition.y);
 }
-
-
-
