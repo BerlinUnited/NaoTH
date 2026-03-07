@@ -12,6 +12,6 @@ premake5 gmake2 --Test
 
 echo "###### COMPILE ######"
 # run make in the corresponding build dir
-(cd ../build/gmake2/ && make config=optdebug_native $@)
+(cd ../build/gmake/ && make config=optdebug_native $@)
 
 echo "###### FINISH ######"
