@@ -40,7 +40,7 @@ if _OPTIONS["platform"] == "Nao" then
 end
 
 workspace "NaoTHSoccer"
-  platforms {"Native", "Nao"}
+  platforms {"Native", "Nao", "Booster"}
   configurations {"OptDebug", "Debug"}
   location (project_dir)
 
@@ -128,6 +128,36 @@ workspace "NaoTHSoccer"
 
   filter { "platforms:Native" }
     targetdir "../dist/Native"
+
+  -- special defines for the Booster robot
+  filter { "platforms:Booster" }
+    targetdir "../dist/Booster"
+    defines { "NAO" }
+    system ("linux")
+
+    -- HACK: system() doesn't set the target system properly => set the target system manually
+    if _OPTIONS["platform"] == "Booster" then
+      -- include the Nao platform
+      if COMPILER_PATH_NAO ~= nil then
+        include (COMPILER_PATH_NAO)
+      end
+      _TARGET_OS = "linux"
+      print("NOTE: set the target OS to " .. os.target())
+    end
+
+    -- add a hard coded path for the libs on the robot
+    --linkoptions { "-Wl,-rpath=/home/nao/lib" }
+    
+    -- for booster
+    linkoptions { "-Wl,-rpath=./lib" }
+    buildoptions{"-fPIC"}
+    buildoptions{"-fsigned-char"}
+
+    cppdialect "c++17"
+
+    -- for debugging:
+    -- buildoptions {"-time"}
+
 
   -- special defines for the Nao robot
   filter { "platforms:Nao" }
