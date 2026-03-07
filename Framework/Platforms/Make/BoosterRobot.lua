@@ -30,35 +30,4 @@ project "BoosterRobot"
     --"flite_usenglish"
   }
   
-  -- needed for nao
-  if _OPTIONS["platform"] == "Nao" then
-    links {
-      "rt",
-      "z",
-      "pthread",
-      "asound",
-      "pulse",
-      "pulse-simple"
-    }
-  end
-  
-  -- additional links needed for the old cross compiler
-  if _OPTIONS["platform"] == "Nao" and (ROBOT_OS == nil or ROBOT_OS == "naoos") then
-    links {
-      "pulsecommon-3.99",
-      "json",
-      "dbus-1",
-      "sndfile",
-      "asyncns",
-      "FLAC",
-      "gdbm",
-      "vorbis",
-      "vorbisenc",
-      "ogg",
-      "cap",
-      "attr",
-      "wrap"
-    }
-  end
-
   targetname "naoth-booster"
