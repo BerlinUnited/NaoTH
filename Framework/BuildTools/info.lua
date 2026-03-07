@@ -12,11 +12,22 @@ function get_info(cmd, default)
   return rev
 end
 
+function is_git_dirty()
+    local f = io.popen("git status --porcelain", "r")
+    if f ~= nil then
+        local output = f:read("*a")
+        f:close()
+        -- If output is not empty, it's dirty
+        return output ~= ""
+    end
+    return false
+end
+
 -- NOTE: cal also be found in '.git/HEAD'
 BRANCH_PATH = get_info("git rev-parse --abbrev-ref HEAD", "none\n")
 -- NOTE: can be found in '.git/refs/heads/<BRANCH_PATH>'
 REVISION = get_info("git rev-parse HEAD", "none\n")
-
+GIT_DIRTY_FLAG = is_git_dirty() and "dirty" or "clean"
 USER_NAME = get_info("git config user.name", "none\n")
 
 REVISION = string.gsub(REVISION,"\n", "")
@@ -26,6 +37,8 @@ BRANCH_PATH = string.gsub(BRANCH_PATH,"\n", "")
 
 print("INFO: repository info")
 print("  REVISION = " .. REVISION)
+print("  GIT STATE = " .. GIT_DIRTY_FLAG)
 print("  USER_NAME = " .. USER_NAME)
 print("  BRANCH_PATH = " .. BRANCH_PATH)
 print()
+
