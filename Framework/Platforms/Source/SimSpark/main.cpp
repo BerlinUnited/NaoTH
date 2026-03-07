@@ -62,6 +62,9 @@ int main(int argc, char** argv)
   #ifdef BRANCH_PATH
   info << "Branch path: " << MAKE_STRING(BRANCH_PATH) << std::endl;
   #endif
+  #ifdef GIT_DIRTY_FLAG
+  std::cout << "Git dirty state: " << TO_STRING(GIT_DIRTY_FLAG) << std::endl;
+  #endif
   info << "==========================================\n"  << std::endl;
 
 
