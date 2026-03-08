@@ -23,15 +23,21 @@ namespace naoth
   class CameraInfoParameter : public ParameterList
   {
   public:
-    // diagonal angle of field of view
-    double openingAngleDiagonal;
-
     CameraInfoParameter(const std::string& idName) : ParameterList("CameraInfo" + idName)
     {
       PARAMETER_ANGLE_REGISTER(openingAngleDiagonal) = 72.6;
 
+      PARAMETER_REGISTER(opticalCenter.x) = IMAGE_WIDTH / 2;
+      PARAMETER_REGISTER(opticalCenter.y) = IMAGE_HEIGHT / 2;
+
       syncWithConfig();
     }
+
+  public:
+    // diagonal angle of field of view
+    double openingAngleDiagonal;
+
+    Vector2d opticalCenter;
   };
 
   class CameraInfo: public Printable
@@ -45,13 +51,7 @@ namespace naoth
       numOfCamera //FIXME: this doesn't correspond to the type naothmessages::CameraID
     };
     
-    CameraInfo()
-      :
-      cameraID(Bottom),
-      resolutionWidth(IMAGE_WIDTH),
-      resolutionHeight(IMAGE_HEIGHT),
-      params(getCameraIDName(Bottom))
-    {}
+    CameraInfo() : CameraInfo(Bottom) {}
 
     CameraInfo(CameraID id)
       :
@@ -92,14 +92,16 @@ namespace naoth
     }
 
     double getOpticalCenterX() const {
-      return static_cast<double>(resolutionWidth / 2);
+      return params.opticalCenter.x;
+      //return static_cast<double>(resolutionWidth / 2);
     }
 
     double getOpticalCenterY() const {
-      return static_cast<double>(resolutionHeight / 2);
+      return params.opticalCenter.y;
+      //return static_cast<double>(resolutionHeight / 2);
     }
 
-    inline unsigned long CameraInfo::getSize() const {
+    inline unsigned long getSize() const {
       return resolutionHeight * resolutionWidth;
     }
 
