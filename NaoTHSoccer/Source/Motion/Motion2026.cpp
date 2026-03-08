@@ -28,8 +28,9 @@ Motion2026::Motion2026()
   REGISTER_DEBUG_COMMAND("ParameterList:set", "set the parameter list with the given name", &getDebugParameterList());
 
 
-  theHeadMotionEngine = registerModule<HeadMotionEngine>("HeadMotionEngine", true);
-
+  theHeadMotionEngine   = registerModule<HeadMotionEngine>("HeadMotionEngine", true);
+  theBoosterBodyAdapter = registerModule<BoosterBodyAdapter>("BoosterBodyAdapter", true);
+  
 
   getDebugParameterList().add(&parameter);
 }
@@ -127,6 +128,11 @@ void Motion2026::call()
 
   PLOT("Motion:head_pitch", head_pitch);
   PLOT("Motion:head_yaw", head_yaw);
+
+  // Booster
+  // kGetUp
+  // kDamping
+  theBoosterBodyAdapter->execute();
 
 
   // logger

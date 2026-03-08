@@ -18,6 +18,8 @@
 // modules
 #include "Engine/HeadMotion/HeadMotionEngine.h"
 
+#include "Infrastructure/BoosterAdapter/BoosterBodyAdapter.h"
+
 
 // representations
 #include <Representations/Infrastructure/FrameInfo.h>
@@ -149,6 +151,8 @@ private: // motion modules
   AbstractModuleCreator* theLogProvider;
 
   ModuleCreator<HeadMotionEngine>* theHeadMotionEngine;
+  ModuleCreator<BoosterBodyAdapter>* theBoosterBodyAdapter;
+  
 
   Logger motionLogger;
   Stopwatch cycleStopwatch;
