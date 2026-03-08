@@ -16,38 +16,6 @@
 using namespace naoth;
 using namespace std;
 
-double CameraInfo::getFocalLength() const
-{
-  double halfDiagLength = 0.5 * hypot(resolutionWidth, resolutionHeight);
-  
-  // senity check
-  ASSERT(halfDiagLength > 0.0 && getOpeningAngleDiagonal() > 0.0);
-  return halfDiagLength / tan(0.5 * getOpeningAngleDiagonal());
-}
-
-double CameraInfo::getOpeningAngleHeight() const {
-  return 2.0 * atan2(static_cast<double>(resolutionHeight), getFocalLength() * 2.0);
-}
-
-double CameraInfo::getOpeningAngleWidth() const {
-  return 2.0 * atan2(static_cast<double>(resolutionWidth), getFocalLength() * 2.0);
-}
-
-double CameraInfo::getOpticalCenterX() const {
-  return static_cast<double>(resolutionWidth / 2);
-}
-
-double CameraInfo::getOpticalCenterY() const {
-  return static_cast<double>(resolutionHeight / 2);
-}
-
-unsigned long CameraInfo::getSize() const {
-  return resolutionHeight * resolutionWidth;
-}
-
-double CameraInfo::getOpeningAngleDiagonal() const {
-  return params.openingAngleDiagonal;
-}
 
 void CameraInfo::print(ostream& stream) const
 {
@@ -76,34 +44,7 @@ void CameraInfo::print(ostream& stream) const
          ;
 }
 
-CameraInfoParameter::CameraInfoParameter(const std::string& idName)
-  :
-  ParameterList("CameraInfo" + idName)
-{
-  PARAMETER_ANGLE_REGISTER(openingAngleDiagonal) = 72.6;
 
-  /*
-  //size of an Pixel on the chip
-  PARAMETER_REGISTER(pixelSize) = 0.0036;
-  //measured focus
-  PARAMETER_REGISTER(focus) = 1.37;
-  //moved middle point
-  PARAMETER_REGISTER(xp) = 0.0;
-  PARAMETER_REGISTER(yp) = 0.0;
-  //radial symmetric distortion parameters
-  PARAMETER_REGISTER(k1) = 0.0;
-  PARAMETER_REGISTER(k2) = 0.0;
-  PARAMETER_REGISTER(k3) = 0.0;
-  //radial asymmetric and tangential distortion parameters
-  PARAMETER_REGISTER(p1) = 0.0;
-  PARAMETER_REGISTER(p2) = 0.0;
-  //affinity and shearing distortion parameters
-  PARAMETER_REGISTER(b1) = 0.0;
-  PARAMETER_REGISTER(b2) = 0.0;
-  */
-
-  syncWithConfig();
-}
 
 void Serializer<CameraInfo>::serialize(const CameraInfo& representation, std::ostream& stream)
 {
@@ -112,6 +53,7 @@ void Serializer<CameraInfo>::serialize(const CameraInfo& representation, std::os
   msg.set_resolutionheight(representation.resolutionHeight);
   msg.set_cameraid((naothmessages::CameraID) representation.cameraID);
   msg.set_openinganglediagonal(representation.params.openingAngleDiagonal);
+
   //msg.set_focus(representation.params.focus);
   //msg.set_pixelsize(representation.params.pixelSize);
 
@@ -129,6 +71,7 @@ void Serializer<CameraInfo>::deserialize(std::istream& stream, CameraInfo& r)
   r.resolutionHeight = static_cast<unsigned int>(msg.resolutionheight());
   r.cameraID = (CameraInfo::CameraID) msg.cameraid();
   r.params.openingAngleDiagonal = msg.openinganglediagonal();
+
   //r.params.focus = msg.focus();
   //r.params.pixelSize = msg.pixelsize();
 }
