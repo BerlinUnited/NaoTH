@@ -17,6 +17,8 @@
 
 #include <Representations/Infrastructure/FrameInfo.h>
 
+#include <Representations/Body/HeadPose.h>
+
 #include "Representations/Motion/Request/HeadMotionRequest.h"
 #include "Representations/Motion/Request/MotionRequest.h"
 
@@ -32,13 +34,17 @@ BEGIN_DECLARE_MODULE(BoosterBodyAdapter)
   // actions
   REQUIRE(HeadMotionRequest)
   REQUIRE(MotionRequest)
+
+  PROVIDE(HeadPose)
 END_DECLARE_MODULE(BoosterBodyAdapter)
 
 class BoosterBodyAdapter : public BoosterBodyAdapterBase
 {
 private:
   SocketConnector bodyBridge;
+
   Booster::ActuatorData actuatorData;
+  Booster::SensorData sensorData;
 
 public:
 
@@ -55,14 +61,30 @@ public:
 
   virtual void execute() 
   {
-    actuatorData.headPose.yaw   = getHeadMotionRequest().targetJointPosition.x; // yaw
-    actuatorData.headPose.pitch = getHeadMotionRequest().targetJointPosition.y; // pitch
+    actuatorData.headRotation.yaw       = static_cast<float>(getHeadMotionRequest().targetJointPosition.x); // yaw
+    actuatorData.headRotation.pitch     = static_cast<float>(getHeadMotionRequest().targetJointPosition.y); // pitch
 
-    actuatorData.walkVelocity.x         = getMotionRequest().walkRequest.target.translation.x;
-    actuatorData.walkVelocity.y         = getMotionRequest().walkRequest.target.translation.y;
-    actuatorData.walkVelocity.rotation  = getMotionRequest().walkRequest.target.rotation;
+    actuatorData.walkVelocity.x         = static_cast<float>(getMotionRequest().walkRequest.target.translation.x);
+    actuatorData.walkVelocity.y         = static_cast<float>(getMotionRequest().walkRequest.target.translation.y);
+    actuatorData.walkVelocity.rotation  = static_cast<float>(getMotionRequest().walkRequest.target.rotation);
 
     bodyBridge.send_actuators(actuatorData);
+
+    // receive the newest sensor data
+    bodyBridge.receive_sensors(sensorData);
+
+    // unpack the sensor data
+
+    getHeadPose().pose.translation.x    = sensorData.headPose.position.x;
+    getHeadPose().pose.translation.y    = sensorData.headPose.position.y;
+    getHeadPose().pose.translation.z    = sensorData.headPose.position.z;
+
+    getHeadPose().pose.rotation = RotationMatrix::fromQuaternion(
+      { sensorData.headPose.orientation.x,
+        sensorData.headPose.orientation.y,
+        sensorData.headPose.orientation.z }, 
+        sensorData.headPose.orientation.w
+    );
   }
 };
 

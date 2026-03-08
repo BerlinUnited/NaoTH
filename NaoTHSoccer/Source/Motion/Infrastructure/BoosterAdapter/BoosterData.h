@@ -257,7 +257,7 @@ struct ActuatorData
     float pitch;
 
     MSGPACK_DEFINE_MAP(yaw, pitch);
-  } headPose;
+  } headRotation;
 
   struct {
     float x;
@@ -267,7 +267,32 @@ struct ActuatorData
     MSGPACK_DEFINE_MAP(x, y, rotation);
   } walkVelocity;
   
-  MSGPACK_DEFINE_MAP(headPose, walkVelocity);
+  MSGPACK_DEFINE_MAP(headRotation, walkVelocity);
+};
+
+
+struct SensorData 
+{
+  struct {
+    struct {
+      float x;
+      float y;
+      float z;
+      MSGPACK_DEFINE_MAP(x, y, z);
+    } position;
+    
+    struct {
+      float x;
+      float y;
+      float z;
+      float w;
+      MSGPACK_DEFINE_MAP(x, y, z, w);
+    } orientation;
+
+    MSGPACK_DEFINE_MAP(position, orientation);
+  } headPose;
+
+  MSGPACK_DEFINE_MAP(headPose);
 };
 
 };

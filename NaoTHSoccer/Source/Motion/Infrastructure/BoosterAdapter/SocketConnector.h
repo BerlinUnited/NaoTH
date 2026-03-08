@@ -45,7 +45,9 @@ public:
 
   inline size_t send_exact(const void* buffer, size_t size) {}
   inline bool send_msgpack(const msgpack::sbuffer& sbuf) {}
-  inline void send_actuators(const Booster::ActuatorData& data){}
+
+  inline void send_actuators(const Booster::ActuatorData& data) {}
+  inline void receive_sensors(const Booster::SensorData& data) {}
 };
 
 #else
@@ -58,6 +60,8 @@ class SocketConnector
 
   // indicated that the LOLA client is in the error state
   bool error = false;
+
+  msgpack::unpacker m_pac;
 
 public:
 
@@ -108,6 +112,55 @@ public:
     }
   }
 
+  inline bool send_msgpack(const msgpack::sbuffer& sbuf)
+  {
+    uint32_t len = static_cast<uint32_t>(sbuf.size());
+    uint32_t len_be = htonl(len);
+
+    if (send_exact(&len_be, sizeof(len_be)) != sizeof(len_be)) { 
+      return false;
+    }
+    if (send_exact(sbuf.data(), sbuf.size()) != sbuf.size()) { 
+      return false;
+    }
+
+    return true;
+  }
+
+  inline bool receive_sensors(Booster::SensorData& data)
+  {
+    uint32_t len_be;
+    if (recv_exact(&len_be, sizeof(len_be)) != sizeof(len_be)) { 
+      return false; 
+    }
+
+    uint32_t len = ntohl(len_be);
+
+    // make sure we have enough space
+    m_pac.reserve_buffer(len);
+
+    size_t bytes = recv_exact(m_pac.buffer(), m_pac.buffer_capacity());
+    if (bytes != sizeof(m_pac.buffer_capacity())) {
+      return false;
+    }
+
+    m_pac.buffer_consumed(bytes);
+
+    msgpack::object_handle oh;
+    m_pac.next(oh);
+
+    // deserialized object is valid during the msgpack::object_handle instance is alive.
+    msgpack::object deserialized = oh.get();
+
+    // debug
+    //std::cout << deserialized << std::endl;
+
+    // convert msgpack::object instance into the original type.
+    deserialized.convert(data);
+
+    return true;
+  }
+
 public:
 
   inline size_t send_exact(const void* buffer, size_t size)
@@ -130,15 +183,32 @@ public:
     return total;
   }
 
-  inline bool send_msgpack(const msgpack::sbuffer& sbuf)
+  inline int recv_exact(void* buf, size_t n) 
   {
-    uint32_t len = static_cast<uint32_t>(sbuf.size());
-    uint32_t len_be = htonl(len);
+    auto* p = static_cast<char*>(buf);
+    size_t got = 0;
+    while (got < n) 
+    {
+      ssize_t r = ::recv(fd, p + got, n - got, 0);
 
-    if (send_exact(&len_be, sizeof(len_be)) != sizeof(len_be)) return false;
-    if (send_exact(sbuf.data(), sbuf.size()) != sbuf.size()) return false;
-    return true;
+      // peer closed
+      if (r == 0) { 
+        return r; 
+      }    
+
+      // interrupted -> retry
+      if (r < 0) {
+        if (errno == EINTR) { 
+          continue; 
+        }
+        std::cerr << "[IMAGE_BRIDGE] recv_exact error: " << std::strerror(errno) << std::endl;
+        return r;
+      }
+      got += static_cast<size_t>(r);
+    }
+    return got;
   }
+
 };
 #endif
 
