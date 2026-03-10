@@ -22,15 +22,8 @@ option decide_game_state
   state stopped {
     action
     {
-      // HACK: keep the state
-      // TODO: maybe there is a better solution
-      game.current_mode = (game.state == _initial_) ? init : game.current_mode;
-      game.current_mode = (game.state == ready)     ? ready : game.current_mode;
-      game.current_mode = (game.state == set)       ? set : game.current_mode;
-      game.current_mode = (game.state == penalized) ? penalized : game.current_mode;
-      game.current_mode = (game.state == finished)  ? finished : game.current_mode;
-      game.current_mode = (game.state == playing)   ? playing : game.current_mode;
-      game.current_mode = (game.state == unstiff)   ? init : game.current_mode;
+      // this state only exists internaly
+      game.current_mode = stopped;
 
       motion.type = stand;
       arm.control_mode = normal;
