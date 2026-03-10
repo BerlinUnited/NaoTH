@@ -252,6 +252,8 @@ namespace Booster {
 
 struct ActuatorData 
 {
+  std::string id;
+
   struct {
     float yaw;
     float pitch;
@@ -267,7 +269,7 @@ struct ActuatorData
     MSGPACK_DEFINE_MAP(x, y, rotation);
   } walkVelocity;
   
-  MSGPACK_DEFINE_MAP(headRotation, walkVelocity);
+  MSGPACK_DEFINE_MAP(id, headRotation, walkVelocity);
 };
 
 

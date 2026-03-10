@@ -55,6 +55,10 @@
 #include <Representations/Infrastructure/UltraSoundData.h>
 
 
+// Booster specific for now
+#include <Representations/Body/HeadPose.h>
+
+
 // local tools
 //#include "Tools/SharedMemoryIO.h"
 
