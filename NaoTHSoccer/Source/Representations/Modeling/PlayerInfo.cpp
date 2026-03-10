@@ -37,7 +37,6 @@ std::string PlayerInfo::toString(RobotState value)
     RETURN_VALUE_TO_STR(set);
     RETURN_VALUE_TO_STR(playing);
     RETURN_VALUE_TO_STR(finished);
-    RETURN_VALUE_TO_STR(standby);
     RETURN_VALUE_TO_STR(penalized);
     RETURN_VALUE_TO_STR(unstiff);
   }

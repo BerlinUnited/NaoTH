@@ -27,7 +27,6 @@ void GameSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerEnumElement("game.state","game.state.playing",   PlayerInfo::playing);
   engine.registerEnumElement("game.state","game.state.penalized", PlayerInfo::penalized);
   engine.registerEnumElement("game.state","game.state.finished",  PlayerInfo::finished);
-  engine.registerEnumElement("game.state","game.state.standby",   PlayerInfo::standby);
   engine.registerEnumElement("game.state","game.state.unstiff",   PlayerInfo::unstiff);
 
   // current game state

@@ -30,8 +30,9 @@ public:
     playing,
     finished,
     penalized,  // <== GameState doesn't have this :)
-    unstiff,     // <== GameState doesn't have this :)
-    standby // <== GameState doesn't have this :)
+    unstiff     // <== GameState doesn't have this :)
+    // Removed in 2026
+    //standby // <== GameState doesn't have this :)
   };
 
   // Same as SetPlay of the GameData, but can be different for each robot and set (e.g.) via DebugRequest

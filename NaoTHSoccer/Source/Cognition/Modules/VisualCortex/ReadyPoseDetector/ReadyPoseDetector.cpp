@@ -63,9 +63,10 @@ void ReadyPoseDetector::execute()
   // dont do anything if we are not in standby - but wen can draw the detection area without being in standby
 
 
-  if(getPlayerInfo().robotState != PlayerInfo::RobotState::standby) {
-    return;
-  }
+  // standby removed in 2026
+  //if(getPlayerInfo().robotState != PlayerInfo::RobotState::standby) {
+  //  return;
+  //}
 
   float (*inputTensor)[1][192][192][3] = reinterpret_cast<float(*)[1][192][192][3]>(exec.getInputTensor());
 

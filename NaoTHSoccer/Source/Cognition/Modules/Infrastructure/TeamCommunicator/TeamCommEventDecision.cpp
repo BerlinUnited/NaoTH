@@ -80,7 +80,7 @@ void TeamCommEventDecision::byDistance()
         readyChangeWasSent = true;
       }
 
-      // reset the erady notify flag
+      // reset the ready notify flag
       if(getPlayerInfo().robotState == PlayerInfo::standby) {
         readyChangeWasSent = false;
       }

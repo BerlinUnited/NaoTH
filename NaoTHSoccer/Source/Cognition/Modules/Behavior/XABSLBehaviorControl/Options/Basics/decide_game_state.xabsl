@@ -1,7 +1,9 @@
 option decide_game_state 
 {  
   common decision {
-    if (game.state == _initial_)
+    if (game.stopped)
+      goto stopped;
+    else if (game.state == _initial_)
       goto _initial;
     else if (game.state == ready)
       goto ready;
@@ -11,32 +13,39 @@ option decide_game_state
       goto penalized;
     else if (game.state == finished)
       goto finished;
-    else if (game.state == standby)
-      goto standby;
-    else if(game.state == playing)
+    else if (game.state == playing)
       goto playing;
-    else if(game.state == unstiff)
+    else if (game.state == unstiff)
       goto unstiff;
   }
   
-  initial state _initial {
+  state stopped {
     action
     {
-      game.current_mode = init;
-      //motion.type = init;
+      // HACK: keep the state
+      // TODO: maybe there is a better solution
+      game.current_mode = (game.state == _initial_) ? init : game.current_mode;
+      game.current_mode = (game.state == ready)     ? ready : game.current_mode;
+      game.current_mode = (game.state == set)       ? set : game.current_mode;
+      game.current_mode = (game.state == penalized) ? penalized : game.current_mode;
+      game.current_mode = (game.state == finished)  ? finished : game.current_mode;
+      game.current_mode = (game.state == playing)   ? playing : game.current_mode;
+      game.current_mode = (game.state == unstiff)   ? init : game.current_mode;
+
       motion.type = stand;
       arm.control_mode = normal;
       head.control_mode = stay_as_forced;
-      audio.capture = false;  //whistledetector off
+      
+      audio.capture = false;
       last_state_was_penalized = false;
     }
   }
 
-  state standby {
+  initial state _initial {
     action
     {
-      game.current_mode = standby;
-      //motion.type = init;
+      game.current_mode = init;
+      
       motion.type = stand;
       arm.control_mode = normal;
       head.control_mode = stay_as_forced;

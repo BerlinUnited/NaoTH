@@ -5,7 +5,6 @@ namespace internal_symbols("Internal Symbols") {
   enum game.internal_mode internal 
   {
     init,
-    standby,
     ready,
     set,
     playing,

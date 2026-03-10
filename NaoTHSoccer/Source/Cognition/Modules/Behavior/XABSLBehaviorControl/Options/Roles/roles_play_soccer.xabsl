@@ -6,8 +6,7 @@ option roles_play_soccer
       goto idle;
     else if(game.current_mode != playing &&
             game.current_mode != ready &&
-            game.current_mode != set &&
-            game.current_mode != standby)
+            game.current_mode != set)
       goto idle;
   }
   
@@ -18,10 +17,6 @@ option roles_play_soccer
                 game.current_mode == ready || 
                 game.current_mode == set)
         goto calibrate_inertial;
-      else if (game.current_mode == standby)
-        // some players might wach the referee here in the future
-      //  goto calibrate_inertial;
-        goto standby;
       else
         stay;
     } 
@@ -58,8 +53,6 @@ option roles_play_soccer
           goto ready;
         else if(game.current_mode == set)
           goto set;
-        else if(game.current_mode == standby)
-          goto standby;
         else 
           goto idle;
       }
@@ -73,28 +66,6 @@ option roles_play_soccer
     }
   }
 
-  state standby
-  {
-    decision
-    {
-      else if(game.current_mode == playing)
-        //goto play;
-        goto calibrate_inertial;
-      else if(game.current_mode == ready)
-        //goto ready;
-        goto calibrate_inertial;
-      else if(game.current_mode == set)
-        //goto set;
-        goto calibrate_inertial;
-      else 
-        stay;
-    }
-    action 
-    {
-      head.control_mode = look_straight_ahead;
-      motion.type = stand;
-    }
-  }
 
   state ready
   {

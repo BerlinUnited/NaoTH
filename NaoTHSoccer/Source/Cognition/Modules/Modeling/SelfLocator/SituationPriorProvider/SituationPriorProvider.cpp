@@ -68,7 +68,7 @@ void SituationPriorProvider::execute()
   }
 
   // initial positions at the first ready
-  else if(currentRobotState == PlayerInfo::ready && (lastRobotState == PlayerInfo::initial || lastRobotState == PlayerInfo::standby))
+  else if(currentRobotState == PlayerInfo::ready && lastRobotState == PlayerInfo::initial)
   {
     getSituationPrior().currentPrior = SituationPrior::firstReady;
   }
