@@ -7,7 +7,7 @@ GameController::GameController()
   : 
   debug_whistle_heard(false),
   play_by_whistle(false),
-  ready_by_pose_detection(false),
+  //ready_by_pose_detection(false),
   setPlaySecondsRemaining(-1),
   lastSetPlayTime(-1)
 {
@@ -18,14 +18,17 @@ GameController::GameController()
   DEBUG_REQUEST_REGISTER("gamecontroller:game_state:set", "force the set state", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:game_state:finished", "force the finished state", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:game_state:unstiff", "force the unstiff state", false);
-  DEBUG_REQUEST_REGISTER("gamecontroller:game_state:standby", "force the standby state", false);
+  // standby removed in 2026
+  //DEBUG_REQUEST_REGISTER("gamecontroller:game_state:standby", "force the standby state", false);
 
   DEBUG_REQUEST_REGISTER("gamecontroller:set_play:none", "force the setPlay state to none", false);
-  DEBUG_REQUEST_REGISTER("gamecontroller:set_play:goal_kick", "force the setPlay state to goal free kick", false);
-  DEBUG_REQUEST_REGISTER("gamecontroller:set_play:pushing_free_kick", "force the setPlay state to pushing free kick", false);
-  DEBUG_REQUEST_REGISTER("gamecontroller:set_play:corner_kick", "force the setPlay state to corner kick", false);
-  DEBUG_REQUEST_REGISTER("gamecontroller:set_play:kick_in", "force the setPlay state to kick-in", false);
-  DEBUG_REQUEST_REGISTER("gamecontroller:set_play:penalty_kick", "force the setPlay state to penalty kick", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:set_play:direct_free_kick", "force the setPlay state to direct_free_kick", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:set_play:indirect_free_kick", "force the setPlay state to indirect_free_kick", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:set_play:penalty_kick", "force the setPlay state to penalty_kick", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:set_play:throw_in", "force the setPlay state to throw_in", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:set_play:goal_kick", "force the setPlay state to goal_kick", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:set_play:corner_kick", "force the setPlay state to corner_kick", false);
+  
 
   DEBUG_REQUEST_REGISTER("gamecontroller:gamephase:normal", "force the gamephase", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:gamephase:penaltyshoot", "force the gamephase", false);
@@ -133,9 +136,9 @@ void GameController::execute()
   }
 
   // reset ready pose detection
-  if(getPlayerInfo().robotState != PlayerInfo::ready) {
-    ready_by_pose_detection = false;
-  }
+  //if(getPlayerInfo().robotState != PlayerInfo::ready) {
+  //  ready_by_pose_detection = false;
+  //}
   
   // reset kickoff state
   if (getPlayerInfo().robotState == PlayerInfo::playing) {
@@ -161,9 +164,9 @@ void GameController::execute()
     }
 
     // release the ownership of the ready state to the GC when its in sync
-    if(getPlayerInfo().robotState == PlayerInfo::ready) {
-      ready_by_pose_detection = false;
-    }
+    //if(getPlayerInfo().robotState == PlayerInfo::ready) {
+    //  ready_by_pose_detection = false;
+    //}
   }
 
   handleButtons();
@@ -180,6 +183,8 @@ void GameController::execute()
     }
   }
 
+  // standby removed in 2026
+  /*
   if(getPlayerInfo().robotState == PlayerInfo::standby)
   {
     // switch from set to play
@@ -198,9 +203,8 @@ void GameController::execute()
       handleCommunicatedReadyState(5);
       handleCommunicatedReadyState(3);
     }
-
   }
-
+  */
 
   // checks if the ball remained untouched in a set play
   // so careful approach can be used
@@ -269,7 +273,8 @@ void GameController::execute()
   }
 } // end execute
 
-
+// standby removed in 2026
+/*
 void GameController::handleCommunicatedReadyState(int playerNumber) 
 {
   if(getTeamState().hasPlayer(playerNumber)) 
@@ -281,6 +286,7 @@ void GameController::handleCommunicatedReadyState(int playerNumber)
     }
   }
 }
+*/
 
 void GameController::handleDebugRequest()
 {
@@ -310,28 +316,28 @@ void GameController::handleDebugRequest()
   DEBUG_REQUEST("gamecontroller:game_state:unstiff",
     debugState = PlayerInfo::unstiff;
   );
-  DEBUG_REQUEST("gamecontroller:game_state:standby",
-    debugState = PlayerInfo::standby;
-  );
 
   // DebugRequests for the set play state (free kicks)
   DEBUG_REQUEST("gamecontroller:set_play:none",
     getPlayerInfo().robotSetPlay = PlayerInfo::set_none;
   );
-  DEBUG_REQUEST("gamecontroller:set_play:goal_kick",
-    getPlayerInfo().robotSetPlay = PlayerInfo::goal_kick;
+  DEBUG_REQUEST("gamecontroller:set_play:direct_free_kick",
+    getPlayerInfo().robotSetPlay = PlayerInfo::direct_free_kick;
   );
-  DEBUG_REQUEST("gamecontroller:set_play:pushing_free_kick",
-    getPlayerInfo().robotSetPlay = PlayerInfo::pushing_free_kick;
-  );
-  DEBUG_REQUEST("gamecontroller:set_play:corner_kick",
-    getPlayerInfo().robotSetPlay = PlayerInfo::corner_kick;
-  );
-  DEBUG_REQUEST("gamecontroller:set_play:kick_in",
-    getPlayerInfo().robotSetPlay = PlayerInfo::kick_in;
+  DEBUG_REQUEST("gamecontroller:set_play:indirect_free_kick",
+    getPlayerInfo().robotSetPlay = PlayerInfo::indirect_free_kick;
   );
   DEBUG_REQUEST("gamecontroller:set_play:penalty_kick",
     getPlayerInfo().robotSetPlay = PlayerInfo::penalty_kick;
+  );
+  DEBUG_REQUEST("gamecontroller:set_play:throw_in",
+    getPlayerInfo().robotSetPlay = PlayerInfo::throw_in;
+  );
+  DEBUG_REQUEST("gamecontroller:set_play:goal_kick",
+    getPlayerInfo().robotSetPlay = PlayerInfo::goal_kick;
+  );
+  DEBUG_REQUEST("gamecontroller:set_play:corner_kick",
+    getPlayerInfo().robotSetPlay = PlayerInfo::corner_kick;
   );
 
   DEBUG_REQUEST("gamecontroller:gamephase:normal",
@@ -384,7 +390,6 @@ void GameController::handleButtons()
     switch (getPlayerInfo().robotState)
     {
     case PlayerInfo::initial:
-    case PlayerInfo::standby:
     case PlayerInfo::ready:
     case PlayerInfo::set:
     case PlayerInfo::playing:
@@ -488,7 +493,6 @@ void GameController::updateLEDs()
     case PlayerInfo::playing:   getGameControllerLEDRequest().request.setChestButton(0.0, 1.0, 0.0); break; // GREEN
     case PlayerInfo::finished:  getGameControllerLEDRequest().request.setChestButton(0.0, 0.0, 0.0); break; // OFF
     case PlayerInfo::penalized: getGameControllerLEDRequest().request.setChestButton(1.0, 0.0, 0.0); break; // RED
-    case PlayerInfo::standby:   getGameControllerLEDRequest().request.setChestButton(0.0, 1.0, 1.0); break; // CYAN
     case PlayerInfo::unstiff:   
       // blinking chest button for unstiff state: blue <-> off
       if (getFrameInfo().getFrameNumber() % 8 < 4) {

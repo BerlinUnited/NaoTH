@@ -341,12 +341,27 @@ void CNNBallDetector::calculateCandidates()
         cnn_detector = currentCNNClose_detector;
       }
 
+      int redCount = 0;
+      for(const BallCandidates::ClassifiedPixel& p : patch.data) {
+        if (p.c == (unsigned char)ColorClasses::red) {
+          redCount++;
+        }
+      }
+      /*
+      if(redCount > 3) {
+        CANVAS(((cameraID == CameraInfo::Top)?"ImageTop":"ImageBottom"));
+        PEN("FF00FF", 1); // red
+        Vector2i c = patch.center();
+        CIRCLE( c.x, c.y, patch.radius());
+      }
+     */
+
       STOPWATCH_START("CNNBallDetector:classifierPredict");
       cnn->predict(patch, params.cnn.classifierMeanBrightnessOffset);
       STOPWATCH_STOP("CNNBallDetector:classifierPredict");
 
       // only run the detector if the classifier predicted a ball in the patch
-      if (cnn->getBallConfidence() >= selectedCNNThreshold) 
+      if (cnn->getBallConfidence() >= selectedCNNThreshold || redCount > params.redCount) 
       {
         
         // HACK: resizing the patch with postBorder helps the classifier
@@ -355,7 +370,8 @@ void CNNBallDetector::calculateCandidates()
         patchForDetector.min = (*i).min;
         patchForDetector.max = (*i).max;
         PatchWork::subsampling(getImage(), getFieldColorPercept(), patchForDetector);
-        
+          
+
         STOPWATCH_START("CNNBallDetector:detectorPredict");
         cnn_detector->predict(patchForDetector, params.cnn.detectorMeanBrightnessOffset);
         STOPWATCH_STOP("CNNBallDetector:detectorPredict");
@@ -368,7 +384,10 @@ void CNNBallDetector::calculateCandidates()
         if (pos.x >= 0.0 && pos.y >= 0.0) {
           // adjust the center and radius of the patch
           Vector2d ballCenterInPatch(pos.x * patchForDetector.width(), pos.y*patchForDetector.width());
-          addBallPercept(ballCenterInPatch + patchForDetector.min, radius*patchForDetector.width());
+          //addBallPercept(ballCenterInPatch + patchForDetector.min, radius*patchForDetector.width());
+          
+          addBallPercept(ballCenterInPatch + patchForDetector.min, patch.radius());
+          
           if (last_percept_valid == false){
             last_percept_min = patchForDetector.min;
             last_percept_max = patchForDetector.max;

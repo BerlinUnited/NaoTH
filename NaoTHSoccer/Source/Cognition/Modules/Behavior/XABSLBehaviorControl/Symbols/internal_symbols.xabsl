@@ -5,12 +5,12 @@ namespace internal_symbols("Internal Symbols") {
   enum game.internal_mode internal 
   {
     init,
-    standby,
     ready,
     set,
     playing,
     penalized,
     finished,
+    stopped, // a special internal state
     unknown
   };
   
