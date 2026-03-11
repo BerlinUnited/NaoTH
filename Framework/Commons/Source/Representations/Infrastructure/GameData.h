@@ -46,37 +46,18 @@ public:
     unknown_team_color = 255
   };
 
-  enum CompetitionPhase
-  {
-    roundrobin = COMPETITION_PHASE_ROUNDROBIN,
-    playoff    = COMPETITION_PHASE_PLAYOFF
-  };
-
   enum CompetitionType
   {
-    competition_normal   = COMPETITION_TYPE_NORMAL,
-    //competition_mixed  = COMPETITION_TYPE_MIXEDTEAM // Deprecated since 2021
-    
-    // RC 2021
-    //competition_1v1      = COMPETITION_TYPE_1VS1_CHALLENGE,
-    //competition_passing  = COMPETITION_TYPE_PASSING_CHALLENGE
-
-    // RC 2022
-    //competition_challenge_shield        = COMPETITION_TYPE_CHALLENGE_SHIELD,
-    //competition_7v7                     = COMPETITION_TYPE_7V7,
-
-    // RC 2023
-    //competition_dynamic_ball_handling   = COMPETITION_TYPE_DYNAMIC_BALL_HANDLING
-
-    // RC 2024
-    competition_type_shared_autonomy = COMPETITION_TYPE_SHARED_AUTONOMY
+    competition_type_small   = COMPETITION_TYPE_SMALL,
+    competition_type_middle   = COMPETITION_TYPE_MIDDLE,
+    competition_type_large   = COMPETITION_TYPE_LARGE,
   };
 
   enum GamePhase
   {
     normal        = GAME_PHASE_NORMAL,
     penaltyshoot  = GAME_PHASE_PENALTYSHOOT,
-    overtime      = GAME_PHASE_OVERTIME,
+    overtime      = GAME_PHASE_EXTRATIME,
     timeout       = GAME_PHASE_TIMEOUT
   };
 
@@ -87,43 +68,38 @@ public:
     set       = STATE_SET,
     playing   = STATE_PLAYING,
     finished  = STATE_FINISHED,
-    standby   = STATE_STANDBY,
     unknown_game_state
   };
 
+
   enum SetPlay 
   {
-    set_none          = SET_PLAY_NONE,
-    goal_kick         = SET_PLAY_GOAL_KICK,
-    pushing_free_kick = SET_PLAY_PUSHING_FREE_KICK,
-    corner_kick       = SET_PLAY_CORNER_KICK,
-    kick_in           = SET_PLAY_KICK_IN,
-    penalty_kick      = SET_PLAY_PENALTY_KICK
+    set_none           = SET_PLAY_NONE,
+    direct_free_kick   = SET_PLAY_DIRECT_FREE_KICK,
+    indirect_free_kick = SET_PLAY_INDIRECT_FREE_KICK,
+    penalty_kick       = SET_PLAY_PENALTY_KICK,
+    throw_in           = SET_PLAY_THROW_IN,
+    goal_kick          = SET_PLAY_GOAL_KICK,
+    corner_kick        = SET_PLAY_CORNER_KICK  
   };
+
 
   enum Penalty
   {
     penalty_none              = PENALTY_NONE,
-                              
-    illegal_ball_contact      = PENALTY_SPL_ILLEGAL_BALL_CONTACT,
-    player_pushing            = PENALTY_SPL_PLAYER_PUSHING,
-    illegal_motion_in_set     = PENALTY_SPL_ILLEGAL_MOTION_IN_SET,
-    inactive_player           = PENALTY_SPL_INACTIVE_PLAYER,
-    illegal_position          = PENALTY_SPL_ILLEGAL_POSITION,
-    leaving_the_field         = PENALTY_SPL_LEAVING_THE_FIELD,
-    request_for_pickup        = PENALTY_SPL_REQUEST_FOR_PICKUP,
-    local_game_stuck          = PENALTY_SPL_LOCAL_GAME_STUCK,
 
-    //kick_off_goal             = 98, //PENALTY_SPL_KICK_OFF_GOAL, // Deprecated since 2021
-    //illegal_defender          = 97, //PENALTY_SPL_ILLEGAL_DEFENDER, // Deprecated since 2021
-    //illegal_positioning       = 99, //PENALTY_SPL_ILLEGAL_POSITIONING, // Deprecated since 2021
-    
-    illegal_position_in_set   = PENALTY_SPL_ILLEGAL_POSITION_IN_SET,
-    player_stance             = PENALTY_SPL_PLAYER_STANCE,
-    illegal_motion_in_standby = PENALTY_SPL_ILLEGAL_MOTION_IN_STANDBY,
-
+    illegal_positioning       = PENALTY_ILLEGAL_POSITIONING,
+    motion_in_set             = PENALTY_MOTION_IN_SET,
+    local_game_stuck          = PENALTY_LOCAL_GAME_STUCK,
+    incapable_robot           = PENALTY_INCAPABLE_ROBOT,
+    pickup                    = PENALTY_PICK_UP,
+    ball_holding              = PENALTY_BALL_HOLDING,
+    leaving_the_field         = PENALTY_LEAVING_THE_FIELD,
+    playing_with_arms_hands   = PENALTY_PLAYING_WITH_ARMS_HANDS,
+    pushing                   = PENALTY_PUSHING,
+    sent_off                  = PENALTY_SENT_OFF,
     substitute                = PENALTY_SUBSTITUTE,
-    manual                    = PENALTY_MANUAL,
+    manual,
   };
 
 
@@ -154,17 +130,11 @@ public:
     unsigned int penaltyShot;       // penalty shot counter
     unsigned int messageBudget;     // number of team messages the team is allowed to send for the remainder of the game
     std::vector<RobotInfo> players; // the team's players
-
-    // NOTE: not used yet
-    //unsigned int goalieNumber;      // unique goalie number
-    //TeamColor goalieColor;          // colour of the goalie
-    //uint16_t singleShots;     // bits represent penalty shot success
   };
 
   void updateSetPlayState();
 
   static std::string toString(TeamColor value);
-  static std::string toString(CompetitionPhase value);
   static std::string toString(CompetitionType value);
   static std::string toString(GamePhase value);
   static std::string toString(GameState value);
@@ -176,8 +146,8 @@ public:
   static Penalty penaltyFromString(const std::string& str);
 
   virtual void print(std::ostream& stream) const;
-  void parseFrom(const spl::RoboCupGameControlData& data, int teamNumber);
-  void parseTeamInfo(TeamInfo& teamInfoDst, const spl::TeamInfo& teamInfoSrc) const;
+  void parseFrom(const hsl::RoboCupGameControlData& data, int teamNumber);
+  void parseTeamInfo(TeamInfo& teamInfoDst, const hsl::TeamInfo& teamInfoSrc) const;
 
   GameData();
 
@@ -192,7 +162,6 @@ public:
 
   unsigned int playersPerTeam;                 // the number of players on a team
 
-  CompetitionPhase competitionPhase;  // phase of the competition (COMPETITION_PHASE_ROUNDROBIN, COMPETITION_PHASE_PLAYOFF)
   CompetitionType  competitionType;   // type of the competition (COMPETITION_TYPE_NORMAL, COMPETITION_TYPE_1VS1_CHALLENGE, COMPETITION_TYPE_PASSING_CHALLENGE)
   GamePhase        gamePhase;         // phase of the game (GAME_PHASE_NORMAL, GAME_PHASE_PENALTYSHOOT, etc)
   GameState        gameState;         // state of the game (STATE_READY, STATE_PLAYING, etc)
@@ -206,6 +175,9 @@ public:
   
   TeamInfo ownTeam;
   TeamInfo oppTeam;
+
+
+  bool stopped; // Emergency stop that is not part of any state, but a global flag.
 
   // HACK: this is only provided by SimSpark - find a better solution
   // if this is set to anything other than 0, the actual player number will change
@@ -241,7 +213,7 @@ public:
   Vector2d ballPosition; // position of ball relative to the robot coordinates in millimeters
 
   // wrote the values to the standard SPL message
-  void writeTo(spl::RoboCupGameControlReturnData& data) const;
+  void writeTo(hsl::RoboCupGameControlReturnData& data) const;
 
   virtual void print(std::ostream& stream) const
   {

@@ -4,8 +4,9 @@ namespace game_symbols("Game Control Symbols")
   /* Type of the competition */
   enum game.type
   {
-    normal,
-    shared_autonomy
+    small,
+    middle,
+    large
   };
 
   enum game.type input game.type;
@@ -19,12 +20,14 @@ namespace game_symbols("Game Control Symbols")
     playing,
     penalized,
     finished,
-    standby,
     unstiff
   };
 
   /* State of the game */
   enum game.state input game.state;
+
+  /* If true, an emergency stop is active */
+  bool input game.stopped;
 
   /* my number */
   float input game.player_number;
@@ -46,11 +49,12 @@ namespace game_symbols("Game Control Symbols")
   enum game.set_play
   {
     none,
+    direct_free_kick,
+    indirect_free_kick,
+    penalty_kick,
+    throw_in,
     goal_kick,
-    pushing_free_kick,
-    corner_kick,
-    kick_in,
-    penalty_kick
+    corner_kick
   };
 
   enum game.set_play input game.set_play;

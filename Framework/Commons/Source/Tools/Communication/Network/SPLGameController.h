@@ -8,7 +8,7 @@
 #include <mutex>
 #include <thread>
 
-using namespace spl;
+using namespace hsl;
 
 class SPLGameController
 {
