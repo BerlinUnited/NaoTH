@@ -15,6 +15,8 @@
 #include <ModuleFramework/Module.h>
 #include <Tools/Debug/NaoTHAssert.h>
 
+#include <Tools/Math/Common.h>
+
 #include <Representations/Infrastructure/FrameInfo.h>
 
 #include <Representations/Body/HeadPose.h>
@@ -66,14 +68,17 @@ public:
     
     actuatorData.headRotation.yaw   = sin( getFrameInfo().getTimeInSeconds() );
     actuatorData.headRotation.pitch = 0.0;
-                                                                                                            /*
+   
     // get the string for the id
     actuatorData.id = motion::getName( getMotionRequest().id );
 
-    actuatorData.walkVelocity.x         = static_cast<float>(getMotionRequest().walkRequest.target.translation.x);
-    actuatorData.walkVelocity.y         = static_cast<float>(getMotionRequest().walkRequest.target.translation.y);
+    actuatorData.walkVelocity.x         = static_cast<float>(getMotionRequest().walkRequest.target.translation.x / 1000.0);
+    actuatorData.walkVelocity.y         = static_cast<float>(getMotionRequest().walkRequest.target.translation.y / 1000.0);
     actuatorData.walkVelocity.rotation  = static_cast<float>(getMotionRequest().walkRequest.target.rotation);
-    */
+    
+    //actuatorData.walkVelocity.x = Math::clamp(actuatorData.walkVelocity.x, -0.3f, 0.3f);
+    //actuatorData.walkVelocity.y = Math::clamp(actuatorData.walkVelocity.y, -0.3f, 0.3f);
+    //actuatorData.walkVelocity.rotation = Math::clamp(actuatorData.walkVelocity.rotation, -0.3f, 0.3f);
 
     bodyBridge.send_actuators(actuatorData);
 
