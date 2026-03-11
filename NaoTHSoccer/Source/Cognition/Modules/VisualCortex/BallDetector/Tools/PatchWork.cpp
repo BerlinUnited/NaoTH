@@ -62,6 +62,8 @@ void PatchWork::subsampling(const Image& image, const FieldColorPercept& fielCol
         p.c = (unsigned char)ColorClasses::white;
       } else if(fielColorPercept.greenHSISeparator.isChroma(p.pixel)) {
         p.c = (unsigned char)ColorClasses::green;
+      } else if (fielColorPercept.isRedColor(p.pixel)) {
+        p.c = (unsigned char)ColorClasses::red;
       } else {
         p.c = (unsigned char)ColorClasses::none;
       }

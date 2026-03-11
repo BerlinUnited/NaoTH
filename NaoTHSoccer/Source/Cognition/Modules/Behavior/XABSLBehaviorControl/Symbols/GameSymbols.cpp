@@ -13,8 +13,9 @@ using namespace std;
 void GameSymbols::registerSymbols(xabsl::Engine& engine)
 {
   // enum for the competition type
-  engine.registerEnumElement("game.type", "game.type.normal" , GameData::competition_normal);
-  engine.registerEnumElement("game.type", "game.type.shared_autonomy" , GameData::competition_type_shared_autonomy);
+  engine.registerEnumElement("game.type", "game.type.small" , GameData::competition_type_small);
+  engine.registerEnumElement("game.type", "game.type.middle" , GameData::competition_type_middle);
+  engine.registerEnumElement("game.type", "game.type.large" , GameData::competition_type_large);
 
   engine.registerEnumeratedInputSymbol("game.type", "game.type", &getCompetitionType);
 
@@ -26,12 +27,12 @@ void GameSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerEnumElement("game.state","game.state.playing",   PlayerInfo::playing);
   engine.registerEnumElement("game.state","game.state.penalized", PlayerInfo::penalized);
   engine.registerEnumElement("game.state","game.state.finished",  PlayerInfo::finished);
-  engine.registerEnumElement("game.state","game.state.standby",   PlayerInfo::standby);
   engine.registerEnumElement("game.state","game.state.unstiff",   PlayerInfo::unstiff);
 
   // current game state
   engine.registerEnumeratedInputSymbol("game.state", "game.state", &getGameState);
 
+  engine.registerBooleanInputSymbol("game.stopped", &getStopped);
 
   engine.registerDecimalInputSymbol("game.player_number", &getPlayerNumber);
   engine.registerDecimalInputSymbol("game.msecsRemaining", &getMsecsRemaining);
@@ -45,12 +46,13 @@ void GameSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerBooleanInputSymbol("game.state.playing_is_set_by_game_controller", &getPlayingIsSetByGameController);
 
 
-  engine.registerEnumElement("game.set_play","game.set_play.none",              PlayerInfo::set_none);
-  engine.registerEnumElement("game.set_play","game.set_play.goal_kick",         PlayerInfo::goal_kick);
-  engine.registerEnumElement("game.set_play","game.set_play.pushing_free_kick", PlayerInfo::pushing_free_kick);
-  engine.registerEnumElement("game.set_play","game.set_play.corner_kick",       PlayerInfo::corner_kick);
-  engine.registerEnumElement("game.set_play","game.set_play.kick_in",           PlayerInfo::kick_in);
-  engine.registerEnumElement("game.set_play","game.set_play.penalty_kick",      PlayerInfo::penalty_kick);
+  engine.registerEnumElement("game.set_play","game.set_play.none",               PlayerInfo::set_none);
+  engine.registerEnumElement("game.set_play","game.set_play.direct_free_kick",   PlayerInfo::direct_free_kick);
+  engine.registerEnumElement("game.set_play","game.set_play.indirect_free_kick", PlayerInfo::indirect_free_kick);
+  engine.registerEnumElement("game.set_play","game.set_play.penalty_kick",       PlayerInfo::penalty_kick);
+  engine.registerEnumElement("game.set_play","game.set_play.throw_in",           PlayerInfo::throw_in);
+  engine.registerEnumElement("game.set_play","game.set_play.goal_kick",       PlayerInfo::goal_kick);
+  engine.registerEnumElement("game.set_play","game.set_play.corner_kick",        PlayerInfo::corner_kick);
 
   engine.registerEnumeratedInputSymbol("game.set_play", "game.set_play", &getSetPlay);
 
@@ -110,4 +112,8 @@ int GameSymbols::getSetPlay() {
 
 int GameSymbols::getGamePhase(){
   return theInstance->getPlayerInfo().gamePhase;
+}
+
+bool GameSymbols::getStopped() {
+  return theInstance->getGameData().stopped;
 }

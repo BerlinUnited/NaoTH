@@ -30,19 +30,21 @@ public:
     playing,
     finished,
     penalized,  // <== GameState doesn't have this :)
-    unstiff,     // <== GameState doesn't have this :)
-    standby
+    unstiff     // <== GameState doesn't have this :)
+    // Removed in 2026
+    //standby // <== GameState doesn't have this :)
   };
 
   // Same as SetPlay of the GameData, but can be different for each robot and set (e.g.) via DebugRequest
   enum RobotSetPlay
   {
-    set_none          = naoth::GameData::set_none,
-    goal_kick         = naoth::GameData::goal_kick,
-    pushing_free_kick = naoth::GameData::pushing_free_kick,
-    corner_kick       = naoth::GameData::corner_kick,
-    kick_in           = naoth::GameData::kick_in,
-    penalty_kick      = naoth::GameData::penalty_kick
+    set_none           = naoth::GameData::set_none,
+    direct_free_kick   = naoth::GameData::direct_free_kick,
+    indirect_free_kick = naoth::GameData::indirect_free_kick,
+    penalty_kick       = naoth::GameData::penalty_kick,
+    throw_in           = naoth::GameData::throw_in,
+    goal_kick          = naoth::GameData::goal_kick,
+    corner_kick        = naoth::GameData::corner_kick  
   };
 
   enum GamePhase
@@ -68,7 +70,6 @@ public:
         case naoth::GameData::set:       robotState = RobotState::set;      break;
         case naoth::GameData::playing:   robotState = RobotState::playing;  break;
         case naoth::GameData::finished:  robotState = RobotState::finished; break;
-        case naoth::GameData::standby:   robotState = RobotState::standby;  break;
         default: ASSERT(false);
       }
     } else {

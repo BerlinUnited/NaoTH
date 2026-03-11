@@ -399,12 +399,12 @@ void StrategySymbols::retrieveFreeKickPosition() {
     // check if a set play for the opponent was called
     if(lastSetPlay == GameData::set_none && !getPlayerInfo().kickoff) {
         // one of our teamates fouled an opponent
-        if(getGameData().setPlay == GameData::pushing_free_kick)
+        if(getGameData().setPlay == GameData::direct_free_kick)
         {
             // retrieve last pose of the player who has fouled
             for(unsigned int i = 0; i < getGameData().ownTeam.players.size(); ++i) {
                 // player is now penalized, but wasn't before
-                if(getGameData().ownTeam.players[i].penalty == naoth::GameData::player_pushing && penalties[i+1] == naoth::GameData::penalty_none) {
+                if(getGameData().ownTeam.players[i].penalty == naoth::GameData::pushing && penalties[i+1] == naoth::GameData::penalty_none) {
                     // get his last position
                     if(getTeamState().hasPlayer(i+1)) {
                         freeKickPosition = getTeamState().getPlayer(i+1).pose().translation;
@@ -425,7 +425,7 @@ void StrategySymbols::retrieveFreeKickPosition() {
     }
 
     // reset free kick position after free kick is over
-    if((lastSetPlay == GameData::pushing_free_kick && getGameData().setPlay != GameData::pushing_free_kick) ||
+    if((lastSetPlay == GameData::direct_free_kick && getGameData().setPlay != GameData::direct_free_kick) ||
        (lastSetPlay == GameData::corner_kick && getGameData().setPlay != GameData::corner_kick))
     {
         freeKickPosition.x = 0.0;

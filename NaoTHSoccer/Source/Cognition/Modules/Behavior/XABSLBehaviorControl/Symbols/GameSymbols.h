@@ -47,6 +47,7 @@ private:
   static int getGameState();
   static int getSetPlay();
   static int getGamePhase();
+  static bool getStopped();
 
   static bool playingIsSetByGameController;
 

@@ -98,7 +98,8 @@ private:
     void byDistance();
 
 private:
-  bool readyChangeWasSent;
+  // removed in 2026
+  //bool readyChangeWasSent;
 
 };
 

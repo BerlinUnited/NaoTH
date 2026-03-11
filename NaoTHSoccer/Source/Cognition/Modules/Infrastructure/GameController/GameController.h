@@ -51,7 +51,7 @@ public:
   virtual ~GameController() {}
 
 private:
-  void handleCommunicatedReadyState(int playerNumber);
+  //void handleCommunicatedReadyState(int playerNumber);
   void handleDebugRequest();
   void handleButtons();
   void handleHeadButtons();
@@ -61,7 +61,7 @@ private:
   bool debug_whistle_heard;
   bool play_by_whistle;
 
-  bool ready_by_pose_detection;
+  //bool ready_by_pose_detection;
 
   int setPlaySecondsRemaining;
   int lastSetPlayTime;
