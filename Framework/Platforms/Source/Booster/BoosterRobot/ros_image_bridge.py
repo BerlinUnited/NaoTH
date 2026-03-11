@@ -58,6 +58,8 @@ from geometry_msgs.msg import PoseStamped
 from message_filters import Subscriber, TimeSynchronizer, ApproximateTimeSynchronizer
 from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSHistoryPolicy, QoSDurabilityPolicy
 
+import msgpack
+import struct
 
 # naoth
 #from naoth.log import Reader as LogReader, Frame as LogFrame
@@ -231,6 +233,13 @@ class ImageServer(Node):
     #self.socket.send_image_bytes(nao_img_bytes)
     
     
+    headPose_msgpack = pose_stamped_to_msgpack(self.current_pose)
+    
+    # prefix with 4-byte length
+    packet = struct.pack("!I", len(headPose_msgpack)) + headPose_msgpack
+    self.socket.send_image_bytes(packet)
+    
+    
     '''
     print(f"Frame {self.frame_number}")
     
@@ -304,7 +313,51 @@ class ImageServer(Node):
     pb.timestamp = ts_ns
 
     return pb
+  
+  def pose_stamped_to_protobuf(self, msg: PoseStamped):
+    pb = framework_pb2.HeadPose()
+
+    # translation
+    pb.pose.translation.x = float(msg.pose.position.x)
+    pb.pose.translation.y = float(msg.pose.position.y)
+    pb.pose.translation.z = float(msg.pose.position.z)
+
+    # rotation quaternion (optional in your schema, but we’ll fill it)
+    pb.pose.rotation_quaternion.x = float(msg.pose.orientation.x)
+    pb.pose.rotation_quaternion.y = float(msg.pose.orientation.y)
+    pb.pose.rotation_quaternion.z = float(msg.pose.orientation.z)
+    pb.pose.rotation_quaternion.w = float(msg.pose.orientation.w)
+
+    # timestamp (optional uint64): ROS2 builtin_interfaces/Time -> uint64 nanoseconds
+    # msg.header.stamp has sec + nanosec
+    ts_ns = (int(msg.header.stamp.sec) * 1_000_000_000) + int(msg.header.stamp.nanosec)
+    pb.timestamp = ts_ns
+
+    return pb
   '''
+  
+  def pose_stamped_to_msgpack(self, msg: PoseStamped):
+    ts_ns = (int(msg.header.stamp.sec) * 1_000_000_000) + int(msg.header.stamp.nanosec)
+
+    data = {
+        "headPose": {
+            "position": {
+                "x": float(msg.pose.position.x),
+                "y": float(msg.pose.position.y),
+                "z": float(msg.pose.position.z),
+            },
+            "orientation": {
+                "x": float(msg.pose.orientation.x),
+                "y": float(msg.pose.orientation.y),
+                "z": float(msg.pose.orientation.z),
+                "w": float(msg.pose.orientation.w),
+            },
+        },
+        "timestamp": ts_ns,
+    }
+
+    return msgpack.packb(data, use_bin_type=True)
+    
   
   def head_pose_callback(self, head_pose_msg):
     self.current_pose = head_pose_msg

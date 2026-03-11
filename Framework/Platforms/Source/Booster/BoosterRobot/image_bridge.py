@@ -72,6 +72,42 @@ def scale_to_nao(img):
     out[:, 3::4] = U[:, 0::2]
     
     return out
+    
+    
+def scale_to_nao_centered(img):
+    h, w = img.shape[:2]
+
+    # scale so width becomes 640 while keeping aspect ratio
+    scale = 640.0 / w
+    new_w = 640
+    new_h = int(round(h * scale))
+
+    resized = cv2.resize(img, (new_w, new_h), interpolation=cv2.INTER_LANCZOS4)
+
+    # crop centered vertically so final height is 480
+    if new_h < 480:
+        raise RuntimeError("scaled image height is smaller than 480, cannot crop")
+
+    top = (new_h - 480) // 2
+    bottom = top + 480
+    cropped = resized[top:bottom, 0:640]
+
+    h, w = cropped.shape[:2]
+    yuv444 = cv2.cvtColor(cropped, cv2.COLOR_BGR2YCrCb)
+
+    Y = yuv444[:, :, 0].astype(np.uint8)
+    U = yuv444[:, :, 1].astype(np.uint8)
+    V = yuv444[:, :, 2].astype(np.uint8)
+
+    out = np.empty((h, w * 2), dtype=np.uint8)  # 2 bytes per pixel
+    out[:, 0::4] = Y[:, 0::2]  # Y0
+    out[:, 1::4] = V[:, 0::2]
+    out[:, 2::4] = Y[:, 1::2]  # Y1
+    out[:, 3::4] = U[:, 0::2]
+
+    return out
+    
+    
 
 
 class RosUnixImageServer:
@@ -96,7 +132,8 @@ class RosUnixImageServer:
         print("Client connected.")
 
     def send_image(self, img):
-        data = scale_to_nao(img)
+        #data = scale_to_nao(img)
+        data = scale_to_nao_centered(img)
         print(data.shape)
         self.conn.sendall(data.tobytes())
         

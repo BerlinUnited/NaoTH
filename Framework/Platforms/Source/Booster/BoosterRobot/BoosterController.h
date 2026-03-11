@@ -92,6 +92,10 @@ public:
   void get(ImageTop& data) {
     imageBridge.readImage(data);
   }
+  
+  void get(HeadPose& data) {
+    imageBridge.receive_headPose(data);
+  }
 
   void get(CurrentCameraSettings& data) {
     //theBottomCameraHandler.getCameraSettings(data);
@@ -205,14 +209,18 @@ public:
 
   // write directly to the shared memory
   // ACHTUNG: each set calls swapWriting()
+  
   void set(const MotorJointData& data) { 
-    /*naoCommandMotorJointData.set(data);*/ 
+    /*
+    //naoCommandMotorJointData.set(data);
     double head_pitch = data.position[JointData::HeadPitch];
     double head_yaw   = data.position[JointData::HeadYaw];
 
     // communicate through the bridge
     bodyBridge.setHead(head_yaw, head_pitch);
+    */
   }
+  
   void set(const LEDData& data) { /*naoCommandLEDData.set(data);*/ }
   void set(const UltraSoundSendData& data) { /*naoCommandUltraSoundSendData.set(data);*/ }
 

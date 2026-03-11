@@ -29,7 +29,7 @@ Motion2026::Motion2026()
 
 
   theHeadMotionEngine   = registerModule<HeadMotionEngine>("HeadMotionEngine", true);
-  theBoosterBodyAdapter = registerModule<BoosterBodyAdapter>("BoosterBodyAdapter", true);
+  theBoosterBodyAdapter = registerModule<BoosterBodyAdapter>("BoosterBodyAdapter", false);
   
 
   getDebugParameterList().add(&parameter);

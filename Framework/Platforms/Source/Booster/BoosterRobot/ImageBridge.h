@@ -12,6 +12,8 @@
 #ifndef IMAGE_BRIDGE_H
 #define IMAGE_BRIDGE_H
 
+#include "Tools/BoosterData.h"
+#include <Representations/Body/HeadPose.h>
 #include "Representations/Infrastructure/Image.h"
 
 // this is needed for communication with the UNIX socket on NAO
@@ -20,6 +22,8 @@
   #include <sys/socket.h>
   #include <sys/un.h>
   #include <unistd.h>
+  
+  #include <msgpack.hpp>
 #endif
 
 #include <sstream>
@@ -27,6 +31,8 @@
 #include <cerrno>
 #include <cstring>
 #include <thread>
+
+
 
 /** 
 Client for the UNIX socket on the NAO robot
@@ -55,6 +61,8 @@ class ImageBridge
   // indicated that the LOLA client is in the error state
   bool error = false;
 
+  msgpack::unpacker m_pac;
+  
 private:
 
   static inline int recv_exact(int fd, void* buf, size_t n) 
@@ -141,6 +149,51 @@ public:
     if(bytes != image.data_size()) {
       std::cerr << "[IMAGE_BRIDGE] wrong message size: " << bytes << " expected " << image.data_size() << std::endl;
     }
+  }
+  
+  void receive_headPose(HeadPose& head_pose)
+  {
+    uint32_t len_be;
+    if (recv_exact(fd, &len_be, sizeof(len_be)) != sizeof(len_be)) { 
+      std::cerr << "[IMAGE_BRIDGE:receive_headPose] wrong number of bythes when reading the message length" << std::endl; 
+    }
+
+    uint32_t len = ntohl(len_be);
+
+    // make sure we have enough space
+    m_pac.reserve_buffer(len);
+
+    size_t bytes = recv_exact(fd, m_pac.buffer(), m_pac.buffer_capacity());
+    if (bytes != sizeof(m_pac.buffer_capacity())) {
+      std::cerr << "[IMAGE_BRIDGE:receive_headPose] wrong message size: " << bytes << " expected " << len << std::endl; 
+    }
+
+    m_pac.buffer_consumed(bytes);
+
+    msgpack::object_handle oh;
+    m_pac.next(oh);
+
+    // deserialized object is valid during the msgpack::object_handle instance is alive.
+    msgpack::object deserialized = oh.get();
+
+    // debug
+    //std::cout << deserialized << std::endl;
+
+    // convert msgpack::object instance into the original type.
+    Booster::SensorData sensorData;
+    deserialized.convert(sensorData);
+
+    // unpack the head pose data
+    head_pose.pose.translation.x    = sensorData.headPose.position.x;
+    head_pose.pose.translation.y    = sensorData.headPose.position.y;
+    head_pose.pose.translation.z    = sensorData.headPose.position.z;
+
+    head_pose.pose.rotation = RotationMatrix::fromQuaternion(
+      { sensorData.headPose.orientation.x,
+        sensorData.headPose.orientation.y,
+        sensorData.headPose.orientation.z }, 
+        sensorData.headPose.orientation.w
+    );
   }
 };
 #endif

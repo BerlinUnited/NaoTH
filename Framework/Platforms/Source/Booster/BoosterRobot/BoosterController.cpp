@@ -45,10 +45,14 @@ BoosterController::BoosterController()
   // camera
   registerInput<Image>(*this);
   registerInput<ImageTop>(*this);
+  
   registerInput<CurrentCameraSettings>(*this);
   registerInput<CurrentCameraSettingsTop>(*this);
+  
   registerOutput<const CameraSettingsRequest>(*this);
   registerOutput<const CameraSettingsRequestTop>(*this);
+
+  registerInput<HeadPose>(*this);
 
   // sound
   registerOutput<const SoundPlayData>(*this);
@@ -163,10 +167,12 @@ BoosterController::BoosterController()
   * ------------
   */
   // activate the image bridge
+  /*
   bodyBridge.connectSocket();
   if(bodyBridge.hasError()) {
     exit(-1);
   }
+  */
 }
 
 BoosterController::~BoosterController()
