@@ -361,7 +361,7 @@ void CNNBallDetector::calculateCandidates()
       STOPWATCH_STOP("CNNBallDetector:classifierPredict");
 
       // only run the detector if the classifier predicted a ball in the patch
-      if (cnn->getBallConfidence() >= selectedCNNThreshold || redCount > 1) 
+      if (cnn->getBallConfidence() >= selectedCNNThreshold || redCount > params.redCount) 
       {
         
         // HACK: resizing the patch with postBorder helps the classifier
