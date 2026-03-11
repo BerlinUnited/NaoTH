@@ -143,16 +143,19 @@ public:
 
   void readImage(naoth::Image& image)
   {
+    //std::cout << "get image" << std::endl;
     // read from the soccet (POSIX style)
     size_t bytes = recv_exact(fd, image.data(), image.data_size());
 
     if(bytes != image.data_size()) {
       std::cerr << "[IMAGE_BRIDGE] wrong message size: " << bytes << " expected " << image.data_size() << std::endl;
     }
+    //std::cout << "get image done" << std::endl;
   }
   
   void receive_headPose(HeadPose& head_pose)
   {
+    //std::cout << "get head_pose" << std::endl;
     uint32_t len_be;
     if (recv_exact(fd, &len_be, sizeof(len_be)) != sizeof(len_be)) { 
       std::cerr << "[IMAGE_BRIDGE:receive_headPose] wrong number of bythes when reading the message length" << std::endl; 
@@ -163,7 +166,7 @@ public:
     // make sure we have enough space
     m_pac.reserve_buffer(len);
 
-    size_t bytes = recv_exact(fd, m_pac.buffer(), m_pac.buffer_capacity());
+    size_t bytes = recv_exact(fd, m_pac.buffer(), len);
     if (bytes != sizeof(m_pac.buffer_capacity())) {
       std::cerr << "[IMAGE_BRIDGE:receive_headPose] wrong message size: " << bytes << " expected " << len << std::endl; 
     }
@@ -194,6 +197,8 @@ public:
         sensorData.headPose.orientation.z }, 
         sensorData.headPose.orientation.w
     );
+    
+    //std::cout << "get head_pose done" << std::endl;
   }
 };
 #endif

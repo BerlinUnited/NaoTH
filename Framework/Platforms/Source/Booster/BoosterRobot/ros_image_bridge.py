@@ -80,8 +80,8 @@ class ImageServer(Node):
         durability  = QoSDurabilityPolicy.VOLATILE
     )
     
-    self.left_sub  = Subscriber(self, Image, '/booster_camera_bridge/image_left_raw' , qos_profile = qos_logger)
-    self.right_sub = Subscriber(self, Image, '/booster_camera_bridge/image_right_raw', qos_profile = qos_logger)
+    self.left_sub  = Subscriber(self, Image, '/image_left_raw' , qos_profile = qos_logger)
+    self.right_sub = Subscriber(self, Image, '/image_right_raw', qos_profile = qos_logger)
     
     self.head_pose = Subscriber(self, PoseStamped, '/head_pose_stamped', qos_profile = qos_logger)
 
@@ -224,6 +224,11 @@ class ImageServer(Node):
   
   
   def stereo_callback(self, left_msg, right_msg):
+      
+    if self.current_pose is None:
+        print("stereo_callback: no pose")
+        return
+        
     # send scaled
     img_left = self.msg2img(left_msg)
     self.socket.send_image(img_left)
@@ -232,8 +237,7 @@ class ImageServer(Node):
     #nao_img_bytes = self.nv12_544x448_to_yuyv_640x480_centered(left_msg.data)
     #self.socket.send_image_bytes(nao_img_bytes)
     
-    
-    headPose_msgpack = pose_stamped_to_msgpack(self.current_pose)
+    headPose_msgpack = self.pose_stamped_to_msgpack(self.current_pose)
     
     # prefix with 4-byte length
     packet = struct.pack("!I", len(headPose_msgpack)) + headPose_msgpack
