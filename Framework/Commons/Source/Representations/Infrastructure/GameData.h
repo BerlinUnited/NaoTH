@@ -121,7 +121,7 @@ public:
       teamColor(unknown_team_color),
       score(0),
       penaltyShot(0),
-      messageBudget(1200)
+      messageBudget(12000)
     {}
 
     unsigned int teamNumber;        // unique team number
