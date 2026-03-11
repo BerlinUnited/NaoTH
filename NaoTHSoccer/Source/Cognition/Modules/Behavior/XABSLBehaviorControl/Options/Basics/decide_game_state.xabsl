@@ -1,7 +1,10 @@
 option decide_game_state 
 {  
   common decision {
-    if (game.stopped)
+    // unstiff has priority over all other states
+    if (game.state == unstiff)
+      goto unstiff;
+    else if (game.stopped)
       goto stopped;
     else if (game.state == _initial_)
       goto _initial;
@@ -15,8 +18,6 @@ option decide_game_state
       goto finished;
     else if (game.state == playing)
       goto playing;
-    else if (game.state == unstiff)
-      goto unstiff;
   }
   
   state stopped {
