@@ -167,7 +167,7 @@ public:
     m_pac.reserve_buffer(len);
 
     size_t bytes = recv_exact(fd, m_pac.buffer(), len);
-    if (bytes != sizeof(m_pac.buffer_capacity())) {
+    if (bytes != len) {
       std::cerr << "[IMAGE_BRIDGE:receive_headPose] wrong message size: " << bytes << " expected " << len << std::endl; 
     }
 

@@ -61,25 +61,28 @@ public:
 
   virtual void execute() 
   {
-    actuatorData.headRotation.yaw       = static_cast<float>(getHeadMotionRequest().targetJointPosition.x); // yaw
-    actuatorData.headRotation.pitch     = static_cast<float>(getHeadMotionRequest().targetJointPosition.y); // pitch
-
+    //actuatorData.headRotation.yaw       = static_cast<float>(getHeadMotionRequest().targetJointPosition.x); // yaw
+    //actuatorData.headRotation.pitch     = static_cast<float>(getHeadMotionRequest().targetJointPosition.y); // pitch
+    
+    actuatorData.headRotation.yaw   = sin( getFrameInfo().getTimeInSeconds() );
+    actuatorData.headRotation.pitch = 0.0;
+                                                                                                            /*
     // get the string for the id
     actuatorData.id = motion::getName( getMotionRequest().id );
 
     actuatorData.walkVelocity.x         = static_cast<float>(getMotionRequest().walkRequest.target.translation.x);
     actuatorData.walkVelocity.y         = static_cast<float>(getMotionRequest().walkRequest.target.translation.y);
     actuatorData.walkVelocity.rotation  = static_cast<float>(getMotionRequest().walkRequest.target.rotation);
+    */
 
     bodyBridge.send_actuators(actuatorData);
 
 
-    /*
     // receive the newest sensor data
+    /*
     bodyBridge.receive_sensors(sensorData);
 
     // unpack the sensor data
-
     getHeadPose().pose.translation.x    = sensorData.headPose.position.x;
     getHeadPose().pose.translation.y    = sensorData.headPose.position.y;
     getHeadPose().pose.translation.z    = sensorData.headPose.position.z;

@@ -294,7 +294,7 @@ class Booster:
         self.body_client.Init()
         time.sleep(3)
         
-        info = client.GetRobotInfo()
+        info = self.body_client.GetRobotInfo()
         print(f"Name    : {info.name}")
         print(f"Nickname: {info.nickname}")
         print(f"Version : {info.version}")
@@ -318,23 +318,25 @@ class Booster:
     '''
     def send_actuators(self, actuators):
         
-        print(actuators)
-        print(dir(actuators))
+        #print(actuators)
+        #print(dir(actuators))
         
         headRotation = actuators["headRotation"]
         self.body_client.RotateHead(headRotation["pitch"], headRotation["yaw"])
         
+        return
+        
         if actuators["id"] == "walk":
             walkVelocity = actuators["walkVelocity"]
-            client.ChangeMode(RobotMode.kWalking)
-            client.Move(walkVelocity["x"], walkVelocity["y"], walkVelocity["rotation"])
+            self.body_client.ChangeMode(RobotMode.kWalking)
+            self.body_client.Move(walkVelocity["x"], walkVelocity["y"], walkVelocity["rotation"])
         elif actuators["id"] == "stand":
-            client.ChangeMode(RobotMode.kPrepare)
-            #client.Move(0, 0, 0)
+            self.body_client.ChangeMode(RobotMode.kPrepare)
+            #self.body_client.Move(0, 0, 0)
         else:
-            client.ChangeMode(RobotMode.kDamping)
+            self.body_client.ChangeMode(RobotMode.kDamping)
             
-        #client.GetUp()
+        #self.body_client.GetUp()
 
 
 
