@@ -1,5 +1,6 @@
 
 package de.naoth.rc.core.server;
+import de.naoth.rc.Helper;
 
 import java.awt.Frame;
 import java.beans.PropertyChangeEvent;
@@ -8,6 +9,7 @@ import java.net.InetAddress;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.ArrayList;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
@@ -139,19 +141,38 @@ public class ConnectionManager
   }
   
   
-  // TODO: for now it's adjusted for the current NaoTH addresses. Make it more general.
     private void updateAvaliableHosts() {
+        String[] robotNumbers = this.properties.getProperty("robotNumbers", "").split(",");
+        String[] defaultIps   = this.properties.getProperty("defaultIps", "").split(",");
+        ArrayList<String> ips = new ArrayList<String>();
+        for (String ip : defaultIps) {
+            ips.add(ip);
+        }
 
-        String[] ips = this.properties.getProperty("iplist","").split(",");
+        try {
+            String thisIp = Helper.getHostIpAdress();
 
-        for(final String ip: ips) {
+            // This does e.g. "123.123.123.123" -> "123.123.123."
+            int lastDotIndex   = thisIp.lastIndexOf('.');
+            String networkPart = thisIp.substring(0, lastDotIndex + 1);
+
+            ips.add(networkPart);
+        } catch (Exception e) {
+            /* ignore exception */
+        }
+
+        for (final String nr : robotNumbers) {
             executor.submit(() -> {
-                try {
-                    InetAddress address = InetAddress.getByName(ip);
-                    if(address.isReachable(500)) {
-                        ipInput.addAddress(ip);
+                for (final String ip : ips) {
+                    try {
+                        InetAddress address = InetAddress.getByName(ip + nr);
+                        if (address.isReachable(500)) {
+                            ipInput.addAddress(ip + nr);
+                        }
+                    } catch (Exception e) {
+                        /* ignore exception */
                     }
-                } catch (Exception e) { /* ignore exception */ }
+                }
             });
         }
     }

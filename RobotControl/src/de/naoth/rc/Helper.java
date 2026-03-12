@@ -29,6 +29,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.Enumeration;
 
 /**
  *
@@ -198,4 +202,24 @@ public class Helper
     return hashVal;
   }
 
+    /**
+    * Best effort to return the IP of the host, e.g. 192.168.0.23
+    */
+    public static String getHostIpAdress() {
+        try {
+            for (NetworkInterface IF : Collections.list(NetworkInterface.getNetworkInterfaces())) {
+                if (IF.isUp() && !IF.isLoopback()) {
+                    for (InetAddress IA : Collections.list(IF.getInetAddresses())) {
+                        if (!IA.isLoopbackAddress() && IA instanceof java.net.Inet4Address) {
+                            // System.out.println("Local IP Address: " + IA.getHostAddress());
+                            return IA.getHostAddress();
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            /* ignore exception */
+        }
+        return null;
+    }
 }//end class Helper
