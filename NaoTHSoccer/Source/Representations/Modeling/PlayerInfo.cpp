@@ -22,8 +22,8 @@ PlayerInfo::PlayerInfo()
   robotSetPlay(set_none),
   gamePhase(normal),
   kickoff(false),
-
-  isPlayingStriker(false)
+  isPlayingStriker(false),
+  ballTouchedInSetPlay(true)
 {
 }
 
@@ -37,7 +37,6 @@ std::string PlayerInfo::toString(RobotState value)
     RETURN_VALUE_TO_STR(set);
     RETURN_VALUE_TO_STR(playing);
     RETURN_VALUE_TO_STR(finished);
-    RETURN_VALUE_TO_STR(standby);
     RETURN_VALUE_TO_STR(penalized);
     RETURN_VALUE_TO_STR(unstiff);
   }
@@ -51,11 +50,12 @@ std::string PlayerInfo::toString(RobotSetPlay value)
   switch (value)
   {
     RETURN_VALUE_TO_STR(set_none);
-    RETURN_VALUE_TO_STR(goal_kick);
-    RETURN_VALUE_TO_STR(pushing_free_kick);
-    RETURN_VALUE_TO_STR(corner_kick);
-    RETURN_VALUE_TO_STR(kick_in);
+    RETURN_VALUE_TO_STR(direct_free_kick);
+    RETURN_VALUE_TO_STR(indirect_free_kick);
     RETURN_VALUE_TO_STR(penalty_kick);
+    RETURN_VALUE_TO_STR(throw_in);
+    RETURN_VALUE_TO_STR(goal_kick);
+    RETURN_VALUE_TO_STR(corner_kick);
   }
 
   ASSERT(false);
@@ -87,6 +87,7 @@ void PlayerInfo::print(ostream& stream) const
   stream << "robotState:       " << toString(robotState) << endl;
   stream << "robotSetPlay:     " << toString(robotSetPlay) << endl;
   stream << "gamephase:        " << toString(gamePhase) << endl;
-  stream << "isPlayingStriker: " << (isPlayingStriker?"yes":"no") << endl;
+  stream << "isPlayingStriker: " << (isPlayingStriker ? "yes" : "no") << endl;
+  stream << "ballTouchedInSetPlay: " << (ballTouchedInSetPlay ? "yes" : "no") << endl;
 }
 

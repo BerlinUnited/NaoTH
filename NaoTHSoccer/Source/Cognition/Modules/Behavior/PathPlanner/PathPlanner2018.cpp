@@ -597,8 +597,19 @@ bool PathPlanner2018::nearApproach_forwardKick(const double offsetX, const doubl
     Foot supporting_foot;
     Coordinate coordinate = Coordinate::Hip;
 
+    // decide at most 1s or if the ball has moved
+    if (getFrameInfo().getTimeSince(dribble_approach_foot_decision_frame) > 1000 || (ball_position_on_decision - getBallModel().positionPreview).abs() > 100) {
+      if(getBallModel().positionPreview.y < 0) {
+        dribble_approach_foot = Foot::RIGHT;
+      } else {
+        dribble_approach_foot = Foot::LEFT;
+      }
+      dribble_approach_foot_decision_frame = getFrameInfo();
+      ball_position_on_decision = getBallModel().positionPreview;
+    }
+
     // decide the foot to kick with
-    if (getBallModel().positionPreview.y < 0)
+    if (dribble_approach_foot == Foot::RIGHT)
     {
       kicking_foot    = Foot::RIGHT;
       supporting_foot = Foot::LEFT;
@@ -611,7 +622,7 @@ bool PathPlanner2018::nearApproach_forwardKick(const double offsetX, const doubl
       //ballPos    = getBallModel().positionPreviewInRFoot;
       //coordinate = Coordinate::RFoot;
     }
-    else if (getBallModel().positionPreview.y >= 0)
+    else if (dribble_approach_foot == Foot::LEFT)
     {
       kicking_foot    = Foot::LEFT;
       supporting_foot = Foot::RIGHT;
@@ -895,8 +906,8 @@ void PathPlanner2018::forwardKick()
     // NOTE: change the kick pose if the parameter is set
     if (params.forwardKickAdaptive) {
         kickTarget = {0.0, ballPos.x, ballPos.y};  // kick towards the ball
+        kickTarget.translation.normalize(kickTarget.translation.abs() + params.kickTargetCropOffset);
     } 
-
 
     KickStepType kickStepType = (KickStepType)params.forwardKickStepType;
     Pose2D stepTarget = kickTarget;
@@ -904,9 +915,17 @@ void PathPlanner2018::forwardKick()
         stepTarget = {0, 0, 0};
     }
 
-
+    // apply min and max kick length
+    if (kickTarget.translation.abs() >= params.maxKickLength) {
+      kickTarget.translation.normalize(params.maxKickLength);
+    } else if (kickTarget.translation.abs() <= params.minKickLength) {
+      kickTarget.translation.normalize(params.minKickLength);
+    }
+    std::cout << "kickTarget: " << kickTarget << std::endl;
     
-    double kickTime = (kickTarget.translation.abs() / params.forwardKickBaseBallDistance) * params.forwardKickVelocity;
+    //double kickTime = (kickTarget.translation.abs() / params.forwardKickBaseBallDistance) * params.forwardKickVelocity;
+    double kickTime = (kickTarget.translation.abs() / params.forwardKickVelocity);
+    std::cout << "kickTime: " << kickTime << std::endl;
 
     // The kick
     StepBufferElement forward_kick_step("forward_kick");

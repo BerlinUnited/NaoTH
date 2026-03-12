@@ -5,7 +5,6 @@
 #include "PlatformInterface/Platform.h"
 
 TeamCommEventDecision::TeamCommEventDecision()
-  : readyChangeWasSent(false)
 {
     getDebugParameterList().add(&params);
 }
@@ -59,19 +58,24 @@ void TeamCommEventDecision::byDistance()
       params.byDistance_lastSentTimestamp = getFrameInfo().getTime();
     }
 
+    // decide which robot is allowed to send information regarding the ready state based on the team size
+    bool can_send_ready_state = false;
+    if(getGameData().playersPerTeam == 7) {
+      // for 7v7 games
+      can_send_ready_state = (getPlayerInfo().playerNumber == 4 || getPlayerInfo().playerNumber == 7);
+    } else {
+      // default: for 5v5 games
+      can_send_ready_state = (getPlayerInfo().playerNumber == 3 || getPlayerInfo().playerNumber == 5);
+    }
+
     // send the ready state switch
-    if(getPlayerInfo().playerNumber == 4 || getPlayerInfo().playerNumber == 7) {
-      if (getPlayerInfo().robotState == PlayerInfo::ready && !readyChangeWasSent) {
+    if(can_send_ready_state)
+    {
+      if (getPlayerInfo().robotState == PlayerInfo::ready) {
         getTeamMessageDecision().send_state.set();
         // update timestamp for the safety condition
         params.byDistance_lastSentTimestamp = getFrameInfo().getTime();
 
-        readyChangeWasSent = true;
-      }
-
-      // reset the erady notify flag
-      if(getPlayerInfo().robotState == PlayerInfo::standby) {
-        readyChangeWasSent = false;
       }
     }
 

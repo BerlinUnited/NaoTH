@@ -216,3 +216,9 @@ message TeamMessageDebug
   optional bool wasStriker = 21 [default=false];
   optional bool wantsToBeStriker = 22 [default=false];
 }
+
+message RoleDecision
+{
+  repeated RobotRole roles = 1;
+  optional DoubleVector2 dynamic_position = 2;
+}

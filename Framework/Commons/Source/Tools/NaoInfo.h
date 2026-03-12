@@ -7,8 +7,8 @@
  * @author <a href="mailto:kaptur@informatik.hu-berlin.de">Christian Kaptur</a>
  */
 
-#ifndef _NaoInfo_h_
-#define _NaoInfo_h_
+#ifndef NAO_INFO_H
+#define NAO_INFO_H
 
 // TODO: this should not be here
 #include <Representations/Infrastructure/FSRData.h>
@@ -92,7 +92,10 @@ public:
   
   static const RobotDimensions robotDimensions;
 
+  // delay between the requested actuator (joint) values and the measurable effect in the sensor values
+  static const int actuatorSensorFrameDelay;
+
 }; //end namespace NaoInfo
 
-#endif //_NaoInfo_h_
+#endif //NAO_INFO_H
 

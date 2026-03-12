@@ -1,10 +1,3 @@
-/**
-* @file FootStepPlanner.cpp
-*
-* @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
-* plan the foot step according to motion request
-*/
-
 #include "ZMPPreviewController.h"
 #include <PlatformInterface/Platform.h>
 

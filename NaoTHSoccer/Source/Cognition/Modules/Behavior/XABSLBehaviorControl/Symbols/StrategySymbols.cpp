@@ -98,6 +98,8 @@ void StrategySymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("strategy.position.own.y", &getHomePositionOwnKickoffY);
   engine.registerDecimalInputSymbol("strategy.position.opp.x", &getHomePositionOppKickoffX);
   engine.registerDecimalInputSymbol("strategy.position.opp.y", &getHomePositionOppKickoffY);
+  engine.registerDecimalInputSymbol("strategy.position.dynamic.x", &getDynamicPositionX);
+  engine.registerDecimalInputSymbol("strategy.position.dynamic.y", &getDynamicPositionY);
 
   engine.registerBooleanOutputSymbol("strategy.run_pose_detection", &getSoccerStrategy().run_pose_detection);
 
@@ -397,13 +399,13 @@ void StrategySymbols::retrieveFreeKickPosition() {
     // check if a set play for the opponent was called
     if(lastSetPlay == GameData::set_none && !getPlayerInfo().kickoff) {
         // one of our teamates fouled an opponent
-        if(getGameData().setPlay == GameData::pushing_free_kick)
+        if(getGameData().setPlay == GameData::direct_free_kick)
         {
             // retrieve last pose of the player who has fouled
             for(std::pair<size_t, naoth::GameData::RobotInfo> info : getGameData().ownTeam.players) {
                 unsigned int i = (unsigned int) info.first;
                 // player is now penalized, but wasn't before
-                if(info.second.penalty == naoth::GameData::player_pushing && penalties[i] == naoth::GameData::penalty_none) {
+                if(getGameData().ownTeam.players.at(i).penalty == naoth::GameData::pushing && penalties[i] == naoth::GameData::penalty_none) {
                     // get his last position
                     if(getTeamState().hasPlayer(i)) {
                         freeKickPosition = getTeamState().getPlayer(i).pose().translation;
@@ -424,7 +426,7 @@ void StrategySymbols::retrieveFreeKickPosition() {
     }
 
     // reset free kick position after free kick is over
-    if((lastSetPlay == GameData::pushing_free_kick && getGameData().setPlay != GameData::pushing_free_kick) ||
+    if((lastSetPlay == GameData::direct_free_kick && getGameData().setPlay != GameData::direct_free_kick) ||
        (lastSetPlay == GameData::corner_kick && getGameData().setPlay != GameData::corner_kick))
     {
         freeKickPosition.x = 0.0;
@@ -514,4 +516,12 @@ double StrategySymbols::getHomePositionOppKickoffY() {
     }
     // put unknown player on the "manual placement line"
     return theInstance->getFieldInfo().yLength/(theInstance->getPlayerInfo().playersPerTeam+2)*theInstance->getPlayerInfo().playerNumber-(theInstance->getFieldInfo().yLength*0.5);
+}
+
+double StrategySymbols::getDynamicPositionX() {
+  return theInstance->getRoleDecisionModel().dynamic_position.x;
+}
+
+double StrategySymbols::getDynamicPositionY() {
+  return theInstance->getRoleDecisionModel().dynamic_position.y;
 }

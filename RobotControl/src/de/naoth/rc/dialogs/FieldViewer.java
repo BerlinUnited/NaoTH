@@ -630,6 +630,9 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
         final double resolution_width = 640.0;
         final double f = (0.5 * resolution_width) / Math.tan(0.5 * opening_angle_width);
         
+        final double imageCenterX = 320.0 - 0.5;
+        final double imageCenterY = 240.0 - 0.5;
+        
         private void readCameraMatrix(BlackBoard b)
         {
             cmBottom = null;
@@ -791,8 +794,9 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
                     last_p = p;
                 }
                 
-                // draw prijected goal posts on the field
-                for(Representations.GoalPercept.GoalPost g: gp.getPostList()) {
+                // draw projected goal posts on the field
+                for(Representations.GoalPercept.GoalPost g: gp.getPostList()) 
+                {
                     Vector2D q = new Vector2D(g.getPosition().getX(), g.getPosition().getY());
                     //Vector2D q = project(R,t,f,p);
                     
@@ -811,13 +815,32 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
             }
         }
         
-        private Vector2D project(Pose3D pose, double f, Vector2D p) {
-            Vector3D v = new Vector3D(f, 320 - p.x, 240 - p.y);
-            v = pose.rotation.multiply(v);
+        private Vector2D project(Pose3D cameraPose, double f, Vector2D p) 
+        {
+            // 2D image coord in px => 3D camera coords in px
+            Vector3D pixelVector = new Vector3D(f, imageCenterX - p.x, imageCenterY - p.y);
+            
+            // 3D camera coords in px => 3D head coords in px
+            pixelVector = cameraPose.rotation.multiply(pixelVector);
 
+            final double objectHeight = 0.0; // assume all objects are on the ground plane
+            final double heightDiff = objectHeight - cameraPose.translation.z;
+            
+            // projection is impossible, because
+            //  - the height of the object is the same as the height of the camera
+            //    (it should never be pixelVector.z == 0 or heightDiff == 0)
+            //  - the point in image lies over the horizont, but the height of the 
+            //    object is smaller as the height of the camera or vice versa 
+            //    (it should allways hold sign(pixelVector.z) == sign(heightDiff))
+            final double epsilon =  1e-13;
+            if (pixelVector.z*heightDiff < epsilon)
+            {
+              return new Vector2D();
+            }
+            
             Vector2D q = new Vector2D(
-                pose.translation.x - v.x*(pose.translation.z/v.z),
-                pose.translation.y - v.y*(pose.translation.z/v.z));
+                cameraPose.translation.x + pixelVector.x *(heightDiff/pixelVector.z),
+                cameraPose.translation.y + pixelVector.y *(heightDiff/pixelVector.z));
             
             return q;
         }

@@ -18,14 +18,27 @@ using namespace std;
 CNNBallDetector::CNNBallDetector():
   last_percept_valid(false)
 {
-  DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:drawCandidates", "draw ball candidates", false);
-  DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:drawCandidatesResizes", "draw ball candidates (resized)", false);
-  DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:drawPercepts", "draw ball percepts", false);
-  DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:drawPatchContrast", "draw patch contrast (only when contrast-check is in use!", false);
-  DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:draw_projected_ball","", false);
+  // TODO: maybe rename
   DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:extractPatches", "generate YUVC patches", false);
-  DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:keyPointsBlack", "draw black key points extracted from integral image", false);
-  DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:drawPatchInImage", "draw the gray-scale patch like it is passed to the CNN in the image", false);
+
+  // drawings in the raw image
+  DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:Image_px:drawCandidates", "draw ball candidates", false);
+  //DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:Image_px:drawCandidatesResizes", "draw ball candidates (resized)", false);
+  DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:Image_px:drawPercepts", "draw ball percepts", false);
+  DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:Image_px:draw_projected_ball","", false);
+
+  DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:Image_px:drawPatchInImage", "draw the gray-scale patch like it is passed to the CNN in the image", false);
+
+  // TODO: obsolede; check ...
+  DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:Image_px:keyPointsBlack", "draw black key points extracted from integral image", false);
+
+
+
+  // vector drawings
+  DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:Image:drawPatchContrast", "draw patch contrast (only when contrast-check is in use!", false);
+  DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:Image:drawCandidates", "draw ball candidates", false);
+  DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:Image:drawPercepts", "draw ball percepts", false);
+
 
   getDebugParameterList().add(&params);
 
@@ -67,11 +80,19 @@ void CNNBallDetector::execute(CameraInfo::CameraID id)
   if(!patches.empty()) {
     calculateCandidates();
   }
-  DEBUG_REQUEST("Vision:CNNBallDetector:drawPercepts",
+  DEBUG_REQUEST("Vision:CNNBallDetector:Image_px:drawPercepts",
     for(MultiBallPercept::ConstABPIterator iter = getMultiBallPercept().begin(); iter != getMultiBallPercept().end(); iter++) {
-      
       if((*iter).cameraId == cameraID) {
         CIRCLE_PX(ColorClasses::orange, (int)((*iter).centerInImage.x+0.5), (int)((*iter).centerInImage.y+0.5), (int)((*iter).radiusInImage+0.5));
+      }
+    }
+  );
+  DEBUG_REQUEST("Vision:CNNBallDetector:Image:drawPercepts",
+    CANVAS(((cameraID == CameraInfo::Top)?"ImageTop":"ImageBottom"));
+    PEN("FF9900", 2); // orange
+    for(MultiBallPercept::ConstABPIterator iter = getMultiBallPercept().begin(); iter != getMultiBallPercept().end(); iter++) {
+      if((*iter).cameraId == cameraID) {
+        CIRCLE((int)((*iter).centerInImage.x+0.5), (int)((*iter).centerInImage.y+0.5), (int)((*iter).radiusInImage+0.5));
       }
     }
   );
@@ -89,7 +110,7 @@ void CNNBallDetector::execute(CameraInfo::CameraID id)
     extractPatches();
   }
 
-  DEBUG_REQUEST("Vision:CNNBallDetector:keyPointsBlack",  
+  DEBUG_REQUEST("Vision:CNNBallDetector:Image_px:keyPointsBlack",  
     BestPatchList bbest;
     for(BestPatchList::PatchList::iterator i = patches.begin(); i != patches.end(); ++i) {
       bbest.clear();
@@ -244,7 +265,7 @@ void CNNBallDetector::calculateCandidates()
         //double stddev = PatchWork::calculateContrastIterative2nd(getImage(),getFieldColorPercept(),min.x,min.y,max.x,max.y,patch_size);
         double stddev = PatchWork::calculateContrastIterative2nd(patch);
         
-        DEBUG_REQUEST("Vision:CNNBallDetector:drawPatchContrast",
+        DEBUG_REQUEST("Vision:CNNBallDetector:Image:drawPatchContrast",
           CANVAS(((cameraID == CameraInfo::Top)?"ImageTop":"ImageBottom"));
           PEN("FF0000", 1); // red
           Vector2i c = patch.center();
@@ -283,7 +304,7 @@ void CNNBallDetector::calculateCandidates()
       //PatchWork::multiplyBrightness((cameraID == CameraInfo::Top) ? 
       //      params.brightnessMultiplierTop : params.brightnessMultiplierBottom, patch);
 
-      DEBUG_REQUEST("Vision:CNNBallDetector:drawPatchInImage",
+      DEBUG_REQUEST("Vision:CNNBallDetector:Image_px:drawPatchInImage",
         unsigned int offsetX = patch.min.x;
         unsigned int offsetY = patch.min.y;
         unsigned int pixelWidth = (unsigned int) ((double) (patch.max.x - patch.min.x) / (double) patch.size() + 0.5);
@@ -320,12 +341,27 @@ void CNNBallDetector::calculateCandidates()
         cnn_detector = currentCNNClose_detector;
       }
 
+      int redCount = 0;
+      for(const BallCandidates::ClassifiedPixel& p : patch.data) {
+        if (p.c == (unsigned char)ColorClasses::red) {
+          redCount++;
+        }
+      }
+      /*
+      if(redCount > 3) {
+        CANVAS(((cameraID == CameraInfo::Top)?"ImageTop":"ImageBottom"));
+        PEN("FF00FF", 1); // red
+        Vector2i c = patch.center();
+        CIRCLE( c.x, c.y, patch.radius());
+      }
+     */
+
       STOPWATCH_START("CNNBallDetector:classifierPredict");
       cnn->predict(patch, params.cnn.classifierMeanBrightnessOffset);
       STOPWATCH_STOP("CNNBallDetector:classifierPredict");
 
       // only run the detector if the classifier predicted a ball in the patch
-      if (cnn->getBallConfidence() >= selectedCNNThreshold) 
+      if (cnn->getBallConfidence() >= selectedCNNThreshold || redCount > params.redCount) 
       {
         
         // HACK: resizing the patch with postBorder helps the classifier
@@ -334,7 +370,8 @@ void CNNBallDetector::calculateCandidates()
         patchForDetector.min = (*i).min;
         patchForDetector.max = (*i).max;
         PatchWork::subsampling(getImage(), getFieldColorPercept(), patchForDetector);
-        
+          
+
         STOPWATCH_START("CNNBallDetector:detectorPredict");
         cnn_detector->predict(patchForDetector, params.cnn.detectorMeanBrightnessOffset);
         STOPWATCH_STOP("CNNBallDetector:detectorPredict");
@@ -347,7 +384,10 @@ void CNNBallDetector::calculateCandidates()
         if (pos.x >= 0.0 && pos.y >= 0.0) {
           // adjust the center and radius of the patch
           Vector2d ballCenterInPatch(pos.x * patchForDetector.width(), pos.y*patchForDetector.width());
-          addBallPercept(ballCenterInPatch + patchForDetector.min, radius*patchForDetector.width());
+          //addBallPercept(ballCenterInPatch + patchForDetector.min, radius*patchForDetector.width());
+          
+          addBallPercept(ballCenterInPatch + patchForDetector.min, patch.radius());
+          
           if (last_percept_valid == false){
             last_percept_min = patchForDetector.min;
             last_percept_max = patchForDetector.max;
@@ -359,11 +399,21 @@ void CNNBallDetector::calculateCandidates()
       stopwatch.stop();
       stopwatch_values.push_back(static_cast<double>(stopwatch.lastValue) * 0.001);
 
-      DEBUG_REQUEST("Vision:CNNBallDetector:drawCandidates",
+      DEBUG_REQUEST("Vision:CNNBallDetector:Image_px:drawCandidates",
         // original patch
         RECT_PX(ColorClasses::skyblue, (*i).min.x, (*i).min.y, (*i).max.x, (*i).max.y);
         // possibly revised patch 
         RECT_PX(ColorClasses::orange, patch.min.x, patch.min.y, patch.max.x, patch.max.y);
+      );
+
+      DEBUG_REQUEST("Vision:CNNBallDetector:Image:drawCandidates",
+        CANVAS(((cameraID == CameraInfo::Top)?"ImageTop":"ImageBottom"));
+        // original patch
+        PEN("6666FF", 1); // skyblue
+        BOX((*i).min.x, (*i).min.y, (*i).max.x, (*i).max.y);
+        // possibly revised patch 
+        PEN("FF9900", 1); // orange
+        BOX(patch.min.x, patch.min.y, patch.max.x, patch.max.y);
       );
 
       index++;
@@ -466,10 +516,10 @@ void CNNBallDetector::addPatchByLastBall()
 
       if (start.y >= 0 && end.y < static_cast<int>(getImage().height()) && start.x >= 0 && end.x < static_cast<int>(getImage().width()))
       {
-        DEBUG_REQUEST("Vision:CNNBallDetector:draw_projected_ball",
-                      RECT_PX(ColorClasses::pink, start.x, start.y, end.x, end.y);
-                      CIRCLE_PX(ColorClasses::pink, ballInImage.x, ballInImage.y, static_cast<int>(estimatedRadius));
-                      );
+        DEBUG_REQUEST("Vision:CNNBallDetector:Image_px:draw_projected_ball",
+          RECT_PX(ColorClasses::pink, start.x, start.y, end.x, end.y);
+          CIRCLE_PX(ColorClasses::pink, ballInImage.x, ballInImage.y, static_cast<int>(estimatedRadius));
+        );
 
         // TODO: Verify this, we might want to check all patches regardless of overlap
         // 
@@ -489,7 +539,8 @@ void CNNBallDetector::addPatchByLastBall()
           if(ballPatch.min.x < (*i).max.x && 
               ballPatch.max.x > (*i).min.x &&
               ballPatch.min.y < (*i).max.y && 
-              ballPatch.max.y > (*i).min.y) {
+              ballPatch.max.y > (*i).min.y) 
+          {
             overlaps = true;
             break;
           }

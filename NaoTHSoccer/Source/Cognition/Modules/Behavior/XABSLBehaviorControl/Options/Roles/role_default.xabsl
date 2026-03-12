@@ -34,7 +34,7 @@ option role_default
       else if(strategy.role_dynamic == supporter)
         // TODO: implement usefull behavior for the supporter
         // NOTE: be aware of the transition between different subroles and the passive behavior!
-        stay;
+        goto supporter_subrole;
       else 
         stay;
     }
@@ -141,7 +141,24 @@ option role_default
     }
     action {
       search_ball();
-      motion.walk.style = stable;
     }
+  }
+  
+  state supporter_subrole
+  {
+    decision {
+      else if(strategy.role_dynamic != supporter) {
+        goto subrole_transition;
+      } else {
+        stay;
+      }
+    }
+     action {
+      strategy.role_dynamic_last = supporter;
+      go_to_and_update_passive_position(
+        x=strategy.position.dynamic.x,
+        y=strategy.position.dynamic.y,
+        rot=0);
+     }
   }
 }

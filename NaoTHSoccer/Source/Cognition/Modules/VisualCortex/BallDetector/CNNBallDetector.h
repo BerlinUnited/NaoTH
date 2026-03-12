@@ -156,6 +156,7 @@ private:
       PARAMETER_REGISTER(contrastMinimum) = 50;
       PARAMETER_REGISTER(contrastMinimumClose) = 50;
 
+      PARAMETER_REGISTER(redCount) = 2;
 
       PARAMETER_REGISTER(classifier) = "fy1500_conf";
       PARAMETER_REGISTER(classifierClose) = "fy1500_conf";
@@ -204,6 +205,7 @@ private:
     double brightnessMultiplierTop;
     double brightnessMultiplierTopDark;
 
+    int redCount;
   } params;
 
 private:

@@ -7,6 +7,8 @@
 #include "ActionSimulator.h"
 #include <algorithm>
 
+//#include <random>
+
 using namespace naoth;
 using namespace std;
 
@@ -45,20 +47,23 @@ void ActionSimulator::simulateAction(const Action& action, ActionResults& result
   //categorizedBallPositions.reserve(static_cast<int>(theParameters.numParticles));
   result.reset();
 
+  // we have to consider everything in the planned (preview) future location on the field
+  const Pose2D robotPosePlanned(getRobotPose() + getMotionStatus().plannedMotion.hip);
+
   // current ball position
-  Vector2d globalBallStartPosition = getRobotPose() * getBallModel().positionPreview;
+  const Vector2d globalBallStartPosition = robotPosePlanned * getBallModel().positionPreview;
   
 
   // now generate predictions and categorize
   for(size_t j=0; j < numParticles; ++j)
   {
     // predict and calculate shoot line
-    Vector2d globalBallEndPosition = getRobotPose() * action.predict(getBallModel().positionPreview, true);
+    Vector2d globalBallEndPosition = robotPosePlanned * action.predict(getBallModel().positionPreview, true);
 
     // check if collision detection with goal has to be performed
     // if the ball start and end positions are inside of the field, you don't need to check
     if(!getFieldInfo().fieldRect.inside(globalBallEndPosition) || !getFieldInfo().fieldRect.inside(globalBallStartPosition))
-	  {
+    {
       // calculate if there is a collision with the opponent goal and where the ball would stop
       bool collisionWithOppGoal = calculateCollision(oppGoalBackSides, globalBallStartPosition, globalBallEndPosition, globalBallEndPosition);
       bool collisionWithOwnGoal = calculateCollision(ownGoalBackSides, globalBallStartPosition, globalBallEndPosition, globalBallEndPosition);
@@ -101,7 +106,7 @@ void ActionSimulator::simulateAction(const Action& action, ActionResults& result
 
     // default category
     BallPositionCategory category = classifyBallPosition(globalBallEndPosition);
-    result.add(getRobotPose() / globalBallEndPosition, category);
+    result.add(robotPosePlanned / globalBallEndPosition, category);
   }
 }
 
@@ -178,18 +183,18 @@ ActionSimulator::BallPositionCategory ActionSimulator::classifyBallPosition( con
 // TODO unify with ballmodel
 Vector2d ActionSimulator::Action::predict(const Vector2d& ball, bool noise) const
 {
-	double gforce = Math::g*1e3; // mm/s^2
-	double distance;
-	double angle;
-	if (noise){
-		double speed = Math::generateGaussianNoise(action_speed, action_speed_std);
-		angle = Math::generateGaussianNoise(Math::fromDegrees(action_angle), Math::fromDegrees(action_angle_std));
-		distance = speed*speed / friction / gforce / 2.0; // friction*mass*gforce*distance = 1/2*mass*speed*speed
-	}
-	else {
-		distance = action_speed*action_speed / friction / gforce / 2.0; // friction*mass*gforce*distance = 1/2*mass*speed*speed
-		angle = Math::fromDegrees(action_angle);
-	}  
+  double gforce = Math::g*1e3; // mm/s^2
+  double distance;
+  double angle;
+  if (noise) {
+    // todo: maybe replace by std::normal_distribution (?)
+    double speed = Math::generateGaussianNoise(action_speed, action_speed_std);
+    angle   = Math::generateGaussianNoise(Math::fromDegrees(action_angle), Math::fromDegrees(action_angle_std));
+    distance = speed*speed / friction / gforce / 2.0; // friction*mass*gforce*distance = 1/2*mass*speed*speed
+  } else {
+    distance = action_speed*action_speed / friction / gforce / 2.0; // friction*mass*gforce*distance = 1/2*mass*speed*speed
+    angle    = Math::fromDegrees(action_angle);
+  }  
   Vector2d predictedAction(distance, 0.0);
   predictedAction.rotate(angle);
 
@@ -201,7 +206,7 @@ double ActionSimulator::evaluateAction(const Vector2d& a) const
 {
   double xPosOpponentGoal = getFieldInfo().xPosOpponentGoal;
   double yPosLeftSideline = getFieldInfo().yPosLeftSideline;
-  double xPosOwnGoal = getFieldInfo().xPosOwnGoal;
+  double xPosOwnGoal      = getFieldInfo().xPosOwnGoal;
 
   double sigmaX = xPosOpponentGoal/2.0;
   double sigmaY = yPosLeftSideline/2.5;
@@ -209,21 +214,24 @@ double ActionSimulator::evaluateAction(const Vector2d& a) const
   
   double f = 0.0;
   f += slope(a.x, a.y, slopeX, 0.0);
-  f -= gaussian(a.x, a.y, xPosOpponentGoal, 0.0, sigmaX, sigmaY);
-  f += gaussian(a.x, a.y, xPosOwnGoal, 0.0, 1.5*sigmaX, sigmaY);
+  f -= gaussian(a.x, a.y, xPosOpponentGoal, 0.0,     sigmaX, sigmaY);
+  f += gaussian(a.x, a.y, xPosOwnGoal,      0.0, 1.5*sigmaX, sigmaY);
   
   return f;
 }
 
 double ActionSimulator::evaluateAction(const ActionResults& results) const
 {
+  // we have to consider everything in the planned (preview) future location on the field
+  const Pose2D robotPosePlanned(getRobotPose() + getMotionStatus().plannedMotion.hip);
+
   double sumPotential = 0.0;
   double numberOfActions = 0.0;
   for(ActionResults::Positions::const_iterator p = results.positions().begin(); p != results.positions().end(); ++p)
   {
     // assumes that the potential field is well defined inside the opponent goal
     if(p->cat() == INFIELD || p->cat() == OPPGOAL) {
-      sumPotential += evaluateAction(getRobotPose() * p->pos());
+      sumPotential += evaluateAction(robotPosePlanned * p->pos());
       numberOfActions++;
     }
   }

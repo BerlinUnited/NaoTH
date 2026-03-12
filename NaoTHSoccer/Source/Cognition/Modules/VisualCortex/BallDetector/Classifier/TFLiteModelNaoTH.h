@@ -35,7 +35,7 @@ struct TfLiteDelegate;
         }                                                                                         \
     } while (0)
 
-class TFLiteModelNaoTH : public AbstractCNNFinder 
+class TFLiteModelNaoTH : public AbstractCNNFinder
 {
 public:
     TFLiteModelNaoTH(std::string file, bool has_radius = false, bool has_center = false, bool has_confidence = true) :
@@ -57,7 +57,7 @@ public:
         TfLiteInterpreterOptions* options = TfLiteInterpreterOptionsCreate();
         MY_ASSERT_NE(options, nullptr);
         TfLiteInterpreterOptionsSetNumThreads(options, numThreads);
-        
+
         #ifndef WIN32
         TfLiteInterpreterOptionsAddDelegate(options, delegate);
         #endif // undef WIN32
@@ -84,7 +84,7 @@ public:
         MY_ASSERT_NE(outputTensor, nullptr);
         MY_ASSERT_EQ(TfLiteTensorType(outputTensor), kTfLiteFloat32);
     }
-    
+
     virtual ~TFLiteModelNaoTH() {
         if (interpreter) {
             TfLiteInterpreterDelete(interpreter);
@@ -97,6 +97,7 @@ public:
     }
 
     virtual void predict(const BallCandidates::PatchYUVClassified& p, double meanBrightness);
+    /** This is actually the "no ball" confidence */
     virtual double getRadius() const;
     virtual Vector2d getCenter() const;
     virtual double getBallConfidence() const;

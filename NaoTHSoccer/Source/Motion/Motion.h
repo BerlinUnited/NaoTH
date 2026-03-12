@@ -48,6 +48,7 @@
 #include <Representations/Modeling/CameraMatrixOffset.h>
 #include <Representations/Modeling/BodyStatus.h>
 #include <Representations/Modeling/BodyState.h>
+#include <Representations/Modeling/OdometryData.h>
 
 // debug
 #include <Representations/Debug/Stopwatch.h>

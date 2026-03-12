@@ -25,6 +25,14 @@ Motion::Motion()
   REGISTER_DEBUG_COMMAND(motionLogger.getCommand(), motionLogger.getDescription(), &motionLogger);
   registerLogableRepresentationList();
 
+  REGISTER_DEBUG_COMMAND("DebugPlot:get", "get the plots", &getDebugPlot());
+
+  // parameter
+  REGISTER_DEBUG_COMMAND("ParameterList:list", "list all registered parameters", &getDebugParameterList());
+  REGISTER_DEBUG_COMMAND("ParameterList:get", "get the parameter list with the given name", &getDebugParameterList());
+  REGISTER_DEBUG_COMMAND("ParameterList:set", "set the parameter list with the given name", &getDebugParameterList());
+
+
   DEBUG_REQUEST_REGISTER("Motion:KinematicChain:orientation_test", "", false);
 
   DEBUG_REQUEST_REGISTER("Motion:delay_1000", "Sleep for 100ms in each cycle to simulate slow processing.", false);
@@ -32,12 +40,6 @@ Motion::Motion()
   DEBUG_REQUEST_REGISTER("Motion:KinematicChain:drawMotor3D", "", false);
   DEBUG_REQUEST_REGISTER("Motion:KinematicChain:drawSensor3D", "", false);
 
-  REGISTER_DEBUG_COMMAND("DebugPlot:get", "get the plots", &getDebugPlot());
-
-  // parameter
-  REGISTER_DEBUG_COMMAND("ParameterList:list", "list all registered parameters", &getDebugParameterList());
-  REGISTER_DEBUG_COMMAND("ParameterList:get", "get the parameter list with the given name", &getDebugParameterList());
-  REGISTER_DEBUG_COMMAND("ParameterList:set", "set the parameter list with the given name", &getDebugParameterList());
 
   // register the modules
   theInertiaSensorCalibrator = registerModule<InertiaSensorCalibrator>("InertiaSensorCalibrator", true);

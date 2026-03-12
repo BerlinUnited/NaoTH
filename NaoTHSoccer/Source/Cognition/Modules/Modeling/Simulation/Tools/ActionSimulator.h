@@ -14,8 +14,9 @@
 #include "Representations/Infrastructure/FieldInfo.h"
 #include "Representations/Modeling/BallModel.h"
 #include "Representations/Modeling/RobotPose.h"
-//#include "Representations/Modeling/GoalModel.h"
 #include "Representations/Modeling/KickActionModel.h"
+#include "Representations/Motion/MotionStatus.h"
+//#include "Representations/Modeling/GoalModel.h"
 //#include "Representations/Modeling/ObstacleModel.h"
 
 //Tools
@@ -23,8 +24,8 @@
 #include <Tools/Math/Line.h>
 
 #include <Tools/Math/Probabilistics.h>
-//#include "Tools/DataStructures/RingBufferWithSum.h"
 #include <Tools/DataStructures/ParameterList.h>
+//#include "Tools/DataStructures/RingBufferWithSum.h"
 //#include "Tools/Filters/AssymetricalBoolFilter.h"
 
 
@@ -42,6 +43,7 @@ BEGIN_DECLARE_MODULE(ActionSimulator)
   REQUIRE(FieldInfo)
   REQUIRE(BallModel)
   REQUIRE(RobotPose)
+  REQUIRE(MotionStatus)
 
   PROVIDE(KickActionModel)
 END_DECLARE_MODULE(ActionSimulator)

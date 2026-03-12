@@ -47,7 +47,6 @@ private:
         Parameters() : ParameterList("RoleDecisionAssignmentDistance")
         {
             // the initial assignments, they don't have to be the active ones
-            PARAMETER_REGISTER(assignment, &Parameters::parseAssignment) = "1:goalie;2:defender_left;3:forward_center;4:defender_right;5:midfielder_right;6:midfielder_left";
             PARAMETER_REGISTER(variant, &Parameters::setVariantFunction) = "priodist"; // "distance", "priority", "priodist"
             PARAMETER_REGISTER(changing, &Parameters::setChangingFunction) = "time"; // "cycle", "time"
 
@@ -61,34 +60,12 @@ private:
         int minChangingCycles;
         double minChangingTime;
 
-        std::string assignment;
-        std::map<unsigned int, Roles::Static> assignment_role;
-
         std::string variant;
         void (RoleDecisionAssignmentDistance::*variantFunc)(std::map<unsigned int, Roles::Static>&);
 
         std::string changing;
         void (RoleDecisionAssignmentDistance::*changingFunc)(std::map<unsigned int, Roles::Static>&);
     private:
-        /**
-         * @brief If the 'assignment' parameter changes, the new value is parsed and the new role
-         *        assignments are applied. An assignment is 'playernumber:role' and every assignment
-         *        is seperated by a ';'.
-         *        Eg.: "1:goalie;2:defender_left"
-         *
-         * @param assign
-         */
-        void parseAssignment(std::string assign) {
-            // clear the 'old' assignments
-            assignment_role.clear();
-            std::vector<std::string> parts = StringTools::split(assign, ';');
-            for(const std::string& part : parts) {
-                std::vector<std::string> assign_part = StringTools::split(part, ':');
-                ASSERT(assign_part.size() == 2);
-                assignment_role[static_cast<unsigned int>(std::stoul(assign_part[0]))] = Roles::getStaticRole(assign_part[1]);
-            }
-        }
-
         /**
          * @brief If the 'variant' parameter changes, the corresponding function pointer is set
          *        to the correct method.

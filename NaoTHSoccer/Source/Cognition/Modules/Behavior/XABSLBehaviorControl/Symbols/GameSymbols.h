@@ -40,12 +40,14 @@ private:
   static int getCompetitionType();
   static bool getPlayingIsSetByGameController();
   static bool getOwnKickOff();
+  static bool getBallTouchedInSetPlay();
   static double getPlayerNumber();
   static double getMsecsRemaining();
   static double getMsecsRemainingSecondary();
   static int getGameState();
   static int getSetPlay();
   static int getGamePhase();
+  static bool getStopped();
 
   static bool playingIsSetByGameController;
 

@@ -46,16 +46,25 @@ option path_striker2024
   {
     decision
     {
-      else if(strategy.role != goalie && vector.abs(x=ball.future.preview.x, y=ball.future.preview.y) > 300)
+      else if(vector.abs(x=ball.future.preview.x, y=ball.future.preview.y) < ((strategy.role == goalie)?500:500))
+      {
+        if(game.set_play != none)
+          goto turn_carefully;
+        else if(!game.ballTouchedInSetPlay)
+          goto turn_carefully;
+        // NOTE: just fr future notice, in case someone gets the same idea again:
+        //   this seems like a good idea, but it doesn't work well.
+        //   there is no check if the ball is positioned well in front of the foot.
+        //   this is handled better by the approach_dribble.
+        //else if(vector.abs(x=ball.future.preview.x, y=ball.future.preview.y) < 300 && attack.best_action == kick_short)
+        //  goto forwardkick;
+        else
+          goto approach_dribble;
+      } 
+      else 
+      {
         stay;
-      else if(vector.abs(x=ball.future.preview.x, y=ball.future.preview.y) > 500)
-        stay;
-      else if(game.set_play != none)
-        goto turn_carefully;
-      else if(attack.best_action == kick_short)
-        goto forwardkick;
-      else
-        goto approach_dribble;
+      }
     }
     action{
       situation_abortable = true;

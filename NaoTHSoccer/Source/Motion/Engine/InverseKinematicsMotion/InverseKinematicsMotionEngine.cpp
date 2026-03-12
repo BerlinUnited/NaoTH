@@ -407,10 +407,7 @@ bool InverseKinematicsMotionEngine::rotationStabilizeRC16(
   Vector2d gyro = Vector2d(theGyrometerData.data.x, theGyrometerData.data.y);
   static Vector2d filteredGyro = gyro;
   filteredGyro = filteredGyro * (1.0f - alpha) + gyro * alpha;
-
-  const double observerMeasurementDelay = 40;
-  const int frameDelay = static_cast<int>(observerMeasurementDelay / (timeDelta*1000));
-
+  
   static RingBuffer<Vector2d, 10> buffer;
   static Vector2d lastGyroError;
   static RotationMatrix lastBodyRotationMatrix = p.hip.rotation;
@@ -421,9 +418,9 @@ bool InverseKinematicsMotionEngine::rotationStabilizeRC16(
   const double rotationY = atan2(relativeRotation.c[2].x, relativeRotation.c[2].z);
   buffer.add(Vector2d(relativeRotation.getXAngle(), rotationY));
 
-  if(buffer.isFull() && frameDelay > 0 && frameDelay < buffer.size())
+  if(buffer.isFull() && buffer.size() >= NaoInfo::actuatorSensorFrameDelay )
   {
-    const Vector2d requestedVelocity = (buffer[frameDelay-1] - buffer[frameDelay]) / timeDelta;
+    const Vector2d requestedVelocity = (buffer[NaoInfo::actuatorSensorFrameDelay-1] - buffer[NaoInfo::actuatorSensorFrameDelay]) / timeDelta;
     const Vector2d error = requestedVelocity - filteredGyro;
     //const Vector2d errorDerivative = (error - lastGyroError) / timeDelta;
 

@@ -4277,6 +4277,784 @@ public final class CommonTypes {
 
   }
 
+  public interface DoubleQuaternionOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:naothmessages.DoubleQuaternion)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>required double x = 1;</code>
+     */
+    boolean hasX();
+    /**
+     * <code>required double x = 1;</code>
+     */
+    double getX();
+
+    /**
+     * <code>required double y = 2;</code>
+     */
+    boolean hasY();
+    /**
+     * <code>required double y = 2;</code>
+     */
+    double getY();
+
+    /**
+     * <code>required double z = 3;</code>
+     */
+    boolean hasZ();
+    /**
+     * <code>required double z = 3;</code>
+     */
+    double getZ();
+
+    /**
+     * <code>required double w = 4;</code>
+     */
+    boolean hasW();
+    /**
+     * <code>required double w = 4;</code>
+     */
+    double getW();
+  }
+  /**
+   * Protobuf type {@code naothmessages.DoubleQuaternion}
+   */
+  public  static final class DoubleQuaternion extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:naothmessages.DoubleQuaternion)
+      DoubleQuaternionOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use DoubleQuaternion.newBuilder() to construct.
+    private DoubleQuaternion(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private DoubleQuaternion() {
+      x_ = 0D;
+      y_ = 0D;
+      z_ = 0D;
+      w_ = 0D;
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private DoubleQuaternion(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 9: {
+              bitField0_ |= 0x00000001;
+              x_ = input.readDouble();
+              break;
+            }
+            case 17: {
+              bitField0_ |= 0x00000002;
+              y_ = input.readDouble();
+              break;
+            }
+            case 25: {
+              bitField0_ |= 0x00000004;
+              z_ = input.readDouble();
+              break;
+            }
+            case 33: {
+              bitField0_ |= 0x00000008;
+              w_ = input.readDouble();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return de.naoth.rc.core.messages.CommonTypes.internal_static_naothmessages_DoubleQuaternion_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return de.naoth.rc.core.messages.CommonTypes.internal_static_naothmessages_DoubleQuaternion_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion.class, de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion.Builder.class);
+    }
+
+    private int bitField0_;
+    public static final int X_FIELD_NUMBER = 1;
+    private double x_;
+    /**
+     * <code>required double x = 1;</code>
+     */
+    public boolean hasX() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>required double x = 1;</code>
+     */
+    public double getX() {
+      return x_;
+    }
+
+    public static final int Y_FIELD_NUMBER = 2;
+    private double y_;
+    /**
+     * <code>required double y = 2;</code>
+     */
+    public boolean hasY() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>required double y = 2;</code>
+     */
+    public double getY() {
+      return y_;
+    }
+
+    public static final int Z_FIELD_NUMBER = 3;
+    private double z_;
+    /**
+     * <code>required double z = 3;</code>
+     */
+    public boolean hasZ() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>required double z = 3;</code>
+     */
+    public double getZ() {
+      return z_;
+    }
+
+    public static final int W_FIELD_NUMBER = 4;
+    private double w_;
+    /**
+     * <code>required double w = 4;</code>
+     */
+    public boolean hasW() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    /**
+     * <code>required double w = 4;</code>
+     */
+    public double getW() {
+      return w_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      if (!hasX()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasY()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasZ()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasW()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeDouble(1, x_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeDouble(2, y_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeDouble(3, z_);
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeDouble(4, w_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeDoubleSize(1, x_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeDoubleSize(2, y_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeDoubleSize(3, z_);
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeDoubleSize(4, w_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion)) {
+        return super.equals(obj);
+      }
+      de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion other = (de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion) obj;
+
+      boolean result = true;
+      result = result && (hasX() == other.hasX());
+      if (hasX()) {
+        result = result && (
+            java.lang.Double.doubleToLongBits(getX())
+            == java.lang.Double.doubleToLongBits(
+                other.getX()));
+      }
+      result = result && (hasY() == other.hasY());
+      if (hasY()) {
+        result = result && (
+            java.lang.Double.doubleToLongBits(getY())
+            == java.lang.Double.doubleToLongBits(
+                other.getY()));
+      }
+      result = result && (hasZ() == other.hasZ());
+      if (hasZ()) {
+        result = result && (
+            java.lang.Double.doubleToLongBits(getZ())
+            == java.lang.Double.doubleToLongBits(
+                other.getZ()));
+      }
+      result = result && (hasW() == other.hasW());
+      if (hasW()) {
+        result = result && (
+            java.lang.Double.doubleToLongBits(getW())
+            == java.lang.Double.doubleToLongBits(
+                other.getW()));
+      }
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (hasX()) {
+        hash = (37 * hash) + X_FIELD_NUMBER;
+        hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+            java.lang.Double.doubleToLongBits(getX()));
+      }
+      if (hasY()) {
+        hash = (37 * hash) + Y_FIELD_NUMBER;
+        hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+            java.lang.Double.doubleToLongBits(getY()));
+      }
+      if (hasZ()) {
+        hash = (37 * hash) + Z_FIELD_NUMBER;
+        hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+            java.lang.Double.doubleToLongBits(getZ()));
+      }
+      if (hasW()) {
+        hash = (37 * hash) + W_FIELD_NUMBER;
+        hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+            java.lang.Double.doubleToLongBits(getW()));
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code naothmessages.DoubleQuaternion}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:naothmessages.DoubleQuaternion)
+        de.naoth.rc.core.messages.CommonTypes.DoubleQuaternionOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return de.naoth.rc.core.messages.CommonTypes.internal_static_naothmessages_DoubleQuaternion_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return de.naoth.rc.core.messages.CommonTypes.internal_static_naothmessages_DoubleQuaternion_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion.class, de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion.Builder.class);
+      }
+
+      // Construct using de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      public Builder clear() {
+        super.clear();
+        x_ = 0D;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        y_ = 0D;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        z_ = 0D;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        w_ = 0D;
+        bitField0_ = (bitField0_ & ~0x00000008);
+        return this;
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return de.naoth.rc.core.messages.CommonTypes.internal_static_naothmessages_DoubleQuaternion_descriptor;
+      }
+
+      public de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion getDefaultInstanceForType() {
+        return de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion.getDefaultInstance();
+      }
+
+      public de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion build() {
+        de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion buildPartial() {
+        de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion result = new de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.x_ = x_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.y_ = y_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.z_ = z_;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        result.w_ = w_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion) {
+          return mergeFrom((de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion other) {
+        if (other == de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion.getDefaultInstance()) return this;
+        if (other.hasX()) {
+          setX(other.getX());
+        }
+        if (other.hasY()) {
+          setY(other.getY());
+        }
+        if (other.hasZ()) {
+          setZ(other.getZ());
+        }
+        if (other.hasW()) {
+          setW(other.getW());
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        if (!hasX()) {
+          return false;
+        }
+        if (!hasY()) {
+          return false;
+        }
+        if (!hasZ()) {
+          return false;
+        }
+        if (!hasW()) {
+          return false;
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      private double x_ ;
+      /**
+       * <code>required double x = 1;</code>
+       */
+      public boolean hasX() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>required double x = 1;</code>
+       */
+      public double getX() {
+        return x_;
+      }
+      /**
+       * <code>required double x = 1;</code>
+       */
+      public Builder setX(double value) {
+        bitField0_ |= 0x00000001;
+        x_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required double x = 1;</code>
+       */
+      public Builder clearX() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        x_ = 0D;
+        onChanged();
+        return this;
+      }
+
+      private double y_ ;
+      /**
+       * <code>required double y = 2;</code>
+       */
+      public boolean hasY() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>required double y = 2;</code>
+       */
+      public double getY() {
+        return y_;
+      }
+      /**
+       * <code>required double y = 2;</code>
+       */
+      public Builder setY(double value) {
+        bitField0_ |= 0x00000002;
+        y_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required double y = 2;</code>
+       */
+      public Builder clearY() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        y_ = 0D;
+        onChanged();
+        return this;
+      }
+
+      private double z_ ;
+      /**
+       * <code>required double z = 3;</code>
+       */
+      public boolean hasZ() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>required double z = 3;</code>
+       */
+      public double getZ() {
+        return z_;
+      }
+      /**
+       * <code>required double z = 3;</code>
+       */
+      public Builder setZ(double value) {
+        bitField0_ |= 0x00000004;
+        z_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required double z = 3;</code>
+       */
+      public Builder clearZ() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        z_ = 0D;
+        onChanged();
+        return this;
+      }
+
+      private double w_ ;
+      /**
+       * <code>required double w = 4;</code>
+       */
+      public boolean hasW() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      /**
+       * <code>required double w = 4;</code>
+       */
+      public double getW() {
+        return w_;
+      }
+      /**
+       * <code>required double w = 4;</code>
+       */
+      public Builder setW(double value) {
+        bitField0_ |= 0x00000008;
+        w_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required double w = 4;</code>
+       */
+      public Builder clearW() {
+        bitField0_ = (bitField0_ & ~0x00000008);
+        w_ = 0D;
+        onChanged();
+        return this;
+      }
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:naothmessages.DoubleQuaternion)
+    }
+
+    // @@protoc_insertion_point(class_scope:naothmessages.DoubleQuaternion)
+    private static final de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion();
+    }
+
+    public static de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    @java.lang.Deprecated public static final com.google.protobuf.Parser<DoubleQuaternion>
+        PARSER = new com.google.protobuf.AbstractParser<DoubleQuaternion>() {
+      public DoubleQuaternion parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+          return new DoubleQuaternion(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<DoubleQuaternion> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<DoubleQuaternion> getParserForType() {
+      return PARSER;
+    }
+
+    public de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
   public interface Pose3DOrBuilder extends
       // @@protoc_insertion_point(interface_extends:naothmessages.Pose3D)
       com.google.protobuf.MessageOrBuilder {
@@ -4317,6 +5095,19 @@ public final class CommonTypes {
      */
     de.naoth.rc.core.messages.CommonTypes.DoubleVector3OrBuilder getRotationOrBuilder(
         int index);
+
+    /**
+     * <code>optional .naothmessages.DoubleQuaternion rotation_quaternion = 3;</code>
+     */
+    boolean hasRotationQuaternion();
+    /**
+     * <code>optional .naothmessages.DoubleQuaternion rotation_quaternion = 3;</code>
+     */
+    de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion getRotationQuaternion();
+    /**
+     * <code>optional .naothmessages.DoubleQuaternion rotation_quaternion = 3;</code>
+     */
+    de.naoth.rc.core.messages.CommonTypes.DoubleQuaternionOrBuilder getRotationQuaternionOrBuilder();
   }
   /**
    * Protobuf type {@code naothmessages.Pose3D}
@@ -4382,6 +5173,19 @@ public final class CommonTypes {
               }
               rotation_.add(
                   input.readMessage(de.naoth.rc.core.messages.CommonTypes.DoubleVector3.PARSER, extensionRegistry));
+              break;
+            }
+            case 26: {
+              de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion.Builder subBuilder = null;
+              if (((bitField0_ & 0x00000002) == 0x00000002)) {
+                subBuilder = rotationQuaternion_.toBuilder();
+              }
+              rotationQuaternion_ = input.readMessage(de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(rotationQuaternion_);
+                rotationQuaternion_ = subBuilder.buildPartial();
+              }
+              bitField0_ |= 0x00000002;
               break;
             }
           }
@@ -4468,6 +5272,27 @@ public final class CommonTypes {
       return rotation_.get(index);
     }
 
+    public static final int ROTATION_QUATERNION_FIELD_NUMBER = 3;
+    private de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion rotationQuaternion_;
+    /**
+     * <code>optional .naothmessages.DoubleQuaternion rotation_quaternion = 3;</code>
+     */
+    public boolean hasRotationQuaternion() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>optional .naothmessages.DoubleQuaternion rotation_quaternion = 3;</code>
+     */
+    public de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion getRotationQuaternion() {
+      return rotationQuaternion_ == null ? de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion.getDefaultInstance() : rotationQuaternion_;
+    }
+    /**
+     * <code>optional .naothmessages.DoubleQuaternion rotation_quaternion = 3;</code>
+     */
+    public de.naoth.rc.core.messages.CommonTypes.DoubleQuaternionOrBuilder getRotationQuaternionOrBuilder() {
+      return rotationQuaternion_ == null ? de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion.getDefaultInstance() : rotationQuaternion_;
+    }
+
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
@@ -4488,6 +5313,12 @@ public final class CommonTypes {
           return false;
         }
       }
+      if (hasRotationQuaternion()) {
+        if (!getRotationQuaternion().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
       memoizedIsInitialized = 1;
       return true;
     }
@@ -4499,6 +5330,9 @@ public final class CommonTypes {
       }
       for (int i = 0; i < rotation_.size(); i++) {
         output.writeMessage(2, rotation_.get(i));
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeMessage(3, getRotationQuaternion());
       }
       unknownFields.writeTo(output);
     }
@@ -4515,6 +5349,10 @@ public final class CommonTypes {
       for (int i = 0; i < rotation_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(2, rotation_.get(i));
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(3, getRotationQuaternion());
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -4539,6 +5377,11 @@ public final class CommonTypes {
       }
       result = result && getRotationList()
           .equals(other.getRotationList());
+      result = result && (hasRotationQuaternion() == other.hasRotationQuaternion());
+      if (hasRotationQuaternion()) {
+        result = result && getRotationQuaternion()
+            .equals(other.getRotationQuaternion());
+      }
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -4557,6 +5400,10 @@ public final class CommonTypes {
       if (getRotationCount() > 0) {
         hash = (37 * hash) + ROTATION_FIELD_NUMBER;
         hash = (53 * hash) + getRotationList().hashCode();
+      }
+      if (hasRotationQuaternion()) {
+        hash = (37 * hash) + ROTATION_QUATERNION_FIELD_NUMBER;
+        hash = (53 * hash) + getRotationQuaternion().hashCode();
       }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
@@ -4685,6 +5532,7 @@ public final class CommonTypes {
                 .alwaysUseFieldBuilders) {
           getTranslationFieldBuilder();
           getRotationFieldBuilder();
+          getRotationQuaternionFieldBuilder();
         }
       }
       public Builder clear() {
@@ -4701,6 +5549,12 @@ public final class CommonTypes {
         } else {
           rotationBuilder_.clear();
         }
+        if (rotationQuaternionBuilder_ == null) {
+          rotationQuaternion_ = null;
+        } else {
+          rotationQuaternionBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
 
@@ -4741,6 +5595,14 @@ public final class CommonTypes {
           result.rotation_ = rotation_;
         } else {
           result.rotation_ = rotationBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        if (rotationQuaternionBuilder_ == null) {
+          result.rotationQuaternion_ = rotationQuaternion_;
+        } else {
+          result.rotationQuaternion_ = rotationQuaternionBuilder_.build();
         }
         result.bitField0_ = to_bitField0_;
         onBuilt();
@@ -4813,6 +5675,9 @@ public final class CommonTypes {
             }
           }
         }
+        if (other.hasRotationQuaternion()) {
+          mergeRotationQuaternion(other.getRotationQuaternion());
+        }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
@@ -4827,6 +5692,11 @@ public final class CommonTypes {
         }
         for (int i = 0; i < getRotationCount(); i++) {
           if (!getRotation(i).isInitialized()) {
+            return false;
+          }
+        }
+        if (hasRotationQuaternion()) {
+          if (!getRotationQuaternion().isInitialized()) {
             return false;
           }
         }
@@ -5208,6 +6078,124 @@ public final class CommonTypes {
           rotation_ = null;
         }
         return rotationBuilder_;
+      }
+
+      private de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion rotationQuaternion_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion, de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion.Builder, de.naoth.rc.core.messages.CommonTypes.DoubleQuaternionOrBuilder> rotationQuaternionBuilder_;
+      /**
+       * <code>optional .naothmessages.DoubleQuaternion rotation_quaternion = 3;</code>
+       */
+      public boolean hasRotationQuaternion() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>optional .naothmessages.DoubleQuaternion rotation_quaternion = 3;</code>
+       */
+      public de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion getRotationQuaternion() {
+        if (rotationQuaternionBuilder_ == null) {
+          return rotationQuaternion_ == null ? de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion.getDefaultInstance() : rotationQuaternion_;
+        } else {
+          return rotationQuaternionBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>optional .naothmessages.DoubleQuaternion rotation_quaternion = 3;</code>
+       */
+      public Builder setRotationQuaternion(de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion value) {
+        if (rotationQuaternionBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          rotationQuaternion_ = value;
+          onChanged();
+        } else {
+          rotationQuaternionBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000004;
+        return this;
+      }
+      /**
+       * <code>optional .naothmessages.DoubleQuaternion rotation_quaternion = 3;</code>
+       */
+      public Builder setRotationQuaternion(
+          de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion.Builder builderForValue) {
+        if (rotationQuaternionBuilder_ == null) {
+          rotationQuaternion_ = builderForValue.build();
+          onChanged();
+        } else {
+          rotationQuaternionBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000004;
+        return this;
+      }
+      /**
+       * <code>optional .naothmessages.DoubleQuaternion rotation_quaternion = 3;</code>
+       */
+      public Builder mergeRotationQuaternion(de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion value) {
+        if (rotationQuaternionBuilder_ == null) {
+          if (((bitField0_ & 0x00000004) == 0x00000004) &&
+              rotationQuaternion_ != null &&
+              rotationQuaternion_ != de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion.getDefaultInstance()) {
+            rotationQuaternion_ =
+              de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion.newBuilder(rotationQuaternion_).mergeFrom(value).buildPartial();
+          } else {
+            rotationQuaternion_ = value;
+          }
+          onChanged();
+        } else {
+          rotationQuaternionBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000004;
+        return this;
+      }
+      /**
+       * <code>optional .naothmessages.DoubleQuaternion rotation_quaternion = 3;</code>
+       */
+      public Builder clearRotationQuaternion() {
+        if (rotationQuaternionBuilder_ == null) {
+          rotationQuaternion_ = null;
+          onChanged();
+        } else {
+          rotationQuaternionBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000004);
+        return this;
+      }
+      /**
+       * <code>optional .naothmessages.DoubleQuaternion rotation_quaternion = 3;</code>
+       */
+      public de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion.Builder getRotationQuaternionBuilder() {
+        bitField0_ |= 0x00000004;
+        onChanged();
+        return getRotationQuaternionFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>optional .naothmessages.DoubleQuaternion rotation_quaternion = 3;</code>
+       */
+      public de.naoth.rc.core.messages.CommonTypes.DoubleQuaternionOrBuilder getRotationQuaternionOrBuilder() {
+        if (rotationQuaternionBuilder_ != null) {
+          return rotationQuaternionBuilder_.getMessageOrBuilder();
+        } else {
+          return rotationQuaternion_ == null ?
+              de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion.getDefaultInstance() : rotationQuaternion_;
+        }
+      }
+      /**
+       * <code>optional .naothmessages.DoubleQuaternion rotation_quaternion = 3;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion, de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion.Builder, de.naoth.rc.core.messages.CommonTypes.DoubleQuaternionOrBuilder> 
+          getRotationQuaternionFieldBuilder() {
+        if (rotationQuaternionBuilder_ == null) {
+          rotationQuaternionBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion, de.naoth.rc.core.messages.CommonTypes.DoubleQuaternion.Builder, de.naoth.rc.core.messages.CommonTypes.DoubleQuaternionOrBuilder>(
+                  getRotationQuaternion(),
+                  getParentForChildren(),
+                  isClean());
+          rotationQuaternion_ = null;
+        }
+        return rotationQuaternionBuilder_;
       }
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
@@ -6210,6 +7198,11 @@ public final class CommonTypes {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_naothmessages_DoubleVector_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_naothmessages_DoubleQuaternion_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_naothmessages_DoubleQuaternion_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_naothmessages_Pose3D_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
@@ -6235,29 +7228,32 @@ public final class CommonTypes {
       "\013translation\030\001 \002(\0132\034.naothmessages.Doubl" +
       "eVector2\022\020\n\010rotation\030\002 \002(\001\"0\n\rDoubleVect" +
       "or3\022\t\n\001x\030\001 \002(\001\022\t\n\001y\030\002 \002(\001\022\t\n\001z\030\003 \002(\001\"\031\n\014" +
-      "DoubleVector\022\t\n\001v\030\001 \003(\001\"k\n\006Pose3D\0221\n\013tra" +
-      "nslation\030\001 \002(\0132\034.naothmessages.DoubleVec" +
-      "tor3\022.\n\010rotation\030\002 \003(\0132\034.naothmessages.D",
-      "oubleVector3\"z\n\013LineSegment\022*\n\004base\030\001 \002(" +
-      "\0132\034.naothmessages.DoubleVector2\022/\n\tdirec" +
-      "tion\030\002 \002(\0132\034.naothmessages.DoubleVector2" +
-      "\022\016\n\006length\030\003 \002(\001*\220\001\n\005Color\022\010\n\004none\020\000\022\n\n\006" +
-      "orange\020\001\022\n\n\006yellow\020\002\022\013\n\007skyblue\020\003\022\t\n\005whi" +
-      "te\020\004\022\007\n\003red\020\005\022\010\n\004blue\020\006\022\t\n\005green\020\007\022\t\n\005bl" +
-      "ack\020\010\022\010\n\004pink\020\t\022\010\n\004gray\020\n\022\020\n\014yellowOrang" +
-      "e\020\013*\037\n\010CameraID\022\007\n\003top\020\000\022\n\n\006bottom\020\001*\245\003\n" +
-      "\007JointID\022\r\n\tHeadPitch\020\000\022\013\n\007HeadYaw\020\001\022\021\n\r" +
-      "RShoulderRoll\020\002\022\021\n\rLShoulderRoll\020\003\022\022\n\016RS",
-      "houlderPitch\020\004\022\022\n\016LShoulderPitch\020\005\022\016\n\nRE" +
-      "lbowRoll\020\006\022\016\n\nLElbowRoll\020\007\022\r\n\tRElbowYaw\020" +
-      "\010\022\r\n\tLElbowYaw\020\t\022\020\n\014RHipYawPitch\020\n\022\020\n\014LH" +
-      "ipYawPitch\020\013\022\r\n\tRHipPitch\020\014\022\r\n\tLHipPitch" +
-      "\020\r\022\014\n\010RHipRoll\020\016\022\014\n\010LHipRoll\020\017\022\016\n\nRKneeP" +
-      "itch\020\020\022\016\n\nLKneePitch\020\021\022\017\n\013RAnklePitch\020\022\022" +
-      "\017\n\013LAnklePitch\020\023\022\016\n\nRAnkleRoll\020\024\022\016\n\nLAnk" +
-      "leRoll\020\025\022\r\n\tLWristYaw\020\026\022\r\n\tRWristYaw\020\027\022\t" +
-      "\n\005LHand\020\030\022\t\n\005RHand\020\031B\033\n\031de.naoth.rc.core" +
-      ".messages"
+      "DoubleVector\022\t\n\001v\030\001 \003(\001\">\n\020DoubleQuatern" +
+      "ion\022\t\n\001x\030\001 \002(\001\022\t\n\001y\030\002 \002(\001\022\t\n\001z\030\003 \002(\001\022\t\n\001" +
+      "w\030\004 \002(\001\"\251\001\n\006Pose3D\0221\n\013translation\030\001 \002(\0132",
+      "\034.naothmessages.DoubleVector3\022.\n\010rotatio" +
+      "n\030\002 \003(\0132\034.naothmessages.DoubleVector3\022<\n" +
+      "\023rotation_quaternion\030\003 \001(\0132\037.naothmessag" +
+      "es.DoubleQuaternion\"z\n\013LineSegment\022*\n\004ba" +
+      "se\030\001 \002(\0132\034.naothmessages.DoubleVector2\022/" +
+      "\n\tdirection\030\002 \002(\0132\034.naothmessages.Double" +
+      "Vector2\022\016\n\006length\030\003 \002(\001*\220\001\n\005Color\022\010\n\004non" +
+      "e\020\000\022\n\n\006orange\020\001\022\n\n\006yellow\020\002\022\013\n\007skyblue\020\003" +
+      "\022\t\n\005white\020\004\022\007\n\003red\020\005\022\010\n\004blue\020\006\022\t\n\005green\020" +
+      "\007\022\t\n\005black\020\010\022\010\n\004pink\020\t\022\010\n\004gray\020\n\022\020\n\014yell",
+      "owOrange\020\013*\037\n\010CameraID\022\007\n\003top\020\000\022\n\n\006botto" +
+      "m\020\001*\245\003\n\007JointID\022\r\n\tHeadPitch\020\000\022\013\n\007HeadYa" +
+      "w\020\001\022\021\n\rRShoulderRoll\020\002\022\021\n\rLShoulderRoll\020" +
+      "\003\022\022\n\016RShoulderPitch\020\004\022\022\n\016LShoulderPitch\020" +
+      "\005\022\016\n\nRElbowRoll\020\006\022\016\n\nLElbowRoll\020\007\022\r\n\tREl" +
+      "bowYaw\020\010\022\r\n\tLElbowYaw\020\t\022\020\n\014RHipYawPitch\020" +
+      "\n\022\020\n\014LHipYawPitch\020\013\022\r\n\tRHipPitch\020\014\022\r\n\tLH" +
+      "ipPitch\020\r\022\014\n\010RHipRoll\020\016\022\014\n\010LHipRoll\020\017\022\016\n" +
+      "\nRKneePitch\020\020\022\016\n\nLKneePitch\020\021\022\017\n\013RAnkleP" +
+      "itch\020\022\022\017\n\013LAnklePitch\020\023\022\016\n\nRAnkleRoll\020\024\022",
+      "\016\n\nLAnkleRoll\020\025\022\r\n\tLWristYaw\020\026\022\r\n\tRWrist" +
+      "Yaw\020\027\022\t\n\005LHand\020\030\022\t\n\005RHand\020\031B\033\n\031de.naoth." +
+      "rc.core.messages"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -6307,14 +7303,20 @@ public final class CommonTypes {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_naothmessages_DoubleVector_descriptor,
         new java.lang.String[] { "V", });
-    internal_static_naothmessages_Pose3D_descriptor =
+    internal_static_naothmessages_DoubleQuaternion_descriptor =
       getDescriptor().getMessageTypes().get(6);
+    internal_static_naothmessages_DoubleQuaternion_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_naothmessages_DoubleQuaternion_descriptor,
+        new java.lang.String[] { "X", "Y", "Z", "W", });
+    internal_static_naothmessages_Pose3D_descriptor =
+      getDescriptor().getMessageTypes().get(7);
     internal_static_naothmessages_Pose3D_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_naothmessages_Pose3D_descriptor,
-        new java.lang.String[] { "Translation", "Rotation", });
+        new java.lang.String[] { "Translation", "Rotation", "RotationQuaternion", });
     internal_static_naothmessages_LineSegment_descriptor =
-      getDescriptor().getMessageTypes().get(7);
+      getDescriptor().getMessageTypes().get(8);
     internal_static_naothmessages_LineSegment_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_naothmessages_LineSegment_descriptor,

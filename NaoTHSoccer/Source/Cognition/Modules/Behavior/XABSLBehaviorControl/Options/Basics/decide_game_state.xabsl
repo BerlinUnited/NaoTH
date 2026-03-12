@@ -1,7 +1,12 @@
 option decide_game_state 
 {  
   common decision {
-    if (game.state == _initial_)
+    // unstiff has priority over all other states
+    if (game.state == unstiff)
+      goto unstiff;
+    else if (game.stopped)
+      goto stopped;
+    else if (game.state == _initial_)
       goto _initial;
     else if (game.state == ready)
       goto ready;
@@ -11,32 +16,30 @@ option decide_game_state
       goto penalized;
     else if (game.state == finished)
       goto finished;
-    else if (game.state == standby)
-      goto standby;
-    else if(game.state == playing)
+    else if (game.state == playing)
       goto playing;
-    else if(game.state == unstiff)
-      goto unstiff;
   }
   
-  initial state _initial {
+  state stopped {
     action
     {
-      game.current_mode = init;
-      //motion.type = init;
+      // this state only exists internaly
+      game.current_mode = stopped;
+
       motion.type = stand;
       arm.control_mode = normal;
       head.control_mode = stay_as_forced;
-      audio.capture = false;  //whistledetector off
+      
+      audio.capture = false;
       last_state_was_penalized = false;
     }
   }
 
-  state standby {
+  initial state _initial {
     action
     {
-      game.current_mode = standby;
-      //motion.type = init;
+      game.current_mode = init;
+      
       motion.type = stand;
       arm.control_mode = normal;
       head.control_mode = stay_as_forced;

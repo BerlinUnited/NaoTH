@@ -17,7 +17,7 @@ using namespace std;
 #include <gio/gunixsocketaddress.h>
 
 MessageQueue4Process::MessageQueue4Process(const std::string& name):
-theName("/tmp/naoth.messagequeue."+name),
+  theName("/tmp/naoth.messagequeue."+name),
   serverSocket(NULL),
   readSocket(NULL),
   writeSocket(NULL)

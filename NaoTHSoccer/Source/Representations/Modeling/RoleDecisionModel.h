@@ -13,6 +13,7 @@
 #include <map>
 
 #include "Tools/DataStructures/Printable.h"
+#include "Tools/DataStructures/Serializer.h"
 #include "Tools/Math/Vector2.h"
 #include "Representations/Infrastructure/Roles.h"
 
@@ -24,8 +25,14 @@ public:
     std::map<unsigned int, Roles::Role> roles;
     std::map<Roles::Static, Roles::Position> roles_position;
 
+    /** The dynamic position. */
+    Vector2d dynamic_position;
+
     Roles::Role getRole(unsigned int playerNumber) const;
     Roles::Position getStaticRolePosition(Roles::Static role) const;
+
+    /** Returns the player number of the given role, 0 if not found */
+    unsigned int getPlayerNumber(Roles::Dynamic role) const;
 
     bool isStriker(unsigned int playerNumber) const;
 
@@ -44,6 +51,12 @@ public:
     }
 };
 
+template<> class naoth::Serializer<RoleDecisionModel>
+{
+    public:
+        static void serialize(const RoleDecisionModel& representation, std::ostream& stream);
+        static void deserialize(std::istream& stream, RoleDecisionModel& representation);
+};
 
 #endif  /* ROLEDECISIONMODEL_H */
 

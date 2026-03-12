@@ -23,6 +23,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
+import java.nio.file.NoSuchFileException;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
@@ -201,6 +203,16 @@ public class DialogRegistry {
     }
     
     public void loadFromFile(File in) throws IOException {
+        // ACHTUNG: we must check whether the file exists and is readable before calling readXML().
+        // In theory, readXML(..) does tose checks as well,
+        // but something breaks inside the docking control when that happens.
+        if(!in.exists()) {
+            throw new NoSuchFileException(in.getAbsolutePath() + " does not exist.");
+        }
+        if(!in.canRead()) {
+            throw new AccessDeniedException(in.getAbsolutePath() + " is not readable.");
+        }
+        
         this.control.readXML(in);
     }
     

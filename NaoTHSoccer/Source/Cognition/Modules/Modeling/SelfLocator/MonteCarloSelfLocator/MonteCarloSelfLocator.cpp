@@ -131,7 +131,7 @@ void MonteCarloSelfLocator::execute()
   }
 
   // TODO: in the future we might want to localize in initial, then we will need a more detailed approach here
-  if(getPlayerInfo().robotState == PlayerInfo::initial || getPlayerInfo().robotState == PlayerInfo::standby) 
+  if(getPlayerInfo().robotState == PlayerInfo::initial) 
   {
     state = KIDNAPPED;
   }
@@ -447,7 +447,6 @@ void MonteCarloSelfLocator::updateByOdometryRelative(SampleSet& sampleSet, bool 
 void MonteCarloSelfLocator::updateBySituation()
 {
   if(getSituationPrior().currentPrior == getSituationPrior().firstReady)
-    //||getPlayerInfo().robotState == PlayerInfo::standby)
   {
     updateByStartPositions(theSampleSet);
   }
@@ -936,16 +935,33 @@ void MonteCarloSelfLocator::updateByStartPositions(SampleSet& sampleSet) const
   LineDensity rightStartingLine(startRight, endRight,  Math::pi_2, parameters.startPositionsSigmaDistance, parameters.startPositionsSigmaAngle);
 
   /*---- HACK BEGIN ----*/
+  // Decide which players are located on the left side line depending on the team size
   LineDensity startingLine;
-  if(
-    getPlayerInfo().playerNumber == 1 || 
-    getPlayerInfo().playerNumber == 2 || 
-    getPlayerInfo().playerNumber == 3 || 
-    getPlayerInfo().playerNumber == 4) {
+  if(getGameData().playersPerTeam == 7) {
+    // Localization for 7v7 games
+    if(
+      getPlayerInfo().playerNumber == 1 || 
+      getPlayerInfo().playerNumber == 2 || 
+      getPlayerInfo().playerNumber == 3 || 
+      getPlayerInfo().playerNumber == 4) 
+    {
       startingLine = leftStartingLine;
-  } else {
+    } else {
       startingLine = rightStartingLine;
+    }
+  } else {
+    // Localization for 5v5 games
+    if(
+      getPlayerInfo().playerNumber == 1 || 
+      getPlayerInfo().playerNumber == 2 || 
+      getPlayerInfo().playerNumber == 3)
+    {
+      startingLine = leftStartingLine;
+    } else {
+      startingLine = rightStartingLine;
+    }
   }
+
 
   for(size_t i = 0; i < sampleSet.size(); i++) {
       sampleSet[i].likelihood *= startingLine.update(sampleSet[i]);

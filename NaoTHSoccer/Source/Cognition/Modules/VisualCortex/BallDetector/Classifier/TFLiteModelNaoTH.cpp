@@ -6,11 +6,11 @@ void TFLiteModelNaoTH::predict(const BallCandidates::PatchYUVClassified &patch, 
 {
     // create input data from patch (TODO: why not use a Y-patch directly and save the copy operation?)
     ASSERT(patch.size() == 16);
-      
+
 
     // Copy patch data to input tensor
     //float* input = interpreter->typed_input_tensor<float>(0);
-	
+
     // Ensure input tensor is properly accessed
     float* input = inputTensor->data.f;
     ASSERT(input != nullptr);
@@ -21,7 +21,7 @@ void TFLiteModelNaoTH::predict(const BallCandidates::PatchYUVClassified &patch, 
     for (size_t x = 0; x < patchSize; x++)
     {
         for (size_t y = 0; y < patchSize; y++)
-        {   
+        {
             // Directly copy Y-channel data with brightness adjustment
             float value = (static_cast<float>(patch.data[patchSize * x + y].pixel.y) / 255.0f) + static_cast<float>(meanBrightness);
             input[patchSize * x + y] = value;
@@ -31,7 +31,7 @@ void TFLiteModelNaoTH::predict(const BallCandidates::PatchYUVClassified &patch, 
     // Perform inference
      MY_ASSERT_EQ(TfLiteInterpreterInvoke(interpreter), kTfLiteOk);
 
-    // Retrieve the full output tensor 
+    // Retrieve the full output tensor
     const float* outputData = TfLiteInterpreterGetOutputTensor(interpreter, 0)->data.f;
     int numOutputElements = TfLiteTensorByteSize(TfLiteInterpreterGetOutputTensor(interpreter, 0)) / sizeof(float);
     result = std::vector<float>(outputData, outputData + numOutputElements);
@@ -40,7 +40,7 @@ void TFLiteModelNaoTH::predict(const BallCandidates::PatchYUVClassified &patch, 
     // std::cout << "The result is: " << result[0] << ", " << result[1]  << std::endl;
 }
 
-double TFLiteModelNaoTH::getBallConfidence() const 
+double TFLiteModelNaoTH::getBallConfidence() const
 {
   // make sure there is an output tensor
   ASSERT(result.size() > 0);
@@ -51,6 +51,7 @@ double TFLiteModelNaoTH::getBallConfidence() const
   return 1.0;
 }
 
+/** This is actually the "no ball" confidence */
 double TFLiteModelNaoTH::getRadius() const
 {
   // make sure there is an output tensor

@@ -11,6 +11,17 @@ from tools import raw_attack_direction_provider as attack_dir
 from state import State
 from run_simulation_with_particleFilter import calculate_best_direction as heinrich_test
 
+'''
+# this is needed for a nice export as pgf or pdf
+import matplotlib 
+matplotlib.use("pgf")
+
+plt.rcParams.update({
+    "pgf.texsystem": "pdflatex",   # or "xelatex" / "lualatex" if you use those
+    "text.usetex": True,
+    "font.family": "serif",        # matches LaTeX default
+})
+'''
 
 def minimal_rotation(s, action, turn_direction):
     turn_speed = math.radians(5.0)
@@ -63,7 +74,7 @@ def direct_kick_strategy_cool(s, action_list, take_best=False):
 
     for idx, action in enumerate(action_list):
 
-        if action.name is "none":
+        if action.name == "none":
             rotation = 0
         else:
             # optimize action
@@ -89,7 +100,7 @@ def direct_kick_strategy_cool(s, action_list, take_best=False):
         # restore previous rotation
         s.pose.rotate(-rotation)
 
-        if action.name is not "none":
+        if action.name != "none":
             if fastest_action_dir is None or np.abs(rotation) < np.abs(fastest_action_dir):
                 fastest_action_dir = rotation
                 fastest_action_idx = idx
@@ -145,7 +156,7 @@ def optimal_kick_strategy(s, action_list):
     selected_action_idx = 0
 
     for ix, action in enumerate(action_list):
-        if action.name is "none":
+        if action.name == "none":
             continue
 
         rotation, _ = heinrich_test(s, action, False, iterations=20)
@@ -162,7 +173,7 @@ def optimal_value_strategy(s, action_list):
     rotations = []
     for action in action_list:
 
-        if action.name is "none":
+        if action.name == "none":
             rotation = 0
         else:
             # optimize action
@@ -299,28 +310,38 @@ if __name__ == "__main__":
     all_actions = select(actions, ["none", "kick_short", "sidekick_left", "sidekick_right"])
     # print ([a.name for a in all_actions])
 
-    # repeat it multiple times to see how reliable the result is
-    for i in range(100):
+    # repeat simulation with different strategies
+    N = 99
+    print("EXPERIMENT: repeat simulation with different strategies")
+    for i in range(N):
+        print("RUN {}/{}".format(i,N))
+    
         origin = State()
-        origin.pose.rotation = np.radians([66.0])
-        origin.pose.translation.x = 1086
-        origin.pose.translation.y = 2047
 
-        '''
+        # set a starting pose for the robot
+        #origin.pose.rotation = np.radians([66.0])
+        #origin.pose.translation.x = 1086
+        #origin.pose.translation.y = 2047
+
+        # set a starting pose for the robot
+        origin.pose.rotation = np.radians([45.0])
+        origin.pose.translation.x = -2000 # mm
+        origin.pose.translation.y = -1000 # mm
+
         state = copy.deepcopy(origin)
-        print("run optimal_kick_strategy")
+        print("run optimal_kick_strategy") # optimal one / best-one
         history1 = run_experiment(state, optimal_kick_strategy, select(actions, ["none", "kick_short"]))
         
         state = copy.deepcopy(origin)
-        print("run optimal_kick_strategy")
+        print("run optimal_kick_strategy") # optimal all / best-fast
         history2 = run_experiment(state, optimal_kick_strategy, all_actions)
         
         state = copy.deepcopy(origin)
-        print("run direct_kick_strategy")
+        print("run direct_kick_strategy") # fast-fast
         history3 = run_experiment(state, direct_kick_strategy, all_actions)
         
         state = copy.deepcopy(origin)
-        print("run optimal_value_strategy")
+        print("run optimal_value_strategy") # best
         history4 = run_experiment(state, optimal_value_strategy, all_actions)
         
         h1 = np.array([[h.state.pose.translation.x, h.state.pose.translation.y] for h in history1])
@@ -330,17 +351,30 @@ if __name__ == "__main__":
         
         plt.clf()
         axes = plt.gca()
+        axes.set_axis_off()
+        
+        
         tools.draw_field(axes)
         
         
-        plt.plot(h1[:, 0], h1[:, 1], '-ob')
-        plt.plot(h2[:, 0], h2[:, 1], '-ok')
-        plt.plot(h3[:, 0], h3[:, 1], '-or')
-        plt.plot(h4[:, 0], h4[:, 1], '-oy')
+        plt.plot(h1[:, 0], h1[:, 1], '-ob', linewidth=1, markersize=5, label='best one')
+        plt.plot(h2[:, 0], h2[:, 1], '-ok', linewidth=1, markersize=5, label='best fast')
+        plt.plot(h3[:, 0], h3[:, 1], '-or', linewidth=1, markersize=5,label='fast')
+        plt.plot(h4[:, 0], h4[:, 1], '-om', linewidth=1, markersize=5,label='best') 
+        
+        #axes.legend(fontsize=8, ncol=4, loc="lower center",frameon=False)
+
+        # export as pgf or pdf
+        # NOTE: enable the parameters in the header
+        #plt.gcf().savefig(f"strategy_figures/strategy_decision_{i:02}.pgf")
+        #plt.gcf().savefig(f"strategy_figures/strategy_decision_{i:02}.png")
         
         plt.pause(2)
-        '''
+        plt.show()
+        
 
+        # EXPERIMENT: run a single strategy
+        '''
         state = copy.deepcopy(origin)
         print("run direct_kick_strategy")
         history3 = run_experiment(state, direct_kick_strategy_cool, all_actions)
@@ -358,5 +392,7 @@ if __name__ == "__main__":
 
         plt.plot(h3[:, 0], h3[:, 1], '-or')
         plt.quiver(h3[:, 0], h3[:, 1], v3[:, 0], v3[:, 1], units='width')
-
+        
+        
         plt.show()
+        '''

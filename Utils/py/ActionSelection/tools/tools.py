@@ -7,7 +7,8 @@ from . import field_info as f
 
 
 def draw_field(axis=plt.gca()):
-    mpl.rcParams['lines.linewidth'] = 2.33513514  # was 2 before
+    line_width_pt = 2.33513514  # was 2 before
+    mpl.rcParams['lines.linewidth'] = line_width_pt
 
     ax = axis
 
@@ -15,7 +16,7 @@ def draw_field(axis=plt.gca()):
     ax.add_patch(
         patches.Rectangle(
             (-f.x_field_length / 2, -f.y_field_length / 2), f.x_field_length, f.y_field_length,
-            facecolor="green", zorder=0
+            facecolor="lightgreen", zorder=0
         )
     )
 
@@ -52,7 +53,7 @@ def draw_field(axis=plt.gca()):
             'white')  # own penalty
 
     # Middle Circle
-    ax.add_artist(Circle(xy=(0, 0), radius=f.center_circle_radius, fill=False, edgecolor='white'))
+    ax.add_artist(Circle(xy=(0, 0), radius=f.center_circle_radius, fill=False, edgecolor='white', linewidth=line_width_pt))
     # Penalty Marks
     ax.add_artist(Circle(xy=(f.x_opponent_groundline - f.x_penalty_mark_distance, 0),
                          radius=f.penalty_cross_radius, color='white'))

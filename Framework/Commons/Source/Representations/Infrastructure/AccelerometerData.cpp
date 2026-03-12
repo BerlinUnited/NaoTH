@@ -1,5 +1,6 @@
 
-#include "Representations/Infrastructure/AccelerometerData.h"
+
+#include "AccelerometerData.h"
 #include "Messages/Framework-Representations.pb.h"
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 #include <Tools/DataConversion.h>

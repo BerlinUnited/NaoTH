@@ -87,6 +87,7 @@ void FieldInfo::calculateCrossings()
   yPosLeftSideline        =  yLength / 2.0; 
   yPosRightSideline       = -yPosLeftSideline;
 
+  // TODO: is this still used?
   //Extra stuff for the Simulator
   xThrowInLineOwn   = xPosOwnGroundline+1000;
   xThrowInLineOpp   = -xThrowInLineOwn;

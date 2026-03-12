@@ -67,7 +67,10 @@ private:
             PARAMETER_REGISTER(forward_center_str,   &Parameters::parsePositionForwardCenter)   = " 1500,    0;  -500,    0; -1100,    0";
             PARAMETER_REGISTER(forward_right_str,    &Parameters::parsePositionForwardRight)    = " 1500,-1500;  -500,-1500; -1000, -750";
 
+            // the active roles are used to decide which player gets which role in a dynamic way (non-static)
             PARAMETER_REGISTER(active_str, &Parameters::parseActive) = "goalie;forward_center;defender_left;midfielder_center;defender_right;midfielder_right;midfielder_left"; //"all";
+            // the assignments are used to initially set the roles for each player or for static assignment
+            PARAMETER_REGISTER(assignment_str, &Parameters::parseAssignment) = "1:goalie;2:defender_left;3:forward_right;4:defender_right;5:midfielder_left;6:midfielder_right;7:forward_left";
 
             // load from the file after registering all parameters
             syncWithConfig();
@@ -90,6 +93,7 @@ private:
         std::string forward_right_str;
 
         std::string active_str;
+        std::string assignment_str;
 
         void parsePositionGoalie(std::string pos)           { parsePosition(pos, Roles::goalie); }
         void parsePositionDefenderLeft(std::string pos)     { parsePosition(pos, Roles::defender_left); }
@@ -154,7 +158,26 @@ private:
                     provider->getRoles().active.push_back(r);
                 }
             }
+        }
 
+        /**
+         * @brief If the 'assignment' parameter changes, the new value is parsed and the new role
+         *        assignments are applied. An assignment is 'playernumber:role' and every assignment
+         *        is seperated by a ';'.
+         *        Eg.: "1:goalie;2:defender_left"
+         *
+         * @param assignment
+         */
+        void parseAssignment(std::string assignment)
+        {
+            std::vector<std::string> parts = StringTools::split(assignment, ';');
+            provider->getRoles().assignments.clear(); // clear the 'old' assignments
+            for(const std::string& part : parts)
+            {
+                std::vector<std::string> assign_part = StringTools::split(part, ':');
+                ASSERT(assign_part.size() == 2);
+                provider->getRoles().assignments[static_cast<unsigned int>(std::stoul(assign_part[0]))] = Roles::getStaticRole(assign_part[1]);
+            }
         }
     } params;
 

@@ -18,7 +18,7 @@ public:
     NONE
   };
 
-  GroundContactModel() : leftGroundContact(false), rightGroundContact(false) {}
+  GroundContactModel() : leftGroundContact(false), rightGroundContact(false), supportFoot(NONE) {}
 
   bool leftGroundContact;
   bool rightGroundContact;
@@ -31,10 +31,8 @@ namespace naoth
   class Serializer<GroundContactModel>
   {
   public:
-    static void serialize(const GroundContactModel& representation,
-                          std::ostream& stream);
-    static void deserialize(std::istream& stream,
-                            GroundContactModel& representation);
+    static void serialize(const GroundContactModel& representation, std::ostream& stream);
+    static void deserialize(std::istream& stream, GroundContactModel& representation);
   };
 }
 

@@ -32,6 +32,9 @@
 #include <google/protobuf/unknown_field_set.h>
 // @@protoc_insertion_point(includes)
 namespace naothmessages {
+class DoubleQuaternion;
+class DoubleQuaternionDefaultTypeInternal;
+extern DoubleQuaternionDefaultTypeInternal _DoubleQuaternion_default_instance_;
 class DoubleVector;
 class DoubleVectorDefaultTypeInternal;
 extern DoubleVectorDefaultTypeInternal _DoubleVector_default_instance_;
@@ -896,6 +899,147 @@ class DoubleVector : public ::google::protobuf::Message /* @@protoc_insertion_po
 };
 // -------------------------------------------------------------------
 
+class DoubleQuaternion : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:naothmessages.DoubleQuaternion) */ {
+ public:
+  DoubleQuaternion();
+  virtual ~DoubleQuaternion();
+
+  DoubleQuaternion(const DoubleQuaternion& from);
+
+  inline DoubleQuaternion& operator=(const DoubleQuaternion& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  #if LANG_CXX11
+  DoubleQuaternion(DoubleQuaternion&& from) noexcept
+    : DoubleQuaternion() {
+    *this = ::std::move(from);
+  }
+
+  inline DoubleQuaternion& operator=(DoubleQuaternion&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+  #endif
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _internal_metadata_.unknown_fields();
+  }
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return _internal_metadata_.mutable_unknown_fields();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const DoubleQuaternion& default_instance();
+
+  static inline const DoubleQuaternion* internal_default_instance() {
+    return reinterpret_cast<const DoubleQuaternion*>(
+               &_DoubleQuaternion_default_instance_);
+  }
+  static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
+    6;
+
+  void Swap(DoubleQuaternion* other);
+  friend void swap(DoubleQuaternion& a, DoubleQuaternion& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline DoubleQuaternion* New() const PROTOBUF_FINAL { return New(NULL); }
+
+  DoubleQuaternion* New(::google::protobuf::Arena* arena) const PROTOBUF_FINAL;
+  void CopyFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void MergeFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void CopyFrom(const DoubleQuaternion& from);
+  void MergeFrom(const DoubleQuaternion& from);
+  void Clear() PROTOBUF_FINAL;
+  bool IsInitialized() const PROTOBUF_FINAL;
+
+  size_t ByteSizeLong() const PROTOBUF_FINAL;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) PROTOBUF_FINAL;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const PROTOBUF_FINAL;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const PROTOBUF_FINAL;
+  int GetCachedSize() const PROTOBUF_FINAL { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const PROTOBUF_FINAL;
+  void InternalSwap(DoubleQuaternion* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const PROTOBUF_FINAL;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // required double x = 1;
+  bool has_x() const;
+  void clear_x();
+  static const int kXFieldNumber = 1;
+  double x() const;
+  void set_x(double value);
+
+  // required double y = 2;
+  bool has_y() const;
+  void clear_y();
+  static const int kYFieldNumber = 2;
+  double y() const;
+  void set_y(double value);
+
+  // required double z = 3;
+  bool has_z() const;
+  void clear_z();
+  static const int kZFieldNumber = 3;
+  double z() const;
+  void set_z(double value);
+
+  // required double w = 4;
+  bool has_w() const;
+  void clear_w();
+  static const int kWFieldNumber = 4;
+  double w() const;
+  void set_w(double value);
+
+  // @@protoc_insertion_point(class_scope:naothmessages.DoubleQuaternion)
+ private:
+  void set_has_x();
+  void clear_has_x();
+  void set_has_y();
+  void clear_has_y();
+  void set_has_z();
+  void clear_has_z();
+  void set_has_w();
+  void clear_has_w();
+
+  // helper for ByteSizeLong()
+  size_t RequiredFieldsByteSizeFallback() const;
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::internal::HasBits<1> _has_bits_;
+  mutable int _cached_size_;
+  double x_;
+  double y_;
+  double z_;
+  double w_;
+  friend struct protobuf_CommonTypes_2eproto::TableStruct;
+};
+// -------------------------------------------------------------------
+
 class Pose3D : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:naothmessages.Pose3D) */ {
  public:
   Pose3D();
@@ -937,7 +1081,7 @@ class Pose3D : public ::google::protobuf::Message /* @@protoc_insertion_point(cl
                &_Pose3D_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    6;
+    7;
 
   void Swap(Pose3D* other);
   friend void swap(Pose3D& a, Pose3D& b) {
@@ -1005,16 +1149,28 @@ class Pose3D : public ::google::protobuf::Message /* @@protoc_insertion_point(cl
   ::naothmessages::DoubleVector3* release_translation();
   void set_allocated_translation(::naothmessages::DoubleVector3* translation);
 
+  // optional .naothmessages.DoubleQuaternion rotation_quaternion = 3;
+  bool has_rotation_quaternion() const;
+  void clear_rotation_quaternion();
+  static const int kRotationQuaternionFieldNumber = 3;
+  const ::naothmessages::DoubleQuaternion& rotation_quaternion() const;
+  ::naothmessages::DoubleQuaternion* mutable_rotation_quaternion();
+  ::naothmessages::DoubleQuaternion* release_rotation_quaternion();
+  void set_allocated_rotation_quaternion(::naothmessages::DoubleQuaternion* rotation_quaternion);
+
   // @@protoc_insertion_point(class_scope:naothmessages.Pose3D)
  private:
   void set_has_translation();
   void clear_has_translation();
+  void set_has_rotation_quaternion();
+  void clear_has_rotation_quaternion();
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   ::google::protobuf::internal::HasBits<1> _has_bits_;
   mutable int _cached_size_;
   ::google::protobuf::RepeatedPtrField< ::naothmessages::DoubleVector3 > rotation_;
   ::naothmessages::DoubleVector3* translation_;
+  ::naothmessages::DoubleQuaternion* rotation_quaternion_;
   friend struct protobuf_CommonTypes_2eproto::TableStruct;
 };
 // -------------------------------------------------------------------
@@ -1060,7 +1216,7 @@ class LineSegment : public ::google::protobuf::Message /* @@protoc_insertion_poi
                &_LineSegment_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    7;
+    8;
 
   void Swap(LineSegment* other);
   friend void swap(LineSegment& a, LineSegment& b) {
@@ -1502,6 +1658,106 @@ DoubleVector::mutable_v() {
 
 // -------------------------------------------------------------------
 
+// DoubleQuaternion
+
+// required double x = 1;
+inline bool DoubleQuaternion::has_x() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void DoubleQuaternion::set_has_x() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void DoubleQuaternion::clear_has_x() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void DoubleQuaternion::clear_x() {
+  x_ = 0;
+  clear_has_x();
+}
+inline double DoubleQuaternion::x() const {
+  // @@protoc_insertion_point(field_get:naothmessages.DoubleQuaternion.x)
+  return x_;
+}
+inline void DoubleQuaternion::set_x(double value) {
+  set_has_x();
+  x_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.DoubleQuaternion.x)
+}
+
+// required double y = 2;
+inline bool DoubleQuaternion::has_y() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void DoubleQuaternion::set_has_y() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void DoubleQuaternion::clear_has_y() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void DoubleQuaternion::clear_y() {
+  y_ = 0;
+  clear_has_y();
+}
+inline double DoubleQuaternion::y() const {
+  // @@protoc_insertion_point(field_get:naothmessages.DoubleQuaternion.y)
+  return y_;
+}
+inline void DoubleQuaternion::set_y(double value) {
+  set_has_y();
+  y_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.DoubleQuaternion.y)
+}
+
+// required double z = 3;
+inline bool DoubleQuaternion::has_z() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void DoubleQuaternion::set_has_z() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void DoubleQuaternion::clear_has_z() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void DoubleQuaternion::clear_z() {
+  z_ = 0;
+  clear_has_z();
+}
+inline double DoubleQuaternion::z() const {
+  // @@protoc_insertion_point(field_get:naothmessages.DoubleQuaternion.z)
+  return z_;
+}
+inline void DoubleQuaternion::set_z(double value) {
+  set_has_z();
+  z_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.DoubleQuaternion.z)
+}
+
+// required double w = 4;
+inline bool DoubleQuaternion::has_w() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void DoubleQuaternion::set_has_w() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void DoubleQuaternion::clear_has_w() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline void DoubleQuaternion::clear_w() {
+  w_ = 0;
+  clear_has_w();
+}
+inline double DoubleQuaternion::w() const {
+  // @@protoc_insertion_point(field_get:naothmessages.DoubleQuaternion.w)
+  return w_;
+}
+inline void DoubleQuaternion::set_w(double value) {
+  set_has_w();
+  w_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.DoubleQuaternion.w)
+}
+
+// -------------------------------------------------------------------
+
 // Pose3D
 
 // required .naothmessages.DoubleVector3 translation = 1;
@@ -1578,6 +1834,52 @@ inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::DoubleVector
 Pose3D::rotation() const {
   // @@protoc_insertion_point(field_list:naothmessages.Pose3D.rotation)
   return rotation_;
+}
+
+// optional .naothmessages.DoubleQuaternion rotation_quaternion = 3;
+inline bool Pose3D::has_rotation_quaternion() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void Pose3D::set_has_rotation_quaternion() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void Pose3D::clear_has_rotation_quaternion() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void Pose3D::clear_rotation_quaternion() {
+  if (rotation_quaternion_ != NULL) rotation_quaternion_->::naothmessages::DoubleQuaternion::Clear();
+  clear_has_rotation_quaternion();
+}
+inline const ::naothmessages::DoubleQuaternion& Pose3D::rotation_quaternion() const {
+  const ::naothmessages::DoubleQuaternion* p = rotation_quaternion_;
+  // @@protoc_insertion_point(field_get:naothmessages.Pose3D.rotation_quaternion)
+  return p != NULL ? *p : *reinterpret_cast<const ::naothmessages::DoubleQuaternion*>(
+      &::naothmessages::_DoubleQuaternion_default_instance_);
+}
+inline ::naothmessages::DoubleQuaternion* Pose3D::mutable_rotation_quaternion() {
+  set_has_rotation_quaternion();
+  if (rotation_quaternion_ == NULL) {
+    rotation_quaternion_ = new ::naothmessages::DoubleQuaternion;
+  }
+  // @@protoc_insertion_point(field_mutable:naothmessages.Pose3D.rotation_quaternion)
+  return rotation_quaternion_;
+}
+inline ::naothmessages::DoubleQuaternion* Pose3D::release_rotation_quaternion() {
+  // @@protoc_insertion_point(field_release:naothmessages.Pose3D.rotation_quaternion)
+  clear_has_rotation_quaternion();
+  ::naothmessages::DoubleQuaternion* temp = rotation_quaternion_;
+  rotation_quaternion_ = NULL;
+  return temp;
+}
+inline void Pose3D::set_allocated_rotation_quaternion(::naothmessages::DoubleQuaternion* rotation_quaternion) {
+  delete rotation_quaternion_;
+  rotation_quaternion_ = rotation_quaternion;
+  if (rotation_quaternion) {
+    set_has_rotation_quaternion();
+  } else {
+    clear_has_rotation_quaternion();
+  }
+  // @@protoc_insertion_point(field_set_allocated:naothmessages.Pose3D.rotation_quaternion)
 }
 
 // -------------------------------------------------------------------
@@ -1704,6 +2006,8 @@ inline void LineSegment::set_length(double value) {
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
 #endif  // !PROTOBUF_INLINE_NOT_IN_HEADERS
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------

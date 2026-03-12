@@ -4,7 +4,7 @@
 using namespace std;
 
 GameLogger::GameLogger()
-  : 
+  :
   lastCompleteFrameNumber(0),
   oldState(PlayerInfo::initial),
   firstRecording(true),
@@ -15,7 +15,7 @@ GameLogger::GameLogger()
   const std::string imageLogPath = "/home/nao/images.log";
 
   logfileManager.openFile(gameLogPath);
-  
+
   imageOutFile.open(imageLogPath, ios::out | ios::binary);
   lastTimeImageRecorded = getFrameInfo();
 
@@ -87,7 +87,7 @@ void GameLogger::execute()
       LOGSTUFF(BallModel);
 
       LOGSTUFF(RobotPose);
-      
+
       if(params.logUltraSound) {
         LOGSTUFF(UltraSoundReceiveData);
       }
@@ -100,27 +100,25 @@ void GameLogger::execute()
       LOGSTUFF(ShortLinePercept);
       LOGSTUFF(RansacLinePercept);
       LOGSTUFF(RansacCirclePercept2018);
-      
-      if(params.logJPEGImages) {
-        getImageJPEG().compressYUYV();
-        LOGSTUFF(ImageJPEG);
 
-        getImageJPEGTop().compressYUYV();
+      if(params.logJPEGImages) {
+        LOGSTUFF(ImageJPEG);
         LOGSTUFF(ImageJPEGTop);
       }
-      
+
       if(params.logBallCandidates) {
         LOGSTUFF(BallCandidates);
         LOGSTUFF(BallCandidatesTop);
       }
 
       LOGSTUFF(TeamState);
+      LOGSTUFF(RoleDecisionModel);
       LOGSTUFF(TeamMessageDecision);
 
 
       // keep the audio device open for some time
 
-      if(params.logAudioData) 
+      if(params.logAudioData)
       {
         // remember when the capture was on and keep recording for some time after the behavior says stop recording
         if(getAudioControl().capture) {
@@ -136,8 +134,8 @@ void GameLogger::execute()
         }
       }
 
-      
-      
+
+
       if (getWhistlePercept().whistleDetected) {
         LOGSTUFF(WhistlePercept);
       }
