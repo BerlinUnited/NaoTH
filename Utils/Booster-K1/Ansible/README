@@ -1,0 +1,6 @@
+TODO:
+Move this to boosterimage repo when it has been created.
+It is cursed to have this here in the repo.
+
+The name Ansible comes from the Ansible tool, which manages the state of servers (i.e. assures that certain files are at the right place)
+We do not (yet) use Ansible for this, but the name still makes sence.

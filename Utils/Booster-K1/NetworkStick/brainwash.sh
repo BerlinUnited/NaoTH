@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Redirect all the output to the logger
+exec 1> >(bulog -n Networkstick) 2>&1
+
 echo "INFO: Beginning with network script"
 
 WLAN_SSID=NAONET
@@ -50,10 +53,10 @@ method=disabled
 EOF
 
 # To avoid "failed to load connection: File permissions (100644) are insecure"
-sudo chown root:root /etc/NetworkManager/system-connections/*
-sudo chmod 600 /etc/NetworkManager/system-connections/*
+chown root:root /etc/NetworkManager/system-connections/*
+chmod 600 /etc/NetworkManager/system-connections/*
 
-sudo systemctl restart NetworkManager
-sudo nmcli connection modify 975cebb3-4286-40fb-8856-80336335e3b1 wifi.cloned-mac-address permanent
+systemctl restart NetworkManager
+nmcli connection modify 975cebb3-4286-40fb-8856-80336335e3b1 wifi.cloned-mac-address permanent
 
 echo "INFO: Done with network script"

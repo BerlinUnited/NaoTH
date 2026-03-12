@@ -1,0 +1,74 @@
+#!/bin/bash
+
+# set -eo pipefail
+
+# Redirect all the output to the logger
+exec 1> >(bulog -n Brainwashrunner) 2>&1
+
+# For some reason without this "INFO Starting" gets printed twice
+sleep 0.3
+
+echo "INFO: Starting"
+
+MNT_POINT=/media/bu/brainwashmnt
+
+# Mounting
+mkdir -p $MNT_POINT
+# Mount usb drive with enough rw for everyone! yay!
+# Important: use rwx to make fat32 files executable
+mount /dev/brainwashstick $MNT_POINT -o umask=000
+
+# Check success
+# if [ $? -ne 0 ]; then
+#     # For a list of supported filesystems, enter the following command on a nao robot: "cat /proc/filesystems"
+#     if [ $(blkid -s TYPE -o value /dev/brainwasher) != "vfat" ]; then
+#         logger -t brainwasher "ERROR: usb wrong filesystem"
+#         su nao -c "/usr/bin/paplay /home/nao/naoqi/Media/error_usb_wrong_filesystem.wav"
+#     else
+#         logger -t brainwasher "ERROR: usb unknown mount error"
+#         su nao -c "/usr/bin/paplay /home/nao/naoqi/Media/error_usb_unknown_mount_error.wav"
+#     fi
+#     exit 1
+# fi
+
+# Executing
+cd $MNT_POINT
+# Check if executable is available
+if [ -e ./brainwash.sh ]; then
+    # set +eo pipefail # Because we still want to unmount on errors
+    # TODO: doing just ./brainwash.sh does not work on fat32, and I could not get fat32 to mount with 777
+    # 'mount /dev/brainwashstick $MNT_POINT -o rwx,umask=000' did not work
+    # chmod +x ./brainwash.sh
+    bash ./brainwash.sh
+    # set -eo pipefail
+else
+    echo "WARN: Missing brainwasher script"
+    # su nao -c "/usr/bin/paplay /home/nao/naoqi/Media/error_missing_usb_brainwasher_script.wav"
+fi
+
+# cd /
+# COUNTER=100 # ~ 10 seconds
+# until umount $MNT_POINT &>/dev/null; do
+#     sleep 0.1
+#     ((COUNTER--))
+#     # Max. "COUNTER" attempts to unmount device, otherwise force unmount and break -> prevent infinite loop
+#     if [ $COUNTER -le 0 ]; then
+#         echo "ERROR Unmounting USB"
+#         # su nao -c "/usr/bin/paplay /home/nao/naoqi/Media/error_unmounting_usb_drive.wav"
+#         fuser -c -k $MNT_POINT &>/dev/null # Kill all process accessing mount point
+#         umount -f $MNT_POINT &>/dev/null   # Force unmounting
+#         break
+#     fi
+# done
+# rmdir $MNT_POINT
+
+# Unmounting
+cd /
+umount $MNT_POINT
+rmdir $MNT_POINT
+# fuser -k --mount $MNT_POINT
+# umount -f $MNT_POINT
+
+# su nao -c "/usr/bin/paplay /home/nao/naoqi/Media/usb_stop.wav"
+
+echo "INFO: Finished"

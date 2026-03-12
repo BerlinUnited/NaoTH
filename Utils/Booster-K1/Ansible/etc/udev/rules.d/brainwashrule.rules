@@ -1,0 +1,2 @@
+# Mounts the stick and starts the systemd service which will run the brainwashing script
+KERNEL=="sd*", SUBSYSTEMS=="usb", ACTION=="add", SYMLINK+="brainwashstick", ENV{SYSTEMD_WANTS}+="brainwashservice"
