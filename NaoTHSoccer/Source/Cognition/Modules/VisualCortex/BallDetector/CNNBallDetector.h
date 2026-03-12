@@ -157,6 +157,8 @@ private:
       PARAMETER_REGISTER(contrastMinimumClose) = 50;
 
       PARAMETER_REGISTER(redCount) = 2;
+      PARAMETER_REGISTER(use_detected_center) = true;
+      PARAMETER_REGISTER(use_detected_radius) = false;
 
       PARAMETER_REGISTER(classifier) = "fy1500_conf";
       PARAMETER_REGISTER(classifierClose) = "fy1500_conf";
@@ -168,6 +170,8 @@ private:
       PARAMETER_REGISTER(brightnessMultiplierTop) = 1.0;
       PARAMETER_REGISTER(brightnessMultiplierTopDark) = 1.0;
       
+      
+
       syncWithConfig();
     }
 
@@ -206,6 +210,8 @@ private:
     double brightnessMultiplierTopDark;
 
     int redCount;
+    bool use_detected_center;
+    bool use_detected_radius;
   } params;
 
 private:
