@@ -402,12 +402,13 @@ void StrategySymbols::retrieveFreeKickPosition() {
         if(getGameData().setPlay == GameData::direct_free_kick)
         {
             // retrieve last pose of the player who has fouled
-            for(unsigned int i = 0; i < getGameData().ownTeam.players.size(); ++i) {
+            for(std::pair<size_t, naoth::GameData::RobotInfo> info : getGameData().ownTeam.players) {
+                unsigned int i = (unsigned int) info.first;
                 // player is now penalized, but wasn't before
-                if(getGameData().ownTeam.players[i].penalty == naoth::GameData::pushing && penalties[i+1] == naoth::GameData::penalty_none) {
+                if(getGameData().ownTeam.players.at(i).penalty == naoth::GameData::pushing && penalties[i] == naoth::GameData::penalty_none) {
                     // get his last position
-                    if(getTeamState().hasPlayer(i+1)) {
-                        freeKickPosition = getTeamState().getPlayer(i+1).pose().translation;
+                    if(getTeamState().hasPlayer(i)) {
+                        freeKickPosition = getTeamState().getPlayer(i).pose().translation;
                     }
                 }
             }
@@ -434,8 +435,8 @@ void StrategySymbols::retrieveFreeKickPosition() {
 
     // update last setplay and penalties of own teammates
     lastSetPlay = getGameData().setPlay;
-    for(unsigned int i = 0; i < getGameData().ownTeam.players.size(); ++i) {
-        penalties[i+1] = getGameData().ownTeam.players[i].penalty;
+    for(std::pair<size_t, naoth::GameData::RobotInfo> info : getGameData().ownTeam.players) {
+        penalties[info.first] = info.second.penalty;
     }
 }
 
