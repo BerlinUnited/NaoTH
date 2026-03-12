@@ -31,7 +31,7 @@ void Sensor::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   REG_INPUT(VirtualVisionTop);
   REG_INPUT(FrameInfo);
 
-  REG_INPUT(HeadPose);
+  //REG_INPUT(HeadPose);
 
   REG_INPUT(AccelerometerData);
   REG_INPUT(GyrometerData);

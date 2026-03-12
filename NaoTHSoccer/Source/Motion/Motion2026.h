@@ -17,8 +17,12 @@
 
 // modules
 #include "Engine/HeadMotion/HeadMotionEngine.h"
+#include "Cognition/Modules/SelfAwareness/HeadPoseCameraMatrix/HeadPoseCameraMatrix.h"
+
 
 #include "Infrastructure/BoosterAdapter/BoosterBodyAdapter.h"
+
+#include <Representations/Body/HeadPose.h>
 
 
 // representations
@@ -83,6 +87,8 @@ BEGIN_DECLARE_MODULE(Motion2026)
   PROVIDE(MotorJointData) // TODO: check
 
   PROVIDE(OffsetJointData)
+
+  PROVIDE(HeadPose)
 
   PROVIDE(RobotInfo)
   PROVIDE(KinematicChainSensor)
@@ -152,6 +158,7 @@ private: // motion modules
 
   ModuleCreator<HeadMotionEngine>* theHeadMotionEngine;
   ModuleCreator<BoosterBodyAdapter>* theBoosterBodyAdapter;
+  ModuleCreator<HeadPoseCameraMatrix>* theHeadPoseCameraMatrix;
   
 
   Logger motionLogger;

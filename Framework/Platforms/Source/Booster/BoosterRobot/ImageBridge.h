@@ -97,7 +97,12 @@ public:
 
   ImageBridge() {}  
 
-  void connectSocket() 
+  void connectSocket() {
+    connectSocket("/tmp/naoth_image");
+  }
+  
+
+  void connectSocket(const char* path) 
   {
     if ( (fd = socket(AF_UNIX, SOCK_STREAM, 0)) == -1) {
       std::cerr << "[IMAGE_BRIDGE] socket error: " << std::strerror(errno) << std::endl;
@@ -109,7 +114,7 @@ public:
     struct sockaddr_un addr;
     memset(&addr, 0, sizeof(addr));
     addr.sun_family = AF_UNIX;
-    strncpy(addr.sun_path, "/tmp/naoth_image", sizeof(addr.sun_path)-1);
+    strncpy(addr.sun_path, path, sizeof(addr.sun_path)-1);
 
     std::cerr << "[IMAGE_BRIDGE] connect to socket: " << addr.sun_path << std::endl;
     if (connect(fd, (struct sockaddr*)&addr, sizeof(addr)) == -1) {

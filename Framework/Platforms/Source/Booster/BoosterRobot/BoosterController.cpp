@@ -131,22 +131,18 @@ BoosterController::BoosterController()
   theDebugServer = new DebugServer();
   theDebugServer->start(static_cast<unsigned short>(debug_port));
   
-  /*
   string debugIp = "127.0.0.1";
   unsigned int debugPort = 10704;
-  if(config.hasKey("TeamCommDebugger", "host"))
-  {
+  if(config.hasKey("TeamCommDebugger", "host")) {
     debugIp = config.getString("TeamCommDebugger", "host");
   }
-  if(config.hasKey("TeamCommDebugger", "port") && config.getInt("TeamCommDebugger", "port") > 0)
-  {
+  if(config.hasKey("TeamCommDebugger", "port") && config.getInt("TeamCommDebugger", "port") > 0) {
     debugPort = (unsigned int) config.getInt("TeamCommDebugger", "port");
   }
   theTeamCommDebugger = new UDPSender(debugIp, debugPort, "TeamCommDebugger");
 
   std::cout << "[BoosterController] " << "Init SPLGameController"<<endl;
   theGameController = new SPLGameController();
-  */
 
 
   /* 
@@ -158,6 +154,12 @@ BoosterController::BoosterController()
   // activate the image bridge
   imageBridge.connectSocket();
   if(imageBridge.hasError()) {
+    exit(-1);
+  }
+  
+  // activate the image bridge
+  sensorBridge.connectSocket("/tmp/naoth_sensors");
+  if(sensorBridge.hasError()) {
     exit(-1);
   }
   

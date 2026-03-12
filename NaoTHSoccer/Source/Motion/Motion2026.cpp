@@ -29,9 +29,9 @@ Motion2026::Motion2026()
 
 
   theHeadMotionEngine   = registerModule<HeadMotionEngine>("HeadMotionEngine", true);
-  theBoosterBodyAdapter = registerModule<BoosterBodyAdapter>("BoosterBodyAdapter", true);
+  theBoosterBodyAdapter = registerModule<BoosterBodyAdapter>("BoosterBodyAdapter", false);
+  theHeadPoseCameraMatrix = registerModule<HeadPoseCameraMatrix>("HeadPoseCameraMatrix", true);
   
-
   getDebugParameterList().add(&parameter);
 }
 
@@ -68,6 +68,8 @@ void Motion2026::init(naoth::ProcessInterface& platformInterface, const naoth::P
   REG_INPUT(AccelerometerData);
   REG_INPUT(GyrometerData);
   REG_INPUT(ButtonData);
+
+  REG_INPUT(HeadPose);
 
   REG_INPUT(DebugMessageInMotion);
 
@@ -118,6 +120,8 @@ void Motion2026::call()
   }
 
 
+  theHeadPoseCameraMatrix->execute();
+
   /**
   * run the motion engine
   */
@@ -129,11 +133,13 @@ void Motion2026::call()
   PLOT("Motion:head_pitch", head_pitch);
   PLOT("Motion:head_yaw", head_yaw);
 
+
+
+
   // Booster
   // kGetUp
   // kDamping
   theBoosterBodyAdapter->execute();
-
 
   // logger
   motionLogger.log(getFrameInfo().getFrameNumber());

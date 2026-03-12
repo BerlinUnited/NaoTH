@@ -94,7 +94,8 @@ public:
   }
   
   void get(HeadPose& data) {
-    imageBridge.receive_headPose(data);
+    std::cout << "HeadPose" << std::endl;
+    sensorBridge.receive_headPose(data);
   }
 
   void get(CurrentCameraSettings& data) {
@@ -308,6 +309,8 @@ protected:
   DebugServer* theDebugServer           = nullptr;
 
   ImageBridge imageBridge;
+  // TODO: clean
+  ImageBridge sensorBridge;
   BodyBridge bodyBridge;
 };
 
