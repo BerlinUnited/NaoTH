@@ -47,16 +47,21 @@ ros2 topic info /head_pose_stamped
 
 import os
 import time
+
 import numpy as np
 import cv2
 
+
+# ros stuff
 import rclpy
 from rclpy.node import Node
-from sensor_msgs.msg import Image
-from geometry_msgs.msg import PoseStamped
 
 from message_filters import Subscriber, TimeSynchronizer, ApproximateTimeSynchronizer
 from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSHistoryPolicy, QoSDurabilityPolicy
+
+from sensor_msgs.msg import Image
+from geometry_msgs.msg import PoseStamped
+
 
 import msgpack
 import struct
@@ -71,7 +76,7 @@ from image_bridge import RosUnixImageServer
 class ImageServer(Node):
 
   def __init__(self, output_path = None):
-    super().__init__('image_logger')
+    super().__init__('naoth_image_bridge')
     
     qos_logger = QoSProfile(
         history     = QoSHistoryPolicy.KEEP_LAST,
@@ -237,12 +242,13 @@ class ImageServer(Node):
     #nao_img_bytes = self.nv12_544x448_to_yuyv_640x480_centered(left_msg.data)
     #self.socket.send_image_bytes(nao_img_bytes)
     
+    '''
     headPose_msgpack = self.pose_stamped_to_msgpack(self.current_pose)
     
     # prefix with 4-byte length
     packet = struct.pack("!I", len(headPose_msgpack)) + headPose_msgpack
     self.socket.send_image_bytes(packet)
-    
+    '''
     
     '''
     print(f"Frame {self.frame_number}")
@@ -368,7 +374,6 @@ class ImageServer(Node):
     
     #self.current_pose = self.pose_stamped_to_headpose_pb(head_pose_msg)
     #print(self.current_pose.timestamp)
-    
     
     
     

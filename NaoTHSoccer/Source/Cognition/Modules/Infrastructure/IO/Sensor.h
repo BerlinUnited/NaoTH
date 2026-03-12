@@ -33,7 +33,7 @@
 #include "Representations/Motion/CollisionPercept.h"
 
 // Booster
-#include <Representations/Body/HeadPose.h>
+//#include <Representations/Body/HeadPose.h>
 
 #include "Representations/Infrastructure/GPSData.h"
 //#include "Representations/Infrastructure/SerialSensorData.h"
@@ -75,7 +75,7 @@ BEGIN_DECLARE_MODULE(Sensor)
   PROVIDE(CpuData)
   PROVIDE(AudioData)
 
-  PROVIDE(HeadPose)
+  //PROVIDE(HeadPose)
 
   PROVIDE(TeamMessageDataIn)
   PROVIDE(RemoteMessageDataIn)

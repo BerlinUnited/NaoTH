@@ -282,6 +282,7 @@ RotateHeadWithDirectionParameter
 '''
 
 
+
 class Booster:
     def __init__(self):
         #ChannelFactory.Instance().Init(0)
@@ -466,6 +467,7 @@ def main():
             booster.send_actuators(actuators)
             
             # send sensors
+            
             #server.send_data()
             
     finally:
