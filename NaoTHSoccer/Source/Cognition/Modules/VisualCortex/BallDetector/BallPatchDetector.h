@@ -324,9 +324,15 @@ void BallPatchDetector::calculateKeyPointsFast(const ImageType& integralImage, B
       const unsigned int area = 4*radius*radius;
 
       unsigned int inner = integralImage.getSumForRect(point.x-radius, point.y-radius, point.x+radius, point.y+radius, 0);
-      double greenInner = integralImage.getDensityForRect(point.x-innerOffset, point.y-innerOffset, point.x+innerOffset, point.y+innerOffset, 1);
+      double greenInner  = integralImage.getDensityForRect(point.x-innerOffset, point.y-innerOffset, point.x+innerOffset, point.y+innerOffset, 1);
       
-      if (inner*2 > area && greenInner <= params.maxInnerGreenDensitiy)
+      unsigned int below = 0;
+      
+      if(point.x+radius < width && point.y+radius*2 < height) {
+        below = integralImage.getSumForRect(point.x-radius, point.y+radius, point.x+radius, point.y+radius*2, 0);
+      }
+      
+      if (inner*2 > area && greenInner <= params.maxInnerGreenDensitiy && below*2 < area)
       {
         double value = ((double)inner)/((double)(area));
         best.add( 
