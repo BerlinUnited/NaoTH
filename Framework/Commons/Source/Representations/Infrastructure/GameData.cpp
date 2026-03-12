@@ -229,12 +229,20 @@ void GameData::parseTeamInfo(TeamInfo& teamInfoDst, const hsl::TeamInfo& teamInf
   teamInfoDst.teamNumber    = teamInfoSrc.teamNumber;
   teamInfoDst.messageBudget = teamInfoSrc.messageBudget;
 
-  teamInfoDst.players.resize(playersPerTeam);
-  for(unsigned int i = 0; i < playersPerTeam; i++) {
-    teamInfoDst.players[i].penalty = (Penalty)teamInfoSrc.players[i].penalty;
+  // clear all players to avoid substituted players in map
+  teamInfoDst.players.clear();
+  for(unsigned int i = 0; i < MAX_NUM_PLAYERS; i++) {
+    // MAX_NUM_PLAYERS is used to iterate over all possible players
+    if (teamInfoSrc.players[i].penalty != PENALTY_SUBSTITUTE){ // only add non-substituted players
+      // copy data from spl::RobotInfo
+      teamInfoDst.players[i+1] = RobotInfo();
+      teamInfoDst.players[i+1].secsTillUnpenalised = teamInfoSrc.players[i].secsTillUnpenalised;
+      teamInfoDst.players[i+1].penalty             = (Penalty)teamInfoSrc.players[i].penalty;
 
-    // ACHTUNG: casting to signed values - time can be negative (!)
-    teamInfoDst.players[i].secsTillUnpenalised = (int8_t)teamInfoSrc.players[i].secsTillUnpenalised;
+      // ACHTUNG: casting to signed values - time can be negative (!)
+      teamInfoDst.players[i+1].secsTillUnpenalised = (int8_t)teamInfoSrc.players[i].secsTillUnpenalised;
+    }
+    ASSERT(teamInfoDst.players.size() <= playersPerTeam);
   }
 }
 
@@ -263,8 +271,11 @@ void GameData::print(ostream& stream) const
   stream << " |- penaltyShot = " << ownTeam.penaltyShot << std::endl;
   stream << " |- messageBudget = " << ownTeam.messageBudget << std::endl;
   stream << " |- players (penalty, time until unpenalize in s):" << std::endl;
-  for(size_t i = 0; i < ownTeam.players.size(); ++i) {
+  /*for(size_t i = 0; i < ownTeam.players.size(); ++i) {
     stream << "      |- " << (i+1) << ": " << toString(ownTeam.players[i].penalty) << " - " << ownTeam.players[i].secsTillUnpenalised << std::endl;
+  }*/
+  for ( std::pair<size_t, RobotInfo> currentPlayer : ownTeam.players){
+    stream << "      |- " << (currentPlayer.first) << ": " << toString(currentPlayer.second.penalty) << " - " << currentPlayer.second.secsTillUnpenalised << std::endl;
   }
 
   stream << std::endl;
@@ -275,8 +286,8 @@ void GameData::print(ostream& stream) const
   stream << " |- penaltyShot = " << oppTeam.penaltyShot << std::endl;
   stream << " |- messageBudget = " << ownTeam.messageBudget << std::endl;
   stream << " |- players (penalty, time until unpenalize in s):" << std::endl;
-  for(size_t i = 0; i < oppTeam.players.size(); ++i) {
-    stream << "      |- " << (i+1) << ": " << toString(oppTeam.players[i].penalty) << " - " << oppTeam.players[i].secsTillUnpenalised << std::endl;
+  for ( std::pair<size_t, RobotInfo> currentPlayer : oppTeam.players){
+    stream << "      |- " << (currentPlayer.first) << ": " << toString(currentPlayer.second.penalty) << " - " << currentPlayer.second.secsTillUnpenalised << std::endl;
   }
 }
 

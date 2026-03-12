@@ -166,13 +166,13 @@ private:
 
         const auto& state   = getTeamMessagePlayersState().data;
         const auto& players = getGameData().ownTeam.players;
-        for (size_t index = 0; index < players.size(); ++index)
+        for (std::pair<size_t, naoth::GameData::RobotInfo> info : players)
         {
-            auto n = index + 1;
+            size_t n = (unsigned int) info.first;
             if (state.find(n) != state.cend())
             {
-                getTeamMessagePlayersState().data[n].active = getTeamMessagePlayersState().isAlive(n) && !players[index].isPenalized();
-                getTeamMessagePlayersState().data[n].penalized = players[index].isPenalized();
+                getTeamMessagePlayersState().data[n].active = getTeamMessagePlayersState().isAlive(n) && !info.second.isPenalized();
+                getTeamMessagePlayersState().data[n].penalized = info.second.isPenalized();
             }
         }
     }
