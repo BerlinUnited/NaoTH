@@ -53,6 +53,7 @@ current_compile_branch=$(exec_cmd_and_return_or_default 'grep "Branch path" /var
 current_compile_revision=$(exec_cmd_and_return_or_default 'grep "Revision number" /var/log/syslog | tail -1 | grep -o "Revision number.*"' 'Revision number: UNKNOWN')
 current_compile_time=$(exec_cmd_and_return_or_default 'grep "NaoTH compiled on" /var/log/syslog | tail -1 | grep -o "NaoTH compiled on.*"' 'NaoTH compiled on: UNKNOWN')
 current_compile_owner=$(exec_cmd_and_return_or_default 'grep "Owner" /var/log/syslog | tail -1 | grep -o "Owner.*"' 'Owner: UNKNOWN')
+#current_git_state=$(exec_cmd_and_return_or_default 'grep "Git dirty state" /var/log/syslog | tail -1 | grep -o "Git dirty state.*"' 'Git dirty state: UNKNOWN')
 
 # write to systemlog
 logger "Brainwasher:start $current_date, $current_nao, Player $current_nao_player"
@@ -87,6 +88,8 @@ echo "$current_compile_branch" >> $target_path/nao.info
 echo "$current_compile_revision" >> $target_path/nao.info
 echo "$current_compile_time" >> $target_path/nao.info
 echo "$current_compile_owner" >> $target_path/nao.info
+#echo "$current_git_state" >> $target_path/nao.info
+
 
 # find log files and copy them to the created directory
 #find -L /tmp -type d -name media -prune -o -name "*.log" -exec cp {} $currentDir/$current_date-$current_nao \;
