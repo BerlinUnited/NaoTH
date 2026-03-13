@@ -359,9 +359,10 @@ void CNNBallDetector::calculateCandidates()
       STOPWATCH_START("CNNBallDetector:classifierPredict");
       cnn->predict(patch, params.cnn.classifierMeanBrightnessOffset);
       STOPWATCH_STOP("CNNBallDetector:classifierPredict");
-
+      std::cout << cnn->getBallConfidence() << std::endl << ("===") << std::endl;
       // only run the detector if the classifier predicted a ball in the patch
       if (cnn->getBallConfidence() >= selectedCNNThreshold || redCount > params.redCount) 
+
       {
         
         // HACK: resizing the patch with postBorder helps the classifier
