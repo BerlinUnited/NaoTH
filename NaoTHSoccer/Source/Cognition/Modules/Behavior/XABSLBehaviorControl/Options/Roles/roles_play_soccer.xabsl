@@ -4,8 +4,6 @@ option roles_play_soccer
   {
     if(!body.ready_to_walk)
       goto idle;
-    else if(game.current_mode == stopped)
-      goto stopped;
     else if(game.current_mode != playing &&
             game.current_mode != ready &&
             game.current_mode != set)
@@ -23,14 +21,6 @@ option roles_play_soccer
         stay;
     } 
     action {}
-  }
-
-  state stopped {
-    action 
-    {
-      head.control_mode = search_for_ball;
-      motion.type = stand;
-    }
   }
 
   state calibrate_inertial
@@ -112,7 +102,6 @@ option roles_play_soccer
     action 
     {
       head.control_mode = search_for_ball;
-      motion.type = stand;
     }
   }
 

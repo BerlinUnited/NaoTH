@@ -507,12 +507,6 @@ void GameController::updateLEDs()
       break;
   }
 
-  // blink red if stopped was set
-  if ( getGameData().valid && getGameData().stopped && getFrameInfo().getFrameNumber() % 8 < 4)  {
-    getGameControllerLEDRequest().request.setChestButton(1.0, 0.0, 0.0); // RED
-  }
-
-
   // offer all avaliable colors of jerseys :)
   switch (getPlayerInfo().teamColor)
   {
