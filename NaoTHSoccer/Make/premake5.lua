@@ -89,7 +89,8 @@ workspace "NaoTHSoccer"
   defines {
     "REVISION=\"" .. REVISION .. "\"",
     "USER_NAME=\"" .. USER_NAME .. "\"",
-    "BRANCH_PATH=\"" .. BRANCH_PATH .. "\""
+    "BRANCH_PATH=\"" .. BRANCH_PATH .. "\"",
+    "GIT_DIRTY_FLAG=\"" .. GIT_DIRTY_FLAG .. "\""
   }
   
   -- TODO: howto compile the framework representations properly *inside* the project?

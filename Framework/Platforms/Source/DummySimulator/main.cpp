@@ -41,6 +41,9 @@ void print_info()
   #ifdef BRANCH_PATH
   std::cout << "Branch path: " << TO_STRING(BRANCH_PATH) << std::endl;
   #endif
+  #ifdef GIT_DIRTY_FLAG
+  std::cout << "Git dirty state: " << TO_STRING(GIT_DIRTY_FLAG) << std::endl;
+  #endif
   std::cout << "==========================================\n"  << std::endl;
 }
 
