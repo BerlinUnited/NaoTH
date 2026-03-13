@@ -1,0 +1,70 @@
+#!/bin/bash
+
+# Usage:
+# Put this at the top of your file:
+# NAME=YourProgram source buloginit
+# Then just:
+# info "Hello World"
+
+# Or just do any of these:
+# bulog -m "INFO Your Message"
+# bulog -n YourProgram -m "Your Message"
+# bulog -n YourProgram -l {debug, info, warn, error} -m "Your Message"
+
+LOGFILE=/home/booster/bu/log.log
+
+while getopts "n:m:l:" opt; do
+    case ${opt} in
+    n)
+        NAME=$OPTARG
+        ;;
+    m)
+        MESSAGE=$OPTARG
+        ;;
+    l)
+        LEVEL=$OPTARG
+        ;;
+    \?)
+        echo "Invalid option: -$OPTARG" >&2
+        exit 1
+        ;;
+    :)
+        echo "Option -$OPTARG requires an argument." >&2
+        exit 1
+        ;;
+    esac
+done
+
+# Fallback to the name of this script
+if [ -z "$NAME" ]; then
+    NAME=$(basename "$0")
+fi
+
+write_log() {
+    shopt -s nocasematch # Match severity case insensitive
+    local level
+    if [ -n "$3" ]; then
+        level="$3"
+    elif [[ $2 == *"ERROR"* ]]; then
+        level=error
+    elif [[ $2 == *"WARN"* ]]; then
+        level=warn
+    elif [[ $2 == *"INFO"* ]]; then
+        level=info
+    elif [[ $2 == *"DEBUG"* ]]; then
+        level=debug
+    else
+        level=info
+    fi
+
+    echo "$(date --iso-8601=ns) ${level,,} $1: $2" >>"$LOGFILE"
+}
+
+# If MESSAGE is set, write MESSAGE, else read from stdin
+if [ -n "$MESSAGE" ]; then
+    write_log "$NAME" "$MESSAGE" "$LEVEL"
+else
+    while IFS= read -r LINE; do
+        write_log "$NAME" "$LINE" "$LEVEL"
+    done
+fi

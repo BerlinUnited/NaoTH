@@ -1,18 +1,14 @@
 #!/bin/bash
 
-# set -eo pipefail
-
-# Redirect all the output to the logger
 NAME=brainwashrunner source buloginit
 
-info "Starting"
+info "Beginning"
 
 MNT_POINT=/media/bu/brainwashmnt
 
 # Mounting
 mkdir -p $MNT_POINT
 # Mount usb drive with enough rw for everyone! yay!
-# Important: use rwx to make fat32 files executable
 mount /dev/brainwashstick $MNT_POINT -o umask=000
 
 # Check success
@@ -29,13 +25,12 @@ mount /dev/brainwashstick $MNT_POINT -o umask=000
 # fi
 
 # Executing
-cd $MNT_POINT
-# Check if executable is available
+cd $MNT_POINT || exit
 if [ -e ./brainwash.sh ]; then
     # set +eo pipefail # Because we still want to unmount on errors
     # TODO: doing just ./brainwash.sh does not work on fat32, and I could not get fat32 to mount with 777
     # 'mount /dev/brainwashstick $MNT_POINT -o rwx,umask=000' did not work
-    # chmod +x ./brainwash.sh
+    # 'chmod +x ./brainwash.sh' does not work either
     bash ./brainwash.sh
     # set -eo pipefail
 else
@@ -66,6 +61,6 @@ rmdir $MNT_POINT
 # fuser -k --mount $MNT_POINT
 # umount -f $MNT_POINT
 
-buplay -f /home/booster/bu/audio/usb_stop.wav
+# buplay -f /home/booster/bu/audio/usb_stop.wav
 
-info "Finished"
+info "Done"

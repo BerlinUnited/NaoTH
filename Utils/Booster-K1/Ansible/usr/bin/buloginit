@@ -1,13 +1,22 @@
 #!/bin/bash
 
-# Usage:
-# Put this at the top of your file:
-# NAME=YourProgram source buloginit
-# Then just:
-# info "Hello World"
+exec 1> >(exec bulog -n "$NAME"'[stdout]') 2> >(exec bulog -n "$NAME"'[stderr]')
+# alias debug='echo DEBUG '
+# alias info='echo INFO '
+# alias warn='>&2 echo WARN '
+# alias error='>&2 echo ERROR '
+debug() {
+    echo "DEBUG $*"
+}
 
-exec 1> >(exec logger -t "bujournal $NAME"'[stdout]' -p local3.info) 2> >(exec logger -t "bujournal $NAME"'[stderr]' -p local3.warning)
-alias debug='echo "DEBUG " '
-alias info='echo "INFO " '
-alias warn='>&2 echo "WARN " '
-alias error='>&2 echo "ERROR " '
+info() {
+    echo "INFO $*"
+}
+
+warn() {
+    >&2 echo "WARN $*"
+}
+
+error() {
+    >&2 echo "ERROR $*"
+}

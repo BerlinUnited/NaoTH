@@ -1,9 +1,8 @@
 #!/bin/bash
 
-# Redirect all the output to the logger
-exec 1> >(bulog -n Networkstick) 2>&1
+NAME=networkstick source buloginit
 
-echo "INFO: Beginning with network script"
+info "Beginning"
 
 WLAN_SSID=NAONET
 WLAN_PW=a1b0a1b0a1
@@ -15,11 +14,11 @@ NR=41
 
 IFNAME=wlP1p1s0
 if [[ $(ip a | grep $IFNAME) == "" ]]; then
-    echo "ERROR: Wifi interface name changed/ does not exist! Exiting."
+    error "Wifi interface name changed/ does not exist! Exiting."
     exit 1
 fi
 
-echo "INFO: Setting SSID=$WLAN_SSID, PW=$WLAN_PW, IP=$WLAN_IP.$NR/$WLAN_SUBNET_MASK, IF=$IFNAME"
+info "Setting SSID=$WLAN_SSID, PW=$WLAN_PW, IP=$WLAN_IP.$NR/$WLAN_SUBNET_MASK, IF=$IFNAME"
 
 # NOTE: NO NOT change the name of the connection file
 cat - <<EOF >/etc/NetworkManager/system-connections/WIFI.nmconnection
@@ -59,4 +58,4 @@ chmod 600 /etc/NetworkManager/system-connections/*
 systemctl restart NetworkManager
 nmcli connection modify 975cebb3-4286-40fb-8856-80336335e3b1 wifi.cloned-mac-address permanent
 
-echo "INFO: Done with network script"
+info "Done"
