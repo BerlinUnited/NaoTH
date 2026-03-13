@@ -11,7 +11,7 @@
 # bulog -n YourProgram -m "Your Message"
 # bulog -n YourProgram -l {debug, info, warn, error} -m "Your Message"
 
-LOGFILE=/home/booster/bu/log.log
+LOGFILE=/home/booster/naoth/utils.log
 
 while getopts "n:m:l:" opt; do
     case ${opt} in

@@ -11,8 +11,8 @@ GameLogger::GameLogger()
   lastAudioDataTimestamp(0)
 {
   // CAUTION: if you change this the collect stick needs to change as well
-  const std::string gameLogPath = "/home/nao/game.log";
-  const std::string imageLogPath = "/home/nao/images.log";
+  const std::string gameLogPath = "/home/booster/game.log";
+  const std::string imageLogPath = "/home/booster/images.log";
 
   logfileManager.openFile(gameLogPath);
 
