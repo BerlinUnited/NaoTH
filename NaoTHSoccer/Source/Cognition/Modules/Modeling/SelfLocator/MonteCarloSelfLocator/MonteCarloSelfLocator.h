@@ -186,6 +186,8 @@ private: // local types
       PARAMETER_REGISTER(startPositionsSigmaDistance) = 500;
       PARAMETER_REGISTER(startPositionsSigmaAngle) = 0.5;
 
+      PARAMETER_REGISTER(tracking_exclude_suspecious_circle) = true;
+
       // load from the file after registering all parameters
       syncWithConfig();
     }
@@ -251,6 +253,8 @@ private: // local types
     bool updateBySituation;
     double startPositionsSigmaDistance;
     double startPositionsSigmaAngle;
+
+    bool tracking_exclude_suspecious_circle;
 
   } parameters;
 

@@ -201,7 +201,7 @@ void MonteCarloSelfLocator::execute()
         updateByOdometry(theSampleSet, parameters.motionNoise, true);
       }
 
-	  // go back to the last state before BLIND
+	    // go back to the last state before BLIND
       if(!islocalized) { //TODO: can we use islocalized = (lastState==TRACKING) here?
         state = LOCALIZE;
       } else {
@@ -859,11 +859,23 @@ void MonteCarloSelfLocator::updateByLines2018(const LinePercept2018& linePercept
 
 void MonteCarloSelfLocator::updateByMiddleCircle(const Vector2d& middleCircleCenter, SampleSet& sampleSet) const
 {
+  // Simetinmes the robot sees circles in the faint lines in the penalty area and goal 
+  // box which can destroy a valid localization.
+  if(parameters.tracking_exclude_suspecious_circle && getRobotPose().isValid) {
+    const Vector2d globalCirclePercept = getRobotPose() * middleCircleCenter;
+    // if the observed circle is too far from the expected location then it's probably a false positive
+    // (use the power of two ^2 to avoid sqrt for performance) 
+    if( globalCirclePercept.abs2() > std::sqrt(getFieldInfo().centerCircleRadius*2) ) {
+      return;
+    }
+  }
+
   double sigmaDistance = parameters.sigmaDistanceCenterCircle;
   double sigmaAngle    = parameters.sigmaAngleCenterCircle;
   double cameraHeight  = getCameraMatrix().translation.z;
 
-  Vector2d centerCirclePosition; // (0,0)
+  // global center circle
+  const Vector2d centerCirclePosition; // (0,0)
 
   //TODO: this needs to be analyzed in more detail
   // Don't update angle if inside center cicle
@@ -874,7 +886,7 @@ void MonteCarloSelfLocator::updateByMiddleCircle(const Vector2d& middleCircleCen
     Sample& sample = sampleSet[s];
 
     // translate the center circle to local coord 
-    Vector2d localCircle = sample/centerCirclePosition;
+    const Vector2d localCircle = sample/centerCirclePosition;
 
     double expectedDistance = localCircle.abs();
     double expectedAngle = localCircle.angle();
