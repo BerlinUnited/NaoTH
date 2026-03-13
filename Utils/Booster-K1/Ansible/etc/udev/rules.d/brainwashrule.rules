@@ -1,7 +1,5 @@
 # Mounts the stick and starts the systemd service which will run the brainwashing script
-KERNEL=="sda*", SUBSYSTEMS=="usb", ACTION=="add", SYMLINK+="brainwashstick", ENV{SYSTEMD_WANTS}+="brainwashservice"
-KERNEL=="sdb*", SUBSYSTEMS=="usb", ACTION=="add", SYMLINK+="brainwashstick", ENV{SYSTEMD_WANTS}+="brainwashservice"
-KERNEL=="sdc*", SUBSYSTEMS=="usb", ACTION=="add", SYMLINK+="brainwashstick", ENV{SYSTEMD_WANTS}+="brainwashservice"
+KERNEL=="sd*", SUBSYSTEMS=="usb", ENV{ID_FS_TYPE}=="vfat", ACTION=="add", SYMLINK+="brainwashstick", ENV{SYSTEMD_WANTS}+="brainwashservice"
 
 # NOTE: Some component of ubuntu currently automounts the stick to /media/booster/<stickname>
 # It does not seem to cause any problems
