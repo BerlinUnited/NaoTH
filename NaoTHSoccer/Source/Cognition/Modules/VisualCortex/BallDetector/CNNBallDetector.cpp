@@ -383,8 +383,19 @@ void CNNBallDetector::calculateCandidates()
         // has predicted values < 0 in some cases in the past
         if (pos.x >= 0.0 && pos.y >= 0.0) {
           // adjust the center and radius of the patch
-          Vector2d ballCenterInPatch(pos.x * patchForDetector.width(), pos.y*patchForDetector.width());
-          //addBallPercept(ballCenterInPatch + patchForDetector.min, radius*patchForDetector.width());
+          const Vector2d ballCenterInPatch(pos.x * patchForDetector.width(), pos.y * patchForDetector.width());
+          
+          Vector2d center = patch.center();
+          double radius = patch.radius();
+          
+          if( params.use_detected_center ) {
+            center = ballCenterInPatch + patchForDetector.min;
+          }
+          if( params.use_detected_radius ) {
+            radius = radius*patchForDetector.width();
+          }
+
+          addBallPercept(ballCenterInPatch + patchForDetector.min, radius*patchForDetector.width());
           
           addBallPercept(ballCenterInPatch + patchForDetector.min, patch.radius());
           
