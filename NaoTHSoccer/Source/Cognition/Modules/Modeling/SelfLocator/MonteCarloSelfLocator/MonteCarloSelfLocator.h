@@ -169,6 +169,7 @@ private: // local types
       PARAMETER_REGISTER(updateByRansacCircle) = true;
       PARAMETER_REGISTER(sigmaDistanceCenterCircle) = 0.1;
       PARAMETER_REGISTER(sigmaAngleCenterCircle) = 0.1;
+      PARAMETER_REGISTER(tracking_exclude_suspecious_circle) = true;
 
       PARAMETER_REGISTER(updateByOldPose) = false;
       PARAMETER_REGISTER(oldPoseSigmaDistance) = 500; // mm
@@ -185,8 +186,6 @@ private: // local types
       PARAMETER_REGISTER(updateBySituation) = true;
       PARAMETER_REGISTER(startPositionsSigmaDistance) = 500;
       PARAMETER_REGISTER(startPositionsSigmaAngle) = 0.5;
-
-      PARAMETER_REGISTER(tracking_exclude_suspecious_circle) = true;
 
       // load from the file after registering all parameters
       syncWithConfig();
