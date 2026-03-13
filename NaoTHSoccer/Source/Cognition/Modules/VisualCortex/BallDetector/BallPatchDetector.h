@@ -35,7 +35,7 @@ BEGIN_DECLARE_MODULE(BallPatchDetector)
   PROVIDE(DebugImageDrawingsTop)
   PROVIDE(DebugParameterList)
   PROVIDE(DebugDrawings)
-  
+
   REQUIRE(FieldInfo) // needed for ball radius
 
   REQUIRE(CameraInfo)
@@ -79,14 +79,14 @@ public:
   virtual ~BallPatchDetector();
 
 
-  virtual void execute() 
+  virtual void execute()
   {
     execute(CameraInfo::CameraID::Bottom);
     execute(CameraInfo::CameraID::Top);
   }
 
 private:
-  
+
   struct Parameter: public ParameterList
   {
     double borderRadiusFactorClose;
@@ -99,8 +99,8 @@ private:
       PARAMETER_REGISTER(borderRadiusFactorClose) = 0.5;
       PARAMETER_REGISTER(borderRadiusFactorFar) = 0.8;
       PARAMETER_REGISTER(maxInnerGreenDensitiy) = 0.5;
-      
-      
+
+
       syncWithConfig();
     };
   } params;
@@ -143,7 +143,7 @@ private:
       double value = (double)(inner - (outer - inner))/((double)(size+border)*(size+border));
 
       // scale the patch up to the image coordinates
-      best.add( 
+      best.add(
         static_cast<int>((point.x-border)*integralImage.FACTOR),
         static_cast<int>((point.y-border)*integralImage.FACTOR),
         static_cast<int>((point.x+size+border)*integralImage.FACTOR),
@@ -164,7 +164,7 @@ private:
       double value = (double)(inner - (outer - inner))/((double)(size+border)*(size+border));
 
       // scale the patch up to the image coordinates
-      best.add( 
+      best.add(
         static_cast<int>((point.x-border)*integralImage.FACTOR),
         static_cast<int>((point.y-border)*integralImage.FACTOR),
         static_cast<int>((point.x+size+border)*integralImage.FACTOR),
@@ -184,11 +184,11 @@ private:
       double value = ((double)inner)/((double)(size)*(size));// (double)(inner - (outer - inner)) / ((double)(size + border)*(size + border));
 
       // scale the patch up to the image coordinates
-      best.add( 
-        (point.x-border)*integralImage.FACTOR, 
-        (point.y-border)*integralImage.FACTOR, 
-        (point.x+size+border)*integralImage.FACTOR, 
-        (point.y+size+border)*integralImage.FACTOR, 
+      best.add(
+        (point.x-border)*integralImage.FACTOR,
+        (point.y-border)*integralImage.FACTOR,
+        (point.x+size+border)*integralImage.FACTOR,
+        (point.y+size+border)*integralImage.FACTOR,
         value);
     }*/
   }
@@ -236,13 +236,13 @@ void BallPatchDetector::calculateKeyPoints(const ImageType& integralImage, BestP
   const int32_t FACTOR = integralImage.FACTOR;
 
   Vector2<unsigned int> point;
-  
+
   for(point.y = minY/FACTOR; point.y < integralImage.getHeight(); ++point.y)
   {
     double estimatedRadius = CameraGeometry::estimatedBallRadius(
       getCameraMatrix(), getCameraInfo(), getFieldInfo().ballRadius,
       static_cast<int>(point.x)*FACTOR, static_cast<int>(point.y)*FACTOR);
-    
+
     double radius = std::max(6.0, estimatedRadius);
     unsigned int size   = (unsigned int)(radius*2.0/FACTOR+0.5);
     unsigned int border = (unsigned int)(radius*params.borderRadiusFactorClose/FACTOR+0.5);
@@ -257,7 +257,7 @@ void BallPatchDetector::calculateKeyPoints(const ImageType& integralImage, BestP
     if (point.y <= border || point.y+size+border >= integralImage.getHeight()) {
       continue;
     }
-    
+
     for(point.x = border; point.x+size+border < integralImage.getWidth(); ++point.x)
     {
       evaluatePatch(integralImage, best, point, size, border);
@@ -295,22 +295,22 @@ void BallPatchDetector::calculateKeyPointsFast(const ImageType& integralImage, B
 
   const unsigned int height = integralImage.getHeight();
   const unsigned int width = integralImage.getWidth();
-  
+
   for(point.y = minY/FACTOR; point.y < height; ++point.y)
   {
     double estimatedRadius = CameraGeometry::estimatedBallRadius(
       getCameraMatrix(), getCameraInfo(), getFieldInfo().ballRadius,
       static_cast<int>(getImage().width()/2), static_cast<int>(point.y)*FACTOR);
-    
+
     estimatedRadius = estimatedRadius / FACTOR + 0.5;
     // Note: we have a minimal allowed radius
     unsigned int radius = (estimatedRadius < 2.0) ? 2 : static_cast<unsigned int>(estimatedRadius);
-    
+
     // smalest ball size == 3 => ball size == FACTOR*3 == 12
     if (point.y < radius || point.y + radius >= height) {
       continue;
     }
-    
+
     for(point.x = radius; point.x + radius < width; ++point.x)
     {
       //evaluatePatch(integralImage, best, point, size, border);
@@ -319,23 +319,24 @@ void BallPatchDetector::calculateKeyPointsFast(const ImageType& integralImage, B
          getBodyContour().isOccupied(point.x*integralImage.FACTOR, (point.y+radius)*integralImage.FACTOR)) {
         continue;
       }
-      
+
       const unsigned int innerOffset = radius/2;
       const unsigned int area = 4*radius*radius;
 
       unsigned int inner = integralImage.getSumForRect(point.x-radius, point.y-radius, point.x+radius, point.y+radius, 0);
       double greenInner  = integralImage.getDensityForRect(point.x-innerOffset, point.y-innerOffset, point.x+innerOffset, point.y+innerOffset, 1);
-      
+
       unsigned int below = 0;
-      
-      if(point.x+radius < width && point.y+radius*2 < height) {
-        below = integralImage.getSumForRect(point.x-radius, point.y+radius, point.x+radius, point.y+radius*2, 0);
+      unsigned int radius_below = radius*2;
+
+      if(point.y+radius_below < height) {
+        below = integralImage.getSumForRect(point.x-radius, point.y+radius, point.x+radius, point.y+radius_below, 0);
       }
-      
+
       if (inner*2 > area && greenInner <= params.maxInnerGreenDensitiy && below*2 < area)
       {
         double value = ((double)inner)/((double)(area));
-        best.add( 
+        best.add(
             static_cast<int>(point.x-radius)*integralImage.FACTOR,
             static_cast<int>(point.y-radius)*integralImage.FACTOR,
             static_cast<int>(point.x+radius)*integralImage.FACTOR,
@@ -349,9 +350,9 @@ void BallPatchDetector::calculateKeyPointsFast(const ImageType& integralImage, B
           value = Math::clamp(value / 200.0, 0.0,1.0);
           PEN(Color(1.0,1.0-value,1.0-value,0.8),0.1);
 
-          FILLBOX((point.x)*integralImage.FACTOR - integralImage.FACTOR/2, 
-                  (point.y)*integralImage.FACTOR - integralImage.FACTOR/2, 
-                  (point.x)*integralImage.FACTOR + integralImage.FACTOR/2, 
+          FILLBOX((point.x)*integralImage.FACTOR - integralImage.FACTOR/2,
+                  (point.y)*integralImage.FACTOR - integralImage.FACTOR/2,
+                  (point.x)*integralImage.FACTOR + integralImage.FACTOR/2,
                   (point.y)*integralImage.FACTOR + integralImage.FACTOR/2);
       );
     }
@@ -392,17 +393,17 @@ void BallPatchDetector::calculateKeyPointsFull(const ImageType& integralImage, B
       values[x][y][0] = 0.0;
     }
   }
-  
+
   // TODO: faster reset?
   //std::fill_n(&values[0][0][0], (480/4)*(640/4)*2, 0);
-  
+
   for(point.y = minY/FACTOR; point.y < (int)integralImage.getHeight(); ++point.y)
   {
     double estimatedRadius = CameraGeometry::estimatedBallRadius(
       getCameraMatrix(), getCameraInfo(), getFieldInfo().ballRadius,
       getImage().width()/2, point.y*FACTOR);
-    
-    
+
+
     int radius = (int)(estimatedRadius / FACTOR + 0.5);
 
     // smalest ball size == 3 => ball size == FACTOR*3 == 12
@@ -430,7 +431,7 @@ void BallPatchDetector::calculateKeyPointsFull(const ImageType& integralImage, B
         values[point.x][point.y][0] = value;
         values[point.x][point.y][1] = radius;
       }
-      else 
+      else
       {
         values[point.x][point.y][0] = 0.0;
         values[point.x][point.y][1] = radius;
@@ -442,9 +443,9 @@ void BallPatchDetector::calculateKeyPointsFull(const ImageType& integralImage, B
           value = Math::clamp(value / 200.0, 0.0,1.0);
           PEN(Color(1.0,1.0-value,1.0-value,0.8),0.1);
 
-          FILLBOX((point.x)*integralImage.FACTOR - integralImage.FACTOR/2, 
-                  (point.y)*integralImage.FACTOR - integralImage.FACTOR/2, 
-                  (point.x)*integralImage.FACTOR + integralImage.FACTOR/2, 
+          FILLBOX((point.x)*integralImage.FACTOR - integralImage.FACTOR/2,
+                  (point.y)*integralImage.FACTOR - integralImage.FACTOR/2,
+                  (point.x)*integralImage.FACTOR + integralImage.FACTOR/2,
                   (point.y)*integralImage.FACTOR + integralImage.FACTOR/2);
       );
     }
@@ -454,23 +455,23 @@ void BallPatchDetector::calculateKeyPointsFull(const ImageType& integralImage, B
   for(int y = 1; y+1 < 480/4; ++y) {
     for(int x = 1; x+1 < 640/4; ++x) {
       if(values[x][y][0] > 0) {
-        if( values[x][y][0] > values[x-1][y][0] && 
-            values[x][y][0] > values[x+1][y][0] && 
-            values[x][y][0] > values[x  ][y-1][0] && 
+        if( values[x][y][0] > values[x-1][y][0] &&
+            values[x][y][0] > values[x+1][y][0] &&
+            values[x][y][0] > values[x  ][y-1][0] &&
             values[x][y][0] > values[x  ][y+1][0] &&
 
-            values[x][y][0] > values[x-1][y-1][0] && 
-            values[x][y][0] > values[x+1][y-1][0] && 
-            values[x][y][0] > values[x-1][y+1][0] && 
+            values[x][y][0] > values[x-1][y-1][0] &&
+            values[x][y][0] > values[x+1][y-1][0] &&
+            values[x][y][0] > values[x-1][y+1][0] &&
             values[x][y][0] > values[x+1][y+1][0])
         {
           double value = values[x][y][0];
           int rad = (int)values[x][y][1];
           best.add(
-            (x-rad)*integralImage.FACTOR, 
-            (y-rad)*integralImage.FACTOR, 
-            (x+rad)*integralImage.FACTOR, 
-            (y+rad)*integralImage.FACTOR, 
+            (x-rad)*integralImage.FACTOR,
+            (y-rad)*integralImage.FACTOR,
+            (x+rad)*integralImage.FACTOR,
+            (y+rad)*integralImage.FACTOR,
             value);
         }
       }
