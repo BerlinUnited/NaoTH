@@ -238,6 +238,7 @@ private: // local types
     bool updateByRansacCircle;
     double sigmaDistanceCenterCircle;
     double sigmaAngleCenterCircle;
+    bool tracking_exclude_suspecious_circle;
 
     bool updateByOldPose;
     double oldPoseSigmaDistance;
@@ -253,7 +254,7 @@ private: // local types
     double startPositionsSigmaDistance;
     double startPositionsSigmaAngle;
 
-    bool tracking_exclude_suspecious_circle;
+    
 
   } parameters;
 
