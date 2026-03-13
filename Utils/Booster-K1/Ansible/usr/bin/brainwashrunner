@@ -3,12 +3,9 @@
 # set -eo pipefail
 
 # Redirect all the output to the logger
-exec 1> >(bulog -n Brainwashrunner) 2>&1
+NAME=brainwashrunner source buloginit
 
-# For some reason without this "INFO Starting" gets printed twice
-sleep 0.3
-
-echo "INFO: Starting"
+info "Starting"
 
 MNT_POINT=/media/bu/brainwashmnt
 
@@ -42,7 +39,7 @@ if [ -e ./brainwash.sh ]; then
     bash ./brainwash.sh
     # set -eo pipefail
 else
-    echo "WARN: Missing brainwasher script"
+    error "Missing brainwasher script"
     # su nao -c "/usr/bin/paplay /home/nao/naoqi/Media/error_missing_usb_brainwasher_script.wav"
 fi
 
@@ -69,6 +66,6 @@ rmdir $MNT_POINT
 # fuser -k --mount $MNT_POINT
 # umount -f $MNT_POINT
 
-# su nao -c "/usr/bin/paplay /home/nao/naoqi/Media/usb_stop.wav"
+buplay -f /home/booster/bu/audio/usb_stop.wav
 
-echo "INFO: Finished"
+info "Finished"
