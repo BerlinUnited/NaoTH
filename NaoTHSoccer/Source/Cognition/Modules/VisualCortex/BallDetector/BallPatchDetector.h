@@ -94,12 +94,15 @@ private:
 
     double maxInnerGreenDensitiy;
 
+    int area_below_factor;
+
     Parameter() : ParameterList("BallPatchDetector")
     {
       PARAMETER_REGISTER(borderRadiusFactorClose) = 0.5;
       PARAMETER_REGISTER(borderRadiusFactorFar) = 0.8;
       PARAMETER_REGISTER(maxInnerGreenDensitiy) = 0.5;
 
+      PARAMETER_REGISTER(area_below_factor) = 4;
 
       syncWithConfig();
     };
@@ -333,7 +336,7 @@ void BallPatchDetector::calculateKeyPointsFast(const ImageType& integralImage, B
         below = integralImage.getSumForRect(point.x-radius, point.y+radius, point.x+radius, point.y+radius_below, 0);
       }
 
-      if (inner*2 > area && greenInner <= params.maxInnerGreenDensitiy && below*2 < area)
+      if (inner*2 > area && greenInner <= params.maxInnerGreenDensitiy && below*params.area_below_factor < area)
       {
         double value = ((double)inner)/((double)(area));
         best.add(
