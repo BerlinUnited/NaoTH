@@ -169,6 +169,7 @@ private: // local types
       PARAMETER_REGISTER(updateByRansacCircle) = true;
       PARAMETER_REGISTER(sigmaDistanceCenterCircle) = 0.1;
       PARAMETER_REGISTER(sigmaAngleCenterCircle) = 0.1;
+      PARAMETER_REGISTER(tracking_exclude_suspecious_circle) = true;
 
       PARAMETER_REGISTER(updateByOldPose) = false;
       PARAMETER_REGISTER(oldPoseSigmaDistance) = 500; // mm
@@ -237,6 +238,7 @@ private: // local types
     bool updateByRansacCircle;
     double sigmaDistanceCenterCircle;
     double sigmaAngleCenterCircle;
+    bool tracking_exclude_suspecious_circle;
 
     bool updateByOldPose;
     double oldPoseSigmaDistance;
@@ -251,6 +253,8 @@ private: // local types
     bool updateBySituation;
     double startPositionsSigmaDistance;
     double startPositionsSigmaAngle;
+
+    
 
   } parameters;
 
