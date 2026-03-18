@@ -5633,14 +5633,14 @@ class CalibrationData : public ::google::protobuf::Message /* @@protoc_insertion
 
   // accessors -------------------------------------------------------
 
-  // optional .naothmessages.DoubleVector2 inertialSensorOffset = 1;
-  bool has_inertialsensoroffset() const;
-  void clear_inertialsensoroffset();
-  static const int kInertialSensorOffsetFieldNumber = 1;
-  const ::naothmessages::DoubleVector2& inertialsensoroffset() const;
-  ::naothmessages::DoubleVector2* mutable_inertialsensoroffset();
-  ::naothmessages::DoubleVector2* release_inertialsensoroffset();
-  void set_allocated_inertialsensoroffset(::naothmessages::DoubleVector2* inertialsensoroffset);
+  // optional .naothmessages.DoubleVector2 inertialSensorOffset2d = 1 [deprecated = true];
+  GOOGLE_PROTOBUF_DEPRECATED_ATTR bool has_inertialsensoroffset2d() const;
+  GOOGLE_PROTOBUF_DEPRECATED_ATTR void clear_inertialsensoroffset2d();
+  GOOGLE_PROTOBUF_DEPRECATED_ATTR static const int kInertialSensorOffset2DFieldNumber = 1;
+  GOOGLE_PROTOBUF_DEPRECATED_ATTR const ::naothmessages::DoubleVector2& inertialsensoroffset2d() const;
+  GOOGLE_PROTOBUF_DEPRECATED_ATTR ::naothmessages::DoubleVector2* mutable_inertialsensoroffset2d();
+  GOOGLE_PROTOBUF_DEPRECATED_ATTR ::naothmessages::DoubleVector2* release_inertialsensoroffset2d();
+  GOOGLE_PROTOBUF_DEPRECATED_ATTR void set_allocated_inertialsensoroffset2d(::naothmessages::DoubleVector2* inertialsensoroffset2d);
 
   // optional .naothmessages.DoubleVector3 accSensorOffset = 3;
   bool has_accsensoroffset() const;
@@ -5660,6 +5660,15 @@ class CalibrationData : public ::google::protobuf::Message /* @@protoc_insertion
   ::naothmessages::DoubleVector3* release_gyrosensoroffset();
   void set_allocated_gyrosensoroffset(::naothmessages::DoubleVector3* gyrosensoroffset);
 
+  // optional .naothmessages.DoubleVector3 inertialSensorOffset = 6;
+  bool has_inertialsensoroffset() const;
+  void clear_inertialsensoroffset();
+  static const int kInertialSensorOffsetFieldNumber = 6;
+  const ::naothmessages::DoubleVector3& inertialsensoroffset() const;
+  ::naothmessages::DoubleVector3* mutable_inertialsensoroffset();
+  ::naothmessages::DoubleVector3* release_inertialsensoroffset();
+  void set_allocated_inertialsensoroffset(::naothmessages::DoubleVector3* inertialsensoroffset);
+
   // required bool calibrated = 4;
   bool has_calibrated() const;
   void clear_calibrated();
@@ -5669,6 +5678,8 @@ class CalibrationData : public ::google::protobuf::Message /* @@protoc_insertion
 
   // @@protoc_insertion_point(class_scope:naothmessages.CalibrationData)
  private:
+  void set_has_inertialsensoroffset2d();
+  void clear_has_inertialsensoroffset2d();
   void set_has_inertialsensoroffset();
   void clear_has_inertialsensoroffset();
   void set_has_gyrosensoroffset();
@@ -5681,9 +5692,10 @@ class CalibrationData : public ::google::protobuf::Message /* @@protoc_insertion
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   ::google::protobuf::internal::HasBits<1> _has_bits_;
   mutable int _cached_size_;
-  ::naothmessages::DoubleVector2* inertialsensoroffset_;
+  ::naothmessages::DoubleVector2* inertialsensoroffset2d_;
   ::naothmessages::DoubleVector3* accsensoroffset_;
   ::naothmessages::DoubleVector3* gyrosensoroffset_;
+  ::naothmessages::DoubleVector3* inertialsensoroffset_;
   bool calibrated_;
   friend struct protobuf_Representations_2eproto::TableStruct;
 };
@@ -13517,42 +13529,88 @@ inline void BodyStatus::set_timestamp(::google::protobuf::uint32 value) {
 
 // CalibrationData
 
-// optional .naothmessages.DoubleVector2 inertialSensorOffset = 1;
-inline bool CalibrationData::has_inertialsensoroffset() const {
+// optional .naothmessages.DoubleVector2 inertialSensorOffset2d = 1 [deprecated = true];
+inline bool CalibrationData::has_inertialsensoroffset2d() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
-inline void CalibrationData::set_has_inertialsensoroffset() {
+inline void CalibrationData::set_has_inertialsensoroffset2d() {
   _has_bits_[0] |= 0x00000001u;
 }
-inline void CalibrationData::clear_has_inertialsensoroffset() {
+inline void CalibrationData::clear_has_inertialsensoroffset2d() {
   _has_bits_[0] &= ~0x00000001u;
 }
-inline void CalibrationData::clear_inertialsensoroffset() {
-  if (inertialsensoroffset_ != NULL) inertialsensoroffset_->::naothmessages::DoubleVector2::Clear();
-  clear_has_inertialsensoroffset();
+inline void CalibrationData::clear_inertialsensoroffset2d() {
+  if (inertialsensoroffset2d_ != NULL) inertialsensoroffset2d_->::naothmessages::DoubleVector2::Clear();
+  clear_has_inertialsensoroffset2d();
 }
-inline const ::naothmessages::DoubleVector2& CalibrationData::inertialsensoroffset() const {
-  const ::naothmessages::DoubleVector2* p = inertialsensoroffset_;
-  // @@protoc_insertion_point(field_get:naothmessages.CalibrationData.inertialSensorOffset)
+inline const ::naothmessages::DoubleVector2& CalibrationData::inertialsensoroffset2d() const {
+  const ::naothmessages::DoubleVector2* p = inertialsensoroffset2d_;
+  // @@protoc_insertion_point(field_get:naothmessages.CalibrationData.inertialSensorOffset2d)
   return p != NULL ? *p : *reinterpret_cast<const ::naothmessages::DoubleVector2*>(
       &::naothmessages::_DoubleVector2_default_instance_);
 }
-inline ::naothmessages::DoubleVector2* CalibrationData::mutable_inertialsensoroffset() {
+inline ::naothmessages::DoubleVector2* CalibrationData::mutable_inertialsensoroffset2d() {
+  set_has_inertialsensoroffset2d();
+  if (inertialsensoroffset2d_ == NULL) {
+    inertialsensoroffset2d_ = new ::naothmessages::DoubleVector2;
+  }
+  // @@protoc_insertion_point(field_mutable:naothmessages.CalibrationData.inertialSensorOffset2d)
+  return inertialsensoroffset2d_;
+}
+inline ::naothmessages::DoubleVector2* CalibrationData::release_inertialsensoroffset2d() {
+  // @@protoc_insertion_point(field_release:naothmessages.CalibrationData.inertialSensorOffset2d)
+  clear_has_inertialsensoroffset2d();
+  ::naothmessages::DoubleVector2* temp = inertialsensoroffset2d_;
+  inertialsensoroffset2d_ = NULL;
+  return temp;
+}
+inline void CalibrationData::set_allocated_inertialsensoroffset2d(::naothmessages::DoubleVector2* inertialsensoroffset2d) {
+  delete inertialsensoroffset2d_;
+  inertialsensoroffset2d_ = inertialsensoroffset2d;
+  if (inertialsensoroffset2d) {
+    set_has_inertialsensoroffset2d();
+  } else {
+    clear_has_inertialsensoroffset2d();
+  }
+  // @@protoc_insertion_point(field_set_allocated:naothmessages.CalibrationData.inertialSensorOffset2d)
+}
+
+// optional .naothmessages.DoubleVector3 inertialSensorOffset = 6;
+inline bool CalibrationData::has_inertialsensoroffset() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void CalibrationData::set_has_inertialsensoroffset() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void CalibrationData::clear_has_inertialsensoroffset() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline void CalibrationData::clear_inertialsensoroffset() {
+  if (inertialsensoroffset_ != NULL) inertialsensoroffset_->::naothmessages::DoubleVector3::Clear();
+  clear_has_inertialsensoroffset();
+}
+inline const ::naothmessages::DoubleVector3& CalibrationData::inertialsensoroffset() const {
+  const ::naothmessages::DoubleVector3* p = inertialsensoroffset_;
+  // @@protoc_insertion_point(field_get:naothmessages.CalibrationData.inertialSensorOffset)
+  return p != NULL ? *p : *reinterpret_cast<const ::naothmessages::DoubleVector3*>(
+      &::naothmessages::_DoubleVector3_default_instance_);
+}
+inline ::naothmessages::DoubleVector3* CalibrationData::mutable_inertialsensoroffset() {
   set_has_inertialsensoroffset();
   if (inertialsensoroffset_ == NULL) {
-    inertialsensoroffset_ = new ::naothmessages::DoubleVector2;
+    inertialsensoroffset_ = new ::naothmessages::DoubleVector3;
   }
   // @@protoc_insertion_point(field_mutable:naothmessages.CalibrationData.inertialSensorOffset)
   return inertialsensoroffset_;
 }
-inline ::naothmessages::DoubleVector2* CalibrationData::release_inertialsensoroffset() {
+inline ::naothmessages::DoubleVector3* CalibrationData::release_inertialsensoroffset() {
   // @@protoc_insertion_point(field_release:naothmessages.CalibrationData.inertialSensorOffset)
   clear_has_inertialsensoroffset();
-  ::naothmessages::DoubleVector2* temp = inertialsensoroffset_;
+  ::naothmessages::DoubleVector3* temp = inertialsensoroffset_;
   inertialsensoroffset_ = NULL;
   return temp;
 }
-inline void CalibrationData::set_allocated_inertialsensoroffset(::naothmessages::DoubleVector2* inertialsensoroffset) {
+inline void CalibrationData::set_allocated_inertialsensoroffset(::naothmessages::DoubleVector3* inertialsensoroffset) {
   delete inertialsensoroffset_;
   inertialsensoroffset_ = inertialsensoroffset;
   if (inertialsensoroffset) {
@@ -13657,13 +13715,13 @@ inline void CalibrationData::set_allocated_accsensoroffset(::naothmessages::Doub
 
 // required bool calibrated = 4;
 inline bool CalibrationData::has_calibrated() const {
-  return (_has_bits_[0] & 0x00000008u) != 0;
+  return (_has_bits_[0] & 0x00000010u) != 0;
 }
 inline void CalibrationData::set_has_calibrated() {
-  _has_bits_[0] |= 0x00000008u;
+  _has_bits_[0] |= 0x00000010u;
 }
 inline void CalibrationData::clear_has_calibrated() {
-  _has_bits_[0] &= ~0x00000008u;
+  _has_bits_[0] &= ~0x00000010u;
 }
 inline void CalibrationData::clear_calibrated() {
   calibrated_ = false;
