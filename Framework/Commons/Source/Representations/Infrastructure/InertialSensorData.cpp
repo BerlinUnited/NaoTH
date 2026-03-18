@@ -18,7 +18,7 @@ void Serializer<InertialSensorData>::serialize(const InertialSensorData& represe
 {
   naothmessages::InertialSensorData msg;
   
-  naoth::DataConversion::toMessage(representation.data, *msg.mutable_data());
+  naoth::DataConversion::toMessage(representation.data, *msg.mutable_data3d());
 
   google::protobuf::io::OstreamOutputStream buf(&stream);
   msg.SerializeToZeroCopyStream(&buf);
@@ -36,7 +36,14 @@ void Serializer<InertialSensorData>::deserialize(std::istream& stream, InertialS
     representation.data.y = msg.legacypackeddata(1);
   }
 
-  if(msg.has_data()) {
-    naoth::DataConversion::fromMessage(*msg.mutable_data(), representation.data);
+  // legacy
+  if(msg.has_data2d()) {
+    representation.data.x = msg.data2d().x();
+    representation.data.y = msg.data2d().y();
+    representation.data.z = 0.0;
+  }
+
+  if(msg.has_data3d()) {
+    naoth::DataConversion::fromMessage(msg.data3d(), representation.data);
   }
 }

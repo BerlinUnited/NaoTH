@@ -111,7 +111,7 @@ private:
   inline bool determineReadyToWalkState();
 
   // internal data
-  RingBufferWithSum<Vector2d, 10> inertialBuffer;
+  RingBufferWithSum<Vector3d, 10> inertialBuffer;
 
   // filter the battery state
   RingBufferWithSum<double, 1000> batteryChargeBuffer;

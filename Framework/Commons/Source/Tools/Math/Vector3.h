@@ -11,6 +11,7 @@
 #include <ostream>
 #include <istream>
 
+#include "Vector2.h"
 
 /** This class represents a 3-vector */
 template <class V> class Vector3
@@ -245,6 +246,10 @@ template <class V> class Vector3
   */
   Vector3<V> normalize() {
     return normalize(static_cast<V>(1));
+  }
+
+  Vector2<V> xy() const {
+    return Vector2<V>(x,y);
   }
 
   // some prefefined vectors for convenience

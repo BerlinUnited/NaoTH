@@ -123,7 +123,9 @@ message GyrometerData {
 message InertialSensorData {
   repeated double legacyPackedData = 1 [deprecated=true];
   
-  optional DoubleVector2 data = 2;
+  optional DoubleVector2 data2d = 2;
+  
+  optional DoubleVector3 data3d = 3;
 }
 
 message ButtonData {
