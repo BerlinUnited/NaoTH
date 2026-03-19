@@ -108,12 +108,14 @@ scp -r ../Config booster@10.0.4.41:~/naoth/
 
 All binaries must be executed in `~/naoth` on the Booster
 
-1. start the bridge (in one shell)
+1. start each bridge as a separate process (e.g., each in a separate shell)
 
 ```sh
 ssh booster@10.0.4.41
 cd ~/naoth
-python image_bridge.py
+python bin/ros_image_bridge.py
+python bin/body_bridge.py
+python bin/ros_sensor_bridge.py
 ```
 
 12 start the binaty (in a second shell)
