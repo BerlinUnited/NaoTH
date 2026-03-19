@@ -1,0 +1,16 @@
+[Unit]
+Description = Booster K1 Body Bridge Service
+#After = lola.service pulseaudio.service
+#Wants = lola.service pulseaudio.service
+#Requires = lola.service
+#Requires = pulseaudio.service
+ConditionPathExists=/home/booster/bin/body_bridge.py
+
+[Service]
+Type=idle
+ExecStart = /usr/bin/python3 -u /home/booster/bin/body_bridge.py
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy = default.target
