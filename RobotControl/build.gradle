@@ -1,21 +1,19 @@
 /*  
 // NOTE: can not use the default script dependencies, since it doesn't allow dynamic modifications
 plugins {
-  id 'application' // uses the java and distribution plugin
-  id 'org.openjfx.javafxplugin' version '0.1.0'
+    id 'application' // uses the java and distribution plugin
+    id 'org.openjfx.javafxplugin' version '0.1.0'
 }
 */
 
 // the dependencies for this build script (not the project!)
 buildscript {
-  repositories {
-    maven {
-      url "https://plugins.gradle.org/m2/"
+    repositories {
+        maven { url = uri("https://plugins.gradle.org/m2/") }
     }
-  }
-  dependencies {
-    classpath 'org.openjfx:javafx-plugin:0.1.0'
-  }
+    dependencies {
+        classpath 'org.openjfx:javafx-plugin:0.1.0'
+    }
 }
 
 apply plugin: 'application' // uses the java and distribution plugin
@@ -25,35 +23,39 @@ compileJava {options.encoding = "UTF-8"} // set the encoding in case LANG / LC_A
 // use the 'javafxplugin' based on the available java version
 def jVersion = JavaVersion.current()
 if (jVersion >= JavaVersion.VERSION_11) {
-  apply plugin: 'org.openjfx.javafxplugin'
+    apply plugin: 'org.openjfx.javafxplugin'
 } else if (jVersion == JavaVersion.VERSION_1_8) {
-  // do nothing, JavaFX is installed
+    // do nothing, JavaFX is installed
 } else {
-  // TODO: stop execution / throw error, since javafxplugin only supports 11+
+    // TODO: stop execution / throw error, since javafxplugin only supports 11+
 }
 
 if (jVersion >= JavaVersion.VERSION_11) {
-  javafx {
-    // NOTE: got JVM segfaults, if a different (hard-coded) version than the current java version is used
-    version = jVersion.getMajorVersion()
-    // NOTE: all other modules are dependencies of the listed
-    modules = [ 'javafx.fxml', 'javafx.swing', 'javafx.web' ]
-  }
+    javafx {
+        // NOTE: got JVM segfaults, if a different (hard-coded) version than the current java version is used
+        version = jVersion.getMajorVersion()
+        // NOTE: all other modules are dependencies of the listed
+        modules = [ 'javafx.fxml', 'javafx.swing', 'javafx.web' ]
+    }
 }
 
 // the project dependencies
 repositories {
     mavenCentral() 
-    maven { url "https://jogamp.org/deployment/maven" }
-    maven { url "https://jogamp.org/deployment/maven-java3d" }
+    maven { url = uri("https://jogamp.org/deployment/maven") }
+    maven { url = uri("https://jogamp.org/deployment/maven-java3d") }
 }
 
 dependencies {
-  // NOTE: we're using the commited libs, if necessary we can switch to a maven repo
-  implementation fileTree(include: ['**/*.jar'], dir: 'lib')
+    // NOTE: we're using the commited libs, if necessary we can switch to a maven repo
+    implementation fileTree(include: ['**/*.jar'], dir: 'lib')
 
-    implementation ('org.jogamp.java3d:java3d-core:1.7.2' )
-    implementation ('org.jogamp.java3d:java3d-utils:1.7.2')
+    implementation 'org.jogamp.java3d:java3d-core:1.7.2'
+    implementation 'org.jogamp.java3d:java3d-utils:1.7.2'
+    
+    // dependencies for java3d - must be included explicitely
+    implementation 'org.jogamp.gluegen:gluegen-rt-main:2.5.0'
+    implementation 'org.jogamp.jogl:jogl-all-main:2.5.0'
 }
 
 // by default just (build and) run RobotControl
@@ -66,98 +68,110 @@ java {
 }
 
 // configure the application plugin
-application.getMainClass().set('de.naoth.rc.RobotControlImpl')
-application.executableDir = '' // do not create a "bin" directory in install/zip
-application.applicationName = 'robotcontrol' // set the startscripts to lower case
-// HACK: show splashscreen for 'gradlew run'
-application.applicationDefaultJvmArgs = [
-  '-splash:build/resources/de/naoth/rc/res/Splash.png',
-  '-Djava.util.Arrays.useLegacyMergeSort=true',
-  '--add-exports=java.desktop/sun.awt=ALL-UNNAMED',
-  '--add-opens=java.desktop/sun.awt.X11=ALL-UNNAMED',
-  // needed for jogl on windows
-  // https://jogamp.org/jogl/doc/userguide/
-  //'-Dsun.java2d.noddraw=true'
-]
+application {
+    mainClass = 'de.naoth.rc.RobotControlImpl'
+    executableDir = '' // do not create a "bin" directory in install/zip
+    applicationName = 'robotcontrol' // set the startscripts to lower case
+
+    // JVM args for `gradlew run`
+    applicationDefaultJvmArgs = [
+        "-splash:${layout.buildDirectory.get()}/resources/de/naoth/rc/res/Splash.png",
+        '-Djava.util.Arrays.useLegacyMergeSort=true',
+        '--add-exports=java.desktop/sun.awt=ALL-UNNAMED',
+        '--add-opens=java.desktop/sun.awt.X11=ALL-UNNAMED'
+        // needed for jogl on windows
+        // https://jogamp.org/jogl/doc/userguide/
+        // '-Dsun.java2d.noddraw=true'
+    ]
+}
 
 // set the source directory and disable the other dirs
-sourceSets.main.java.srcDirs = ['src']
-sourceSets.main.resources.srcDirs = ['src/de/naoth/rc/res']
-sourceSets.main.output.resourcesDir = file('build/resources/de/naoth/rc/res') // default: build/resources/main
-sourceSets.main.runtimeClasspath += files('build/resources') // make sure, running from build directory finds the resources
-sourceSets.test.java.srcDirs = []
-sourceSets.test.resources.srcDirs = []
+sourceSets {
+    main {
+        java.srcDirs = ['src']
+        resources.srcDirs = ['src/de/naoth/rc/res']
+        output.resourcesDir = file('build/resources/de/naoth/rc/res') // default: build/resources/main
+        runtimeClasspath += files('build/resources') // make sure running from build dir finds resources
+    }
+    test {
+        java.srcDirs = []
+        resources.srcDirs = []
+    }
+}
+
 
 def additionalResources = [ 'config', 'logging.properties', '**/*.fxml', '**/*.html', '**/*.css' ]
 processResources {
-  // copy the additional resources to the build directory
-  from('src/de/naoth/rc/') {
-    include(additionalResources)
-    into '../'
-    // avoid empty directories caused by the additional resources
-    includeEmptyDirs = false
-  }
+    // copy the additional resources to the build directory
+    from('src/de/naoth/rc/') {
+        include(additionalResources)
+        into '../'
+        // avoid empty directories caused by the additional resources
+        includeEmptyDirs = false
+    }
 }
 
 installDist {
-  // "install" the resulting application to the "dist" directory (mimic the old behavior)
-  destinationDir = file("$projectDir/dist")
+    // "install" the resulting application to the "dist" directory (mimic the old behavior)
+    destinationDir = file("$projectDir/dist")
 }
 // make sure the "installDist" task is executed
 build.finalizedBy(installDist)
 
 distTar {
-  // HACK: disable zip & tar generation, if not explicitly requested (currently i don't know better)
-  onlyIf { gradle.startParameter.taskNames.contains('distTar') }
+    // HACK: disable zip & tar generation, if not explicitly requested (currently i don't know better)
+    onlyIf { gradle.startParameter.taskNames.contains('distTar') }
 }
 
 distZip {
-  // HACK: disable zip & tar generation, if not explicitly requested (currently i don't know better)
-  onlyIf { gradle.startParameter.taskNames.contains('distZip') }
+    // HACK: disable zip & tar generation, if not explicitly requested (currently i don't know better)
+    onlyIf { gradle.startParameter.taskNames.contains('distZip') }
 }
 
 // make sure the dist directory is also cleaned (since we're moved it out of the build directory)
 task cleanDist(type: Delete) {
-  delete "$projectDir/dist"
+    delete "$projectDir/dist"
 }
 clean.finalizedBy(cleanDist)
 
 jar {
-  // HACK: if a file is part of resource directory, move it to the correct directory instead of 
-  //       putting it in the root directory. This is necessary 'cause of the 'legacy' directory structure.
-  eachFile {
-    file ->
-    if (file.getFile().getPath().startsWith(sourceSets.main.output.resourcesDir.getPath())) {
-      file.setPath("de/naoth/rc/res/" + file.getPath())
+    // HACK: if a file is part of resource directory, move it to the correct directory instead of 
+    //       putting it in the root directory. This is necessary 'cause of the 'legacy' directory structure.
+    eachFile {
+        file ->
+            if (file.getFile().getPath().startsWith(sourceSets.main.output.resourcesDir.getPath())) {
+                file.setPath("de/naoth/rc/res/" + file.getPath())
+            }
     }
-  }
-    
-  // make sure the additional resources are placed correctly
-  from('src/de/naoth/rc/') {
-    include(additionalResources)
-    into 'de/naoth/rc'
-  }
+      
+    // make sure the additional resources are placed correctly
+    from('src/de/naoth/rc/') {
+        include(additionalResources)
+        into 'de/naoth/rc'
+    }
 
-  // create a manifest for the jar
-  manifest {
-    attributes 'Class-Path': sourceSets.main.runtimeClasspath.collect { it.name }.join(' ')
-    attributes 'Main-Class': application.getMainClass()
-    attributes 'SplashScreen-Image': 'de/naoth/rc/res/Splash.png'
-  }
-  
-  // avoid empty directories caused by the modified resource structure
-  includeEmptyDirs = false
-  
-  // exclude duplicate files
-  duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+    // create a manifest for the jar
+    manifest {
+        attributes(
+            'Class-Path': sourceSets.main.runtimeClasspath*.name.join(' '),
+            'Main-Class': application.mainClass.get(),
+            'SplashScreen-Image': 'de/naoth/rc/res/Splash.png'
+        )
+    }
+    
+    // avoid empty directories caused by the modified resource structure
+    includeEmptyDirs = false
+    
+    // exclude duplicate files
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 startScripts {
-  // overwrite the 'applicationDefaultJvmArgs', since we don't need it here
-  defaultJvmOpts = []
-  doLast {
-    // HACK: modify the script templates in order to call the application via its JAR file
-    unixScript.text = unixScript.text.replaceAll('-classpath.+\\\"\\$APP_ARGS\"', '-jar \\$APP_HOME/lib/RobotControl.jar "\\$APP_ARGS"')
-    windowsScript.text = windowsScript.text.replaceAll('-classpath.+%CMD_LINE_ARGS%', '-jar %APP_HOME%\\\\lib\\\\RobotControl.jar %CMD_LINE_ARGS%')
-  }
+    // overwrite the 'applicationDefaultJvmArgs', since we don't need it here
+    defaultJvmOpts = []
+    doLast {
+        // HACK: modify the script templates in order to call the application via its JAR file
+        unixScript.text = unixScript.text.replaceAll('-classpath.+\\\"\\$APP_ARGS\"', '-jar \\$APP_HOME/lib/RobotControl.jar "\\$APP_ARGS"')
+        windowsScript.text = windowsScript.text.replaceAll('-classpath.+%CMD_LINE_ARGS%', '-jar %APP_HOME%\\\\lib\\\\RobotControl.jar %CMD_LINE_ARGS%')
+    }
 }
