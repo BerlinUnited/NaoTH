@@ -36,6 +36,11 @@ using namespace std;
 #define BRANCH_PATH "unknown"
 #endif
 
+#ifndef GIT_DIRTY_FLAG
+#define GIT_DIRTY_FLAG "unknown"
+#endif
+
+
 #define NAOTH_BUILD_INFO                         \
   "=========================================="   \
   " http://www.naoth.de                      "   \
@@ -43,6 +48,7 @@ using namespace std;
   "Revision number: " REVISION                   \
   "Owner: " USER_NAME                            \
   "Branch path: " BRANCH_PATH                    \
+  "Git dirty state: " GIT_DIRTY_FLAG             \
   "==========================================\n"
 
 

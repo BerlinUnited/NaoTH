@@ -8,7 +8,7 @@
 #include "SituationPriorProvider.h"
 
 SituationPriorProvider::SituationPriorProvider()
-{ 
+{
   lastRobotState          = getPlayerInfo().robotState;
   currentRobotState       = getPlayerInfo().robotState;
   gameStateWhenPenalized  = GameData::unknown_game_state;
@@ -30,13 +30,14 @@ void SituationPriorProvider::execute()
 
     walked_since_state_change = false;
 
-    // remember the reason for the current penalty if the robot was penalized 
+    // remember the reason for the current penalty if the robot was penalized
     // and the global game state when the penalry was isseud
     if(getPlayerInfo().robotState == PlayerInfo::penalized) {
       gameStateWhenPenalized = getGameData().gameState;
 
-      if(getGameData().valid) {
-        reasonForLastPenalized = getGameData().getOwnRobotInfo(getPlayerInfo().playerNumber).penalty;
+      unsigned int playerNumber = getPlayerInfo().playerNumber;
+      if(getGameData().valid && getGameData().isActivePlayer(playerNumber)) {
+        reasonForLastPenalized = getGameData().getOwnRobotInfo(playerNumber).penalty;
       }
     }
   }
@@ -44,12 +45,12 @@ void SituationPriorProvider::execute()
   if(getMotionStatus().currentMotion == motion::walk) {
     walked_since_state_change = true;
   }
-  
+
   // TODO: for the future - track whether the robot was manually moved
   /*
   // in those states the robot does not walk and can be moved manually
-  if( currentRobotState == PlayerInfo::set || 
-      currentRobotState == PlayerInfo::initial || 
+  if( currentRobotState == PlayerInfo::set ||
+      currentRobotState == PlayerInfo::initial ||
       currentRobotState == PlayerInfo::penalized ||
       currentRobotState == PlayerInfo::standby)
   {
