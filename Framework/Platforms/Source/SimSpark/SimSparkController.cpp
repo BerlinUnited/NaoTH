@@ -7,9 +7,11 @@
  */
 
 #include "SimSparkController.h"
+#include <cstddef>
 #include <iostream>
 #include <fstream>
 #include "PlatformInterface/Platform.h"
+#include "Representations/Infrastructure/RobotInfo.h"
 #include "Tools/Communication/MessageQueue/MessageQueue4Threads.h"
 #include <Tools/ImageProcessing/ColorModelConversions.h>
 #include <Tools/StringTools.h>
@@ -1461,24 +1463,20 @@ void SimSparkController::get(GameData& data)
 
     data.ownTeam.teamNumber = theGameInfo.teamNumber;
     data.ownTeam.teamColor = theGameInfo.getOwnTeamColor();
-    data.ownTeam.players.resize(theGameInfo.playersPerTeam);
     data.ownTeam.score = theGameInfo.getOwnScore();
-
-    for (size_t i=0; i<data.ownTeam.players.size(); ++i) {
-        if(theGameInfo.ownPlayers.size() > i) {
-            data.ownTeam.players[i].penalty = theGameInfo.ownPlayers[i].penalty;
-            data.ownTeam.players[i].secsTillUnpenalised = theGameInfo.ownPlayers[i].secsTillUnpenalised;
-        }
+    data.ownTeam.players.clear(); // remove all players from own team to clear substituted players
+    for (size_t i=0; i<theGameInfo.ownPlayers.size(); i++){
+      // i+1 because we map trikot number to robot info instead of array index
+      data.ownTeam.players[i+1] = theGameInfo.ownPlayers[i];
     }
 
     data.oppTeam.teamColor = theGameInfo.getOppTeamColor();
-    data.oppTeam.players.resize(theGameInfo.playersPerTeam);
+    
     data.oppTeam.score = theGameInfo.getOppScore();
-    for (size_t i=0; i<data.oppTeam.players.size(); ++i) {
-        if(theGameInfo.oppPlayers.size() > i) {
-            data.oppTeam.players[i].penalty = theGameInfo.oppPlayers[i].penalty;
-            data.oppTeam.players[i].secsTillUnpenalised = theGameInfo.oppPlayers[i].secsTillUnpenalised;
-        }
+    data.oppTeam.players.clear(); // remove all players from opp team to clear substituted players
+    for (size_t i=0; i<theGameInfo.oppPlayers.size(); i++){
+      // i+1 because we map trikot number to robot info instead of array index
+      data.oppTeam.players[i+1] = theGameInfo.oppPlayers[i];
     }
 
     theGameInfo.valid = false;
