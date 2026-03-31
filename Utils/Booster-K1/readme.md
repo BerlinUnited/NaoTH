@@ -123,7 +123,7 @@ python bin/ros_sensor_bridge.py
 ```sh
 ssh booster@10.0.4.41
 cd ~/naoth
-./naoth-booster
+bin/naoth-booster
 ```
 
 ## Test
