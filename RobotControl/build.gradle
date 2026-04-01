@@ -82,6 +82,10 @@ application {
         // needed for jogl on windows
         // https://jogamp.org/jogl/doc/userguide/
         // '-Dsun.java2d.noddraw=true'
+        // for Ubuntu 25
+        '-Djogl.disable.openglarbcontext=true'
+        '-Djogl.debug=all'
+        '-Dnativewindow.debug=all'
     ]
 }
 
