@@ -76,16 +76,21 @@ application {
     // JVM args for `gradlew run`
     applicationDefaultJvmArgs = [
         "-splash:${layout.buildDirectory.get()}/resources/de/naoth/rc/res/Splash.png",
+        
         '-Djava.util.Arrays.useLegacyMergeSort=true',
         '--add-exports=java.desktop/sun.awt=ALL-UNNAMED',
-        '--add-opens=java.desktop/sun.awt.X11=ALL-UNNAMED'
+        '--add-opens=java.desktop/sun.awt.X11=ALL-UNNAMED',
+        
         // needed for jogl on windows
         // https://jogamp.org/jogl/doc/userguide/
-        // '-Dsun.java2d.noddraw=true'
-        // for Ubuntu 25
-        '-Djogl.disable.openglarbcontext=true'
-        '-Djogl.debug=all'
-        '-Dnativewindow.debug=all'
+        // '-Dsun.java2d.noddraw=true',
+        
+        // compatibility: this might help with driver issues on Ubuntu
+        //'-Djogl.disable.openglarbcontext=true',
+        
+        // debug
+        //'-Djogl.debug=all',
+        //'-Dnativewindow.debug=all',
     ]
 }
 
