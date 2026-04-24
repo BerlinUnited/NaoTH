@@ -17,19 +17,6 @@ export NETWORK_ETH_IP="10.1.4"
 export NETWORK_ETH_MASK="255.255.255.0"
 export NETWORK_ETH_BROADCAST="10.0.4.255"
 
-# switch between scripts to use for Nao's up to version 5 or Nao's version 6
-if [ -f "/opt/aldebaran/bin/lola" ] | [ -f "/usr/bin/lola" ]; then
-
-	echo "Nao V6"
-	
-	chmod +x brainwash_v6.sh
-	nohup ./brainwash_v6.sh & 
-  tail -f nohup.out
-
-else
-	echo "Nao V5 or older"	
-
-	chmod +x brainwash_v3v4v5.sh
-	nohup ./brainwash_v3v4v5.sh &
-  tail -f nohup.out
-fi
+chmod +x brainwash_v6.sh
+nohup ./brainwash_v6.sh & 
+tail -f nohup.out

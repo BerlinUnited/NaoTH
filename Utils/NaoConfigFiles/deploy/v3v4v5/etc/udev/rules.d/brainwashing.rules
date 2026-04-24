@@ -1,3 +1,0 @@
-# mounts the stick and executes the brainwashing script
-
-KERNEL=="sd?1", SUBSYSTEMS=="usb", ACTION=="add", SYMLINK+="brainwasher", RUN+="/usr/bin/brainwash"
