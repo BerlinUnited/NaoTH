@@ -10,5 +10,5 @@ Software base developed by the *Berlin United - Nao Team Humboldt* for a humanoi
 * RoboCup: 
   * http://robocup.org  
   
-* RoboCup SPL: 
-  * http://spl.robocup.org   
+* RoboCup HSL: 
+  * http://hsl.robocup.org   
