@@ -97,7 +97,7 @@ publish_naoth_python_pypi:
   stage: deploy
   rules:
     - if: '$PUBLISH_NAOTH'
-    - if: $CI_COMMIT_BRANCH == "develop"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == "develop"
       changes:
       - Utils/py/naoth/**/*
   dependencies: []  # don't download any artifacts to this job for speed
