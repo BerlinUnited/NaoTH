@@ -270,26 +270,16 @@ workspace "NaoTHSoccer"
   
   -- set up platforms
   if _OPTIONS["platform"] == "Nao" then
-    group "Platform"
-      dofile (FRAMEWORK_PATH .. "/Platforms/Make/NaoSMAL.lua")
-        if AL_DIR ~= nil then
-          externalincludedirs {AL_DIR .. "/include"}
-          syslibdirs {AL_DIR .. "/lib"}
-        end
-        vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/NaoSMAL" }
-        defines { "BOOST_SIGNALS_NO_DEPRECATION_WARNING" }
-        -- ACHTUNG: NaoSMAL doesn't build with the flag -std=c++11 (because of Boost)
-        cppdialect "gnu++11"
-        
-        dofile (FRAMEWORK_PATH .. "/Platforms/Make/NaoRobot.lua")
-        kind "ConsoleApp"
-        links { "NaoTHSoccer", "Commons", naoth_links}
-        vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/NaoRobot" }
-       
-        dofile (FRAMEWORK_PATH .. "/Platforms/Make/LolaAdaptor.lua")
-        kind "ConsoleApp"
-        links { "NaoTHSoccer", "Commons"}
-        vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/LolaAdaptor" }
+    group "Platform"        
+      dofile (FRAMEWORK_PATH .. "/Platforms/Make/NaoRobot.lua")
+      kind "ConsoleApp"
+      links { "NaoTHSoccer", "Commons", naoth_links}
+      vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/NaoRobot" }
+      
+      dofile (FRAMEWORK_PATH .. "/Platforms/Make/LolaAdaptor.lua")
+      kind "ConsoleApp"
+      links { "NaoTHSoccer", "Commons"}
+      vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/LolaAdaptor" }
       
         
         dofile (FRAMEWORK_PATH .. "/Platforms/Make/BoosterRobot.lua")
