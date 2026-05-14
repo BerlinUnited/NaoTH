@@ -17,7 +17,6 @@ dofile "projectconfig.lua" -- load the global default settings
 -- load some helpers
 dofile (FRAMEWORK_PATH .. "/BuildTools/info.lua")
 dofile (FRAMEWORK_PATH .. "/BuildTools/protoc.lua")
-dofile (FRAMEWORK_PATH .. "/BuildTools/qtcreator_2.7+.lua")
 
 dofile (FRAMEWORK_PATH .. "/BuildTools/extract_modules.lua")
 
