@@ -1,3 +1,0 @@
-[Service]
-Type=oneshot
-ExecStart=/usr/bin/mount_logstick
