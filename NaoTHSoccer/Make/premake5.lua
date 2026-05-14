@@ -401,13 +401,4 @@ workspace "NaoTHSoccer"
           vpaths { ["*"] = "../Test/Source/TfliteCheck" }
 
     end
-
-    -- generate LogSimulatorJNI if required
-    if _OPTIONS["JNI"] ~= nil then
-      group "Platform"
-        dofile (FRAMEWORK_PATH .. "/Platforms/Make/LogSimulatorJNI.lua")
-          kind "SharedLib"
-          links { "NaoTHSoccer", "Commons", naoth_links}
-          vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/LogSimulatorJNI" }
-    end
   end
