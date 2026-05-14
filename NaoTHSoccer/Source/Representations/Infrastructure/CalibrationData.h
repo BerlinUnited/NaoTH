@@ -20,7 +20,7 @@ class CalibrationData: public naoth::Printable
 public:
   CalibrationData() : calibrated(false) {}
 
-  Vector2d inertialSensorOffset;
+  Vector3d inertialSensorOffset;
   Vector3d gyroSensorOffset;
   Vector3d accSensorOffset;
 

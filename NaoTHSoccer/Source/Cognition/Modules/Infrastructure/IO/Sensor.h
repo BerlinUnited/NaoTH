@@ -32,6 +32,9 @@
 #include "Representations/Infrastructure/AudioData.h"
 #include "Representations/Motion/CollisionPercept.h"
 
+// Booster
+//#include <Representations/Body/HeadPose.h>
+
 #include "Representations/Infrastructure/GPSData.h"
 //#include "Representations/Infrastructure/SerialSensorData.h"
 #include "Representations/Motion/MotionStatus.h"
@@ -46,7 +49,6 @@
 #include <Representations/Infrastructure/FrameInfo.h>
 #include <Representations/Infrastructure/CameraSettings.h>
 #include "Representations/Modeling/GroundContactModel.h"
-
 
 // hack
 #include <Representations/Infrastructure/RemoteControlCommand.h>
@@ -72,6 +74,8 @@ BEGIN_DECLARE_MODULE(Sensor)
   PROVIDE(SoundCaptureData)
   PROVIDE(CpuData)
   PROVIDE(AudioData)
+
+  //PROVIDE(HeadPose)
 
   PROVIDE(TeamMessageDataIn)
   PROVIDE(RemoteMessageDataIn)

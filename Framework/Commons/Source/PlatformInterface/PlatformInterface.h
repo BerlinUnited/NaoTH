@@ -18,7 +18,7 @@
 
 #undef PRINT_DEBUG
 #ifdef DEBUG_PLATFORM
-#  define PRINT_DEBUG(m) std::err << m << std::endl
+#  define PRINT_DEBUG(m) std::cerr << m << std::endl
 #else
 #  define PRINT_DEBUG(m) ((void)0)
 #endif
@@ -26,10 +26,16 @@
 // EXPERIMENTAL
 class Cognition;
 class Motion;
+class Motion2026;
+
 extern Cognition* createCognition();
 extern Motion* createMotion();
+extern Motion2026* createMotion2026();
+
 extern void deleteCognition(Cognition* cognition);
 extern void deleteMotion(Motion* motion);
+extern void deleteMotion2026(Motion2026* motion);
+
 
 namespace naoth
 {
@@ -68,7 +74,7 @@ public:
     :
     PlatformDataInterface(environment)
   {
-    PRINT_DEBUG("[PlatformInterface] NaoTH " << getName() << " starting...");
+    PRINT_DEBUG("[PlatformInterface] NaoTH " << getPlatformName() << " starting...");
       
     //
     environment.channelActionCreator.setMessageQueueHandler(this);

@@ -6,11 +6,12 @@
 * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
 */
 
-#ifndef _OdometryData_h_
-#define _OdometryData_h_
+#ifndef ODOMETRY_DATA_H
+#define ODOMETRY_DATA_H
+
+#include <Tools/Math/Pose2D.h>
 
 #include <Tools/DataStructures/Printable.h>
-#include <Tools/Math/Pose2D.h>
 #include <Tools/DataStructures/Serializer.h>
 
 /**
@@ -23,14 +24,14 @@ class OdometryData : public Pose2D, public naoth::Printable
 {
 public:
   OdometryData() {}
-  ~OdometryData(){}
+  virtual ~OdometryData() {}
 
   virtual void print(std::ostream& stream) const
   {
     stream << "x = " << translation.x << std::endl;
     stream << "y = " << translation.y << std::endl;
     stream << "rotation = " << rotation << std::endl;
-  }//end print
+  }
 };
 
 namespace naoth
@@ -44,4 +45,4 @@ namespace naoth
   };
 }
 
-#endif //_OdometryData_h_
+#endif // ODOMETRY_DATA_H

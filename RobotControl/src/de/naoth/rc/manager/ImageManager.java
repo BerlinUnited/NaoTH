@@ -48,6 +48,14 @@ abstract class ImageManager extends AbstractManagerPlugin<JanusImage>
         case YUV:
             ImageConversions.convertYUV888toYUV888(src, dst);
             break;
+        case YUV420_NV12:
+            // NOTE: direct conversion from yuv422 to rgb seems to be a bit slower than yuv422->yuv->rgb
+            //ImageConversions.convertYUV422toRGB888Precise(src, dst);
+            //return JanusImage.createFromRGB(dst);
+
+            //ImageConversions.convertNV12toYUV888(src, dst);
+            ImageConversions.convertNV12toYUV888Fast(src, dst);
+            break;
         case YUV422:
             // NOTE: direct conversion from yuv422 to rgb seems to be a bit slower than yuv422->yuv->rgb
             //ImageConversions.convertYUV422toRGB888Precise(src, dst);

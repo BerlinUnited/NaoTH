@@ -33,14 +33,13 @@ bool InertiaSensorCalibrator::intentionallyMoving()
   const double min_stiffness = 0.05;
   for( int i=0; i<JointData::numOfJoint; i++)
   {
-    if ( stiffness[i] > min_stiffness && fabs(jointSpeed[i]) > min_speed )
-    {
+    if ( stiffness[i] > min_stiffness && fabs(jointSpeed[i]) > min_speed ) {
       return true;
     }
   }
 
   return false;
-}//end intentionallyMoving
+}
 
 
 void InertiaSensorCalibrator::reset()
@@ -50,20 +49,21 @@ void InertiaSensorCalibrator::reset()
   
   collectionStartTime = 0;
   stableStartTime = 0;
-}//end reset
+}
 
 
 void InertiaSensorCalibrator::execute()
 {
   // disable calibration and set representation to reasonable values
-  if(parameter.disable){
+  if(parameter.disable)
+  {
       // needed in behavior
       getCalibrationData().calibrated = true;
 
       // will be applied directly to the corresponding representations
-      getCalibrationData().accSensorOffset  = Vector3d();
-      getCalibrationData().gyroSensorOffset = Vector3d();
-      getCalibrationData().inertialSensorOffset = Vector2d();
+      getCalibrationData().accSensorOffset      = Vector3d();
+      getCalibrationData().gyroSensorOffset     = Vector3d();
+      getCalibrationData().inertialSensorOffset = Vector3d();
 
       return;
   }
@@ -225,9 +225,9 @@ void InertiaSensorCalibrator::execute()
     accExpected *= Math::g;
 
     // add sensor reading to the collection
-    inertialValues.add(inertialExpected - getInertialSensorData().data);
+    inertialValues.add(inertialExpected - getInertialSensorData().data.xy());
     accValues.add(getAccelerometerData().data - accExpected);
-    gyroValues.add( -getGyrometerData().data);
+    gyroValues.add( -getGyrometerData().data );
 
     PLOT("InertiaSensorCalibrator:expected:x",Math::toDegrees(inertialExpected.x));
     PLOT("InertiaSensorCalibrator:expected:y",Math::toDegrees(inertialExpected.y));
@@ -252,9 +252,9 @@ void InertiaSensorCalibrator::execute()
   // provide calibrated inertia readings
   if(!calibrated)
   {
-    getCalibrationData().accSensorOffset = Vector3d();
-    getCalibrationData().gyroSensorOffset = Vector3d();
-    getCalibrationData().inertialSensorOffset = Vector2d();
+    getCalibrationData().accSensorOffset      = Vector3d();
+    getCalibrationData().gyroSensorOffset     = Vector3d();
+    getCalibrationData().inertialSensorOffset = Vector3d();
   }
   else
   {

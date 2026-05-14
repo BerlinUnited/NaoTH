@@ -82,7 +82,7 @@ void BodyStateProvider::updateTheFallDownState()
   // buffer the inertial data
   inertialBuffer.add(getInertialSensorData().data);
 
-  Vector2d avg = inertialBuffer.getAverage();
+  Vector3d avg = inertialBuffer.getAverage();
 
   // the state is undefined by default
   getBodyState().fall_down_state = BodyState::undefined;

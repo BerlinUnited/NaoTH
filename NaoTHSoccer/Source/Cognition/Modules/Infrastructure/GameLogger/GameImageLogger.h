@@ -43,7 +43,7 @@ public:
     getImageJPEG().linkTo(getImage());
     getImageJPEGTop().linkTo(getImageTop());
 
-    const std::string imageLogPath = "/home/nao/images_jpeg.log";
+    const std::string imageLogPath = "/home/booster/images_jpeg.log";
     //imageOutFile.open(imageLogPath, std::ios::out | std::ios::binary);
 
     logfileManager.openFile(imageLogPath);

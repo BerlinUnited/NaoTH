@@ -81,7 +81,7 @@ printPath("  AL_DIR = ", tostring(AL_DIR))
 --------------------------------------------------------------
 
 -- define paths depending on the platform
-if PLATFORM == "Nao" then
+if PLATFORM == "Nao" or PLATFORM == "Booster" then
   assert(EXTERN_PATH_NAO ~= nil, "EXTERN_PATH_NAO is needed to be able to compile for nao.")
 	EXTERN_PATH = path.getabsolute(EXTERN_PATH_NAO)
   --[[

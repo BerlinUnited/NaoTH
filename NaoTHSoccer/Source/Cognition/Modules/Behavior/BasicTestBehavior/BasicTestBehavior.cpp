@@ -27,6 +27,7 @@ BasicTestBehavior::BasicTestBehavior()
 
   // walk
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:force", "set the 'force' flag in the motion request true ", false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:walk:modify", "Walk with parameters set through modify.", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:walk:forward", "Walk forward as fast as possible", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:walk:backward", "Walk backward as fast as possible", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:walk:strafe_left", "Set the motion request to 'strafe'.", false);
@@ -255,6 +256,17 @@ void BasicTestBehavior::testMotion()
 
   DEBUG_REQUEST("BasicTestBehavior:motion:id:sit",
     getMotionRequest().id = motion::sit;
+  );
+
+  DEBUG_REQUEST("BasicTestBehavior:motion:walk:modify",
+    getMotionRequest().id = motion::walk;
+    getMotionRequest().walkRequest.target.translation.x = 0.0;
+    getMotionRequest().walkRequest.target.translation.y = 0.0;
+    getMotionRequest().walkRequest.target.rotation = 0.0;
+
+    MODIFY("BasicTestBehavior:motion:walk:modify:x", getMotionRequest().walkRequest.target.translation.x);
+    MODIFY("BasicTestBehavior:motion:walk:modify:y", getMotionRequest().walkRequest.target.translation.y);
+    MODIFY("BasicTestBehavior:motion:walk:modify:rotation", getMotionRequest().walkRequest.target.rotation);
   );
 
   DEBUG_REQUEST("BasicTestBehavior:motion:walk:forward",

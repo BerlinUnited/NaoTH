@@ -12,38 +12,32 @@
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/DataStructures/Serializer.h"
 
+#include "Tools/Math/Vector2.h"
+
 namespace naoth
 {
   // TODO: remove this
-  static const unsigned int IMAGE_WIDTH = 640;
+  static const unsigned int IMAGE_WIDTH  = 640;
   static const unsigned int IMAGE_HEIGHT = 480;
 
   class CameraInfoParameter : public ParameterList
   {
   public:
+    CameraInfoParameter(const std::string& idName) : ParameterList("CameraInfo" + idName)
+    {
+      PARAMETER_ANGLE_REGISTER(openingAngleDiagonal) = 72.6;
+
+      PARAMETER_REGISTER(opticalCenter.x) = IMAGE_WIDTH / 2;
+      PARAMETER_REGISTER(opticalCenter.y) = IMAGE_HEIGHT / 2;
+
+      syncWithConfig();
+    }
+
+  public:
     // diagonal angle of field of view
     double openingAngleDiagonal;
 
-    /*
-    //size of an Pixel on the chip
-    double pixelSize;
-    //measured focus
-    double focus;
-    //moved middle point
-    double xp;
-    double yp;
-    //radial symmetric distortion parameters
-    double k1;
-    double k2;
-    double k3;
-    //radial asymmetric and tangential distortion parameters
-    double p1;
-    double p2;
-    //affinity and ... distortion parameters
-    double b1;
-    double b2;
-    */
-    CameraInfoParameter(const std::string& idName);
+    Vector2d opticalCenter;
   };
 
   class CameraInfo: public Printable
@@ -57,13 +51,7 @@ namespace naoth
       numOfCamera //FIXME: this doesn't correspond to the type naothmessages::CameraID
     };
     
-    CameraInfo()
-      :
-      cameraID(Bottom),
-      resolutionWidth(IMAGE_WIDTH),
-      resolutionHeight(IMAGE_HEIGHT),
-      params(getCameraIDName(Bottom))
-    {}
+    CameraInfo() : CameraInfo(Bottom) {}
 
     CameraInfo(CameraID id)
       :
@@ -82,13 +70,40 @@ namespace naoth
 
     // getter functions that use the existing values to calculate their result
 
-    double getFocalLength() const;
-    double getOpeningAngleWidth() const;
-    double getOpeningAngleHeight() const;
-    double getOpticalCenterX() const;
-    double getOpticalCenterY() const;
-    unsigned long getSize() const;
-    double getOpeningAngleDiagonal() const;
+    double getFocalLength() const
+    {
+      double halfDiagLength = 0.5 * hypot(resolutionWidth, resolutionHeight);
+
+      // senity check
+      ASSERT(halfDiagLength > 0.0 && getOpeningAngleDiagonal() > 0.0);
+      return halfDiagLength / tan(0.5 * getOpeningAngleDiagonal());
+    }
+
+    inline double getOpeningAngleDiagonal() const {
+      return params.openingAngleDiagonal;
+    }
+
+    double getOpeningAngleHeight() const {
+      return 2.0 * atan2(static_cast<double>(resolutionHeight), getFocalLength() * 2.0);
+    }
+
+    double getOpeningAngleWidth() const {
+      return 2.0 * atan2(static_cast<double>(resolutionWidth), getFocalLength() * 2.0);
+    }
+
+    double getOpticalCenterX() const {
+      return params.opticalCenter.x;
+      //return static_cast<double>(resolutionWidth / 2);
+    }
+
+    double getOpticalCenterY() const {
+      return params.opticalCenter.y;
+      //return static_cast<double>(resolutionHeight / 2);
+    }
+
+    inline unsigned long getSize() const {
+      return resolutionHeight * resolutionWidth;
+    }
 
     virtual void print(std::ostream& stream) const;
 

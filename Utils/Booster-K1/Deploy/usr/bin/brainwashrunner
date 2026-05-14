@@ -1,0 +1,70 @@
+#!/bin/bash
+
+NAME=brainwashrunner source buloginit
+
+info "Beginning"
+
+set -e
+
+MNT_POINT=/media/bu/brainwashmnt
+
+# Mounting
+mkdir -p $MNT_POINT
+# Mount usb drive with enough rw for everyone! yay!
+mount /dev/brainwashstick $MNT_POINT -o umask=000
+
+# Check success
+# if [ $? -ne 0 ]; then
+#     # For a list of supported filesystems, enter the following command on a nao robot: "cat /proc/filesystems"
+#     if [ $(blkid -s TYPE -o value /dev/brainwasher) != "vfat" ]; then
+#         logger -t brainwasher "ERROR: usb wrong filesystem"
+#         su nao -c "/usr/bin/paplay /home/nao/naoqi/Media/error_usb_wrong_filesystem.wav"
+#     else
+#         logger -t brainwasher "ERROR: usb unknown mount error"
+#         su nao -c "/usr/bin/paplay /home/nao/naoqi/Media/error_usb_unknown_mount_error.wav"
+#     fi
+#     exit 1
+# fi
+
+# Executing
+cd $MNT_POINT || exit 1
+if [ -e ./brainwash.sh ]; then
+    # set +eo pipefail # Because we still want to unmount on errors
+    # TODO: doing just ./brainwash.sh does not work on fat32, and I could not get fat32 to mount with 777
+    # 'mount /dev/brainwashstick $MNT_POINT -o rwx,umask=000' did not work
+    # 'chmod +x ./brainwash.sh' does not work either
+    bash ./brainwash.sh
+    NAME=brainwashrunner source buloginit
+    # set -eo pipefail
+else
+    error "Missing brainwasher script"
+    # su nao -c "/usr/bin/paplay /home/nao/naoqi/Media/error_missing_usb_brainwasher_script.wav"
+fi
+
+# Unmounting
+cd /
+COUNTER=100 # ~ 10 seconds
+until umount $MNT_POINT &>/dev/null; do
+    sleep 0.1
+    ((COUNTER--))
+    # Max. "COUNTER" attempts to unmount device, otherwise force unmount and break -> prevent infinite loop
+    if [ $COUNTER -le 0 ]; then
+        error "Unmounting USB"
+        # su nao -c "/usr/bin/paplay /home/nao/naoqi/Media/error_unmounting_usb_drive.wav"
+        fuser -c -k $MNT_POINT &>/dev/null # Kill all process accessing mount point
+        umount -f $MNT_POINT &>/dev/null   # Force unmounting
+        break
+    fi
+done
+rmdir $MNT_POINT
+
+# Unmounting
+# cd /
+# umount $MNT_POINT
+# rmdir $MNT_POINT
+# fuser -k --mount $MNT_POINT
+# umount -f $MNT_POINT
+
+# buplay -f /home/booster/bu/audio/usb_stop.wav
+
+info "Done"

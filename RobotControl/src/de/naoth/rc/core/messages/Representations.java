@@ -38661,22 +38661,34 @@ public final class Representations {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>optional .naothmessages.DoubleVector2 inertialSensorOffset = 1;</code>
+     * <code>optional .naothmessages.DoubleVector2 inertialSensorOffset2d = 1 [deprecated = true];</code>
+     */
+    @java.lang.Deprecated boolean hasInertialSensorOffset2D();
+    /**
+     * <code>optional .naothmessages.DoubleVector2 inertialSensorOffset2d = 1 [deprecated = true];</code>
+     */
+    @java.lang.Deprecated de.naoth.rc.core.messages.CommonTypes.DoubleVector2 getInertialSensorOffset2D();
+    /**
+     * <code>optional .naothmessages.DoubleVector2 inertialSensorOffset2d = 1 [deprecated = true];</code>
+     */
+    @java.lang.Deprecated de.naoth.rc.core.messages.CommonTypes.DoubleVector2OrBuilder getInertialSensorOffset2DOrBuilder();
+
+    /**
+     * <code>optional .naothmessages.DoubleVector3 inertialSensorOffset = 6;</code>
      */
     boolean hasInertialSensorOffset();
     /**
-     * <code>optional .naothmessages.DoubleVector2 inertialSensorOffset = 1;</code>
+     * <code>optional .naothmessages.DoubleVector3 inertialSensorOffset = 6;</code>
      */
-    de.naoth.rc.core.messages.CommonTypes.DoubleVector2 getInertialSensorOffset();
+    de.naoth.rc.core.messages.CommonTypes.DoubleVector3 getInertialSensorOffset();
     /**
-     * <code>optional .naothmessages.DoubleVector2 inertialSensorOffset = 1;</code>
+     * <code>optional .naothmessages.DoubleVector3 inertialSensorOffset = 6;</code>
      */
-    de.naoth.rc.core.messages.CommonTypes.DoubleVector2OrBuilder getInertialSensorOffsetOrBuilder();
+    de.naoth.rc.core.messages.CommonTypes.DoubleVector3OrBuilder getInertialSensorOffsetOrBuilder();
 
     /**
      * <pre>
-     *optional DoubleVector3 inertialSensorOffset = 6;
-     *optional DoubleVector2 gyroSensorOffset = 2;
+     *optional DoubleVector2 gyroSensorOffset2d = 2 [deprecated=true];
      * </pre>
      *
      * <code>optional .naothmessages.DoubleVector3 gyroSensorOffset = 5;</code>
@@ -38684,8 +38696,7 @@ public final class Representations {
     boolean hasGyroSensorOffset();
     /**
      * <pre>
-     *optional DoubleVector3 inertialSensorOffset = 6;
-     *optional DoubleVector2 gyroSensorOffset = 2;
+     *optional DoubleVector2 gyroSensorOffset2d = 2 [deprecated=true];
      * </pre>
      *
      * <code>optional .naothmessages.DoubleVector3 gyroSensorOffset = 5;</code>
@@ -38693,8 +38704,7 @@ public final class Representations {
     de.naoth.rc.core.messages.CommonTypes.DoubleVector3 getGyroSensorOffset();
     /**
      * <pre>
-     *optional DoubleVector3 inertialSensorOffset = 6;
-     *optional DoubleVector2 gyroSensorOffset = 2;
+     *optional DoubleVector2 gyroSensorOffset2d = 2 [deprecated=true];
      * </pre>
      *
      * <code>optional .naothmessages.DoubleVector3 gyroSensorOffset = 5;</code>
@@ -38770,19 +38780,19 @@ public final class Representations {
             case 10: {
               de.naoth.rc.core.messages.CommonTypes.DoubleVector2.Builder subBuilder = null;
               if (((bitField0_ & 0x00000001) == 0x00000001)) {
-                subBuilder = inertialSensorOffset_.toBuilder();
+                subBuilder = inertialSensorOffset2D_.toBuilder();
               }
-              inertialSensorOffset_ = input.readMessage(de.naoth.rc.core.messages.CommonTypes.DoubleVector2.PARSER, extensionRegistry);
+              inertialSensorOffset2D_ = input.readMessage(de.naoth.rc.core.messages.CommonTypes.DoubleVector2.PARSER, extensionRegistry);
               if (subBuilder != null) {
-                subBuilder.mergeFrom(inertialSensorOffset_);
-                inertialSensorOffset_ = subBuilder.buildPartial();
+                subBuilder.mergeFrom(inertialSensorOffset2D_);
+                inertialSensorOffset2D_ = subBuilder.buildPartial();
               }
               bitField0_ |= 0x00000001;
               break;
             }
             case 26: {
               de.naoth.rc.core.messages.CommonTypes.DoubleVector3.Builder subBuilder = null;
-              if (((bitField0_ & 0x00000004) == 0x00000004)) {
+              if (((bitField0_ & 0x00000008) == 0x00000008)) {
                 subBuilder = accSensorOffset_.toBuilder();
               }
               accSensorOffset_ = input.readMessage(de.naoth.rc.core.messages.CommonTypes.DoubleVector3.PARSER, extensionRegistry);
@@ -38790,23 +38800,36 @@ public final class Representations {
                 subBuilder.mergeFrom(accSensorOffset_);
                 accSensorOffset_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00000004;
+              bitField0_ |= 0x00000008;
               break;
             }
             case 32: {
-              bitField0_ |= 0x00000008;
+              bitField0_ |= 0x00000010;
               calibrated_ = input.readBool();
               break;
             }
             case 42: {
               de.naoth.rc.core.messages.CommonTypes.DoubleVector3.Builder subBuilder = null;
-              if (((bitField0_ & 0x00000002) == 0x00000002)) {
+              if (((bitField0_ & 0x00000004) == 0x00000004)) {
                 subBuilder = gyroSensorOffset_.toBuilder();
               }
               gyroSensorOffset_ = input.readMessage(de.naoth.rc.core.messages.CommonTypes.DoubleVector3.PARSER, extensionRegistry);
               if (subBuilder != null) {
                 subBuilder.mergeFrom(gyroSensorOffset_);
                 gyroSensorOffset_ = subBuilder.buildPartial();
+              }
+              bitField0_ |= 0x00000004;
+              break;
+            }
+            case 50: {
+              de.naoth.rc.core.messages.CommonTypes.DoubleVector3.Builder subBuilder = null;
+              if (((bitField0_ & 0x00000002) == 0x00000002)) {
+                subBuilder = inertialSensorOffset_.toBuilder();
+              }
+              inertialSensorOffset_ = input.readMessage(de.naoth.rc.core.messages.CommonTypes.DoubleVector3.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(inertialSensorOffset_);
+                inertialSensorOffset_ = subBuilder.buildPartial();
               }
               bitField0_ |= 0x00000002;
               break;
@@ -38836,44 +38859,63 @@ public final class Representations {
     }
 
     private int bitField0_;
-    public static final int INERTIALSENSOROFFSET_FIELD_NUMBER = 1;
-    private de.naoth.rc.core.messages.CommonTypes.DoubleVector2 inertialSensorOffset_;
+    public static final int INERTIALSENSOROFFSET2D_FIELD_NUMBER = 1;
+    private de.naoth.rc.core.messages.CommonTypes.DoubleVector2 inertialSensorOffset2D_;
     /**
-     * <code>optional .naothmessages.DoubleVector2 inertialSensorOffset = 1;</code>
+     * <code>optional .naothmessages.DoubleVector2 inertialSensorOffset2d = 1 [deprecated = true];</code>
      */
-    public boolean hasInertialSensorOffset() {
+    @java.lang.Deprecated public boolean hasInertialSensorOffset2D() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
     /**
-     * <code>optional .naothmessages.DoubleVector2 inertialSensorOffset = 1;</code>
+     * <code>optional .naothmessages.DoubleVector2 inertialSensorOffset2d = 1 [deprecated = true];</code>
      */
-    public de.naoth.rc.core.messages.CommonTypes.DoubleVector2 getInertialSensorOffset() {
-      return inertialSensorOffset_ == null ? de.naoth.rc.core.messages.CommonTypes.DoubleVector2.getDefaultInstance() : inertialSensorOffset_;
+    @java.lang.Deprecated public de.naoth.rc.core.messages.CommonTypes.DoubleVector2 getInertialSensorOffset2D() {
+      return inertialSensorOffset2D_ == null ? de.naoth.rc.core.messages.CommonTypes.DoubleVector2.getDefaultInstance() : inertialSensorOffset2D_;
     }
     /**
-     * <code>optional .naothmessages.DoubleVector2 inertialSensorOffset = 1;</code>
+     * <code>optional .naothmessages.DoubleVector2 inertialSensorOffset2d = 1 [deprecated = true];</code>
      */
-    public de.naoth.rc.core.messages.CommonTypes.DoubleVector2OrBuilder getInertialSensorOffsetOrBuilder() {
-      return inertialSensorOffset_ == null ? de.naoth.rc.core.messages.CommonTypes.DoubleVector2.getDefaultInstance() : inertialSensorOffset_;
+    @java.lang.Deprecated public de.naoth.rc.core.messages.CommonTypes.DoubleVector2OrBuilder getInertialSensorOffset2DOrBuilder() {
+      return inertialSensorOffset2D_ == null ? de.naoth.rc.core.messages.CommonTypes.DoubleVector2.getDefaultInstance() : inertialSensorOffset2D_;
+    }
+
+    public static final int INERTIALSENSOROFFSET_FIELD_NUMBER = 6;
+    private de.naoth.rc.core.messages.CommonTypes.DoubleVector3 inertialSensorOffset_;
+    /**
+     * <code>optional .naothmessages.DoubleVector3 inertialSensorOffset = 6;</code>
+     */
+    public boolean hasInertialSensorOffset() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>optional .naothmessages.DoubleVector3 inertialSensorOffset = 6;</code>
+     */
+    public de.naoth.rc.core.messages.CommonTypes.DoubleVector3 getInertialSensorOffset() {
+      return inertialSensorOffset_ == null ? de.naoth.rc.core.messages.CommonTypes.DoubleVector3.getDefaultInstance() : inertialSensorOffset_;
+    }
+    /**
+     * <code>optional .naothmessages.DoubleVector3 inertialSensorOffset = 6;</code>
+     */
+    public de.naoth.rc.core.messages.CommonTypes.DoubleVector3OrBuilder getInertialSensorOffsetOrBuilder() {
+      return inertialSensorOffset_ == null ? de.naoth.rc.core.messages.CommonTypes.DoubleVector3.getDefaultInstance() : inertialSensorOffset_;
     }
 
     public static final int GYROSENSOROFFSET_FIELD_NUMBER = 5;
     private de.naoth.rc.core.messages.CommonTypes.DoubleVector3 gyroSensorOffset_;
     /**
      * <pre>
-     *optional DoubleVector3 inertialSensorOffset = 6;
-     *optional DoubleVector2 gyroSensorOffset = 2;
+     *optional DoubleVector2 gyroSensorOffset2d = 2 [deprecated=true];
      * </pre>
      *
      * <code>optional .naothmessages.DoubleVector3 gyroSensorOffset = 5;</code>
      */
     public boolean hasGyroSensorOffset() {
-      return ((bitField0_ & 0x00000002) == 0x00000002);
+      return ((bitField0_ & 0x00000004) == 0x00000004);
     }
     /**
      * <pre>
-     *optional DoubleVector3 inertialSensorOffset = 6;
-     *optional DoubleVector2 gyroSensorOffset = 2;
+     *optional DoubleVector2 gyroSensorOffset2d = 2 [deprecated=true];
      * </pre>
      *
      * <code>optional .naothmessages.DoubleVector3 gyroSensorOffset = 5;</code>
@@ -38883,8 +38925,7 @@ public final class Representations {
     }
     /**
      * <pre>
-     *optional DoubleVector3 inertialSensorOffset = 6;
-     *optional DoubleVector2 gyroSensorOffset = 2;
+     *optional DoubleVector2 gyroSensorOffset2d = 2 [deprecated=true];
      * </pre>
      *
      * <code>optional .naothmessages.DoubleVector3 gyroSensorOffset = 5;</code>
@@ -38899,7 +38940,7 @@ public final class Representations {
      * <code>optional .naothmessages.DoubleVector3 accSensorOffset = 3;</code>
      */
     public boolean hasAccSensorOffset() {
-      return ((bitField0_ & 0x00000004) == 0x00000004);
+      return ((bitField0_ & 0x00000008) == 0x00000008);
     }
     /**
      * <code>optional .naothmessages.DoubleVector3 accSensorOffset = 3;</code>
@@ -38920,7 +38961,7 @@ public final class Representations {
      * <code>required bool calibrated = 4;</code>
      */
     public boolean hasCalibrated() {
-      return ((bitField0_ & 0x00000008) == 0x00000008);
+      return ((bitField0_ & 0x00000010) == 0x00000010);
     }
     /**
      * <code>required bool calibrated = 4;</code>
@@ -38938,6 +38979,12 @@ public final class Representations {
       if (!hasCalibrated()) {
         memoizedIsInitialized = 0;
         return false;
+      }
+      if (hasInertialSensorOffset2D()) {
+        if (!getInertialSensorOffset2D().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
       }
       if (hasInertialSensorOffset()) {
         if (!getInertialSensorOffset().isInitialized()) {
@@ -38964,16 +39011,19 @@ public final class Representations {
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeMessage(1, getInertialSensorOffset());
-      }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        output.writeMessage(3, getAccSensorOffset());
+        output.writeMessage(1, getInertialSensorOffset2D());
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeMessage(3, getAccSensorOffset());
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
         output.writeBool(4, calibrated_);
       }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
         output.writeMessage(5, getGyroSensorOffset());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeMessage(6, getInertialSensorOffset());
       }
       unknownFields.writeTo(output);
     }
@@ -38985,19 +39035,23 @@ public final class Representations {
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(1, getInertialSensorOffset());
-      }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(3, getAccSensorOffset());
+          .computeMessageSize(1, getInertialSensorOffset2D());
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(3, getAccSensorOffset());
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        size += com.google.protobuf.CodedOutputStream
           .computeBoolSize(4, calibrated_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(5, getGyroSensorOffset());
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(5, getGyroSensorOffset());
+          .computeMessageSize(6, getInertialSensorOffset());
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -39015,6 +39069,11 @@ public final class Representations {
       de.naoth.rc.core.messages.Representations.CalibrationData other = (de.naoth.rc.core.messages.Representations.CalibrationData) obj;
 
       boolean result = true;
+      result = result && (hasInertialSensorOffset2D() == other.hasInertialSensorOffset2D());
+      if (hasInertialSensorOffset2D()) {
+        result = result && getInertialSensorOffset2D()
+            .equals(other.getInertialSensorOffset2D());
+      }
       result = result && (hasInertialSensorOffset() == other.hasInertialSensorOffset());
       if (hasInertialSensorOffset()) {
         result = result && getInertialSensorOffset()
@@ -39046,6 +39105,10 @@ public final class Representations {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
+      if (hasInertialSensorOffset2D()) {
+        hash = (37 * hash) + INERTIALSENSOROFFSET2D_FIELD_NUMBER;
+        hash = (53 * hash) + getInertialSensorOffset2D().hashCode();
+      }
       if (hasInertialSensorOffset()) {
         hash = (37 * hash) + INERTIALSENSOROFFSET_FIELD_NUMBER;
         hash = (53 * hash) + getInertialSensorOffset().hashCode();
@@ -39188,6 +39251,7 @@ public final class Representations {
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessageV3
                 .alwaysUseFieldBuilders) {
+          getInertialSensorOffset2DFieldBuilder();
           getInertialSensorOffsetFieldBuilder();
           getGyroSensorOffsetFieldBuilder();
           getAccSensorOffsetFieldBuilder();
@@ -39195,26 +39259,32 @@ public final class Representations {
       }
       public Builder clear() {
         super.clear();
+        if (inertialSensorOffset2DBuilder_ == null) {
+          inertialSensorOffset2D_ = null;
+        } else {
+          inertialSensorOffset2DBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000001);
         if (inertialSensorOffsetBuilder_ == null) {
           inertialSensorOffset_ = null;
         } else {
           inertialSensorOffsetBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000001);
+        bitField0_ = (bitField0_ & ~0x00000002);
         if (gyroSensorOffsetBuilder_ == null) {
           gyroSensorOffset_ = null;
         } else {
           gyroSensorOffsetBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000002);
+        bitField0_ = (bitField0_ & ~0x00000004);
         if (accSensorOffsetBuilder_ == null) {
           accSensorOffset_ = null;
         } else {
           accSensorOffsetBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000004);
-        calibrated_ = false;
         bitField0_ = (bitField0_ & ~0x00000008);
+        calibrated_ = false;
+        bitField0_ = (bitField0_ & ~0x00000010);
         return this;
       }
 
@@ -39242,29 +39312,37 @@ public final class Representations {
         if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
           to_bitField0_ |= 0x00000001;
         }
+        if (inertialSensorOffset2DBuilder_ == null) {
+          result.inertialSensorOffset2D_ = inertialSensorOffset2D_;
+        } else {
+          result.inertialSensorOffset2D_ = inertialSensorOffset2DBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
         if (inertialSensorOffsetBuilder_ == null) {
           result.inertialSensorOffset_ = inertialSensorOffset_;
         } else {
           result.inertialSensorOffset_ = inertialSensorOffsetBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
-          to_bitField0_ |= 0x00000002;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
         }
         if (gyroSensorOffsetBuilder_ == null) {
           result.gyroSensorOffset_ = gyroSensorOffset_;
         } else {
           result.gyroSensorOffset_ = gyroSensorOffsetBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
-          to_bitField0_ |= 0x00000004;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000008;
         }
         if (accSensorOffsetBuilder_ == null) {
           result.accSensorOffset_ = accSensorOffset_;
         } else {
           result.accSensorOffset_ = accSensorOffsetBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
-          to_bitField0_ |= 0x00000008;
+        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+          to_bitField0_ |= 0x00000010;
         }
         result.calibrated_ = calibrated_;
         result.bitField0_ = to_bitField0_;
@@ -39309,6 +39387,9 @@ public final class Representations {
 
       public Builder mergeFrom(de.naoth.rc.core.messages.Representations.CalibrationData other) {
         if (other == de.naoth.rc.core.messages.Representations.CalibrationData.getDefaultInstance()) return this;
+        if (other.hasInertialSensorOffset2D()) {
+          mergeInertialSensorOffset2D(other.getInertialSensorOffset2D());
+        }
         if (other.hasInertialSensorOffset()) {
           mergeInertialSensorOffset(other.getInertialSensorOffset());
         }
@@ -39329,6 +39410,11 @@ public final class Representations {
       public final boolean isInitialized() {
         if (!hasCalibrated()) {
           return false;
+        }
+        if (hasInertialSensorOffset2D()) {
+          if (!getInertialSensorOffset2D().isInitialized()) {
+            return false;
+          }
         }
         if (hasInertialSensorOffset()) {
           if (!getInertialSensorOffset().isInitialized()) {
@@ -39367,29 +39453,147 @@ public final class Representations {
       }
       private int bitField0_;
 
-      private de.naoth.rc.core.messages.CommonTypes.DoubleVector2 inertialSensorOffset_ = null;
+      private de.naoth.rc.core.messages.CommonTypes.DoubleVector2 inertialSensorOffset2D_ = null;
       private com.google.protobuf.SingleFieldBuilderV3<
-          de.naoth.rc.core.messages.CommonTypes.DoubleVector2, de.naoth.rc.core.messages.CommonTypes.DoubleVector2.Builder, de.naoth.rc.core.messages.CommonTypes.DoubleVector2OrBuilder> inertialSensorOffsetBuilder_;
+          de.naoth.rc.core.messages.CommonTypes.DoubleVector2, de.naoth.rc.core.messages.CommonTypes.DoubleVector2.Builder, de.naoth.rc.core.messages.CommonTypes.DoubleVector2OrBuilder> inertialSensorOffset2DBuilder_;
       /**
-       * <code>optional .naothmessages.DoubleVector2 inertialSensorOffset = 1;</code>
+       * <code>optional .naothmessages.DoubleVector2 inertialSensorOffset2d = 1 [deprecated = true];</code>
        */
-      public boolean hasInertialSensorOffset() {
+      @java.lang.Deprecated public boolean hasInertialSensorOffset2D() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
       /**
-       * <code>optional .naothmessages.DoubleVector2 inertialSensorOffset = 1;</code>
+       * <code>optional .naothmessages.DoubleVector2 inertialSensorOffset2d = 1 [deprecated = true];</code>
        */
-      public de.naoth.rc.core.messages.CommonTypes.DoubleVector2 getInertialSensorOffset() {
+      @java.lang.Deprecated public de.naoth.rc.core.messages.CommonTypes.DoubleVector2 getInertialSensorOffset2D() {
+        if (inertialSensorOffset2DBuilder_ == null) {
+          return inertialSensorOffset2D_ == null ? de.naoth.rc.core.messages.CommonTypes.DoubleVector2.getDefaultInstance() : inertialSensorOffset2D_;
+        } else {
+          return inertialSensorOffset2DBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector2 inertialSensorOffset2d = 1 [deprecated = true];</code>
+       */
+      @java.lang.Deprecated public Builder setInertialSensorOffset2D(de.naoth.rc.core.messages.CommonTypes.DoubleVector2 value) {
+        if (inertialSensorOffset2DBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          inertialSensorOffset2D_ = value;
+          onChanged();
+        } else {
+          inertialSensorOffset2DBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000001;
+        return this;
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector2 inertialSensorOffset2d = 1 [deprecated = true];</code>
+       */
+      @java.lang.Deprecated public Builder setInertialSensorOffset2D(
+          de.naoth.rc.core.messages.CommonTypes.DoubleVector2.Builder builderForValue) {
+        if (inertialSensorOffset2DBuilder_ == null) {
+          inertialSensorOffset2D_ = builderForValue.build();
+          onChanged();
+        } else {
+          inertialSensorOffset2DBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000001;
+        return this;
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector2 inertialSensorOffset2d = 1 [deprecated = true];</code>
+       */
+      @java.lang.Deprecated public Builder mergeInertialSensorOffset2D(de.naoth.rc.core.messages.CommonTypes.DoubleVector2 value) {
+        if (inertialSensorOffset2DBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) == 0x00000001) &&
+              inertialSensorOffset2D_ != null &&
+              inertialSensorOffset2D_ != de.naoth.rc.core.messages.CommonTypes.DoubleVector2.getDefaultInstance()) {
+            inertialSensorOffset2D_ =
+              de.naoth.rc.core.messages.CommonTypes.DoubleVector2.newBuilder(inertialSensorOffset2D_).mergeFrom(value).buildPartial();
+          } else {
+            inertialSensorOffset2D_ = value;
+          }
+          onChanged();
+        } else {
+          inertialSensorOffset2DBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000001;
+        return this;
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector2 inertialSensorOffset2d = 1 [deprecated = true];</code>
+       */
+      @java.lang.Deprecated public Builder clearInertialSensorOffset2D() {
+        if (inertialSensorOffset2DBuilder_ == null) {
+          inertialSensorOffset2D_ = null;
+          onChanged();
+        } else {
+          inertialSensorOffset2DBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000001);
+        return this;
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector2 inertialSensorOffset2d = 1 [deprecated = true];</code>
+       */
+      @java.lang.Deprecated public de.naoth.rc.core.messages.CommonTypes.DoubleVector2.Builder getInertialSensorOffset2DBuilder() {
+        bitField0_ |= 0x00000001;
+        onChanged();
+        return getInertialSensorOffset2DFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector2 inertialSensorOffset2d = 1 [deprecated = true];</code>
+       */
+      @java.lang.Deprecated public de.naoth.rc.core.messages.CommonTypes.DoubleVector2OrBuilder getInertialSensorOffset2DOrBuilder() {
+        if (inertialSensorOffset2DBuilder_ != null) {
+          return inertialSensorOffset2DBuilder_.getMessageOrBuilder();
+        } else {
+          return inertialSensorOffset2D_ == null ?
+              de.naoth.rc.core.messages.CommonTypes.DoubleVector2.getDefaultInstance() : inertialSensorOffset2D_;
+        }
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector2 inertialSensorOffset2d = 1 [deprecated = true];</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          de.naoth.rc.core.messages.CommonTypes.DoubleVector2, de.naoth.rc.core.messages.CommonTypes.DoubleVector2.Builder, de.naoth.rc.core.messages.CommonTypes.DoubleVector2OrBuilder> 
+          getInertialSensorOffset2DFieldBuilder() {
+        if (inertialSensorOffset2DBuilder_ == null) {
+          inertialSensorOffset2DBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              de.naoth.rc.core.messages.CommonTypes.DoubleVector2, de.naoth.rc.core.messages.CommonTypes.DoubleVector2.Builder, de.naoth.rc.core.messages.CommonTypes.DoubleVector2OrBuilder>(
+                  getInertialSensorOffset2D(),
+                  getParentForChildren(),
+                  isClean());
+          inertialSensorOffset2D_ = null;
+        }
+        return inertialSensorOffset2DBuilder_;
+      }
+
+      private de.naoth.rc.core.messages.CommonTypes.DoubleVector3 inertialSensorOffset_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          de.naoth.rc.core.messages.CommonTypes.DoubleVector3, de.naoth.rc.core.messages.CommonTypes.DoubleVector3.Builder, de.naoth.rc.core.messages.CommonTypes.DoubleVector3OrBuilder> inertialSensorOffsetBuilder_;
+      /**
+       * <code>optional .naothmessages.DoubleVector3 inertialSensorOffset = 6;</code>
+       */
+      public boolean hasInertialSensorOffset() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector3 inertialSensorOffset = 6;</code>
+       */
+      public de.naoth.rc.core.messages.CommonTypes.DoubleVector3 getInertialSensorOffset() {
         if (inertialSensorOffsetBuilder_ == null) {
-          return inertialSensorOffset_ == null ? de.naoth.rc.core.messages.CommonTypes.DoubleVector2.getDefaultInstance() : inertialSensorOffset_;
+          return inertialSensorOffset_ == null ? de.naoth.rc.core.messages.CommonTypes.DoubleVector3.getDefaultInstance() : inertialSensorOffset_;
         } else {
           return inertialSensorOffsetBuilder_.getMessage();
         }
       }
       /**
-       * <code>optional .naothmessages.DoubleVector2 inertialSensorOffset = 1;</code>
+       * <code>optional .naothmessages.DoubleVector3 inertialSensorOffset = 6;</code>
        */
-      public Builder setInertialSensorOffset(de.naoth.rc.core.messages.CommonTypes.DoubleVector2 value) {
+      public Builder setInertialSensorOffset(de.naoth.rc.core.messages.CommonTypes.DoubleVector3 value) {
         if (inertialSensorOffsetBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -39399,33 +39603,33 @@ public final class Representations {
         } else {
           inertialSensorOffsetBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00000001;
+        bitField0_ |= 0x00000002;
         return this;
       }
       /**
-       * <code>optional .naothmessages.DoubleVector2 inertialSensorOffset = 1;</code>
+       * <code>optional .naothmessages.DoubleVector3 inertialSensorOffset = 6;</code>
        */
       public Builder setInertialSensorOffset(
-          de.naoth.rc.core.messages.CommonTypes.DoubleVector2.Builder builderForValue) {
+          de.naoth.rc.core.messages.CommonTypes.DoubleVector3.Builder builderForValue) {
         if (inertialSensorOffsetBuilder_ == null) {
           inertialSensorOffset_ = builderForValue.build();
           onChanged();
         } else {
           inertialSensorOffsetBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00000001;
+        bitField0_ |= 0x00000002;
         return this;
       }
       /**
-       * <code>optional .naothmessages.DoubleVector2 inertialSensorOffset = 1;</code>
+       * <code>optional .naothmessages.DoubleVector3 inertialSensorOffset = 6;</code>
        */
-      public Builder mergeInertialSensorOffset(de.naoth.rc.core.messages.CommonTypes.DoubleVector2 value) {
+      public Builder mergeInertialSensorOffset(de.naoth.rc.core.messages.CommonTypes.DoubleVector3 value) {
         if (inertialSensorOffsetBuilder_ == null) {
-          if (((bitField0_ & 0x00000001) == 0x00000001) &&
+          if (((bitField0_ & 0x00000002) == 0x00000002) &&
               inertialSensorOffset_ != null &&
-              inertialSensorOffset_ != de.naoth.rc.core.messages.CommonTypes.DoubleVector2.getDefaultInstance()) {
+              inertialSensorOffset_ != de.naoth.rc.core.messages.CommonTypes.DoubleVector3.getDefaultInstance()) {
             inertialSensorOffset_ =
-              de.naoth.rc.core.messages.CommonTypes.DoubleVector2.newBuilder(inertialSensorOffset_).mergeFrom(value).buildPartial();
+              de.naoth.rc.core.messages.CommonTypes.DoubleVector3.newBuilder(inertialSensorOffset_).mergeFrom(value).buildPartial();
           } else {
             inertialSensorOffset_ = value;
           }
@@ -39433,11 +39637,11 @@ public final class Representations {
         } else {
           inertialSensorOffsetBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00000001;
+        bitField0_ |= 0x00000002;
         return this;
       }
       /**
-       * <code>optional .naothmessages.DoubleVector2 inertialSensorOffset = 1;</code>
+       * <code>optional .naothmessages.DoubleVector3 inertialSensorOffset = 6;</code>
        */
       public Builder clearInertialSensorOffset() {
         if (inertialSensorOffsetBuilder_ == null) {
@@ -39446,37 +39650,37 @@ public final class Representations {
         } else {
           inertialSensorOffsetBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000001);
+        bitField0_ = (bitField0_ & ~0x00000002);
         return this;
       }
       /**
-       * <code>optional .naothmessages.DoubleVector2 inertialSensorOffset = 1;</code>
+       * <code>optional .naothmessages.DoubleVector3 inertialSensorOffset = 6;</code>
        */
-      public de.naoth.rc.core.messages.CommonTypes.DoubleVector2.Builder getInertialSensorOffsetBuilder() {
-        bitField0_ |= 0x00000001;
+      public de.naoth.rc.core.messages.CommonTypes.DoubleVector3.Builder getInertialSensorOffsetBuilder() {
+        bitField0_ |= 0x00000002;
         onChanged();
         return getInertialSensorOffsetFieldBuilder().getBuilder();
       }
       /**
-       * <code>optional .naothmessages.DoubleVector2 inertialSensorOffset = 1;</code>
+       * <code>optional .naothmessages.DoubleVector3 inertialSensorOffset = 6;</code>
        */
-      public de.naoth.rc.core.messages.CommonTypes.DoubleVector2OrBuilder getInertialSensorOffsetOrBuilder() {
+      public de.naoth.rc.core.messages.CommonTypes.DoubleVector3OrBuilder getInertialSensorOffsetOrBuilder() {
         if (inertialSensorOffsetBuilder_ != null) {
           return inertialSensorOffsetBuilder_.getMessageOrBuilder();
         } else {
           return inertialSensorOffset_ == null ?
-              de.naoth.rc.core.messages.CommonTypes.DoubleVector2.getDefaultInstance() : inertialSensorOffset_;
+              de.naoth.rc.core.messages.CommonTypes.DoubleVector3.getDefaultInstance() : inertialSensorOffset_;
         }
       }
       /**
-       * <code>optional .naothmessages.DoubleVector2 inertialSensorOffset = 1;</code>
+       * <code>optional .naothmessages.DoubleVector3 inertialSensorOffset = 6;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
-          de.naoth.rc.core.messages.CommonTypes.DoubleVector2, de.naoth.rc.core.messages.CommonTypes.DoubleVector2.Builder, de.naoth.rc.core.messages.CommonTypes.DoubleVector2OrBuilder> 
+          de.naoth.rc.core.messages.CommonTypes.DoubleVector3, de.naoth.rc.core.messages.CommonTypes.DoubleVector3.Builder, de.naoth.rc.core.messages.CommonTypes.DoubleVector3OrBuilder> 
           getInertialSensorOffsetFieldBuilder() {
         if (inertialSensorOffsetBuilder_ == null) {
           inertialSensorOffsetBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-              de.naoth.rc.core.messages.CommonTypes.DoubleVector2, de.naoth.rc.core.messages.CommonTypes.DoubleVector2.Builder, de.naoth.rc.core.messages.CommonTypes.DoubleVector2OrBuilder>(
+              de.naoth.rc.core.messages.CommonTypes.DoubleVector3, de.naoth.rc.core.messages.CommonTypes.DoubleVector3.Builder, de.naoth.rc.core.messages.CommonTypes.DoubleVector3OrBuilder>(
                   getInertialSensorOffset(),
                   getParentForChildren(),
                   isClean());
@@ -39490,19 +39694,17 @@ public final class Representations {
           de.naoth.rc.core.messages.CommonTypes.DoubleVector3, de.naoth.rc.core.messages.CommonTypes.DoubleVector3.Builder, de.naoth.rc.core.messages.CommonTypes.DoubleVector3OrBuilder> gyroSensorOffsetBuilder_;
       /**
        * <pre>
-       *optional DoubleVector3 inertialSensorOffset = 6;
-       *optional DoubleVector2 gyroSensorOffset = 2;
+       *optional DoubleVector2 gyroSensorOffset2d = 2 [deprecated=true];
        * </pre>
        *
        * <code>optional .naothmessages.DoubleVector3 gyroSensorOffset = 5;</code>
        */
       public boolean hasGyroSensorOffset() {
-        return ((bitField0_ & 0x00000002) == 0x00000002);
+        return ((bitField0_ & 0x00000004) == 0x00000004);
       }
       /**
        * <pre>
-       *optional DoubleVector3 inertialSensorOffset = 6;
-       *optional DoubleVector2 gyroSensorOffset = 2;
+       *optional DoubleVector2 gyroSensorOffset2d = 2 [deprecated=true];
        * </pre>
        *
        * <code>optional .naothmessages.DoubleVector3 gyroSensorOffset = 5;</code>
@@ -39516,8 +39718,7 @@ public final class Representations {
       }
       /**
        * <pre>
-       *optional DoubleVector3 inertialSensorOffset = 6;
-       *optional DoubleVector2 gyroSensorOffset = 2;
+       *optional DoubleVector2 gyroSensorOffset2d = 2 [deprecated=true];
        * </pre>
        *
        * <code>optional .naothmessages.DoubleVector3 gyroSensorOffset = 5;</code>
@@ -39532,13 +39733,12 @@ public final class Representations {
         } else {
           gyroSensorOffsetBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00000002;
+        bitField0_ |= 0x00000004;
         return this;
       }
       /**
        * <pre>
-       *optional DoubleVector3 inertialSensorOffset = 6;
-       *optional DoubleVector2 gyroSensorOffset = 2;
+       *optional DoubleVector2 gyroSensorOffset2d = 2 [deprecated=true];
        * </pre>
        *
        * <code>optional .naothmessages.DoubleVector3 gyroSensorOffset = 5;</code>
@@ -39551,20 +39751,19 @@ public final class Representations {
         } else {
           gyroSensorOffsetBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00000002;
+        bitField0_ |= 0x00000004;
         return this;
       }
       /**
        * <pre>
-       *optional DoubleVector3 inertialSensorOffset = 6;
-       *optional DoubleVector2 gyroSensorOffset = 2;
+       *optional DoubleVector2 gyroSensorOffset2d = 2 [deprecated=true];
        * </pre>
        *
        * <code>optional .naothmessages.DoubleVector3 gyroSensorOffset = 5;</code>
        */
       public Builder mergeGyroSensorOffset(de.naoth.rc.core.messages.CommonTypes.DoubleVector3 value) {
         if (gyroSensorOffsetBuilder_ == null) {
-          if (((bitField0_ & 0x00000002) == 0x00000002) &&
+          if (((bitField0_ & 0x00000004) == 0x00000004) &&
               gyroSensorOffset_ != null &&
               gyroSensorOffset_ != de.naoth.rc.core.messages.CommonTypes.DoubleVector3.getDefaultInstance()) {
             gyroSensorOffset_ =
@@ -39576,13 +39775,12 @@ public final class Representations {
         } else {
           gyroSensorOffsetBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00000002;
+        bitField0_ |= 0x00000004;
         return this;
       }
       /**
        * <pre>
-       *optional DoubleVector3 inertialSensorOffset = 6;
-       *optional DoubleVector2 gyroSensorOffset = 2;
+       *optional DoubleVector2 gyroSensorOffset2d = 2 [deprecated=true];
        * </pre>
        *
        * <code>optional .naothmessages.DoubleVector3 gyroSensorOffset = 5;</code>
@@ -39594,26 +39792,24 @@ public final class Representations {
         } else {
           gyroSensorOffsetBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000002);
+        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
       /**
        * <pre>
-       *optional DoubleVector3 inertialSensorOffset = 6;
-       *optional DoubleVector2 gyroSensorOffset = 2;
+       *optional DoubleVector2 gyroSensorOffset2d = 2 [deprecated=true];
        * </pre>
        *
        * <code>optional .naothmessages.DoubleVector3 gyroSensorOffset = 5;</code>
        */
       public de.naoth.rc.core.messages.CommonTypes.DoubleVector3.Builder getGyroSensorOffsetBuilder() {
-        bitField0_ |= 0x00000002;
+        bitField0_ |= 0x00000004;
         onChanged();
         return getGyroSensorOffsetFieldBuilder().getBuilder();
       }
       /**
        * <pre>
-       *optional DoubleVector3 inertialSensorOffset = 6;
-       *optional DoubleVector2 gyroSensorOffset = 2;
+       *optional DoubleVector2 gyroSensorOffset2d = 2 [deprecated=true];
        * </pre>
        *
        * <code>optional .naothmessages.DoubleVector3 gyroSensorOffset = 5;</code>
@@ -39628,8 +39824,7 @@ public final class Representations {
       }
       /**
        * <pre>
-       *optional DoubleVector3 inertialSensorOffset = 6;
-       *optional DoubleVector2 gyroSensorOffset = 2;
+       *optional DoubleVector2 gyroSensorOffset2d = 2 [deprecated=true];
        * </pre>
        *
        * <code>optional .naothmessages.DoubleVector3 gyroSensorOffset = 5;</code>
@@ -39655,7 +39850,7 @@ public final class Representations {
        * <code>optional .naothmessages.DoubleVector3 accSensorOffset = 3;</code>
        */
       public boolean hasAccSensorOffset() {
-        return ((bitField0_ & 0x00000004) == 0x00000004);
+        return ((bitField0_ & 0x00000008) == 0x00000008);
       }
       /**
        * <code>optional .naothmessages.DoubleVector3 accSensorOffset = 3;</code>
@@ -39680,7 +39875,7 @@ public final class Representations {
         } else {
           accSensorOffsetBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00000004;
+        bitField0_ |= 0x00000008;
         return this;
       }
       /**
@@ -39694,7 +39889,7 @@ public final class Representations {
         } else {
           accSensorOffsetBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00000004;
+        bitField0_ |= 0x00000008;
         return this;
       }
       /**
@@ -39702,7 +39897,7 @@ public final class Representations {
        */
       public Builder mergeAccSensorOffset(de.naoth.rc.core.messages.CommonTypes.DoubleVector3 value) {
         if (accSensorOffsetBuilder_ == null) {
-          if (((bitField0_ & 0x00000004) == 0x00000004) &&
+          if (((bitField0_ & 0x00000008) == 0x00000008) &&
               accSensorOffset_ != null &&
               accSensorOffset_ != de.naoth.rc.core.messages.CommonTypes.DoubleVector3.getDefaultInstance()) {
             accSensorOffset_ =
@@ -39714,7 +39909,7 @@ public final class Representations {
         } else {
           accSensorOffsetBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00000004;
+        bitField0_ |= 0x00000008;
         return this;
       }
       /**
@@ -39727,14 +39922,14 @@ public final class Representations {
         } else {
           accSensorOffsetBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000004);
+        bitField0_ = (bitField0_ & ~0x00000008);
         return this;
       }
       /**
        * <code>optional .naothmessages.DoubleVector3 accSensorOffset = 3;</code>
        */
       public de.naoth.rc.core.messages.CommonTypes.DoubleVector3.Builder getAccSensorOffsetBuilder() {
-        bitField0_ |= 0x00000004;
+        bitField0_ |= 0x00000008;
         onChanged();
         return getAccSensorOffsetFieldBuilder().getBuilder();
       }
@@ -39771,7 +39966,7 @@ public final class Representations {
        * <code>required bool calibrated = 4;</code>
        */
       public boolean hasCalibrated() {
-        return ((bitField0_ & 0x00000008) == 0x00000008);
+        return ((bitField0_ & 0x00000010) == 0x00000010);
       }
       /**
        * <code>required bool calibrated = 4;</code>
@@ -39783,7 +39978,7 @@ public final class Representations {
        * <code>required bool calibrated = 4;</code>
        */
       public Builder setCalibrated(boolean value) {
-        bitField0_ |= 0x00000008;
+        bitField0_ |= 0x00000010;
         calibrated_ = value;
         onChanged();
         return this;
@@ -39792,7 +39987,7 @@ public final class Representations {
        * <code>required bool calibrated = 4;</code>
        */
       public Builder clearCalibrated() {
-        bitField0_ = (bitField0_ & ~0x00000008);
+        bitField0_ = (bitField0_ & ~0x00000010);
         calibrated_ = false;
         onChanged();
         return this;
@@ -58738,100 +58933,102 @@ public final class Representations {
       "rest\030\016 \001(\010\"3\n\014OdometryData\022#\n\004pose\030\001 \002(\013" +
       "2\025.naothmessages.Pose2D\"\037\n\tBodyState\022\022\n\n" +
       "isLiftedUp\030\001 \001(\010\"3\n\nBodyStatus\022\022\n\ncurren" +
-      "tSum\030\001 \003(\001\022\021\n\ttimestamp\030\003 \002(\r\"\320\001\n\017Calibr" +
-      "ationData\022:\n\024inertialSensorOffset\030\001 \001(\0132",
-      "\034.naothmessages.DoubleVector2\0226\n\020gyroSen" +
-      "sorOffset\030\005 \001(\0132\034.naothmessages.DoubleVe" +
-      "ctor3\0225\n\017accSensorOffset\030\003 \001(\0132\034.naothme" +
-      "ssages.DoubleVector3\022\022\n\ncalibrated\030\004 \002(\010" +
-      "\"B\n\rInertialModel\0221\n\013orientation\030\001 \001(\0132\034" +
-      ".naothmessages.DoubleVector2\"\210\002\n\027CameraM" +
-      "atrixCalibration\022:\n\020correctionOffset\030\001 \003" +
-      "(\0132\034.naothmessages.DoubleVector2B\002\030\001\022:\n\024" +
-      "correctionOffsetBody\030\002 \001(\0132\034.naothmessag" +
-      "es.DoubleVector2\022:\n\024correctionOffsetHead",
-      "\030\003 \001(\0132\034.naothmessages.DoubleVector3\0229\n\023" +
-      "correctionOffsetCam\030\004 \003(\0132\034.naothmessage" +
-      "s.DoubleVector3\"\213\002\n\016BallCandidates\0224\n\007pa" +
-      "tches\030\001 \003(\0132#.naothmessages.BallCandidat" +
-      "es.Patch\032\302\001\n\005Patch\022&\n\003min\030\001 \002(\0132\031.naothm" +
-      "essages.IntVector2\022&\n\003max\030\002 \002(\0132\031.naothm" +
-      "essages.IntVector2\0229\n\004type\030\003 \001(\0162(.naoth" +
-      "messages.BallCandidates.Patch.Type:\001Y\022\014\n" +
-      "\004data\030\005 \002(\014\" \n\004Type\022\005\n\001Y\020\000\022\007\n\003YUV\020\001\022\010\n\004Y" +
-      "UVC\020\002\"\371\003\n\024RemoteControlCommand\022D\n\013contro",
-      "lMode\030\001 \001(\0162/.naothmessages.RemoteContro" +
-      "lCommand.ControlMode\022>\n\006action\030\002 \001(\0162..n" +
-      "aothmessages.RemoteControlCommand.Action" +
-      "Type\022K\n\rsecond_action\030\003 \001(\01624.naothmessa" +
-      "ges.RemoteControlCommand.SecondActionTyp" +
-      "e\022%\n\006target\030\004 \001(\0132\025.naothmessages.Pose2D" +
-      "\"3\n\013ControlMode\022\022\n\016DIRECT_CONTROL\020\000\022\020\n\014L" +
-      "OCK_CONTROL\020\001\"y\n\nActionType\022\010\n\004NONE\020\000\022\t\n" +
-      "\005STAND\020\001\022\010\n\004WALK\020\002\022\016\n\nKICK_RIGHT\020\003\022\r\n\tKI" +
-      "CK_LEFT\020\004\022\025\n\021KICK_FORWARD_LEFT\020\005\022\026\n\022KICK",
-      "_FORWARD_RIGHT\020\006\"7\n\020SecondActionType\022\017\n\013" +
-      "SECOND_NONE\020\000\022\t\n\005BLINK\020\001\022\007\n\003SAY\020\002\"\257\001\n\022Gr" +
-      "oundContactModel\022\031\n\021leftGroundContact\030\001 " +
-      "\002(\010\022\032\n\022rightGroundContact\030\002 \002(\010\022;\n\013suppo" +
-      "rtFoot\030\003 \002(\0162&.naothmessages.GroundConta" +
-      "ctModel.Foot\"%\n\004Foot\022\010\n\004LEFT\020\000\022\t\n\005RIGHT\020" +
-      "\001\022\010\n\004NONE\020\002\"\325\001\n\020CollisionPercept\022\034\n\024time" +
-      "CollisionArmLeft\030\001 \002(\r\022\035\n\025timeCollisionA" +
-      "rmRight\030\002 \002(\r\022\035\n\025isCollisionLeftBumper\030\003" +
-      " \002(\010\022\036\n\026isCollisionRightBumper\030\004 \002(\010\022!\n\031",
-      "lastComputedCollisionLeft\030\005 \002(\001\022\"\n\032lastC" +
-      "omputedCollisionRight\030\006 \002(\001\"\212\004\n\007IMUData\022" +
-      ".\n\010location\030\001 \002(\0132\034.naothmessages.Double" +
-      "Vector3\022.\n\010velocity\030\002 \002(\0132\034.naothmessage" +
-      "s.DoubleVector3\0222\n\014acceleration\030\003 \002(\0132\034." +
-      "naothmessages.DoubleVector3\0229\n\023accelerat" +
-      "ion_sensor\030\004 \001(\0132\034.naothmessages.DoubleV" +
-      "ector3\022.\n\010rotation\030\005 \002(\0132\034.naothmessages" +
-      ".DoubleVector3\0229\n\023rotational_velocity\030\006 " +
-      "\002(\0132\034.naothmessages.DoubleVector3\022@\n\032rot",
-      "ational_velocity_sensor\030\007 \001(\0132\034.naothmes" +
-      "sages.DoubleVector3\0221\n\013orientation\030\010 \002(\013" +
-      "2\034.naothmessages.DoubleVector2\0228\n\022orient" +
-      "ation_rotvec\030\t \002(\0132\034.naothmessages.Doubl" +
-      "eVector3\022\026\n\016has_been_reset\030\n \001(\010\"\316\003\n\020Cen" +
-      "treOfPressure\022?\n\031in_and_only_left_foot_c" +
-      "op\030\001 \002(\0132\034.naothmessages.DoubleVector3\022\'" +
-      "\n\037in_and_only_left_foot_magnitude\030\002 \002(\001\022" +
-      "#\n\033in_and_only_left_foot_valid\030\003 \002(\010\022@\n\032" +
-      "in_and_only_right_foot_cop\030\004 \002(\0132\034.naoth",
-      "messages.DoubleVector3\022(\n in_and_only_ri" +
-      "ght_foot_magnitude\030\005 \002(\001\022$\n\034in_and_only_" +
-      "right_foot_valid\030\006 \002(\010\022C\n\035in_kinematic_c" +
-      "hain_origin_cop\030\007 \002(\0132\034.naothmessages.Do" +
-      "ubleVector3\022+\n#in_kinematic_chain_origin" +
-      "_magnitude\030\010 \002(\001\022\'\n\037in_kinematic_chain_o" +
-      "rigin_valid\030\t \002(\010\"\215\003\n\022CalibrationDataCMC" +
-      "\022R\n\017calibrationData\030\001 \003(\01329.naothmessage" +
-      "s.CalibrationDataCMC.CalibrationDataSamp" +
-      "leV3\022\031\n\021numberOfResudials\030\002 \001(\r\032\207\002\n\027Cali",
-      "brationDataSampleV3\022(\n\tchestPose\030\001 \001(\0132\025" +
-      ".naothmessages.Pose3D\0223\n\redgelsInImage\030\002" +
-      " \003(\0132\034.naothmessages.DoubleVector2\0226\n\020ed" +
-      "gelsInImageTop\030\003 \003(\0132\034.naothmessages.Dou" +
-      "bleVector2\0221\n\013orientation\030\004 \001(\0132\034.naothm" +
-      "essages.DoubleVector2\022\017\n\007headYaw\030\005 \001(\001\022\021" +
-      "\n\theadPitch\030\006 \001(\001\"\356\001\n\016WhistlePercept\022 \n\030" +
-      "frameWhenWhistleDetected\030\001 \001(\r\022\023\n\013captur" +
-      "eFile\030\002 \001(\t\022A\n\022recognizedWhistles\030\003 \003(\0132" +
-      "%.naothmessages.WhistlePercept.Whistle\022\027",
-      "\n\017whistleDetected\030\004 \001(\010\032I\n\007Whistle\022\014\n\004na" +
-      "me\030\001 \002(\t\022\031\n\021positionInCapture\030\002 \002(\003\022\025\n\rr" +
-      "esponseValue\030\003 \002(\001\"\203\001\n\013DebugModify\0228\n\010va" +
-      "lueMap\030\001 \003(\0132&.naothmessages.DebugModify" +
-      ".ModifyValue\032:\n\013ModifyValue\022\014\n\004name\030\001 \002(" +
-      "\t\022\016\n\006modify\030\002 \001(\010\022\r\n\005value\030\003 \001(\001\"9\n\nStep" +
-      "Buffer\022+\n\014support_foot\030\001 \001(\0132\025.naothmess" +
-      "ages.Pose3D\"\215\001\n\rbodyAwareness\022\020\n\010isLifte" +
-      "d\030\001 \001(\010\0223\n\rcalculatedCoM\030\002 \001(\0132\034.naothme" +
-      "ssages.DoubleVector3\0225\n\017currentCoMError\030",
-      "\003 \001(\0132\034.naothmessages.DoubleVector3B\033\n\031d" +
-      "e.naoth.rc.core.messages"
+      "tSum\030\001 \003(\001\022\021\n\ttimestamp\030\003 \002(\r\"\222\002\n\017Calibr" +
+      "ationData\022@\n\026inertialSensorOffset2d\030\001 \001(",
+      "\0132\034.naothmessages.DoubleVector2B\002\030\001\022:\n\024i" +
+      "nertialSensorOffset\030\006 \001(\0132\034.naothmessage" +
+      "s.DoubleVector3\0226\n\020gyroSensorOffset\030\005 \001(" +
+      "\0132\034.naothmessages.DoubleVector3\0225\n\017accSe" +
+      "nsorOffset\030\003 \001(\0132\034.naothmessages.DoubleV" +
+      "ector3\022\022\n\ncalibrated\030\004 \002(\010\"B\n\rInertialMo" +
+      "del\0221\n\013orientation\030\001 \001(\0132\034.naothmessages" +
+      ".DoubleVector2\"\210\002\n\027CameraMatrixCalibrati" +
+      "on\022:\n\020correctionOffset\030\001 \003(\0132\034.naothmess" +
+      "ages.DoubleVector2B\002\030\001\022:\n\024correctionOffs",
+      "etBody\030\002 \001(\0132\034.naothmessages.DoubleVecto" +
+      "r2\022:\n\024correctionOffsetHead\030\003 \001(\0132\034.naoth" +
+      "messages.DoubleVector3\0229\n\023correctionOffs" +
+      "etCam\030\004 \003(\0132\034.naothmessages.DoubleVector" +
+      "3\"\213\002\n\016BallCandidates\0224\n\007patches\030\001 \003(\0132#." +
+      "naothmessages.BallCandidates.Patch\032\302\001\n\005P" +
+      "atch\022&\n\003min\030\001 \002(\0132\031.naothmessages.IntVec" +
+      "tor2\022&\n\003max\030\002 \002(\0132\031.naothmessages.IntVec" +
+      "tor2\0229\n\004type\030\003 \001(\0162(.naothmessages.BallC" +
+      "andidates.Patch.Type:\001Y\022\014\n\004data\030\005 \002(\014\" \n",
+      "\004Type\022\005\n\001Y\020\000\022\007\n\003YUV\020\001\022\010\n\004YUVC\020\002\"\371\003\n\024Remo" +
+      "teControlCommand\022D\n\013controlMode\030\001 \001(\0162/." +
+      "naothmessages.RemoteControlCommand.Contr" +
+      "olMode\022>\n\006action\030\002 \001(\0162..naothmessages.R" +
+      "emoteControlCommand.ActionType\022K\n\rsecond" +
+      "_action\030\003 \001(\01624.naothmessages.RemoteCont" +
+      "rolCommand.SecondActionType\022%\n\006target\030\004 " +
+      "\001(\0132\025.naothmessages.Pose2D\"3\n\013ControlMod" +
+      "e\022\022\n\016DIRECT_CONTROL\020\000\022\020\n\014LOCK_CONTROL\020\001\"" +
+      "y\n\nActionType\022\010\n\004NONE\020\000\022\t\n\005STAND\020\001\022\010\n\004WA",
+      "LK\020\002\022\016\n\nKICK_RIGHT\020\003\022\r\n\tKICK_LEFT\020\004\022\025\n\021K" +
+      "ICK_FORWARD_LEFT\020\005\022\026\n\022KICK_FORWARD_RIGHT" +
+      "\020\006\"7\n\020SecondActionType\022\017\n\013SECOND_NONE\020\000\022" +
+      "\t\n\005BLINK\020\001\022\007\n\003SAY\020\002\"\257\001\n\022GroundContactMod" +
+      "el\022\031\n\021leftGroundContact\030\001 \002(\010\022\032\n\022rightGr" +
+      "oundContact\030\002 \002(\010\022;\n\013supportFoot\030\003 \002(\0162&" +
+      ".naothmessages.GroundContactModel.Foot\"%" +
+      "\n\004Foot\022\010\n\004LEFT\020\000\022\t\n\005RIGHT\020\001\022\010\n\004NONE\020\002\"\325\001" +
+      "\n\020CollisionPercept\022\034\n\024timeCollisionArmLe" +
+      "ft\030\001 \002(\r\022\035\n\025timeCollisionArmRight\030\002 \002(\r\022",
+      "\035\n\025isCollisionLeftBumper\030\003 \002(\010\022\036\n\026isColl" +
+      "isionRightBumper\030\004 \002(\010\022!\n\031lastComputedCo" +
+      "llisionLeft\030\005 \002(\001\022\"\n\032lastComputedCollisi" +
+      "onRight\030\006 \002(\001\"\212\004\n\007IMUData\022.\n\010location\030\001 " +
+      "\002(\0132\034.naothmessages.DoubleVector3\022.\n\010vel" +
+      "ocity\030\002 \002(\0132\034.naothmessages.DoubleVector" +
+      "3\0222\n\014acceleration\030\003 \002(\0132\034.naothmessages." +
+      "DoubleVector3\0229\n\023acceleration_sensor\030\004 \001" +
+      "(\0132\034.naothmessages.DoubleVector3\022.\n\010rota" +
+      "tion\030\005 \002(\0132\034.naothmessages.DoubleVector3",
+      "\0229\n\023rotational_velocity\030\006 \002(\0132\034.naothmes" +
+      "sages.DoubleVector3\022@\n\032rotational_veloci" +
+      "ty_sensor\030\007 \001(\0132\034.naothmessages.DoubleVe" +
+      "ctor3\0221\n\013orientation\030\010 \002(\0132\034.naothmessag" +
+      "es.DoubleVector2\0228\n\022orientation_rotvec\030\t" +
+      " \002(\0132\034.naothmessages.DoubleVector3\022\026\n\016ha" +
+      "s_been_reset\030\n \001(\010\"\316\003\n\020CentreOfPressure\022" +
+      "?\n\031in_and_only_left_foot_cop\030\001 \002(\0132\034.nao" +
+      "thmessages.DoubleVector3\022\'\n\037in_and_only_" +
+      "left_foot_magnitude\030\002 \002(\001\022#\n\033in_and_only",
+      "_left_foot_valid\030\003 \002(\010\022@\n\032in_and_only_ri" +
+      "ght_foot_cop\030\004 \002(\0132\034.naothmessages.Doubl" +
+      "eVector3\022(\n in_and_only_right_foot_magni" +
+      "tude\030\005 \002(\001\022$\n\034in_and_only_right_foot_val" +
+      "id\030\006 \002(\010\022C\n\035in_kinematic_chain_origin_co" +
+      "p\030\007 \002(\0132\034.naothmessages.DoubleVector3\022+\n" +
+      "#in_kinematic_chain_origin_magnitude\030\010 \002" +
+      "(\001\022\'\n\037in_kinematic_chain_origin_valid\030\t " +
+      "\002(\010\"\215\003\n\022CalibrationDataCMC\022R\n\017calibratio" +
+      "nData\030\001 \003(\01329.naothmessages.CalibrationD",
+      "ataCMC.CalibrationDataSampleV3\022\031\n\021number" +
+      "OfResudials\030\002 \001(\r\032\207\002\n\027CalibrationDataSam" +
+      "pleV3\022(\n\tchestPose\030\001 \001(\0132\025.naothmessages" +
+      ".Pose3D\0223\n\redgelsInImage\030\002 \003(\0132\034.naothme" +
+      "ssages.DoubleVector2\0226\n\020edgelsInImageTop" +
+      "\030\003 \003(\0132\034.naothmessages.DoubleVector2\0221\n\013" +
+      "orientation\030\004 \001(\0132\034.naothmessages.Double" +
+      "Vector2\022\017\n\007headYaw\030\005 \001(\001\022\021\n\theadPitch\030\006 " +
+      "\001(\001\"\356\001\n\016WhistlePercept\022 \n\030frameWhenWhist" +
+      "leDetected\030\001 \001(\r\022\023\n\013captureFile\030\002 \001(\t\022A\n",
+      "\022recognizedWhistles\030\003 \003(\0132%.naothmessage" +
+      "s.WhistlePercept.Whistle\022\027\n\017whistleDetec" +
+      "ted\030\004 \001(\010\032I\n\007Whistle\022\014\n\004name\030\001 \002(\t\022\031\n\021po" +
+      "sitionInCapture\030\002 \002(\003\022\025\n\rresponseValue\030\003" +
+      " \002(\001\"\203\001\n\013DebugModify\0228\n\010valueMap\030\001 \003(\0132&" +
+      ".naothmessages.DebugModify.ModifyValue\032:" +
+      "\n\013ModifyValue\022\014\n\004name\030\001 \002(\t\022\016\n\006modify\030\002 " +
+      "\001(\010\022\r\n\005value\030\003 \001(\001\"9\n\nStepBuffer\022+\n\014supp" +
+      "ort_foot\030\001 \001(\0132\025.naothmessages.Pose3D\"\215\001" +
+      "\n\rbodyAwareness\022\020\n\010isLifted\030\001 \001(\010\0223\n\rcal",
+      "culatedCoM\030\002 \001(\0132\034.naothmessages.DoubleV" +
+      "ector3\0225\n\017currentCoMError\030\003 \001(\0132\034.naothm" +
+      "essages.DoubleVector3B\033\n\031de.naoth.rc.cor" +
+      "e.messages"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -59050,7 +59247,7 @@ public final class Representations {
     internal_static_naothmessages_CalibrationData_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_naothmessages_CalibrationData_descriptor,
-        new java.lang.String[] { "InertialSensorOffset", "GyroSensorOffset", "AccSensorOffset", "Calibrated", });
+        new java.lang.String[] { "InertialSensorOffset2D", "InertialSensorOffset", "GyroSensorOffset", "AccSensorOffset", "Calibrated", });
     internal_static_naothmessages_InertialModel_descriptor =
       getDescriptor().getMessageTypes().get(30);
     internal_static_naothmessages_InertialModel_fieldAccessorTable = new

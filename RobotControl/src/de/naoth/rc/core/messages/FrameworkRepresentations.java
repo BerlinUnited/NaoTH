@@ -11876,17 +11876,30 @@ public final class FrameworkRepresentations {
     @java.lang.Deprecated double getLegacyPackedData(int index);
 
     /**
-     * <code>optional .naothmessages.DoubleVector2 data = 2;</code>
+     * <code>optional .naothmessages.DoubleVector2 data2d = 2;</code>
      */
-    boolean hasData();
+    boolean hasData2D();
     /**
-     * <code>optional .naothmessages.DoubleVector2 data = 2;</code>
+     * <code>optional .naothmessages.DoubleVector2 data2d = 2;</code>
      */
-    de.naoth.rc.core.messages.CommonTypes.DoubleVector2 getData();
+    de.naoth.rc.core.messages.CommonTypes.DoubleVector2 getData2D();
     /**
-     * <code>optional .naothmessages.DoubleVector2 data = 2;</code>
+     * <code>optional .naothmessages.DoubleVector2 data2d = 2;</code>
      */
-    de.naoth.rc.core.messages.CommonTypes.DoubleVector2OrBuilder getDataOrBuilder();
+    de.naoth.rc.core.messages.CommonTypes.DoubleVector2OrBuilder getData2DOrBuilder();
+
+    /**
+     * <code>optional .naothmessages.DoubleVector3 data3d = 3;</code>
+     */
+    boolean hasData3D();
+    /**
+     * <code>optional .naothmessages.DoubleVector3 data3d = 3;</code>
+     */
+    de.naoth.rc.core.messages.CommonTypes.DoubleVector3 getData3D();
+    /**
+     * <code>optional .naothmessages.DoubleVector3 data3d = 3;</code>
+     */
+    de.naoth.rc.core.messages.CommonTypes.DoubleVector3OrBuilder getData3DOrBuilder();
   }
   /**
    * Protobuf type {@code naothmessages.InertialSensorData}
@@ -11956,14 +11969,27 @@ public final class FrameworkRepresentations {
             case 18: {
               de.naoth.rc.core.messages.CommonTypes.DoubleVector2.Builder subBuilder = null;
               if (((bitField0_ & 0x00000001) == 0x00000001)) {
-                subBuilder = data_.toBuilder();
+                subBuilder = data2D_.toBuilder();
               }
-              data_ = input.readMessage(de.naoth.rc.core.messages.CommonTypes.DoubleVector2.PARSER, extensionRegistry);
+              data2D_ = input.readMessage(de.naoth.rc.core.messages.CommonTypes.DoubleVector2.PARSER, extensionRegistry);
               if (subBuilder != null) {
-                subBuilder.mergeFrom(data_);
-                data_ = subBuilder.buildPartial();
+                subBuilder.mergeFrom(data2D_);
+                data2D_ = subBuilder.buildPartial();
               }
               bitField0_ |= 0x00000001;
+              break;
+            }
+            case 26: {
+              de.naoth.rc.core.messages.CommonTypes.DoubleVector3.Builder subBuilder = null;
+              if (((bitField0_ & 0x00000002) == 0x00000002)) {
+                subBuilder = data3D_.toBuilder();
+              }
+              data3D_ = input.readMessage(de.naoth.rc.core.messages.CommonTypes.DoubleVector3.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(data3D_);
+                data3D_ = subBuilder.buildPartial();
+              }
+              bitField0_ |= 0x00000002;
               break;
             }
           }
@@ -12016,25 +12042,46 @@ public final class FrameworkRepresentations {
       return legacyPackedData_.get(index);
     }
 
-    public static final int DATA_FIELD_NUMBER = 2;
-    private de.naoth.rc.core.messages.CommonTypes.DoubleVector2 data_;
+    public static final int DATA2D_FIELD_NUMBER = 2;
+    private de.naoth.rc.core.messages.CommonTypes.DoubleVector2 data2D_;
     /**
-     * <code>optional .naothmessages.DoubleVector2 data = 2;</code>
+     * <code>optional .naothmessages.DoubleVector2 data2d = 2;</code>
      */
-    public boolean hasData() {
+    public boolean hasData2D() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
     /**
-     * <code>optional .naothmessages.DoubleVector2 data = 2;</code>
+     * <code>optional .naothmessages.DoubleVector2 data2d = 2;</code>
      */
-    public de.naoth.rc.core.messages.CommonTypes.DoubleVector2 getData() {
-      return data_ == null ? de.naoth.rc.core.messages.CommonTypes.DoubleVector2.getDefaultInstance() : data_;
+    public de.naoth.rc.core.messages.CommonTypes.DoubleVector2 getData2D() {
+      return data2D_ == null ? de.naoth.rc.core.messages.CommonTypes.DoubleVector2.getDefaultInstance() : data2D_;
     }
     /**
-     * <code>optional .naothmessages.DoubleVector2 data = 2;</code>
+     * <code>optional .naothmessages.DoubleVector2 data2d = 2;</code>
      */
-    public de.naoth.rc.core.messages.CommonTypes.DoubleVector2OrBuilder getDataOrBuilder() {
-      return data_ == null ? de.naoth.rc.core.messages.CommonTypes.DoubleVector2.getDefaultInstance() : data_;
+    public de.naoth.rc.core.messages.CommonTypes.DoubleVector2OrBuilder getData2DOrBuilder() {
+      return data2D_ == null ? de.naoth.rc.core.messages.CommonTypes.DoubleVector2.getDefaultInstance() : data2D_;
+    }
+
+    public static final int DATA3D_FIELD_NUMBER = 3;
+    private de.naoth.rc.core.messages.CommonTypes.DoubleVector3 data3D_;
+    /**
+     * <code>optional .naothmessages.DoubleVector3 data3d = 3;</code>
+     */
+    public boolean hasData3D() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>optional .naothmessages.DoubleVector3 data3d = 3;</code>
+     */
+    public de.naoth.rc.core.messages.CommonTypes.DoubleVector3 getData3D() {
+      return data3D_ == null ? de.naoth.rc.core.messages.CommonTypes.DoubleVector3.getDefaultInstance() : data3D_;
+    }
+    /**
+     * <code>optional .naothmessages.DoubleVector3 data3d = 3;</code>
+     */
+    public de.naoth.rc.core.messages.CommonTypes.DoubleVector3OrBuilder getData3DOrBuilder() {
+      return data3D_ == null ? de.naoth.rc.core.messages.CommonTypes.DoubleVector3.getDefaultInstance() : data3D_;
     }
 
     private byte memoizedIsInitialized = -1;
@@ -12043,8 +12090,14 @@ public final class FrameworkRepresentations {
       if (isInitialized == 1) return true;
       if (isInitialized == 0) return false;
 
-      if (hasData()) {
-        if (!getData().isInitialized()) {
+      if (hasData2D()) {
+        if (!getData2D().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      if (hasData3D()) {
+        if (!getData3D().isInitialized()) {
           memoizedIsInitialized = 0;
           return false;
         }
@@ -12059,7 +12112,10 @@ public final class FrameworkRepresentations {
         output.writeDouble(1, legacyPackedData_.get(i));
       }
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeMessage(2, getData());
+        output.writeMessage(2, getData2D());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeMessage(3, getData3D());
       }
       unknownFields.writeTo(output);
     }
@@ -12077,7 +12133,11 @@ public final class FrameworkRepresentations {
       }
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(2, getData());
+          .computeMessageSize(2, getData2D());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(3, getData3D());
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -12097,10 +12157,15 @@ public final class FrameworkRepresentations {
       boolean result = true;
       result = result && getLegacyPackedDataList()
           .equals(other.getLegacyPackedDataList());
-      result = result && (hasData() == other.hasData());
-      if (hasData()) {
-        result = result && getData()
-            .equals(other.getData());
+      result = result && (hasData2D() == other.hasData2D());
+      if (hasData2D()) {
+        result = result && getData2D()
+            .equals(other.getData2D());
+      }
+      result = result && (hasData3D() == other.hasData3D());
+      if (hasData3D()) {
+        result = result && getData3D()
+            .equals(other.getData3D());
       }
       result = result && unknownFields.equals(other.unknownFields);
       return result;
@@ -12117,9 +12182,13 @@ public final class FrameworkRepresentations {
         hash = (37 * hash) + LEGACYPACKEDDATA_FIELD_NUMBER;
         hash = (53 * hash) + getLegacyPackedDataList().hashCode();
       }
-      if (hasData()) {
-        hash = (37 * hash) + DATA_FIELD_NUMBER;
-        hash = (53 * hash) + getData().hashCode();
+      if (hasData2D()) {
+        hash = (37 * hash) + DATA2D_FIELD_NUMBER;
+        hash = (53 * hash) + getData2D().hashCode();
+      }
+      if (hasData3D()) {
+        hash = (37 * hash) + DATA3D_FIELD_NUMBER;
+        hash = (53 * hash) + getData3D().hashCode();
       }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
@@ -12246,19 +12315,26 @@ public final class FrameworkRepresentations {
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessageV3
                 .alwaysUseFieldBuilders) {
-          getDataFieldBuilder();
+          getData2DFieldBuilder();
+          getData3DFieldBuilder();
         }
       }
       public Builder clear() {
         super.clear();
         legacyPackedData_ = java.util.Collections.emptyList();
         bitField0_ = (bitField0_ & ~0x00000001);
-        if (dataBuilder_ == null) {
-          data_ = null;
+        if (data2DBuilder_ == null) {
+          data2D_ = null;
         } else {
-          dataBuilder_.clear();
+          data2DBuilder_.clear();
         }
         bitField0_ = (bitField0_ & ~0x00000002);
+        if (data3DBuilder_ == null) {
+          data3D_ = null;
+        } else {
+          data3DBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
 
@@ -12291,10 +12367,18 @@ public final class FrameworkRepresentations {
         if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
           to_bitField0_ |= 0x00000001;
         }
-        if (dataBuilder_ == null) {
-          result.data_ = data_;
+        if (data2DBuilder_ == null) {
+          result.data2D_ = data2D_;
         } else {
-          result.data_ = dataBuilder_.build();
+          result.data2D_ = data2DBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        if (data3DBuilder_ == null) {
+          result.data3D_ = data3D_;
+        } else {
+          result.data3D_ = data3DBuilder_.build();
         }
         result.bitField0_ = to_bitField0_;
         onBuilt();
@@ -12348,8 +12432,11 @@ public final class FrameworkRepresentations {
           }
           onChanged();
         }
-        if (other.hasData()) {
-          mergeData(other.getData());
+        if (other.hasData2D()) {
+          mergeData2D(other.getData2D());
+        }
+        if (other.hasData3D()) {
+          mergeData3D(other.getData3D());
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -12357,8 +12444,13 @@ public final class FrameworkRepresentations {
       }
 
       public final boolean isInitialized() {
-        if (hasData()) {
-          if (!getData().isInitialized()) {
+        if (hasData2D()) {
+          if (!getData2D().isInitialized()) {
+            return false;
+          }
+        }
+        if (hasData3D()) {
+          if (!getData3D().isInitialized()) {
             return false;
           }
         }
@@ -12450,122 +12542,240 @@ public final class FrameworkRepresentations {
         return this;
       }
 
-      private de.naoth.rc.core.messages.CommonTypes.DoubleVector2 data_ = null;
+      private de.naoth.rc.core.messages.CommonTypes.DoubleVector2 data2D_ = null;
       private com.google.protobuf.SingleFieldBuilderV3<
-          de.naoth.rc.core.messages.CommonTypes.DoubleVector2, de.naoth.rc.core.messages.CommonTypes.DoubleVector2.Builder, de.naoth.rc.core.messages.CommonTypes.DoubleVector2OrBuilder> dataBuilder_;
+          de.naoth.rc.core.messages.CommonTypes.DoubleVector2, de.naoth.rc.core.messages.CommonTypes.DoubleVector2.Builder, de.naoth.rc.core.messages.CommonTypes.DoubleVector2OrBuilder> data2DBuilder_;
       /**
-       * <code>optional .naothmessages.DoubleVector2 data = 2;</code>
+       * <code>optional .naothmessages.DoubleVector2 data2d = 2;</code>
        */
-      public boolean hasData() {
+      public boolean hasData2D() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
       /**
-       * <code>optional .naothmessages.DoubleVector2 data = 2;</code>
+       * <code>optional .naothmessages.DoubleVector2 data2d = 2;</code>
        */
-      public de.naoth.rc.core.messages.CommonTypes.DoubleVector2 getData() {
-        if (dataBuilder_ == null) {
-          return data_ == null ? de.naoth.rc.core.messages.CommonTypes.DoubleVector2.getDefaultInstance() : data_;
+      public de.naoth.rc.core.messages.CommonTypes.DoubleVector2 getData2D() {
+        if (data2DBuilder_ == null) {
+          return data2D_ == null ? de.naoth.rc.core.messages.CommonTypes.DoubleVector2.getDefaultInstance() : data2D_;
         } else {
-          return dataBuilder_.getMessage();
+          return data2DBuilder_.getMessage();
         }
       }
       /**
-       * <code>optional .naothmessages.DoubleVector2 data = 2;</code>
+       * <code>optional .naothmessages.DoubleVector2 data2d = 2;</code>
        */
-      public Builder setData(de.naoth.rc.core.messages.CommonTypes.DoubleVector2 value) {
-        if (dataBuilder_ == null) {
+      public Builder setData2D(de.naoth.rc.core.messages.CommonTypes.DoubleVector2 value) {
+        if (data2DBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
           }
-          data_ = value;
+          data2D_ = value;
           onChanged();
         } else {
-          dataBuilder_.setMessage(value);
+          data2DBuilder_.setMessage(value);
         }
         bitField0_ |= 0x00000002;
         return this;
       }
       /**
-       * <code>optional .naothmessages.DoubleVector2 data = 2;</code>
+       * <code>optional .naothmessages.DoubleVector2 data2d = 2;</code>
        */
-      public Builder setData(
+      public Builder setData2D(
           de.naoth.rc.core.messages.CommonTypes.DoubleVector2.Builder builderForValue) {
-        if (dataBuilder_ == null) {
-          data_ = builderForValue.build();
+        if (data2DBuilder_ == null) {
+          data2D_ = builderForValue.build();
           onChanged();
         } else {
-          dataBuilder_.setMessage(builderForValue.build());
+          data2DBuilder_.setMessage(builderForValue.build());
         }
         bitField0_ |= 0x00000002;
         return this;
       }
       /**
-       * <code>optional .naothmessages.DoubleVector2 data = 2;</code>
+       * <code>optional .naothmessages.DoubleVector2 data2d = 2;</code>
        */
-      public Builder mergeData(de.naoth.rc.core.messages.CommonTypes.DoubleVector2 value) {
-        if (dataBuilder_ == null) {
+      public Builder mergeData2D(de.naoth.rc.core.messages.CommonTypes.DoubleVector2 value) {
+        if (data2DBuilder_ == null) {
           if (((bitField0_ & 0x00000002) == 0x00000002) &&
-              data_ != null &&
-              data_ != de.naoth.rc.core.messages.CommonTypes.DoubleVector2.getDefaultInstance()) {
-            data_ =
-              de.naoth.rc.core.messages.CommonTypes.DoubleVector2.newBuilder(data_).mergeFrom(value).buildPartial();
+              data2D_ != null &&
+              data2D_ != de.naoth.rc.core.messages.CommonTypes.DoubleVector2.getDefaultInstance()) {
+            data2D_ =
+              de.naoth.rc.core.messages.CommonTypes.DoubleVector2.newBuilder(data2D_).mergeFrom(value).buildPartial();
           } else {
-            data_ = value;
+            data2D_ = value;
           }
           onChanged();
         } else {
-          dataBuilder_.mergeFrom(value);
+          data2DBuilder_.mergeFrom(value);
         }
         bitField0_ |= 0x00000002;
         return this;
       }
       /**
-       * <code>optional .naothmessages.DoubleVector2 data = 2;</code>
+       * <code>optional .naothmessages.DoubleVector2 data2d = 2;</code>
        */
-      public Builder clearData() {
-        if (dataBuilder_ == null) {
-          data_ = null;
+      public Builder clearData2D() {
+        if (data2DBuilder_ == null) {
+          data2D_ = null;
           onChanged();
         } else {
-          dataBuilder_.clear();
+          data2DBuilder_.clear();
         }
         bitField0_ = (bitField0_ & ~0x00000002);
         return this;
       }
       /**
-       * <code>optional .naothmessages.DoubleVector2 data = 2;</code>
+       * <code>optional .naothmessages.DoubleVector2 data2d = 2;</code>
        */
-      public de.naoth.rc.core.messages.CommonTypes.DoubleVector2.Builder getDataBuilder() {
+      public de.naoth.rc.core.messages.CommonTypes.DoubleVector2.Builder getData2DBuilder() {
         bitField0_ |= 0x00000002;
         onChanged();
-        return getDataFieldBuilder().getBuilder();
+        return getData2DFieldBuilder().getBuilder();
       }
       /**
-       * <code>optional .naothmessages.DoubleVector2 data = 2;</code>
+       * <code>optional .naothmessages.DoubleVector2 data2d = 2;</code>
        */
-      public de.naoth.rc.core.messages.CommonTypes.DoubleVector2OrBuilder getDataOrBuilder() {
-        if (dataBuilder_ != null) {
-          return dataBuilder_.getMessageOrBuilder();
+      public de.naoth.rc.core.messages.CommonTypes.DoubleVector2OrBuilder getData2DOrBuilder() {
+        if (data2DBuilder_ != null) {
+          return data2DBuilder_.getMessageOrBuilder();
         } else {
-          return data_ == null ?
-              de.naoth.rc.core.messages.CommonTypes.DoubleVector2.getDefaultInstance() : data_;
+          return data2D_ == null ?
+              de.naoth.rc.core.messages.CommonTypes.DoubleVector2.getDefaultInstance() : data2D_;
         }
       }
       /**
-       * <code>optional .naothmessages.DoubleVector2 data = 2;</code>
+       * <code>optional .naothmessages.DoubleVector2 data2d = 2;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
           de.naoth.rc.core.messages.CommonTypes.DoubleVector2, de.naoth.rc.core.messages.CommonTypes.DoubleVector2.Builder, de.naoth.rc.core.messages.CommonTypes.DoubleVector2OrBuilder> 
-          getDataFieldBuilder() {
-        if (dataBuilder_ == null) {
-          dataBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+          getData2DFieldBuilder() {
+        if (data2DBuilder_ == null) {
+          data2DBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
               de.naoth.rc.core.messages.CommonTypes.DoubleVector2, de.naoth.rc.core.messages.CommonTypes.DoubleVector2.Builder, de.naoth.rc.core.messages.CommonTypes.DoubleVector2OrBuilder>(
-                  getData(),
+                  getData2D(),
                   getParentForChildren(),
                   isClean());
-          data_ = null;
+          data2D_ = null;
         }
-        return dataBuilder_;
+        return data2DBuilder_;
+      }
+
+      private de.naoth.rc.core.messages.CommonTypes.DoubleVector3 data3D_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          de.naoth.rc.core.messages.CommonTypes.DoubleVector3, de.naoth.rc.core.messages.CommonTypes.DoubleVector3.Builder, de.naoth.rc.core.messages.CommonTypes.DoubleVector3OrBuilder> data3DBuilder_;
+      /**
+       * <code>optional .naothmessages.DoubleVector3 data3d = 3;</code>
+       */
+      public boolean hasData3D() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector3 data3d = 3;</code>
+       */
+      public de.naoth.rc.core.messages.CommonTypes.DoubleVector3 getData3D() {
+        if (data3DBuilder_ == null) {
+          return data3D_ == null ? de.naoth.rc.core.messages.CommonTypes.DoubleVector3.getDefaultInstance() : data3D_;
+        } else {
+          return data3DBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector3 data3d = 3;</code>
+       */
+      public Builder setData3D(de.naoth.rc.core.messages.CommonTypes.DoubleVector3 value) {
+        if (data3DBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          data3D_ = value;
+          onChanged();
+        } else {
+          data3DBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000004;
+        return this;
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector3 data3d = 3;</code>
+       */
+      public Builder setData3D(
+          de.naoth.rc.core.messages.CommonTypes.DoubleVector3.Builder builderForValue) {
+        if (data3DBuilder_ == null) {
+          data3D_ = builderForValue.build();
+          onChanged();
+        } else {
+          data3DBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000004;
+        return this;
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector3 data3d = 3;</code>
+       */
+      public Builder mergeData3D(de.naoth.rc.core.messages.CommonTypes.DoubleVector3 value) {
+        if (data3DBuilder_ == null) {
+          if (((bitField0_ & 0x00000004) == 0x00000004) &&
+              data3D_ != null &&
+              data3D_ != de.naoth.rc.core.messages.CommonTypes.DoubleVector3.getDefaultInstance()) {
+            data3D_ =
+              de.naoth.rc.core.messages.CommonTypes.DoubleVector3.newBuilder(data3D_).mergeFrom(value).buildPartial();
+          } else {
+            data3D_ = value;
+          }
+          onChanged();
+        } else {
+          data3DBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000004;
+        return this;
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector3 data3d = 3;</code>
+       */
+      public Builder clearData3D() {
+        if (data3DBuilder_ == null) {
+          data3D_ = null;
+          onChanged();
+        } else {
+          data3DBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000004);
+        return this;
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector3 data3d = 3;</code>
+       */
+      public de.naoth.rc.core.messages.CommonTypes.DoubleVector3.Builder getData3DBuilder() {
+        bitField0_ |= 0x00000004;
+        onChanged();
+        return getData3DFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector3 data3d = 3;</code>
+       */
+      public de.naoth.rc.core.messages.CommonTypes.DoubleVector3OrBuilder getData3DOrBuilder() {
+        if (data3DBuilder_ != null) {
+          return data3DBuilder_.getMessageOrBuilder();
+        } else {
+          return data3D_ == null ?
+              de.naoth.rc.core.messages.CommonTypes.DoubleVector3.getDefaultInstance() : data3D_;
+        }
+      }
+      /**
+       * <code>optional .naothmessages.DoubleVector3 data3d = 3;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          de.naoth.rc.core.messages.CommonTypes.DoubleVector3, de.naoth.rc.core.messages.CommonTypes.DoubleVector3.Builder, de.naoth.rc.core.messages.CommonTypes.DoubleVector3OrBuilder> 
+          getData3DFieldBuilder() {
+        if (data3DBuilder_ == null) {
+          data3DBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              de.naoth.rc.core.messages.CommonTypes.DoubleVector3, de.naoth.rc.core.messages.CommonTypes.DoubleVector3.Builder, de.naoth.rc.core.messages.CommonTypes.DoubleVector3OrBuilder>(
+                  getData3D(),
+                  getParentForChildren(),
+                  isClean());
+          data3D_ = null;
+        }
+        return data3DBuilder_;
       }
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
@@ -14489,20 +14699,21 @@ public final class FrameworkRepresentations {
       "gacyPackedData\030\001 \003(\001B\002\030\001\022*\n\004data\030\002 \001(\0132\034" +
       ".naothmessages.DoubleVector3\022-\n\007rawData\030" +
       "\003 \001(\0132\034.naothmessages.DoubleVector3\022\013\n\003r" +
-      "ef\030\004 \001(\001\"^\n\022InertialSensorData\022\034\n\020legacy" +
-      "PackedData\030\001 \003(\001B\002\030\001\022*\n\004data\030\002 \001(\0132\034.nao" +
-      "thmessages.DoubleVector2\"\323\002\n\nButtonData\022" +
-      "\021\n\tisPressed\030\001 \003(\010\022\032\n\022numOfFramesPressed" +
-      "\030\002 \003(\r\022\024\n\014eventCounter\030\003 \003(\r\"\377\001\n\010ButtonI" +
-      "D\022\t\n\005Chest\020\000\022\020\n\014LeftFootLeft\020\001\022\021\n\rLeftFo" +
-      "otRight\020\002\022\021\n\rRightFootLeft\020\003\022\022\n\016RightFoo",
-      "tRight\020\004\022\r\n\tHeadFront\020\005\022\016\n\nHeadMiddle\020\006\022" +
-      "\014\n\010HeadRear\020\007\022\020\n\014LeftHandBack\020\010\022\020\n\014LeftH" +
-      "andLeft\020\t\022\021\n\rLeftHandRight\020\n\022\021\n\rRightHan" +
-      "dBack\020\013\022\021\n\rRightHandLeft\020\014\022\022\n\016RightHandR" +
-      "ight\020\r\"B\n\010HeadPose\022#\n\004pose\030\001 \002(\0132\025.naoth" +
-      "messages.Pose3D\022\021\n\ttimestamp\030\002 \001(\004B\033\n\031de" +
-      ".naoth.rc.core.messages"
+      "ef\030\004 \001(\001\"\216\001\n\022InertialSensorData\022\034\n\020legac" +
+      "yPackedData\030\001 \003(\001B\002\030\001\022,\n\006data2d\030\002 \001(\0132\034." +
+      "naothmessages.DoubleVector2\022,\n\006data3d\030\003 " +
+      "\001(\0132\034.naothmessages.DoubleVector3\"\323\002\n\nBu" +
+      "ttonData\022\021\n\tisPressed\030\001 \003(\010\022\032\n\022numOfFram" +
+      "esPressed\030\002 \003(\r\022\024\n\014eventCounter\030\003 \003(\r\"\377\001" +
+      "\n\010ButtonID\022\t\n\005Chest\020\000\022\020\n\014LeftFootLeft\020\001\022",
+      "\021\n\rLeftFootRight\020\002\022\021\n\rRightFootLeft\020\003\022\022\n" +
+      "\016RightFootRight\020\004\022\r\n\tHeadFront\020\005\022\016\n\nHead" +
+      "Middle\020\006\022\014\n\010HeadRear\020\007\022\020\n\014LeftHandBack\020\010" +
+      "\022\020\n\014LeftHandLeft\020\t\022\021\n\rLeftHandRight\020\n\022\021\n" +
+      "\rRightHandBack\020\013\022\021\n\rRightHandLeft\020\014\022\022\n\016R" +
+      "ightHandRight\020\r\"B\n\010HeadPose\022#\n\004pose\030\001 \002(" +
+      "\0132\025.naothmessages.Pose3D\022\021\n\ttimestamp\030\002 " +
+      "\001(\004B\033\n\031de.naoth.rc.core.messages"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -14582,7 +14793,7 @@ public final class FrameworkRepresentations {
     internal_static_naothmessages_InertialSensorData_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_naothmessages_InertialSensorData_descriptor,
-        new java.lang.String[] { "LegacyPackedData", "Data", });
+        new java.lang.String[] { "LegacyPackedData", "Data2D", "Data3D", });
     internal_static_naothmessages_ButtonData_descriptor =
       getDescriptor().getMessageTypes().get(11);
     internal_static_naothmessages_ButtonData_fieldAccessorTable = new

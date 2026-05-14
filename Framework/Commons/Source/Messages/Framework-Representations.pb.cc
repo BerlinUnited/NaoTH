@@ -283,9 +283,11 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_ATTRIBUTE_SECTION
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(InertialSensorData, legacypackeddata_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(InertialSensorData, data_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(InertialSensorData, data2d_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(InertialSensorData, data3d_),
   ~0u,
   0,
+  1,
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ButtonData, _has_bits_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ButtonData, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -318,9 +320,9 @@ static const ::google::protobuf::internal::MigrationSchema schemas[] GOOGLE_ATTR
   { 121, 129, sizeof(FSRData)},
   { 132, 140, sizeof(AccelerometerData)},
   { 143, 152, sizeof(GyrometerData)},
-  { 156, 163, sizeof(InertialSensorData)},
-  { 165, 173, sizeof(ButtonData)},
-  { 176, 183, sizeof(HeadPose)},
+  { 156, 164, sizeof(InertialSensorData)},
+  { 167, 175, sizeof(ButtonData)},
+  { 178, 185, sizeof(HeadPose)},
 };
 
 static ::google::protobuf::Message const * const file_default_instances[] = {
@@ -404,8 +406,10 @@ void TableStruct::InitDefaultsImpl() {
       ::naothmessages::DoubleVector3::internal_default_instance());
   _GyrometerData_default_instance_._instance.get_mutable()->rawdata_ = const_cast< ::naothmessages::DoubleVector3*>(
       ::naothmessages::DoubleVector3::internal_default_instance());
-  _InertialSensorData_default_instance_._instance.get_mutable()->data_ = const_cast< ::naothmessages::DoubleVector2*>(
+  _InertialSensorData_default_instance_._instance.get_mutable()->data2d_ = const_cast< ::naothmessages::DoubleVector2*>(
       ::naothmessages::DoubleVector2::internal_default_instance());
+  _InertialSensorData_default_instance_._instance.get_mutable()->data3d_ = const_cast< ::naothmessages::DoubleVector3*>(
+      ::naothmessages::DoubleVector3::internal_default_instance());
   _HeadPose_default_instance_._instance.get_mutable()->pose_ = const_cast< ::naothmessages::Pose3D*>(
       ::naothmessages::Pose3D::internal_default_instance());
 }
@@ -461,23 +465,24 @@ void AddDescriptorsImpl() {
       "gacyPackedData\030\001 \003(\001B\002\030\001\022*\n\004data\030\002 \001(\0132\034"
       ".naothmessages.DoubleVector3\022-\n\007rawData\030"
       "\003 \001(\0132\034.naothmessages.DoubleVector3\022\013\n\003r"
-      "ef\030\004 \001(\001\"^\n\022InertialSensorData\022\034\n\020legacy"
-      "PackedData\030\001 \003(\001B\002\030\001\022*\n\004data\030\002 \001(\0132\034.nao"
-      "thmessages.DoubleVector2\"\323\002\n\nButtonData\022"
-      "\021\n\tisPressed\030\001 \003(\010\022\032\n\022numOfFramesPressed"
-      "\030\002 \003(\r\022\024\n\014eventCounter\030\003 \003(\r\"\377\001\n\010ButtonI"
-      "D\022\t\n\005Chest\020\000\022\020\n\014LeftFootLeft\020\001\022\021\n\rLeftFo"
-      "otRight\020\002\022\021\n\rRightFootLeft\020\003\022\022\n\016RightFoo"
-      "tRight\020\004\022\r\n\tHeadFront\020\005\022\016\n\nHeadMiddle\020\006\022"
-      "\014\n\010HeadRear\020\007\022\020\n\014LeftHandBack\020\010\022\020\n\014LeftH"
-      "andLeft\020\t\022\021\n\rLeftHandRight\020\n\022\021\n\rRightHan"
-      "dBack\020\013\022\021\n\rRightHandLeft\020\014\022\022\n\016RightHandR"
-      "ight\020\r\"B\n\010HeadPose\022#\n\004pose\030\001 \002(\0132\025.naoth"
-      "messages.Pose3D\022\021\n\ttimestamp\030\002 \001(\004B\033\n\031de"
-      ".naoth.rc.core.messages"
+      "ef\030\004 \001(\001\"\216\001\n\022InertialSensorData\022\034\n\020legac"
+      "yPackedData\030\001 \003(\001B\002\030\001\022,\n\006data2d\030\002 \001(\0132\034."
+      "naothmessages.DoubleVector2\022,\n\006data3d\030\003 "
+      "\001(\0132\034.naothmessages.DoubleVector3\"\323\002\n\nBu"
+      "ttonData\022\021\n\tisPressed\030\001 \003(\010\022\032\n\022numOfFram"
+      "esPressed\030\002 \003(\r\022\024\n\014eventCounter\030\003 \003(\r\"\377\001"
+      "\n\010ButtonID\022\t\n\005Chest\020\000\022\020\n\014LeftFootLeft\020\001\022"
+      "\021\n\rLeftFootRight\020\002\022\021\n\rRightFootLeft\020\003\022\022\n"
+      "\016RightFootRight\020\004\022\r\n\tHeadFront\020\005\022\016\n\nHead"
+      "Middle\020\006\022\014\n\010HeadRear\020\007\022\020\n\014LeftHandBack\020\010"
+      "\022\020\n\014LeftHandLeft\020\t\022\021\n\rLeftHandRight\020\n\022\021\n"
+      "\rRightHandBack\020\013\022\021\n\rRightHandLeft\020\014\022\022\n\016R"
+      "ightHandRight\020\r\"B\n\010HeadPose\022#\n\004pose\030\001 \002("
+      "\0132\025.naothmessages.Pose3D\022\021\n\ttimestamp\030\002 "
+      "\001(\004B\033\n\031de.naoth.rc.core.messages"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 2263);
+      descriptor, 2312);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Framework-Representations.proto", &protobuf_RegisterTypes);
   ::naothmessages::protobuf_CommonTypes_2eproto::AddDescriptors();
@@ -6756,7 +6761,8 @@ void GyrometerData::set_ref(double value) {
 
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
 const int InertialSensorData::kLegacyPackedDataFieldNumber;
-const int InertialSensorData::kDataFieldNumber;
+const int InertialSensorData::kData2DFieldNumber;
+const int InertialSensorData::kData3DFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 InertialSensorData::InertialSensorData()
@@ -6774,17 +6780,24 @@ InertialSensorData::InertialSensorData(const InertialSensorData& from)
       _cached_size_(0),
       legacypackeddata_(from.legacypackeddata_) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
-  if (from.has_data()) {
-    data_ = new ::naothmessages::DoubleVector2(*from.data_);
+  if (from.has_data2d()) {
+    data2d_ = new ::naothmessages::DoubleVector2(*from.data2d_);
   } else {
-    data_ = NULL;
+    data2d_ = NULL;
+  }
+  if (from.has_data3d()) {
+    data3d_ = new ::naothmessages::DoubleVector3(*from.data3d_);
+  } else {
+    data3d_ = NULL;
   }
   // @@protoc_insertion_point(copy_constructor:naothmessages.InertialSensorData)
 }
 
 void InertialSensorData::SharedCtor() {
   _cached_size_ = 0;
-  data_ = NULL;
+  ::memset(&data2d_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&data3d_) -
+      reinterpret_cast<char*>(&data2d_)) + sizeof(data3d_));
 }
 
 InertialSensorData::~InertialSensorData() {
@@ -6793,7 +6806,8 @@ InertialSensorData::~InertialSensorData() {
 }
 
 void InertialSensorData::SharedDtor() {
-  if (this != internal_default_instance()) delete data_;
+  if (this != internal_default_instance()) delete data2d_;
+  if (this != internal_default_instance()) delete data3d_;
 }
 
 void InertialSensorData::SetCachedSize(int size) const {
@@ -6826,9 +6840,16 @@ void InertialSensorData::Clear() {
   (void) cached_has_bits;
 
   legacypackeddata_.Clear();
-  if (has_data()) {
-    GOOGLE_DCHECK(data_ != NULL);
-    data_->::naothmessages::DoubleVector2::Clear();
+  cached_has_bits = _has_bits_[0];
+  if (cached_has_bits & 3u) {
+    if (cached_has_bits & 0x00000001u) {
+      GOOGLE_DCHECK(data2d_ != NULL);
+      data2d_->::naothmessages::DoubleVector2::Clear();
+    }
+    if (cached_has_bits & 0x00000002u) {
+      GOOGLE_DCHECK(data3d_ != NULL);
+      data3d_->::naothmessages::DoubleVector3::Clear();
+    }
   }
   _has_bits_.Clear();
   _internal_metadata_.Clear();
@@ -6863,12 +6884,24 @@ bool InertialSensorData::MergePartialFromCodedStream(
         break;
       }
 
-      // optional .naothmessages.DoubleVector2 data = 2;
+      // optional .naothmessages.DoubleVector2 data2d = 2;
       case 2: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
             static_cast< ::google::protobuf::uint8>(18u /* 18 & 0xFF */)) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
-               input, mutable_data()));
+               input, mutable_data2d()));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // optional .naothmessages.DoubleVector3 data3d = 3;
+      case 3: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(26u /* 26 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_data3d()));
         } else {
           goto handle_unusual;
         }
@@ -6908,10 +6941,16 @@ void InertialSensorData::SerializeWithCachedSizes(
   }
 
   cached_has_bits = _has_bits_[0];
-  // optional .naothmessages.DoubleVector2 data = 2;
+  // optional .naothmessages.DoubleVector2 data2d = 2;
   if (cached_has_bits & 0x00000001u) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      2, *this->data_, output);
+      2, *this->data2d_, output);
+  }
+
+  // optional .naothmessages.DoubleVector3 data3d = 3;
+  if (cached_has_bits & 0x00000002u) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      3, *this->data3d_, output);
   }
 
   if (_internal_metadata_.have_unknown_fields()) {
@@ -6933,11 +6972,18 @@ void InertialSensorData::SerializeWithCachedSizes(
     WriteDoubleToArray(1, this->legacypackeddata_, target);
 
   cached_has_bits = _has_bits_[0];
-  // optional .naothmessages.DoubleVector2 data = 2;
+  // optional .naothmessages.DoubleVector2 data2d = 2;
   if (cached_has_bits & 0x00000001u) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageNoVirtualToArray(
-        2, *this->data_, deterministic, target);
+        2, *this->data2d_, deterministic, target);
+  }
+
+  // optional .naothmessages.DoubleVector3 data3d = 3;
+  if (cached_has_bits & 0x00000002u) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageNoVirtualToArray(
+        3, *this->data3d_, deterministic, target);
   }
 
   if (_internal_metadata_.have_unknown_fields()) {
@@ -6966,13 +7012,22 @@ size_t InertialSensorData::ByteSizeLong() const {
     total_size += data_size;
   }
 
-  // optional .naothmessages.DoubleVector2 data = 2;
-  if (has_data()) {
-    total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
-        *this->data_);
-  }
+  if (_has_bits_[0 / 32] & 3u) {
+    // optional .naothmessages.DoubleVector2 data2d = 2;
+    if (has_data2d()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          *this->data2d_);
+    }
 
+    // optional .naothmessages.DoubleVector3 data3d = 3;
+    if (has_data3d()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          *this->data3d_);
+    }
+
+  }
   int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
   GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
   _cached_size_ = cached_size;
@@ -7003,8 +7058,14 @@ void InertialSensorData::MergeFrom(const InertialSensorData& from) {
   (void) cached_has_bits;
 
   legacypackeddata_.MergeFrom(from.legacypackeddata_);
-  if (from.has_data()) {
-    mutable_data()->::naothmessages::DoubleVector2::MergeFrom(from.data());
+  cached_has_bits = from._has_bits_[0];
+  if (cached_has_bits & 3u) {
+    if (cached_has_bits & 0x00000001u) {
+      mutable_data2d()->::naothmessages::DoubleVector2::MergeFrom(from.data2d());
+    }
+    if (cached_has_bits & 0x00000002u) {
+      mutable_data3d()->::naothmessages::DoubleVector3::MergeFrom(from.data3d());
+    }
   }
 }
 
@@ -7023,8 +7084,11 @@ void InertialSensorData::CopyFrom(const InertialSensorData& from) {
 }
 
 bool InertialSensorData::IsInitialized() const {
-  if (has_data()) {
-    if (!this->data_->IsInitialized()) return false;
+  if (has_data2d()) {
+    if (!this->data2d_->IsInitialized()) return false;
+  }
+  if (has_data3d()) {
+    if (!this->data3d_->IsInitialized()) return false;
   }
   return true;
 }
@@ -7036,7 +7100,8 @@ void InertialSensorData::Swap(InertialSensorData* other) {
 void InertialSensorData::InternalSwap(InertialSensorData* other) {
   using std::swap;
   legacypackeddata_.InternalSwap(&other->legacypackeddata_);
-  swap(data_, other->data_);
+  swap(data2d_, other->data2d_);
+  swap(data3d_, other->data3d_);
   swap(_has_bits_[0], other->_has_bits_[0]);
   _internal_metadata_.Swap(&other->_internal_metadata_);
   swap(_cached_size_, other->_cached_size_);
@@ -7080,50 +7145,96 @@ InertialSensorData::mutable_legacypackeddata() {
   return &legacypackeddata_;
 }
 
-// optional .naothmessages.DoubleVector2 data = 2;
-bool InertialSensorData::has_data() const {
+// optional .naothmessages.DoubleVector2 data2d = 2;
+bool InertialSensorData::has_data2d() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
-void InertialSensorData::set_has_data() {
+void InertialSensorData::set_has_data2d() {
   _has_bits_[0] |= 0x00000001u;
 }
-void InertialSensorData::clear_has_data() {
+void InertialSensorData::clear_has_data2d() {
   _has_bits_[0] &= ~0x00000001u;
 }
-void InertialSensorData::clear_data() {
-  if (data_ != NULL) data_->::naothmessages::DoubleVector2::Clear();
-  clear_has_data();
+void InertialSensorData::clear_data2d() {
+  if (data2d_ != NULL) data2d_->::naothmessages::DoubleVector2::Clear();
+  clear_has_data2d();
 }
-const ::naothmessages::DoubleVector2& InertialSensorData::data() const {
-  const ::naothmessages::DoubleVector2* p = data_;
-  // @@protoc_insertion_point(field_get:naothmessages.InertialSensorData.data)
+const ::naothmessages::DoubleVector2& InertialSensorData::data2d() const {
+  const ::naothmessages::DoubleVector2* p = data2d_;
+  // @@protoc_insertion_point(field_get:naothmessages.InertialSensorData.data2d)
   return p != NULL ? *p : *reinterpret_cast<const ::naothmessages::DoubleVector2*>(
       &::naothmessages::_DoubleVector2_default_instance_);
 }
-::naothmessages::DoubleVector2* InertialSensorData::mutable_data() {
-  set_has_data();
-  if (data_ == NULL) {
-    data_ = new ::naothmessages::DoubleVector2;
+::naothmessages::DoubleVector2* InertialSensorData::mutable_data2d() {
+  set_has_data2d();
+  if (data2d_ == NULL) {
+    data2d_ = new ::naothmessages::DoubleVector2;
   }
-  // @@protoc_insertion_point(field_mutable:naothmessages.InertialSensorData.data)
-  return data_;
+  // @@protoc_insertion_point(field_mutable:naothmessages.InertialSensorData.data2d)
+  return data2d_;
 }
-::naothmessages::DoubleVector2* InertialSensorData::release_data() {
-  // @@protoc_insertion_point(field_release:naothmessages.InertialSensorData.data)
-  clear_has_data();
-  ::naothmessages::DoubleVector2* temp = data_;
-  data_ = NULL;
+::naothmessages::DoubleVector2* InertialSensorData::release_data2d() {
+  // @@protoc_insertion_point(field_release:naothmessages.InertialSensorData.data2d)
+  clear_has_data2d();
+  ::naothmessages::DoubleVector2* temp = data2d_;
+  data2d_ = NULL;
   return temp;
 }
-void InertialSensorData::set_allocated_data(::naothmessages::DoubleVector2* data) {
-  delete data_;
-  data_ = data;
-  if (data) {
-    set_has_data();
+void InertialSensorData::set_allocated_data2d(::naothmessages::DoubleVector2* data2d) {
+  delete data2d_;
+  data2d_ = data2d;
+  if (data2d) {
+    set_has_data2d();
   } else {
-    clear_has_data();
+    clear_has_data2d();
   }
-  // @@protoc_insertion_point(field_set_allocated:naothmessages.InertialSensorData.data)
+  // @@protoc_insertion_point(field_set_allocated:naothmessages.InertialSensorData.data2d)
+}
+
+// optional .naothmessages.DoubleVector3 data3d = 3;
+bool InertialSensorData::has_data3d() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+void InertialSensorData::set_has_data3d() {
+  _has_bits_[0] |= 0x00000002u;
+}
+void InertialSensorData::clear_has_data3d() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+void InertialSensorData::clear_data3d() {
+  if (data3d_ != NULL) data3d_->::naothmessages::DoubleVector3::Clear();
+  clear_has_data3d();
+}
+const ::naothmessages::DoubleVector3& InertialSensorData::data3d() const {
+  const ::naothmessages::DoubleVector3* p = data3d_;
+  // @@protoc_insertion_point(field_get:naothmessages.InertialSensorData.data3d)
+  return p != NULL ? *p : *reinterpret_cast<const ::naothmessages::DoubleVector3*>(
+      &::naothmessages::_DoubleVector3_default_instance_);
+}
+::naothmessages::DoubleVector3* InertialSensorData::mutable_data3d() {
+  set_has_data3d();
+  if (data3d_ == NULL) {
+    data3d_ = new ::naothmessages::DoubleVector3;
+  }
+  // @@protoc_insertion_point(field_mutable:naothmessages.InertialSensorData.data3d)
+  return data3d_;
+}
+::naothmessages::DoubleVector3* InertialSensorData::release_data3d() {
+  // @@protoc_insertion_point(field_release:naothmessages.InertialSensorData.data3d)
+  clear_has_data3d();
+  ::naothmessages::DoubleVector3* temp = data3d_;
+  data3d_ = NULL;
+  return temp;
+}
+void InertialSensorData::set_allocated_data3d(::naothmessages::DoubleVector3* data3d) {
+  delete data3d_;
+  data3d_ = data3d;
+  if (data3d) {
+    set_has_data3d();
+  } else {
+    clear_has_data3d();
+  }
+  // @@protoc_insertion_point(field_set_allocated:naothmessages.InertialSensorData.data3d)
 }
 
 #endif  // PROTOBUF_INLINE_NOT_IN_HEADERS

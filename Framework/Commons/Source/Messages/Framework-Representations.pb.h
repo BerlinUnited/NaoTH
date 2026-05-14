@@ -1899,25 +1899,37 @@ class InertialSensorData : public ::google::protobuf::Message /* @@protoc_insert
   GOOGLE_PROTOBUF_DEPRECATED_ATTR ::google::protobuf::RepeatedField< double >*
       mutable_legacypackeddata();
 
-  // optional .naothmessages.DoubleVector2 data = 2;
-  bool has_data() const;
-  void clear_data();
-  static const int kDataFieldNumber = 2;
-  const ::naothmessages::DoubleVector2& data() const;
-  ::naothmessages::DoubleVector2* mutable_data();
-  ::naothmessages::DoubleVector2* release_data();
-  void set_allocated_data(::naothmessages::DoubleVector2* data);
+  // optional .naothmessages.DoubleVector2 data2d = 2;
+  bool has_data2d() const;
+  void clear_data2d();
+  static const int kData2DFieldNumber = 2;
+  const ::naothmessages::DoubleVector2& data2d() const;
+  ::naothmessages::DoubleVector2* mutable_data2d();
+  ::naothmessages::DoubleVector2* release_data2d();
+  void set_allocated_data2d(::naothmessages::DoubleVector2* data2d);
+
+  // optional .naothmessages.DoubleVector3 data3d = 3;
+  bool has_data3d() const;
+  void clear_data3d();
+  static const int kData3DFieldNumber = 3;
+  const ::naothmessages::DoubleVector3& data3d() const;
+  ::naothmessages::DoubleVector3* mutable_data3d();
+  ::naothmessages::DoubleVector3* release_data3d();
+  void set_allocated_data3d(::naothmessages::DoubleVector3* data3d);
 
   // @@protoc_insertion_point(class_scope:naothmessages.InertialSensorData)
  private:
-  void set_has_data();
-  void clear_has_data();
+  void set_has_data2d();
+  void clear_has_data2d();
+  void set_has_data3d();
+  void clear_has_data3d();
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   ::google::protobuf::internal::HasBits<1> _has_bits_;
   mutable int _cached_size_;
   ::google::protobuf::RepeatedField< double > legacypackeddata_;
-  ::naothmessages::DoubleVector2* data_;
+  ::naothmessages::DoubleVector2* data2d_;
+  ::naothmessages::DoubleVector3* data3d_;
   friend struct protobuf_Framework_2dRepresentations_2eproto::TableStruct;
 };
 // -------------------------------------------------------------------
@@ -4045,50 +4057,96 @@ InertialSensorData::mutable_legacypackeddata() {
   return &legacypackeddata_;
 }
 
-// optional .naothmessages.DoubleVector2 data = 2;
-inline bool InertialSensorData::has_data() const {
+// optional .naothmessages.DoubleVector2 data2d = 2;
+inline bool InertialSensorData::has_data2d() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
-inline void InertialSensorData::set_has_data() {
+inline void InertialSensorData::set_has_data2d() {
   _has_bits_[0] |= 0x00000001u;
 }
-inline void InertialSensorData::clear_has_data() {
+inline void InertialSensorData::clear_has_data2d() {
   _has_bits_[0] &= ~0x00000001u;
 }
-inline void InertialSensorData::clear_data() {
-  if (data_ != NULL) data_->::naothmessages::DoubleVector2::Clear();
-  clear_has_data();
+inline void InertialSensorData::clear_data2d() {
+  if (data2d_ != NULL) data2d_->::naothmessages::DoubleVector2::Clear();
+  clear_has_data2d();
 }
-inline const ::naothmessages::DoubleVector2& InertialSensorData::data() const {
-  const ::naothmessages::DoubleVector2* p = data_;
-  // @@protoc_insertion_point(field_get:naothmessages.InertialSensorData.data)
+inline const ::naothmessages::DoubleVector2& InertialSensorData::data2d() const {
+  const ::naothmessages::DoubleVector2* p = data2d_;
+  // @@protoc_insertion_point(field_get:naothmessages.InertialSensorData.data2d)
   return p != NULL ? *p : *reinterpret_cast<const ::naothmessages::DoubleVector2*>(
       &::naothmessages::_DoubleVector2_default_instance_);
 }
-inline ::naothmessages::DoubleVector2* InertialSensorData::mutable_data() {
-  set_has_data();
-  if (data_ == NULL) {
-    data_ = new ::naothmessages::DoubleVector2;
+inline ::naothmessages::DoubleVector2* InertialSensorData::mutable_data2d() {
+  set_has_data2d();
+  if (data2d_ == NULL) {
+    data2d_ = new ::naothmessages::DoubleVector2;
   }
-  // @@protoc_insertion_point(field_mutable:naothmessages.InertialSensorData.data)
-  return data_;
+  // @@protoc_insertion_point(field_mutable:naothmessages.InertialSensorData.data2d)
+  return data2d_;
 }
-inline ::naothmessages::DoubleVector2* InertialSensorData::release_data() {
-  // @@protoc_insertion_point(field_release:naothmessages.InertialSensorData.data)
-  clear_has_data();
-  ::naothmessages::DoubleVector2* temp = data_;
-  data_ = NULL;
+inline ::naothmessages::DoubleVector2* InertialSensorData::release_data2d() {
+  // @@protoc_insertion_point(field_release:naothmessages.InertialSensorData.data2d)
+  clear_has_data2d();
+  ::naothmessages::DoubleVector2* temp = data2d_;
+  data2d_ = NULL;
   return temp;
 }
-inline void InertialSensorData::set_allocated_data(::naothmessages::DoubleVector2* data) {
-  delete data_;
-  data_ = data;
-  if (data) {
-    set_has_data();
+inline void InertialSensorData::set_allocated_data2d(::naothmessages::DoubleVector2* data2d) {
+  delete data2d_;
+  data2d_ = data2d;
+  if (data2d) {
+    set_has_data2d();
   } else {
-    clear_has_data();
+    clear_has_data2d();
   }
-  // @@protoc_insertion_point(field_set_allocated:naothmessages.InertialSensorData.data)
+  // @@protoc_insertion_point(field_set_allocated:naothmessages.InertialSensorData.data2d)
+}
+
+// optional .naothmessages.DoubleVector3 data3d = 3;
+inline bool InertialSensorData::has_data3d() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void InertialSensorData::set_has_data3d() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void InertialSensorData::clear_has_data3d() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void InertialSensorData::clear_data3d() {
+  if (data3d_ != NULL) data3d_->::naothmessages::DoubleVector3::Clear();
+  clear_has_data3d();
+}
+inline const ::naothmessages::DoubleVector3& InertialSensorData::data3d() const {
+  const ::naothmessages::DoubleVector3* p = data3d_;
+  // @@protoc_insertion_point(field_get:naothmessages.InertialSensorData.data3d)
+  return p != NULL ? *p : *reinterpret_cast<const ::naothmessages::DoubleVector3*>(
+      &::naothmessages::_DoubleVector3_default_instance_);
+}
+inline ::naothmessages::DoubleVector3* InertialSensorData::mutable_data3d() {
+  set_has_data3d();
+  if (data3d_ == NULL) {
+    data3d_ = new ::naothmessages::DoubleVector3;
+  }
+  // @@protoc_insertion_point(field_mutable:naothmessages.InertialSensorData.data3d)
+  return data3d_;
+}
+inline ::naothmessages::DoubleVector3* InertialSensorData::release_data3d() {
+  // @@protoc_insertion_point(field_release:naothmessages.InertialSensorData.data3d)
+  clear_has_data3d();
+  ::naothmessages::DoubleVector3* temp = data3d_;
+  data3d_ = NULL;
+  return temp;
+}
+inline void InertialSensorData::set_allocated_data3d(::naothmessages::DoubleVector3* data3d) {
+  delete data3d_;
+  data3d_ = data3d;
+  if (data3d) {
+    set_has_data3d();
+  } else {
+    clear_has_data3d();
+  }
+  // @@protoc_insertion_point(field_set_allocated:naothmessages.InertialSensorData.data3d)
 }
 
 // -------------------------------------------------------------------

@@ -101,6 +101,24 @@ public class ImageViewer extends AbstractDialog
           ImageViewer.this.imageCanvasTop.setImage(janusImage.getRGB());
           ImageViewer.this.imageCanvasTop.repaint();
         }
+        
+        f = b.get(btRAW.isSelected()?"ImageRight":"ImageRightJPEGTop");
+        if(f != null) {
+          ImageManagerBottomImpl im = new ImageManagerBottomImpl();
+          JanusImage janusImage = im.convertByteArrayToType(f.getData());
+          
+          ImageViewer.this.imageCanvasBottom.setImage(janusImage.getRGB());
+          ImageViewer.this.imageCanvasBottom.repaint();
+        }
+        
+        f = b.get(btRAW.isSelected()?"ImageLeft":"ImageLeftJPEG");
+        if(f != null) {
+          ImageManagerTopImpl im = new ImageManagerTopImpl();
+          JanusImage janusImage = im.convertByteArrayToType(f.getData());
+          
+          ImageViewer.this.imageCanvasTop.setImage(janusImage.getRGB());
+          ImageViewer.this.imageCanvasTop.repaint();
+        }
     }
   }
 
