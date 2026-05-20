@@ -173,11 +173,13 @@ public:
     }
 };
 
-template<> class Serializer<TeamState>
+namespace naoth
 {
-    public:
-        static void serialize(const TeamState& representation, std::ostream& stream);
-        static void deserialize(std::istream& stream, TeamState& representation);
-};
-
+  template<> class Serializer<TeamState>
+  {
+      public:
+          static void serialize(const TeamState& representation, std::ostream& stream);
+          static void deserialize(std::istream& stream, TeamState& representation);
+  };
+}
 #endif // TEAMSTATE_H
