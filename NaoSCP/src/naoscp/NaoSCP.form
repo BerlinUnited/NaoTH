@@ -91,6 +91,27 @@
         </MenuItem>
       </SubComponents>
     </Container>
+    <Container class="javax.swing.JPopupMenu" name="popupMenuInit">
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout">
+        <Property name="useNullLayout" type="boolean" value="true"/>
+      </Layout>
+      <SubComponents>
+        <MenuItem class="javax.swing.JMenuItem" name="miInitNao">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Initialize Nao"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="miInitNaoActionPerformed"/>
+          </Events>
+        </MenuItem>
+        <MenuItem class="javax.swing.JMenuItem" name="miInitBooster">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Initialize Booster"/>
+          </Properties>
+        </MenuItem>
+      </SubComponents>
+    </Container>
   </NonVisualComponents>
   <Events>
     <EventHandler event="componentResized" listener="java.awt.event.ComponentListener" parameters="java.awt.event.ComponentEvent" handler="formComponentResized"/>
@@ -142,7 +163,7 @@
           <Dimension value="[32777, 32777]"/>
         </Property>
         <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[539, 270]"/>
+          <Dimension value="[640, 270]"/>
         </Property>
         <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
           <Dimension value="[539, 270]"/>
@@ -160,10 +181,10 @@
     <Container class="javax.swing.JPanel" name="statusBarPanel">
       <Properties>
         <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[550, 24]"/>
+          <Dimension value="[640, 24]"/>
         </Property>
         <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[550, 24]"/>
+          <Dimension value="[640, 24]"/>
         </Property>
       </Properties>
       <Constraints>
@@ -224,6 +245,14 @@
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btSetNetworkActionPerformed"/>
           </Events>
         </Component>
+        <Component class="javax.swing.JToggleButton" name="btnInitActions">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Initialize Robot"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnInitActionsActionPerformed"/>
+          </Events>
+        </Component>
         <Component class="javax.swing.JButton" name="btInintRobot">
           <Properties>
             <Property name="text" type="java.lang.String" value="Initialize Robot"/>
@@ -236,6 +265,7 @@
         <Component class="javax.swing.JToggleButton" name="btnActions">
           <Properties>
             <Property name="text" type="java.lang.String" value="&#x25b2;"/>
+            <Property name="borderPainted" type="boolean" value="false"/>
             <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
               <Insets value="[2, -4, 2, -4]"/>
             </Property>
