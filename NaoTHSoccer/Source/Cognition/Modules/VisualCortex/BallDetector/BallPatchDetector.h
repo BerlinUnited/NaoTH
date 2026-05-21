@@ -2,8 +2,8 @@
 * @file BallPatchDetector.h
 */
 
-#ifndef BALLKEYPOINTEXTRACTOR_H
-#define BALLKEYPOINTEXTRACTOR_H
+#ifndef BALL_PATCH_DETECTOR_H
+#define BALL_PATCH_DETECTOR_H
 
 #include <ModuleFramework/Module.h>
 
@@ -482,4 +482,4 @@ void BallPatchDetector::calculateKeyPointsFull(const ImageType& integralImage, B
   }
 }
 
-#endif // BALLKEYPOINTEXTRACTOR_H
+#endif // BALL_PATCH_DETECTOR_H
