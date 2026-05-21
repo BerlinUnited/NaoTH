@@ -131,7 +131,7 @@ void BallPatchDetector::calculateKeyPointsFast(const ImageType& integralImage, B
     // Note: we have a minimal allowed radius
     unsigned int radius = (estimatedRadius < 2.0) ? 2 : static_cast<unsigned int>(estimatedRadius);
 
-    // smalest ball size == 3 => ball size == FACTOR*3 == 12
+    // smallest ball size == 3 => ball size == FACTOR*3 == 12
     if (point.y < radius || point.y + radius >= height) {
       continue;
     }
@@ -149,20 +149,24 @@ void BallPatchDetector::calculateKeyPointsFast(const ImageType& integralImage, B
       const unsigned int innerOffset = radius/2;
       const unsigned int area = 4*radius*radius;
 
+      // the zero index for the color channel means non green pixels
       unsigned int inner = integralImage.getSumForRect(point.x-radius, point.y-radius, point.x+radius, point.y+radius, 0);
+      // the 1 index for the color channel means green pixels
       double greenInner  = integralImage.getDensityForRect(point.x-innerOffset, point.y-innerOffset, point.x+innerOffset, point.y+innerOffset, 1);
 
       unsigned int below = 0;
       unsigned int radius_below = radius*2;
 
       if(point.y+radius_below < height) {
+        // get number of non green pixels
         below = integralImage.getSumForRect(point.x-radius, point.y+radius, point.x+radius, point.y+radius_below, 0);
       }
 
       if (inner*2 > area && greenInner <= params.maxInnerGreenDensitiy && below*params.area_below_factor < area)
       {
+        // value is the ratio of non white pixels in a given area
         double value = ((double)inner)/((double)(area));
-        // FIXME add remove overlappting patches directly so we can only log patches that survive the overlapping removal
+        // FIXME add removes overlapping patches directly so we can only log patches that survive the overlapping removal
         // we should be able to save all the patches with the value so we can check later what value the actual best patch has
         best.add(
             static_cast<int>(point.x-radius)*integralImage.FACTOR,
