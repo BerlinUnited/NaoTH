@@ -8,7 +8,6 @@ BallPatchDetector::BallPatchDetector() : cameraID(CameraInfo::Bottom)
   DEBUG_REQUEST_REGISTER("Vision:BallPatchDetector:draw_value", "", false);
   DEBUG_REQUEST_REGISTER("Vision:BallPatchDetector:drawPatches", "draw ball key points", false);
   DEBUG_REQUEST_REGISTER("Vision:BallPatchDetector:drawPatches_px", "draw ball key points in the raw image", false);
-  DEBUG_REQUEST_REGISTER("Vision:BallKeyPointExtractor:draw_value", "", false);
 
   getDebugParameterList().add(&params);
 }
@@ -95,10 +94,6 @@ void BallPatchDetector::calculateKeyPoints(const ImageType& integralImage, BestP
 template<class ImageType>
 void BallPatchDetector::calculateKeyPointsFast(const ImageType& integralImage, BestPatchList& best) const
 {
-  DEBUG_REQUEST("Vision:BallPatchDetector:draw_value",
-    CANVAS(((cameraID == CameraInfo::Top)?"ImageTop":"ImageBottom"));
-  );
-
   //
   // STEP I: find the maximal height minY to be scanned in the image
   //
@@ -171,15 +166,16 @@ void BallPatchDetector::calculateKeyPointsFast(const ImageType& integralImage, B
       }
 
       DEBUG_REQUEST("Vision:BallPatchDetector:draw_value",
-          double value = ((double)inner)/((double)(area));
+        CANVAS(((cameraID == CameraInfo::Top)?"ImageTop":"ImageBottom"));
+        double value = ((double)inner)/((double)(area));
 
-          value = Math::clamp(value / 200.0, 0.0,1.0);
-          PEN(Color(1.0,1.0-value,1.0-value,0.8),0.1);
+        value = Math::clamp(value / 200.0, 0.0,1.0);
+        PEN(Color(1.0,1.0-value,1.0-value,0.8),0.1);
 
-          FILLBOX((point.x)*integralImage.FACTOR - integralImage.FACTOR/2,
-                  (point.y)*integralImage.FACTOR - integralImage.FACTOR/2,
-                  (point.x)*integralImage.FACTOR + integralImage.FACTOR/2,
-                  (point.y)*integralImage.FACTOR + integralImage.FACTOR/2);
+        FILLBOX((point.x)*integralImage.FACTOR - integralImage.FACTOR/2,
+                (point.y)*integralImage.FACTOR - integralImage.FACTOR/2,
+                (point.x)*integralImage.FACTOR + integralImage.FACTOR/2,
+                (point.y)*integralImage.FACTOR + integralImage.FACTOR/2);
       );
     }
   }
@@ -189,10 +185,6 @@ void BallPatchDetector::calculateKeyPointsFast(const ImageType& integralImage, B
 template<class ImageType>
 void BallPatchDetector::calculateKeyPointsFull(const ImageType& integralImage, BestPatchList& best) const
 {
-  DEBUG_REQUEST("Vision:BallPatchDetector:draw_value",
-    CANVAS(((cameraID == CameraInfo::Top)?"ImageTop":"ImageBottom"));
-  );
-
   //
   // STEP I: find the maximal height minY to be scanned in the image
   //
@@ -263,16 +255,17 @@ void BallPatchDetector::calculateKeyPointsFull(const ImageType& integralImage, B
         values[point.x][point.y][1] = radius;
       }
 
-      DEBUG_REQUEST("Vision:BallKeyPointExtractor:draw_value",
-          double value = ((double)inner)/((double)(size*size));
+      DEBUG_REQUEST("Vision:BallPatchDetector:draw_value",
+        CANVAS(((cameraID == CameraInfo::Top)?"ImageTop":"ImageBottom"));
+        double value = ((double)inner)/((double)(size*size));
 
-          value = Math::clamp(value / 200.0, 0.0,1.0);
-          PEN(Color(1.0,1.0-value,1.0-value,0.8),0.1);
+        value = Math::clamp(value / 200.0, 0.0,1.0);
+        PEN(Color(1.0,1.0-value,1.0-value,0.8),0.1);
 
-          FILLBOX((point.x)*integralImage.FACTOR - integralImage.FACTOR/2,
-                  (point.y)*integralImage.FACTOR - integralImage.FACTOR/2,
-                  (point.x)*integralImage.FACTOR + integralImage.FACTOR/2,
-                  (point.y)*integralImage.FACTOR + integralImage.FACTOR/2);
+        FILLBOX((point.x)*integralImage.FACTOR - integralImage.FACTOR/2,
+                (point.y)*integralImage.FACTOR - integralImage.FACTOR/2,
+                (point.x)*integralImage.FACTOR + integralImage.FACTOR/2,
+                (point.y)*integralImage.FACTOR + integralImage.FACTOR/2);
       );
     }
   }
