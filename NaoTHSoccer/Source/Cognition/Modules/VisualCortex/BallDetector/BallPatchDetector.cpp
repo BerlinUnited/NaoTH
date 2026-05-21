@@ -162,6 +162,8 @@ void BallPatchDetector::calculateKeyPointsFast(const ImageType& integralImage, B
       if (inner*2 > area && greenInner <= params.maxInnerGreenDensitiy && below*params.area_below_factor < area)
       {
         double value = ((double)inner)/((double)(area));
+        // FIXME add remove overlappting patches directly so we can only log patches that survive the overlapping removal
+        // we should be able to save all the patches with the value so we can check later what value the actual best patch has
         best.add(
             static_cast<int>(point.x-radius)*integralImage.FACTOR,
             static_cast<int>(point.y-radius)*integralImage.FACTOR,
