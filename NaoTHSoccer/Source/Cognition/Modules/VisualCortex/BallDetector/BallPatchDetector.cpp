@@ -3,6 +3,9 @@
 using namespace naoth;
 using namespace std;
 
+// BallPatchDetector searches the ball detector integral image for candidate ball
+// patches and ranks them by a simple white-content quality score. The output is
+// a sorted BestPatchList of non-overlapping patches that are likely ball regions.
 BallPatchDetector::BallPatchDetector() : cameraID(CameraInfo::Bottom)
 {
   DEBUG_REQUEST_REGISTER("Vision:BallPatchDetector:draw_value", "", false);
@@ -22,8 +25,10 @@ void BallPatchDetector::execute(const CameraInfo::CameraID id)
   cameraID = id;
   getBestPatchList().clear();
 
+  // Compute candidate ball patches using the faster scan path.
   calculateKeyPointsFast(getBallDetectorIntegralImage(), getBestPatchList());
 
+  // Debug drawing: show candidate patch boxes in the selected camera image.
   DEBUG_REQUEST("Vision:BallPatchDetector:drawPatches",
     CANVAS(((cameraID == CameraInfo::Top)?"ImageTop":"ImageBottom"));
     PEN("FF0000", 1);
@@ -42,9 +47,7 @@ void BallPatchDetector::execute(const CameraInfo::CameraID id)
 template<class ImageType>
 void BallPatchDetector::calculateKeyPoints(const ImageType& integralImage, BestPatchList& best) const
 {
-  //
-  // STEP I: find the maximal height minY to be scanned in the image
-  //
+  // STEP I: verify that the field polygon is known and we have a valid scan area.
   if(!getFieldPercept().valid) {
     return;
   }
@@ -52,12 +55,13 @@ void BallPatchDetector::calculateKeyPoints(const ImageType& integralImage, BestP
   // find the top point of the polygon
   int minY = getFieldPercept().getMinY();
 
-  // double check: polygon is empty
+  // double check: polygon is empty or invalid.
   if(minY == (int)getImage().height() || minY < 0) {
     return;
   }
 
-  // todo needs a better place
+  // Integral images are stored at reduced resolution, so image coordinates must be
+  // scaled by FACTOR to convert between integral-image pixels and original pixels.
   const int32_t FACTOR = integralImage.FACTOR;
 
   Vector2<unsigned int> point;
@@ -134,13 +138,14 @@ void BallPatchDetector::calculateKeyPointsFast(const ImageType& integralImage, B
 
     for(point.x = radius; point.x + radius < width; ++point.x)
     {
-      //evaluatePatch(integralImage, best, point, size, border);
-
+      // Skip points that lie on the robot's body contour for the bottom camera.
       if(cameraID == CameraInfo::Bottom && //point.y+radius >(int)(integralImage.getHeight()/2) &&
          getBodyContour().isOccupied(point.x*integralImage.FACTOR, (point.y+radius)*integralImage.FACTOR)) {
         continue;
       }
 
+      // Evaluate the candidate ball patch by measuring the amount of white in the
+      // square centered at this point and by checking the green density near the center.
       const unsigned int innerOffset = radius/2;
       const unsigned int area = 4*radius*radius;
 
@@ -185,9 +190,7 @@ void BallPatchDetector::calculateKeyPointsFast(const ImageType& integralImage, B
 template<class ImageType>
 void BallPatchDetector::calculateKeyPointsFull(const ImageType& integralImage, BestPatchList& best) const
 {
-  //
-  // STEP I: find the maximal height minY to be scanned in the image
-  //
+  // find the maximal height minY to be scanned in the image
   if(!getFieldPercept().valid) {
     return;
   }
@@ -196,16 +199,20 @@ void BallPatchDetector::calculateKeyPointsFull(const ImageType& integralImage, B
   int minY = getFieldPercept().getMinY();
 
   // double check: polygon is empty
+  // TODO is this really necessary - we already have the valid check?? 
   if(minY == (int)getImage().height() || minY < 0) {
     return;
   }
 
-  // todo needs a better place
+  // TODO: needs a better place
+  // Integral images are stored at reduced resolution, so image coordinates must be
+  // scaled by FACTOR to convert between integral-image pixels and original pixels.
   const int32_t FACTOR = integralImage.FACTOR;
 
   Vector2i point;
-
   // TODO: this has to be made more general
+  // Reset the temporary per-pixel candidate values array. This array stores a
+  // score and radius for each potential ball center during the full search.
   for(int y = 1; y+1 < 480/4; ++y) {
     for(int x = 1; x+1 < 640/4; ++x) {
       values[x][y][0] = 0.0;
@@ -224,7 +231,7 @@ void BallPatchDetector::calculateKeyPointsFull(const ImageType& integralImage, B
 
     int radius = (int)(estimatedRadius / FACTOR + 0.5);
 
-    // smalest ball size == 3 => ball size == FACTOR*3 == 12
+    // smallest ball size == 3 => ball size == FACTOR*3 == 12
     if (point.y < radius || point.y + radius >= (int)integralImage.getHeight()) {
       continue;
     }
@@ -271,6 +278,8 @@ void BallPatchDetector::calculateKeyPointsFull(const ImageType& integralImage, B
   }
 
 
+  // Perform non-maximum suppression on the candidate score map. Only local
+  // peaks are turned into final patch proposals.
   for(int y = 1; y+1 < 480/4; ++y) {
     for(int x = 1; x+1 < 640/4; ++x) {
       if(values[x][y][0] > 0) {
@@ -298,6 +307,8 @@ void BallPatchDetector::calculateKeyPointsFull(const ImageType& integralImage, B
   }
 }
 
+// Re-evaluate a previously found patch at multiple inner sizes and choose the
+// best sub-region. This is used to refine a coarse candidate before ball fitting.
 BestPatchList::Patch BallPatchDetector::refineKeyPoint(const BestPatchList::Patch& patch) const
 {
   // todo needs a better place

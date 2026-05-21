@@ -1,9 +1,5 @@
-/**
-* @file BestPatchList.h
-*/
-
-#ifndef _BestPatchList_H_
-#define _BestPatchList_H_
+#ifndef BEST_PATCH_LIST_H
+#define BEST_PATCH_LIST_H
 
 #include <Tools/Math/Vector2.h>
 #include <list>
@@ -43,13 +39,12 @@ public:
   const reverse_iterator rbegin() const { return patches.crbegin(); }
   const reverse_iterator rend() const { return patches.crend(); }
 
-
 public:
-
+  // Add a new patch to the list. The list maintains a sorted order by value,
+  // and overlapping patches are pruned so that only the strongest patch remains.
   void add(int minX, int minY, int maxX, int maxY, double value) {
     add(Patch(minX, minY, maxX, maxY, value));
   }
-
 
   void add(const Patch& patch)
   {
@@ -181,13 +176,8 @@ private:
       return ++iter;
   }
 
-  /*
-  //OLD
-  bool overlap(const Patch& one, const Patch& two) {
-    return std::max(std::abs(two.center.x - one.center.x), std::abs(two.center.y - one.center.y)) < (two.radius + one.radius);
-  }
-  */
-
+  // Two patches overlap when their rectangles intersect. Overlapping patches are
+  // compared by value, and the weaker one is discarded to keep the output unique.
   bool overlap(const Patch& one, const Patch& two) {
     return 
       one.min.x < two.max.x && 
@@ -214,4 +204,4 @@ public:
   virtual ~BestPatchListTop() {}
 };
 
-#endif // _BestPatchList_H_
+#endif // BEST_PATCH_LIST_H
