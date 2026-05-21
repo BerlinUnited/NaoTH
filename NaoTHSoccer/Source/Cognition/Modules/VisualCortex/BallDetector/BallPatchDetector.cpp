@@ -1,7 +1,3 @@
-/**
-* @file BallPatchDetector.cpp
-*/
-
 #include "BallPatchDetector.h"
 
 using namespace naoth;
@@ -12,9 +8,7 @@ BallPatchDetector::BallPatchDetector() : cameraID(CameraInfo::Bottom)
   DEBUG_REQUEST_REGISTER("Vision:BallPatchDetector:draw_value", "", false);
   DEBUG_REQUEST_REGISTER("Vision:BallPatchDetector:drawPatches", "draw ball key points", false);
   DEBUG_REQUEST_REGISTER("Vision:BallPatchDetector:drawPatches_px", "draw ball key points in the raw image", false);
-
   DEBUG_REQUEST_REGISTER("Vision:BallKeyPointExtractor:draw_value", "", false);
-  
 
   getDebugParameterList().add(&params);
 }
@@ -30,7 +24,6 @@ void BallPatchDetector::execute(const CameraInfo::CameraID id)
   getBestPatchList().clear();
 
   calculateKeyPointsFast(getBallDetectorIntegralImage(), getBestPatchList());
-  //calculateKeyPointsFull(getBallDetectorIntegralImage(), getBestPatchList());
 
   DEBUG_REQUEST("Vision:BallPatchDetector:drawPatches",
     CANVAS(((cameraID == CameraInfo::Top)?"ImageTop":"ImageBottom"));
