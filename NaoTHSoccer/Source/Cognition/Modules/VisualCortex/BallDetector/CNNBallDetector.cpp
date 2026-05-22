@@ -15,8 +15,7 @@
 
 using namespace std;
 
-CNNBallDetector::CNNBallDetector():
-  last_percept_valid(false)
+CNNBallDetector::CNNBallDetector()
 {
   // TODO: maybe rename
   DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:extractPatches", "generate YUVC patches", false);
@@ -68,15 +67,11 @@ void CNNBallDetector::execute(CameraInfo::CameraID id)
     patches.push_back(*i);
   }
 
-  // add the last ball percept at the beginning of the now sorted list, so it gets checked first
-  addPatchByLastPercept();
-
   // add the last ball model at the end of the now sorted list, so we check it last
   // FIXME: if there are more patches in the list than the maxNumberOfKeys specifies,
   // the last ball model will not be checked
   addPatchByLastBall();
 
-  last_percept_valid = false;
   if(!patches.empty()) {
     calculateCandidates();
   }
@@ -387,12 +382,6 @@ void CNNBallDetector::calculateCandidates()
           //addBallPercept(ballCenterInPatch + patchForDetector.min, radius*patchForDetector.width());
           
           addBallPercept(ballCenterInPatch + patchForDetector.min, patch.radius());
-          
-          if (last_percept_valid == false){
-            last_percept_min = patchForDetector.min;
-            last_percept_max = patchForDetector.max;
-            last_percept_valid = true;
-          }
         }        
       }
 
@@ -552,18 +541,5 @@ void CNNBallDetector::addPatchByLastBall()
         }
       }
     }
-  }
-}
-
-void CNNBallDetector::addPatchByLastPercept(){
-  if (last_percept_valid){
-    BestPatchList::Patch ballPatch  = BestPatchList::Patch(last_percept_min.x,
-              last_percept_min.y,
-              last_percept_max.x,
-              last_percept_max.y,
-              99);
-    // TODO: filter out other overlapping Patch(es)  in 'patches' here as,
-    // for the same reason we check overlap in addPatchByLastBall?
-    patches.insert(patches.begin(), ballPatch);
   }
 }

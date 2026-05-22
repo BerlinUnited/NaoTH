@@ -11,6 +11,7 @@
 #include "Representations/Perception/CameraMatrix.h"
 #include "Representations/Perception/BodyContour.h"
 #include "Representations/Perception/BestPatchList.h"
+#include "Representations/Perception/MultiBallPercept.h"
 
 // tools
 #include "Tools/DoubleCamHelpers.h"
@@ -53,6 +54,8 @@ BEGIN_DECLARE_MODULE(BallPatchDetector)
 
   REQUIRE(FieldPercept)
   REQUIRE(FieldPerceptTop)
+
+  REQUIRE(MultiBallPercept)
 
   PROVIDE(BestPatchList)
   PROVIDE(BestPatchListTop)
@@ -103,6 +106,7 @@ class BallPatchDetector : public BallPatchDetectorBase
     } params;
   private:
     void execute(const CameraInfo::CameraID id);
+    void addPatchByLastPercept();
 
   public:
     // scan the integral image for white key points

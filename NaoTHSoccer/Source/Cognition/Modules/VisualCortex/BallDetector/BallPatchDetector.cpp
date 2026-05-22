@@ -28,6 +28,8 @@ void BallPatchDetector::execute(const CameraInfo::CameraID id)
   // Compute candidate ball patches using the faster scan path.
   calculateKeyPointsFast(getBallDetectorIntegralImage(), getBestPatchList());
 
+  addPatchByLastPercept();
+
   // Debug drawing: show candidate patch boxes in the selected camera image.
   DEBUG_REQUEST("Vision:BallPatchDetector:drawPatches",
     CANVAS(((cameraID == CameraInfo::Top)?"ImageTop":"ImageBottom"));
@@ -372,3 +374,21 @@ BestPatchList::Patch BallPatchDetector::refineKeyPoint(const BestPatchList::Patc
   return maxPatch;
 }
 
+void BallPatchDetector::addPatchByLastPercept() {
+    // iterating over all the percepts from the last execution cycle here
+    for(MultiBallPercept::ConstABPIterator iter = getMultiBallPercept().begin(); iter != getMultiBallPercept().end(); iter++) {
+      // add each percept to the ball patch list
+      BestPatchList::Patch ballPatch(
+        static_cast<int>((*iter).centerInImage.x -
+                         (*iter).radiusInImage),
+        static_cast<int>((*iter).centerInImage.y -
+                         (*iter).radiusInImage),
+        static_cast<int>((*iter).centerInImage.x +
+                         (*iter).radiusInImage),
+        static_cast<int>((*iter).centerInImage.y +
+                         (*iter).radiusInImage),
+        99.0);
+        // add function handles overlap removal
+        getBestPatchList().add(ballPatch);
+    }
+}
