@@ -24,20 +24,15 @@ CNNBallDetector::CNNBallDetector()
   DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:Image_px:drawCandidates", "draw ball candidates", false);
   //DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:Image_px:drawCandidatesResizes", "draw ball candidates (resized)", false);
   DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:Image_px:drawPercepts", "draw ball percepts", false);
-  DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:Image_px:draw_projected_ball","", false);
-
   DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:Image_px:drawPatchInImage", "draw the gray-scale patch like it is passed to the CNN in the image", false);
 
   // TODO: obsolede; check ...
   DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:Image_px:keyPointsBlack", "draw black key points extracted from integral image", false);
 
-
-
   // vector drawings
   DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:Image:drawPatchContrast", "draw patch contrast (only when contrast-check is in use!", false);
   DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:Image:drawCandidates", "draw ball candidates", false);
   DEBUG_REQUEST_REGISTER("Vision:CNNBallDetector:Image:drawPercepts", "draw ball percepts", false);
-
 
   getDebugParameterList().add(&params);
 
@@ -59,20 +54,15 @@ void CNNBallDetector::execute(CameraInfo::CameraID id)
   cameraID = id;
   getBallCandidates().reset();
 
-  patches.clear();
+  //patches.clear();
   // Add the existing patches from the module, but do not perform any sorting.
   // Instead, use the order as it is provided by the original patch list.
   // Add in reverse order, so the entries with the highest value come first
-  for(BestPatchList::reverse_iterator i = getBestPatchList().rbegin(); i != getBestPatchList().rend(); ++i) {
-    patches.push_back(*i);
-  }
+  //for(BestPatchList::reverse_iterator i = getBestPatchList().rbegin(); i != getBestPatchList().rend(); ++i) {
+  //  patches.push_back(*i);
+  //}
 
-  // add the last ball model at the end of the now sorted list, so we check it last
-  // FIXME: if there are more patches in the list than the maxNumberOfKeys specifies,
-  // the last ball model will not be checked
-  addPatchByLastBall();
-
-  if(!patches.empty()) {
+  if(!getBestPatchList().empty()) {
     calculateCandidates();
   }
   DEBUG_REQUEST("Vision:CNNBallDetector:Image_px:drawPercepts",
@@ -107,7 +97,7 @@ void CNNBallDetector::execute(CameraInfo::CameraID id)
 
   DEBUG_REQUEST("Vision:CNNBallDetector:Image_px:keyPointsBlack",  
     BestPatchList bbest;
-    for(BestPatchList::PatchList::iterator i = patches.begin(); i != patches.end(); ++i) {
+    for(BestPatchList::reverse_iterator i = getBestPatchList().rbegin(); i != getBestPatchList().rend(); ++i) {
       bbest.clear();
       BlackSpotExtractor::calculateKeyPointsBlackBetter(getBallDetectorIntegralImage(), bbest, (*i).min.x, (*i).min.y, (*i).max.x, (*i).max.y);
       int idx = 0;
@@ -211,7 +201,7 @@ void CNNBallDetector::calculateCandidates()
 
   // NOTE: at this point. the PatchList is already sorted with the most promising patches first
   int index = 0;
-  for(BestPatchList::PatchList::iterator i = patches.begin(); i != patches.end(); ++i)
+  for(BestPatchList::reverse_iterator i = getBestPatchList().rbegin(); i != getBestPatchList().rend(); ++i)
   {
     if(getFieldPercept().getValidField().isInside((*i).min) && getFieldPercept().getValidField().isInside((*i).max))
     {
@@ -423,7 +413,7 @@ void CNNBallDetector::extractPatches()
 {
   int idx = 0;
   // at this point, the patches are already sorted with the most promising patches first
-  for(BestPatchList::PatchList::iterator i = patches.begin(); i != patches.end(); ++i)
+  for(BestPatchList::reverse_iterator i = getBestPatchList().rbegin(); i != getBestPatchList().rend(); ++i)
   {
     if(idx >= params.numberOfExportBestPatches) {
       break;
@@ -449,7 +439,7 @@ void CNNBallDetector::extractPatches()
 /** Provides all the internally generated patches in the representation */
 void CNNBallDetector::providePatches()
 {
-  for(BestPatchList::PatchList::iterator i = patches.begin(); i != patches.end(); i++)
+  for(BestPatchList::reverse_iterator i = getBestPatchList().rbegin(); i != getBestPatchList().rend(); i++)
   {
     BallCandidates::PatchYUVClassified& q = getBallCandidates().nextFreePatchYUVClassified();
     q.min = (*i).min;
@@ -477,69 +467,5 @@ void CNNBallDetector::addBallPercept(const Vector2d& center, double radius)
 
     getMultiBallPercept().add(ballPercept);
     getMultiBallPercept().frameInfoWhenBallWasSeen = getFrameInfo();
-  }
-}
-
-void CNNBallDetector::addPatchByLastBall()
-{
-  // last effort if we detect nothing we check the position of the current ball model if it is valid
-  if (getBallModel().valid)
-  {
-    Vector3d ballInField;
-    ballInField.x = getBallModel().position.x;
-    ballInField.y = getBallModel().position.y;
-    ballInField.z = getFieldInfo().ballRadius;
-
-    Vector2i ballInImage;
-    if (CameraGeometry::relativePointToImage(getCameraMatrix(), getCameraInfo(), ballInField, ballInImage))
-    {
-
-      double estimatedRadius = CameraGeometry::estimatedBallRadius(
-          getCameraMatrix(), getCameraInfo(), getFieldInfo().ballRadius,
-          ballInImage.x, ballInImage.y);
-
-      int border = static_cast<int>((estimatedRadius * 1.1) + 0.5);
-
-      Vector2i start = ballInImage - border;
-      Vector2i end = ballInImage + border;
-
-      if (start.y >= 0 && end.y < static_cast<int>(getImage().height()) && start.x >= 0 && end.x < static_cast<int>(getImage().width()))
-      {
-        DEBUG_REQUEST("Vision:CNNBallDetector:Image_px:draw_projected_ball",
-          RECT_PX(ColorClasses::pink, start.x, start.y, end.x, end.y);
-          CIRCLE_PX(ColorClasses::pink, ballInImage.x, ballInImage.y, static_cast<int>(estimatedRadius));
-        );
-
-        // TODO: Verify this, we might want to check all patches regardless of overlap
-        // 
-        // Insert ball patch if there is not already another Patch that overlaps it
-        // Reasoning: Since we can detect multiple balls, we do not want to detect 
-        // the same ball twice at different positions. 
-        // This patch is based on the ball model and therefore likely not the best candidate,
-        // so we prioritize the patches already in the list.
-        BestPatchList::Patch ballPatch  = BestPatchList::Patch(start.x,
-            start.y,
-            end.x,
-            end.y,
-            -1.0);
-        bool overlaps = false;
-        for(BestPatchList::PatchList::iterator i = patches.begin(); i != patches.end(); i++) {
-          
-          if(ballPatch.min.x < (*i).max.x && 
-              ballPatch.max.x > (*i).min.x &&
-              ballPatch.min.y < (*i).max.y && 
-              ballPatch.max.y > (*i).min.y) 
-          {
-            overlaps = true;
-            break;
-          }
-        }
-        if(overlaps == false) {
-          // TODO: Add not at the end, but at maxNumberOfKeys - 1 so we always
-          // check this patch last (if there are more than maxNumberOfKeys patches) 
-          patches.insert(patches.end(), ballPatch);
-        }
-      }
-    }
   }
 }
