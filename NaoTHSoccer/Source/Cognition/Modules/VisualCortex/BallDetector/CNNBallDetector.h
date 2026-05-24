@@ -219,11 +219,6 @@ private:
   std::string currentCNNCloseName;
 
   std::map<std::string, std::shared_ptr<AbstractCNNFinder> > cnnMap;
- 
-  BestPatchList::PatchList patches;
-  Vector2i last_percept_min;
-  Vector2i last_percept_max;
-  bool last_percept_valid;
 
 private:
   void calculateCandidates();
@@ -231,7 +226,6 @@ private:
   void extractPatches();
   void providePatches();
   void addPatchByLastBall();
-  void addPatchByLastPercept();
 
   void setClassifier(const std::string& name, const std::string& nameClose);
   void setDetector(const std::string& name, const std::string& nameClose);

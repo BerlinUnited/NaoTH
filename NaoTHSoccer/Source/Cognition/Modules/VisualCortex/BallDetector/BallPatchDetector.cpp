@@ -11,6 +11,7 @@ BallPatchDetector::BallPatchDetector() : cameraID(CameraInfo::Bottom)
   DEBUG_REQUEST_REGISTER("Vision:BallPatchDetector:draw_value", "", false);
   DEBUG_REQUEST_REGISTER("Vision:BallPatchDetector:drawPatches", "draw ball key points", false);
   DEBUG_REQUEST_REGISTER("Vision:BallPatchDetector:drawPatches_px", "draw ball key points in the raw image", false);
+  DEBUG_REQUEST_REGISTER("Vision:BallPatchDetector:Image_px:draw_projected_ball","", false);
 
   getDebugParameterList().add(&params);
 }
@@ -27,6 +28,14 @@ void BallPatchDetector::execute(const CameraInfo::CameraID id)
 
   // Compute candidate ball patches using the faster scan path.
   calculateKeyPointsFast(getBallDetectorIntegralImage(), getBestPatchList());
+
+  addPatchByLastPercept();
+
+  // add the last ball model at the end of the now sorted list, so we check it last
+  // FIXME: if there are more patches in the list than the maxNumberOfKeys specifies,
+  // the last ball model will not be checked
+  // FIXME maxNumberOfKeys is probable not implemented after moving this from cnn to ballpatchdetector
+  addPatchByLastBall();
 
   // Debug drawing: show candidate patch boxes in the selected camera image.
   DEBUG_REQUEST("Vision:BallPatchDetector:drawPatches",
@@ -372,3 +381,70 @@ BestPatchList::Patch BallPatchDetector::refineKeyPoint(const BestPatchList::Patc
   return maxPatch;
 }
 
+void BallPatchDetector::addPatchByLastPercept() {
+    // iterating over all the percepts from the last execution cycle here
+    for(MultiBallPercept::ConstABPIterator iter = getMultiBallPercept().begin(); iter != getMultiBallPercept().end(); iter++) {
+      // add each percept to the ball patch list
+      BestPatchList::Patch ballPatch(
+        static_cast<int>((*iter).centerInImage.x -
+                         (*iter).radiusInImage),
+        static_cast<int>((*iter).centerInImage.y -
+                         (*iter).radiusInImage),
+        static_cast<int>((*iter).centerInImage.x +
+                         (*iter).radiusInImage),
+        static_cast<int>((*iter).centerInImage.y +
+                         (*iter).radiusInImage),
+        99.0);
+        // add function handles overlap removal
+        getBestPatchList().add(ballPatch);
+    }
+}
+
+void BallPatchDetector::addPatchByLastBall()
+{
+  // last effort if we detect nothing we check the position of the current ball model if it is valid
+  if (getBallModel().valid)
+  {
+    Vector3d ballInField;
+    ballInField.x = getBallModel().position.x;
+    ballInField.y = getBallModel().position.y;
+    ballInField.z = getFieldInfo().ballRadius;
+
+    Vector2i ballInImage;
+    if (CameraGeometry::relativePointToImage(getCameraMatrix(), getCameraInfo(), ballInField, ballInImage))
+    {
+
+      double estimatedRadius = CameraGeometry::estimatedBallRadius(
+          getCameraMatrix(), getCameraInfo(), getFieldInfo().ballRadius,
+          ballInImage.x, ballInImage.y);
+
+      int border = static_cast<int>((estimatedRadius * 1.1) + 0.5);
+
+      Vector2i start = ballInImage - border;
+      Vector2i end = ballInImage + border;
+
+      if (start.y >= 0 && end.y < static_cast<int>(getImage().height()) && start.x >= 0 && end.x < static_cast<int>(getImage().width()))
+      {
+        DEBUG_REQUEST("Vision:BallPatchDetector:Image_px:draw_projected_ball",
+          RECT_PX(ColorClasses::pink, start.x, start.y, end.x, end.y);
+          CIRCLE_PX(ColorClasses::pink, ballInImage.x, ballInImage.y, static_cast<int>(estimatedRadius));
+        );
+
+        // TODO: Verify this, we might want to check all patches regardless of overlap
+        // 
+        // Insert ball patch if there is not already another Patch that overlaps it
+        // Reasoning: Since we can detect multiple balls, we do not want to detect 
+        // the same ball twice at different positions. 
+        // This patch is based on the ball model and therefore likely not the best candidate,
+        // so we prioritize the patches already in the list.
+        BestPatchList::Patch ballPatch  = BestPatchList::Patch(start.x,
+            start.y,
+            end.x,
+            end.y,
+            -1.0
+        );
+        getBestPatchList().add(ballPatch);
+      }
+    }
+  }
+}

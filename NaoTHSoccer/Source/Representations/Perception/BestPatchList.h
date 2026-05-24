@@ -156,6 +156,10 @@ public:
     return patches.size();
   }
 
+  bool empty() const {
+    return patches.empty();
+  }
+
   std::vector<Patch> asVector() const {
     std::vector<Patch> result;
     result.reserve(patches.size());
