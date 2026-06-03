@@ -14,8 +14,6 @@ sleep 1
 
 mkdir -p "$MOUNT_POINT"
 
-echo "$DEVICE $MOUNT_POINT" 
-
 mount "$DEVICE" "$MOUNT_POINT"
 
 if [ -f "$TARGET_SCRIPT" ]; then
