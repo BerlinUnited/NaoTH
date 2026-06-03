@@ -1,0 +1,8 @@
+[Unit]
+Description=Service that runs a bash script that is trying to run the startBrainwash.sh in the top path of the current USB stick.
+
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/getNewNetworkOfUSBStick.sh %I
+User=root
