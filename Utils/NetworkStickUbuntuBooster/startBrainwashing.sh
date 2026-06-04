@@ -1,12 +1,11 @@
 #!/bin/bash
 set -x
 
-AUDIO_FOLDER="/home/booster/"
 SSID="NAONET_5G"
 NETWORK_NAME="NAONET_5G"
 
 # play sound
-su booster -c "AUDIO_FOLDER='$AUDIO_FOLDER'; /usr/bin/paplay \$AUDIO_FOLDER/usb_start.wav"
+/usr/bin/paplay $HOME/naoqi/Media/usb_start.wav"
 
 echo "Generate network configuration";
 
