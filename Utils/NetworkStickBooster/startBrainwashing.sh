@@ -12,7 +12,6 @@ echo "Generate network configuration";
 sudo tee /etc/NetworkManager/system-connections/$NETWORK_NAME.nmconnection > /dev/null <<EOF
 [connection]
 id=$NETWORK_NAME
-uuid=246023fc-f66d-4853-b3c0-f657a0a0269e
 type=wifi
 interface-name=wlP1p1s0
 autoconnect-priority=1
@@ -43,4 +42,5 @@ sudo chmod 600 /etc/NetworkManager/system-connections/$NETWORK_NAME.nmconnection
 
 
 sudo nmcli connection reload
+# sudo nmcli device disconnect wlP1p1s0 # if we encounter errors we might need to do this
 sudo nmcli connection up $NETWORK_NAME
