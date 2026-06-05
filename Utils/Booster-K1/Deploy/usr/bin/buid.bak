@@ -1,7 +1,0 @@
-#!/bin/bash
-
-# TODO: Read mac to ID map here
-
-# ip a show dev wlP1p1s0 | grep -oE '([0-9a-f]{2}:){5}[0-9a-f]{2}' | head -n1
-
-echo 41
