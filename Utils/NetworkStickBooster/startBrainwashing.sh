@@ -38,7 +38,7 @@ psk=$WLAN_PW
 method=manual
 addresses=$WLAN_IP.41/$WLAN_SUBNET_MASK
 gateway=$WLAN_IP.1
-dns=8.8.8.8;141.20.26.7;
+dns=8.8.8.8;$WLAN_IP.1;
 
 [ipv6]
 addr-gen-mode=stable-privacy
