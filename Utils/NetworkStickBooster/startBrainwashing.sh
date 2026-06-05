@@ -23,7 +23,6 @@ sudo tee /etc/NetworkManager/system-connections/BU-WIFI.nmconnection > /dev/null
 [connection]
 id=BU-WIFI
 type=wifi
-interface-name=wlP1p1s0
 autoconnect-priority=1
 
 [wifi]
@@ -39,7 +38,7 @@ psk=$WLAN_PW
 method=manual
 addresses=$WLAN_IP.41/$WLAN_SUBNET_MASK
 gateway=$WLAN_IP.1
-dns=8.8.8.8;1.1.1.1;
+dns=8.8.8.8;141.20.26.7;
 
 [ipv6]
 addr-gen-mode=stable-privacy
