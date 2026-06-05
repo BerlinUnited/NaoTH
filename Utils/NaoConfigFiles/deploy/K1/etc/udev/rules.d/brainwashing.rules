@@ -1,3 +1,2 @@
 # mounts the stick and start the systemd service which will run the brainwashing script
-
-KERNEL=="sd*", SUBSYSTEMS=="usb", ENV{ID_FS_TYPE}=="vfat", ACTION=="add", SYMLINK+="brainwasher", ENV{SYSTEMD_WANTS}+="brainwasher"
+SUBSYSTEM=="block", ENV{UDISKS_AUTO}="0", ENV{UDISKS_IGNORE}="1" ACTION=="add", SYMLINK+="brainwasher", TAG+="systemd", ENV{SYSTEMD_WANTS}+="brainwasher"
