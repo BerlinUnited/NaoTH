@@ -21,10 +21,10 @@ then
   if [ $(blkid -s TYPE -o value /dev/brainwasher) != "vfat" ]
   then
     logger -t brainwasher "ERROR: usb wrong filesystem"
-    su nao -c "/usr/bin/paplay /home/nao/naoqi/Media/error_usb_wrong_filesystem.wav"
+    su booster -c "/usr/bin/paplay /home/booster/naoqi/Media/error_usb_wrong_filesystem.wav"
   else
     logger -t brainwasher "ERROR: usb unknown mount error"
-    su nao -c "/usr/bin/paplay /home/nao/naoqi/Media/error_usb_unknown_mount_error.wav"
+    su booster -c "/usr/bin/paplay /home/booster/naoqi/Media/error_usb_unknown_mount_error.wav"
   fi
 else
   cd /home/brainwasher
@@ -35,7 +35,7 @@ else
     ./startBrainwashing.sh
   else
     logger -t brainwasher "ERROR: missing brainwasher script"
-    su nao -c "/usr/bin/paplay /home/nao/naoqi/Media/error_missing_usb_brainwasher_script.wav"
+    su booster -c "/usr/bin/paplay /home/booster/naoqi/Media/error_missing_usb_brainwasher_script.wav"
   fi
 
   # mountpoint cleanup
@@ -49,7 +49,7 @@ else
     then
       # play error sound
       logger -t brainwasher "ERROR: unmounting usb"
-      su nao -c "/usr/bin/paplay /home/nao/naoqi/Media/error_unmounting_usb_drive.wav"
+      su booster -c "/usr/bin/paplay /home/booster/naoqi/Media/error_unmounting_usb_drive.wav"
       # kill all process accessing mount point
       fuser -c -k /home/brainwasher &> /dev/null
       # force unmounting
@@ -66,4 +66,4 @@ rmdir /home/brainwasher
 logger -t brainwasher "finished"
 
 #play something
-su nao -c "/usr/bin/paplay /home/nao/naoqi/Media/usb_stop.wav"
+su booster -c "/usr/bin/paplay /home/booster/naoqi/Media/usb_stop.wav"

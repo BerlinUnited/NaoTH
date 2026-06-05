@@ -15,7 +15,7 @@ WLAN_SUBNET_MASK="16"
 # NOTE: we dont set LAN IP on boosters for now, that means they will stay the same as in the docs
 
 # play sound
-/usr/bin/paplay "$HOME/naoqi/Media/usb_start.wav"
+su booster -c "/usr/bin/paplay /home/booster/naoqi/Media/usb_start.wav"
 
 echo "Generate network configuration";
 
