@@ -152,7 +152,6 @@ public class NaoSCP extends javax.swing.JPanel {
         btWriteToStick = new javax.swing.JButton();
         btSetNetwork = new javax.swing.JButton();
         btnInitActions = new javax.swing.JToggleButton();
-        btInintRobot = new javax.swing.JButton();
         btnActions = new javax.swing.JToggleButton();
         logPanel = new javax.swing.JPanel();
         logTextPanel = new naoscp.components.LogTextPanel();
@@ -332,15 +331,6 @@ public class NaoSCP extends javax.swing.JPanel {
             }
         });
         statusBarPanel.add(btnInitActions);
-
-        btInintRobot.setText("Initialize Robot");
-        btInintRobot.setToolTipText("Initialize Robot");
-        btInintRobot.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btInintRobotActionPerformed(evt);
-            }
-        });
-        statusBarPanel.add(btInintRobot);
 
         btnActions.setText("▲");
         btnActions.setBorderPainted(false);
@@ -590,144 +580,6 @@ public class NaoSCP extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_btWriteToStickActionPerformed
 
-    private void btInintRobotActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btInintRobotActionPerformed
-
-        naoTHPanel.checkFileAvailability();
-        if (!naoTHPanel.isExecEnabled() || !naoTHPanel.isConfEnabled() || (!naoTHPanel.isLibEnabled() && !naoTHPanel.isLolaEnabled())) {
-            Logger.getGlobal().log(Level.SEVERE, "For initialising the robot naoth executable, Config directory and lola_adaptor executable (V6) or libNaoSMAL need to be available (V5 and lower)! ");
-            return;
-        }
-        naoTHPanel.setLibSelected();
-        naoTHPanel.setLolaSelected();
-        naoTHPanel.setExecSelected();
-        naoTHPanel.setConfSelected();
-
-        final JFileChooser chooser = new JFileChooser();
-        String libPath = config.getProperty("naoscp.libpath", ".");
-        chooser.setCurrentDirectory(new File(libPath));
-        chooser.setDialogTitle("Select toolchain \"extern/lib\" Directory");
-        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        chooser.setAcceptAllFileFilterUsed(false);
-
-        if (chooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) {
-            Logger.getGlobal().log(Level.INFO, "Deploying robot was canceled.");
-            return;
-        }
-
-        // sanity check
-        File libDir = chooser.getSelectedFile();
-        File gioFile = new File(libDir, "libgio-2.0.so");
-        File glibDir = new File(libDir, "glib-2.0");
-        if (!gioFile.isFile() || !glibDir.isDirectory()) {
-            chooser.setDialogTitle("Toolchain \"extern/lib\" Directory seems to be wrong. Try again.");
-            JOptionPane.showMessageDialog(this,
-                    "Toolchain \"extern/lib\" Directory seems to be wrong. Cannot find 'libgio-2.0.so' or 'glib-2.0'.",
-                    "ERROR", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        config.setProperty("naoscp.libpath", libDir.getAbsolutePath());
-
-        final File tmpDir = createTemporaryDirectory("nao_scp_init_");
-        if (tmpDir == null) {
-            return;
-        }
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    File setupDir = new File(tmpDir, "setup");
-                    File deployDir = new File(tmpDir, "setup/deploy");
-
-                    if (setupDir.isDirectory()) {
-                        //Logger.getGlobal().log(Level.SEVERE, "Could not clean the setup directory: " + setupDir.getAbsolutePath());
-                        FileUtils.deleteDir(setupDir);
-                    }
-
-                    if (!setupDir.mkdirs()) {
-                        Logger.getGlobal().log(Level.SEVERE, "Could not create setup directory: " + setupDir.getAbsolutePath());
-                    } else {
-                        // copy deploy stuff
-                        naoTHPanel.getAction().run(deployDir);
-                        FileUtils.copyFiles(new File(deployStickScriptPath), setupDir);
-
-                        // copy scripts
-                        FileUtils.copyFiles(new File(utilsPath + "/NaoConfigFiles"), setupDir);
-
-                        // copy libs
-                        File libDir = chooser.getSelectedFile();
-                        FileUtils.copyFiles(libDir, new File(setupDir + "/deploy", "/home/nao/lib"));
-
-                        // copy binaries
-                        File sysBinDir = new File(libDir.getParentFile(), "bin");
-                        FileUtils.copyFiles(sysBinDir, new File(setupDir + "/deploy", "/home/nao/bin"));
-
-                        // adjust network configuration
-                        NetwokPanel.NetworkConfig cfg = netwokPanel.getNetworkConfig();
-
-                        String networkScript = FileUtils.readFile(new File(setupDir, "startBrainwashing.sh"));
-                        networkScript = networkScript.replaceAll("NETWORK_WLAN_SSID=\".*\"", "NETWORK_WLAN_SSID=\""+cfg.getWlan_encryption().ssid+"\"");
-                        networkScript = networkScript.replaceAll("NETWORK_WLAN_PW=\".*\"", "NETWORK_WLAN_PW=\""+cfg.getWlan_encryption().key+"\"");
-                        networkScript = networkScript.replaceAll("NETWORK_WLAN_IP=\".*\"", "NETWORK_WLAN_IP=\""+cfg.getWlan().subnet+"\"");
-                        networkScript = networkScript.replaceAll("NETWORK_WLAN_MASK=\".*\"", "NETWORK_WLAN_MASK=\""+cfg.getWlan().mask+"\"");
-                        networkScript = networkScript.replaceAll("NETWORK_WLAN_BROADCAST=\".*\"", "NETWORK_WLAN_BROADCAST=\""+cfg.getWlan().broadcast+"\"");
-
-                        networkScript = networkScript.replaceAll("NETWORK_ETH_IP=\".*\"", "NETWORK_ETH_IP=\""+cfg.getLan().subnet+"\"");
-                        networkScript = networkScript.replaceAll("NETWORK_ETH_MASK=\".*\"", "NETWORK_ETH_MASK=\""+cfg.getLan().mask+"\"");
-                        networkScript = networkScript.replaceAll("NETWORK_ETH_BROADCAST=\".*\"", "NETWORK_ETH_BROADCAST=\""+cfg.getLan().broadcast+"\"");
-
-                        FileUtils.writeToFile(networkScript, new File(setupDir, "startBrainwashing.sh"));
-
-
-                        // zip the deploy directory for faster network transfer
-                        File setupZip = new File(tmpDir, "setup.zip");
-                        Logger.getGlobal().log(Level.INFO, "ZIP files to " + setupZip.getPath());
-                        FileUtils.zipDirectory(setupDir, setupZip);
-
-                        // try to connect to the robot
-                        Scp scp = null;
-                        String ip = null;
-                        while (scp == null) {
-                            ip = JOptionPane.showInputDialog(NaoSCP.this, "Robot ip address", ip);
-                            if (ip == null) {
-                                throw new IOException("Operation was canceled.");
-                            }
-                            try {
-                                scp = new Scp(ip, "nao", "nao");
-                            } catch (JSchException ex) {
-                                Logger.getGlobal().log(Level.SEVERE, ex.getMessage());
-                            }
-                        }
-
-                        // copy to robot
-                        scp.setProgressMonitor(new BarProgressMonitor(jProgressBar));
-
-                        scp.mkdir("/home/nao/tmp");
-                        scp.cleardir("/home/nao/tmp");
-
-                        // copy files
-                        //scp.put(setupDir, "/home/nao/tmp");
-                        scp.put(setupZip, "/home/nao/tmp/setup.zip");
-
-                        //scp.chmod(755, "/home/nao/tmp/startBrainwashing.sh");
-
-                        Scp.CommandStream shell = scp.getShell();
-                        shell.run("su", "Password:");
-                        shell.run("root");
-                        shell.run("cd /home/nao/tmp/");
-                        shell.run("sudo -u nao unzip -q setup.zip; cd ./setup; bash ./startBrainwashing.sh", "DONE");
-
-                        scp.disconnect();
-
-                        Logger.getGlobal().log(Level.INFO, "DONE");
-                    }
-                } catch (JSchException | SftpException | IOException | NaoSCPException ex) {
-                    Logger.getGlobal().log(Level.SEVERE, ex.getMessage());
-                }
-            }
-        }).start();
-    }//GEN-LAST:event_btInintRobotActionPerformed
-
     class TemplateFile {
 
         private String text;
@@ -910,7 +762,140 @@ public class NaoSCP extends javax.swing.JPanel {
     }//GEN-LAST:event_btnInitActionsActionPerformed
 
     private void miInitNaoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miInitNaoActionPerformed
-        // TODO add your handling code here:
+        naoTHPanel.checkFileAvailability();
+        if (!naoTHPanel.isExecEnabled() || !naoTHPanel.isConfEnabled() || (!naoTHPanel.isLibEnabled() && !naoTHPanel.isLolaEnabled())) {
+            Logger.getGlobal().log(Level.SEVERE, "For initialising the robot naoth executable, Config directory and lola_adaptor executable (V6) or libNaoSMAL need to be available (V5 and lower)! ");
+            return;
+        }
+        naoTHPanel.setLibSelected();
+        naoTHPanel.setLolaSelected();
+        naoTHPanel.setExecSelected();
+        naoTHPanel.setConfSelected();
+
+        final JFileChooser chooser = new JFileChooser();
+        String libPath = config.getProperty("naoscp.libpath", ".");
+        chooser.setCurrentDirectory(new File(libPath));
+        chooser.setDialogTitle("Select toolchain \"extern/lib\" Directory");
+        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        chooser.setAcceptAllFileFilterUsed(false);
+
+        if (chooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) {
+            Logger.getGlobal().log(Level.INFO, "Deploying robot was canceled.");
+            return;
+        }
+
+        // sanity check
+        File libDir = chooser.getSelectedFile();
+        File gioFile = new File(libDir, "libgio-2.0.so");
+        File glibDir = new File(libDir, "glib-2.0");
+        if (!gioFile.isFile() || !glibDir.isDirectory()) {
+            chooser.setDialogTitle("Toolchain \"extern/lib\" Directory seems to be wrong. Try again.");
+            JOptionPane.showMessageDialog(this,
+                    "Toolchain \"extern/lib\" Directory seems to be wrong. Cannot find 'libgio-2.0.so' or 'glib-2.0'.",
+                    "ERROR", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        config.setProperty("naoscp.libpath", libDir.getAbsolutePath());
+
+        final File tmpDir = createTemporaryDirectory("nao_scp_init_");
+        if (tmpDir == null) {
+            return;
+        }
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    File setupDir = new File(tmpDir, "setup");
+                    File deployDir = new File(tmpDir, "setup/deploy");
+
+                    if (setupDir.isDirectory()) {
+                        //Logger.getGlobal().log(Level.SEVERE, "Could not clean the setup directory: " + setupDir.getAbsolutePath());
+                        FileUtils.deleteDir(setupDir);
+                    }
+
+                    if (!setupDir.mkdirs()) {
+                        Logger.getGlobal().log(Level.SEVERE, "Could not create setup directory: " + setupDir.getAbsolutePath());
+                    } else {
+                        // copy deploy stuff
+                        naoTHPanel.getAction().run(deployDir);
+                        FileUtils.copyFiles(new File(deployStickScriptPath), setupDir);
+
+                        // copy scripts
+                        FileUtils.copyFiles(new File(utilsPath + "/NaoConfigFiles"), setupDir);
+
+                        // copy libs
+                        File libDir = chooser.getSelectedFile();
+                        FileUtils.copyFiles(libDir, new File(setupDir + "/deploy", "/home/nao/lib"));
+
+                        // copy binaries
+                        File sysBinDir = new File(libDir.getParentFile(), "bin");
+                        FileUtils.copyFiles(sysBinDir, new File(setupDir + "/deploy", "/home/nao/bin"));
+
+                        // adjust network configuration
+                        NetwokPanel.NetworkConfig cfg = netwokPanel.getNetworkConfig();
+
+                        String networkScript = FileUtils.readFile(new File(setupDir, "startBrainwashing.sh"));
+                        networkScript = networkScript.replaceAll("NETWORK_WLAN_SSID=\".*\"", "NETWORK_WLAN_SSID=\""+cfg.getWlan_encryption().ssid+"\"");
+                        networkScript = networkScript.replaceAll("NETWORK_WLAN_PW=\".*\"", "NETWORK_WLAN_PW=\""+cfg.getWlan_encryption().key+"\"");
+                        networkScript = networkScript.replaceAll("NETWORK_WLAN_IP=\".*\"", "NETWORK_WLAN_IP=\""+cfg.getWlan().subnet+"\"");
+                        networkScript = networkScript.replaceAll("NETWORK_WLAN_MASK=\".*\"", "NETWORK_WLAN_MASK=\""+cfg.getWlan().mask+"\"");
+                        networkScript = networkScript.replaceAll("NETWORK_WLAN_BROADCAST=\".*\"", "NETWORK_WLAN_BROADCAST=\""+cfg.getWlan().broadcast+"\"");
+
+                        networkScript = networkScript.replaceAll("NETWORK_ETH_IP=\".*\"", "NETWORK_ETH_IP=\""+cfg.getLan().subnet+"\"");
+                        networkScript = networkScript.replaceAll("NETWORK_ETH_MASK=\".*\"", "NETWORK_ETH_MASK=\""+cfg.getLan().mask+"\"");
+                        networkScript = networkScript.replaceAll("NETWORK_ETH_BROADCAST=\".*\"", "NETWORK_ETH_BROADCAST=\""+cfg.getLan().broadcast+"\"");
+
+                        FileUtils.writeToFile(networkScript, new File(setupDir, "startBrainwashing.sh"));
+
+
+                        // zip the deploy directory for faster network transfer
+                        File setupZip = new File(tmpDir, "setup.zip");
+                        Logger.getGlobal().log(Level.INFO, "ZIP files to " + setupZip.getPath());
+                        FileUtils.zipDirectory(setupDir, setupZip);
+
+                        // try to connect to the robot
+                        Scp scp = null;
+                        String ip = null;
+                        while (scp == null) {
+                            ip = JOptionPane.showInputDialog(NaoSCP.this, "Robot ip address", ip);
+                            if (ip == null) {
+                                throw new IOException("Operation was canceled.");
+                            }
+                            try {
+                                scp = new Scp(ip, "nao", "nao");
+                            } catch (JSchException ex) {
+                                Logger.getGlobal().log(Level.SEVERE, ex.getMessage());
+                            }
+                        }
+
+                        // copy to robot
+                        scp.setProgressMonitor(new BarProgressMonitor(jProgressBar));
+
+                        scp.mkdir("/home/nao/tmp");
+                        scp.cleardir("/home/nao/tmp");
+
+                        // copy files
+                        //scp.put(setupDir, "/home/nao/tmp");
+                        scp.put(setupZip, "/home/nao/tmp/setup.zip");
+
+                        //scp.chmod(755, "/home/nao/tmp/startBrainwashing.sh");
+
+                        Scp.CommandStream shell = scp.getShell();
+                        shell.run("su", "Password:");
+                        shell.run("root");
+                        shell.run("cd /home/nao/tmp/");
+                        shell.run("sudo -u nao unzip -q setup.zip; cd ./setup; bash ./startBrainwashing.sh", "DONE");
+
+                        scp.disconnect();
+
+                        Logger.getGlobal().log(Level.INFO, "DONE");
+                    }
+                } catch (JSchException | SftpException | IOException | NaoSCPException ex) {
+                    Logger.getGlobal().log(Level.SEVERE, ex.getMessage());
+                }
+            }
+        }).start();        // TODO add your handling code here:
     }//GEN-LAST:event_miInitNaoActionPerformed
 
     /**
@@ -1024,7 +1009,6 @@ public class NaoSCP extends javax.swing.JPanel {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btDeploy;
-    private javax.swing.JButton btInintRobot;
     private javax.swing.JButton btSetNetwork;
     private javax.swing.JButton btWriteToStick;
     private javax.swing.JToggleButton btnActions;
