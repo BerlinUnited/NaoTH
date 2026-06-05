@@ -1,6 +1,6 @@
 # demo.py
 # to execute this demo, please run following
-# source source /opt/ros/humble/setup.bash
+# source /opt/ros/humble/setup.bash
 # python demo.py
 
 '''
