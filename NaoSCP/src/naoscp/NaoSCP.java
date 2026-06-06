@@ -23,6 +23,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.Box;
+import javax.swing.JPanel;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -857,13 +861,35 @@ public class NaoSCP extends javax.swing.JPanel {
                         // try to connect to the robot
                         Scp scp = null;
                         String ip = null;
+                        int port = 22;
                         while (scp == null) {
-                            ip = JOptionPane.showInputDialog(NaoSCP.this, "Robot ip address", ip);
+                            JTextField ipField = new JTextField(ip, 12);
+                            JTextField portField = new JTextField(String.valueOf(port), 5);
+                            
+                            JPanel inputPanel = new JPanel();
+                            inputPanel.add(new JLabel("Robot IP:"));
+                            inputPanel.add(ipField);
+                            inputPanel.add(Box.createHorizontalStrut(15)); // Spacer
+                            inputPanel.add(new JLabel("Port:"));
+                            inputPanel.add(portField);
+                             
+                            int result = JOptionPane.showConfirmDialog(
+                                NaoSCP.this, 
+                                inputPanel, 
+                                "Connect to NAO Robot", 
+                                JOptionPane.OK_CANCEL_OPTION, 
+                                JOptionPane.QUESTION_MESSAGE
+                            );
+                            if (result != JOptionPane.OK_OPTION) {
+                                throw new IOException("Operation was canceled.");
+                            }
+                            ip = ipField.getText().trim();
+                            String portStr = portField.getText().trim();
                             if (ip == null) {
                                 throw new IOException("Operation was canceled.");
                             }
                             try {
-                                scp = new Scp(ip, "nao", "nao");
+                                scp = new Scp(ip, Integer.parseInt(portStr), "nao", "nao");
                             } catch (JSchException ex) {
                                 Logger.getGlobal().log(Level.SEVERE, ex.getMessage());
                             }
@@ -895,7 +921,7 @@ public class NaoSCP extends javax.swing.JPanel {
                     Logger.getGlobal().log(Level.SEVERE, ex.getMessage());
                 }
             }
-        }).start();        // TODO add your handling code here:
+        }).start();
     }//GEN-LAST:event_miInitNaoActionPerformed
 
     /**

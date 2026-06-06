@@ -22,10 +22,18 @@ public class Scp {
     private SftpProgressMonitor progressMonitor;
     
     public Scp(String ip, String userName, String password) throws JSchException {
-        this(ip, userName, new SimpleUserInfo(password));
+        this(ip, 22, userName, new SimpleUserInfo(password));
+    }
+    
+    public Scp(String ip, String userName, UserInfo ui) throws JSchException {
+        this(ip, 22, userName, ui);
+    }
+    
+    public Scp(String ip, int port, String userName, String password) throws JSchException {
+        this(ip, port, userName, new SimpleUserInfo(password));
     }
 
-    public Scp(String ip, String userName, UserInfo ui) throws JSchException {
+    public Scp(String ip,int port, String userName, UserInfo ui) throws JSchException {
         java.util.logging.Logger.getGlobal().log(Level.INFO, "connecting to " + userName + "@" + ip);
         
         java.util.Properties config = new java.util.Properties();
@@ -34,7 +42,7 @@ public class Scp {
         JSch.setLogger(new SimpleLogger());
         
         JSch jsch = new JSch();
-        session = jsch.getSession(userName, ip, 22);
+        session = jsch.getSession(userName, ip, port);
         session.setConfig(config);
         session.setUserInfo(ui);
         session.setPassword(ui.getPassword());
