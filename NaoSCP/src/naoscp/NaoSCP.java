@@ -908,8 +908,6 @@ public class NaoSCP extends javax.swing.JPanel {
                         //scp.chmod(755, "/home/nao/tmp/startBrainwashing.sh");
 
                         Scp.CommandStream shell = scp.getShell();
-                        shell.run("su", "Password:");
-                        shell.run("root");
                         shell.run("cd /home/nao/tmp/");
                         shell.run("sudo -u nao unzip -q setup.zip; cd ./setup; bash ./startBrainwashing.sh", "DONE");
 
