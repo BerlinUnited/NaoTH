@@ -23,6 +23,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.Box;
+import javax.swing.JPanel;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -125,8 +129,7 @@ public class NaoSCP extends javax.swing.JPanel {
      */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents()
-    {
+    private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
         popupMenu = new javax.swing.JPopupMenu();
@@ -141,6 +144,9 @@ public class NaoSCP extends javax.swing.JPanel {
         miSetVolume40 = new javax.swing.JMenuItem();
         jSeparator3 = new javax.swing.JPopupMenu.Separator();
         miSyncTime = new javax.swing.JMenuItem();
+        popupMenuInit = new javax.swing.JPopupMenu();
+        miInitNao = new javax.swing.JMenuItem();
+        miInitBooster = new javax.swing.JMenuItem();
         netwokPanel = new naoscp.components.NetwokPanel();
         naoTHPanel = new naoscp.components.NaoTHPanel();
         statusBarPanel = new javax.swing.JPanel();
@@ -149,32 +155,26 @@ public class NaoSCP extends javax.swing.JPanel {
         txtDeployTag = new javax.swing.JTextField();
         btWriteToStick = new javax.swing.JButton();
         btSetNetwork = new javax.swing.JButton();
-        btInintRobot = new javax.swing.JButton();
+        btnInitActions = new javax.swing.JToggleButton();
         btnActions = new javax.swing.JToggleButton();
         logPanel = new javax.swing.JPanel();
         logTextPanel = new naoscp.components.LogTextPanel();
         jProgressBar = new javax.swing.JProgressBar();
 
-        popupMenu.addPopupMenuListener(new javax.swing.event.PopupMenuListener()
-        {
-            public void popupMenuCanceled(javax.swing.event.PopupMenuEvent evt)
-            {
+        popupMenu.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
+            public void popupMenuCanceled(javax.swing.event.PopupMenuEvent evt) {
             }
-            public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt)
-            {
+            public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {
                 popupMenuPopupMenuWillBecomeInvisible(evt);
             }
-            public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt)
-            {
+            public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {
             }
         });
 
         miShutdown.setText("Shutdown nao");
         miShutdown.setToolTipText("Shutdown the full nao system");
-        miShutdown.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        miShutdown.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 miShutdownActionPerformed(evt);
             }
         });
@@ -182,10 +182,8 @@ public class NaoSCP extends javax.swing.JPanel {
 
         miRestartNao.setText("Restart nao");
         miRestartNao.setToolTipText("Restarts the full nao system");
-        miRestartNao.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        miRestartNao.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 miRestartNaoActionPerformed(evt);
             }
         });
@@ -194,10 +192,8 @@ public class NaoSCP extends javax.swing.JPanel {
 
         miRestartNaoth.setText("Restart naoth");
         miRestartNaoth.setToolTipText("Restart the naoth process");
-        miRestartNaoth.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        miRestartNaoth.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 miRestartNaothActionPerformed(evt);
             }
         });
@@ -206,10 +202,8 @@ public class NaoSCP extends javax.swing.JPanel {
 
         miMute.setText("Mute");
         miMute.setToolTipText("Muting the nao");
-        miMute.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        miMute.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 miMuteActionPerformed(evt);
             }
         });
@@ -217,10 +211,8 @@ public class NaoSCP extends javax.swing.JPanel {
 
         miUnmute.setText("Un-Mute");
         miUnmute.setToolTipText("Un-muting the nao");
-        miUnmute.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        miUnmute.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 miUnmuteActionPerformed(evt);
             }
         });
@@ -228,10 +220,8 @@ public class NaoSCP extends javax.swing.JPanel {
 
         miSetVolume80.setText("Volume: 80%");
         miSetVolume80.setToolTipText("Sets the speaker volume to 80%");
-        miSetVolume80.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        miSetVolume80.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 miSetVolume80ActionPerformed(evt);
             }
         });
@@ -239,10 +229,8 @@ public class NaoSCP extends javax.swing.JPanel {
 
         miSetVolume40.setText("Volume: 40%");
         miSetVolume40.setToolTipText("Sets the speaker volume to 40%");
-        miSetVolume40.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        miSetVolume40.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 miSetVolume40ActionPerformed(evt);
             }
         });
@@ -251,19 +239,26 @@ public class NaoSCP extends javax.swing.JPanel {
 
         miSyncTime.setText("Sync Time");
         miSyncTime.setToolTipText("Syncs system time and enables NTP");
-        miSyncTime.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        miSyncTime.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 miSyncTimeActionPerformed(evt);
             }
         });
         popupMenu.add(miSyncTime);
 
-        addComponentListener(new java.awt.event.ComponentAdapter()
-        {
-            public void componentResized(java.awt.event.ComponentEvent evt)
-            {
+        miInitNao.setText("Initialize Nao");
+        miInitNao.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                miInitNaoActionPerformed(evt);
+            }
+        });
+        popupMenuInit.add(miInitNao);
+
+        miInitBooster.setText("Initialize Booster");
+        popupMenuInit.add(miInitBooster);
+
+        addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentResized(java.awt.event.ComponentEvent evt) {
                 formComponentResized(evt);
             }
         });
@@ -282,7 +277,7 @@ public class NaoSCP extends javax.swing.JPanel {
 
         naoTHPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("NaoTH"));
         naoTHPanel.setMaximumSize(new java.awt.Dimension(32777, 32777));
-        naoTHPanel.setMinimumSize(new java.awt.Dimension(539, 270));
+        naoTHPanel.setMinimumSize(new java.awt.Dimension(640, 270));
         naoTHPanel.setPreferredSize(new java.awt.Dimension(539, 270));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -291,8 +286,8 @@ public class NaoSCP extends javax.swing.JPanel {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         add(naoTHPanel, gridBagConstraints);
 
-        statusBarPanel.setMinimumSize(new java.awt.Dimension(550, 24));
-        statusBarPanel.setPreferredSize(new java.awt.Dimension(550, 24));
+        statusBarPanel.setMinimumSize(new java.awt.Dimension(640, 24));
+        statusBarPanel.setPreferredSize(new java.awt.Dimension(640, 24));
         statusBarPanel.setLayout(new javax.swing.BoxLayout(statusBarPanel, javax.swing.BoxLayout.X_AXIS));
 
         txtRobotNumber.setColumns(3);
@@ -303,10 +298,8 @@ public class NaoSCP extends javax.swing.JPanel {
 
         btDeploy.setText("Send to Robot");
         btDeploy.setToolTipText("Send binaries and NaoTH Configs to Robot if checked above. No Network Configs on the robot will be changed.");
-        btDeploy.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        btDeploy.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btDeployActionPerformed(evt);
             }
         });
@@ -319,10 +312,8 @@ public class NaoSCP extends javax.swing.JPanel {
 
         btWriteToStick.setText("Write to Stick");
         btWriteToStick.setToolTipText("Copy binaries and NaoTH Configs to a USB Stick if checked above. No Network Configs will be copied.");
-        btWriteToStick.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        btWriteToStick.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btWriteToStickActionPerformed(evt);
             }
         });
@@ -330,32 +321,26 @@ public class NaoSCP extends javax.swing.JPanel {
 
         btSetNetwork.setText("Set Network");
         btSetNetwork.setToolTipText("Set Network");
-        btSetNetwork.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        btSetNetwork.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btSetNetworkActionPerformed(evt);
             }
         });
         statusBarPanel.add(btSetNetwork);
 
-        btInintRobot.setText("Initialize Robot");
-        btInintRobot.setToolTipText("Initialize Robot");
-        btInintRobot.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
-                btInintRobotActionPerformed(evt);
+        btnInitActions.setText("Initialize Robot");
+        btnInitActions.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnInitActionsActionPerformed(evt);
             }
         });
-        statusBarPanel.add(btInintRobot);
+        statusBarPanel.add(btnInitActions);
 
-        btnActions.setText("\u25B2"); // Black Up-Pointing Triangle
+        btnActions.setText("▲");
+        btnActions.setBorderPainted(false);
         btnActions.setMargin(new java.awt.Insets(2, -4, 2, -4));
-        btnActions.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        btnActions.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnActionsActionPerformed(evt);
             }
         });
@@ -599,144 +584,6 @@ public class NaoSCP extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_btWriteToStickActionPerformed
 
-    private void btInintRobotActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btInintRobotActionPerformed
-
-        naoTHPanel.checkFileAvailability();
-        if (!naoTHPanel.isExecEnabled() || !naoTHPanel.isConfEnabled() || (!naoTHPanel.isLibEnabled() && !naoTHPanel.isLolaEnabled())) {
-            Logger.getGlobal().log(Level.SEVERE, "For initialising the robot naoth executable, Config directory and lola_adaptor executable (V6) or libNaoSMAL need to be available (V5 and lower)! ");
-            return;
-        }
-        naoTHPanel.setLibSelected();
-        naoTHPanel.setLolaSelected();
-        naoTHPanel.setExecSelected();
-        naoTHPanel.setConfSelected();
-
-        final JFileChooser chooser = new JFileChooser();
-        String libPath = config.getProperty("naoscp.libpath", ".");
-        chooser.setCurrentDirectory(new File(libPath));
-        chooser.setDialogTitle("Select toolchain \"extern/lib\" Directory");
-        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        chooser.setAcceptAllFileFilterUsed(false);
-
-        if (chooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) {
-            Logger.getGlobal().log(Level.INFO, "Deploying robot was canceled.");
-            return;
-        }
-
-        // sanity check
-        File libDir = chooser.getSelectedFile();
-        File gioFile = new File(libDir, "libgio-2.0.so");
-        File glibDir = new File(libDir, "glib-2.0");
-        if (!gioFile.isFile() || !glibDir.isDirectory()) {
-            chooser.setDialogTitle("Toolchain \"extern/lib\" Directory seems to be wrong. Try again.");
-            JOptionPane.showMessageDialog(this,
-                    "Toolchain \"extern/lib\" Directory seems to be wrong. Cannot find 'libgio-2.0.so' or 'glib-2.0'.",
-                    "ERROR", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        config.setProperty("naoscp.libpath", libDir.getAbsolutePath());
-
-        final File tmpDir = createTemporaryDirectory("nao_scp_init_");
-        if (tmpDir == null) {
-            return;
-        }
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    File setupDir = new File(tmpDir, "setup");
-                    File deployDir = new File(tmpDir, "setup/deploy");
-
-                    if (setupDir.isDirectory()) {
-                        //Logger.getGlobal().log(Level.SEVERE, "Could not clean the setup directory: " + setupDir.getAbsolutePath());
-                        FileUtils.deleteDir(setupDir);
-                    }
-
-                    if (!setupDir.mkdirs()) {
-                        Logger.getGlobal().log(Level.SEVERE, "Could not create setup directory: " + setupDir.getAbsolutePath());
-                    } else {
-                        // copy deploy stuff
-                        naoTHPanel.getAction().run(deployDir);
-                        FileUtils.copyFiles(new File(deployStickScriptPath), setupDir);
-
-                        // copy scripts
-                        FileUtils.copyFiles(new File(utilsPath + "/NaoConfigFiles"), setupDir);
-
-                        // copy libs
-                        File libDir = chooser.getSelectedFile();
-                        FileUtils.copyFiles(libDir, new File(setupDir + "/deploy", "/home/nao/lib"));
-
-                        // copy binaries
-                        File sysBinDir = new File(libDir.getParentFile(), "bin");
-                        FileUtils.copyFiles(sysBinDir, new File(setupDir + "/deploy", "/home/nao/bin"));
-
-                        // adjust network configuration
-                        NetwokPanel.NetworkConfig cfg = netwokPanel.getNetworkConfig();
-
-                        String networkScript = FileUtils.readFile(new File(setupDir, "startBrainwashing.sh"));
-                        networkScript = networkScript.replaceAll("NETWORK_WLAN_SSID=\".*\"", "NETWORK_WLAN_SSID=\""+cfg.getWlan_encryption().ssid+"\"");
-                        networkScript = networkScript.replaceAll("NETWORK_WLAN_PW=\".*\"", "NETWORK_WLAN_PW=\""+cfg.getWlan_encryption().key+"\"");
-                        networkScript = networkScript.replaceAll("NETWORK_WLAN_IP=\".*\"", "NETWORK_WLAN_IP=\""+cfg.getWlan().subnet+"\"");
-                        networkScript = networkScript.replaceAll("NETWORK_WLAN_MASK=\".*\"", "NETWORK_WLAN_MASK=\""+cfg.getWlan().mask+"\"");
-                        networkScript = networkScript.replaceAll("NETWORK_WLAN_BROADCAST=\".*\"", "NETWORK_WLAN_BROADCAST=\""+cfg.getWlan().broadcast+"\"");
-
-                        networkScript = networkScript.replaceAll("NETWORK_ETH_IP=\".*\"", "NETWORK_ETH_IP=\""+cfg.getLan().subnet+"\"");
-                        networkScript = networkScript.replaceAll("NETWORK_ETH_MASK=\".*\"", "NETWORK_ETH_MASK=\""+cfg.getLan().mask+"\"");
-                        networkScript = networkScript.replaceAll("NETWORK_ETH_BROADCAST=\".*\"", "NETWORK_ETH_BROADCAST=\""+cfg.getLan().broadcast+"\"");
-
-                        FileUtils.writeToFile(networkScript, new File(setupDir, "startBrainwashing.sh"));
-
-
-                        // zip the deploy directory for faster network transfer
-                        File setupZip = new File(tmpDir, "setup.zip");
-                        Logger.getGlobal().log(Level.INFO, "ZIP files to " + setupZip.getPath());
-                        FileUtils.zipDirectory(setupDir, setupZip);
-
-                        // try to connect to the robot
-                        Scp scp = null;
-                        String ip = null;
-                        while (scp == null) {
-                            ip = JOptionPane.showInputDialog(NaoSCP.this, "Robot ip address", ip);
-                            if (ip == null) {
-                                throw new IOException("Operation was canceled.");
-                            }
-                            try {
-                                scp = new Scp(ip, "nao", "nao");
-                            } catch (JSchException ex) {
-                                Logger.getGlobal().log(Level.SEVERE, ex.getMessage());
-                            }
-                        }
-
-                        // copy to robot
-                        scp.setProgressMonitor(new BarProgressMonitor(jProgressBar));
-
-                        scp.mkdir("/home/nao/tmp");
-                        scp.cleardir("/home/nao/tmp");
-
-                        // copy files
-                        //scp.put(setupDir, "/home/nao/tmp");
-                        scp.put(setupZip, "/home/nao/tmp/setup.zip");
-
-                        //scp.chmod(755, "/home/nao/tmp/startBrainwashing.sh");
-
-                        Scp.CommandStream shell = scp.getShell();
-                        shell.run("su", "Password:");
-                        shell.run("root");
-                        shell.run("cd /home/nao/tmp/");
-                        shell.run("sudo -u nao unzip -q setup.zip; cd ./setup; bash ./startBrainwashing.sh", "DONE");
-
-                        scp.disconnect();
-
-                        Logger.getGlobal().log(Level.INFO, "DONE");
-                    }
-                } catch (JSchException | SftpException | IOException | NaoSCPException ex) {
-                    Logger.getGlobal().log(Level.SEVERE, ex.getMessage());
-                }
-            }
-        }).start();
-    }//GEN-LAST:event_btInintRobotActionPerformed
-
     class TemplateFile {
 
         private String text;
@@ -914,6 +761,167 @@ public class NaoSCP extends javax.swing.JPanel {
         singleShellCommand(cmd, null, "Sync time", null, true);
     }//GEN-LAST:event_miSyncTimeActionPerformed
 
+    private void btnInitActionsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInitActionsActionPerformed
+        popupMenuInit.show(this.btnInitActions, 0, -popupMenuInit.getPreferredSize().height);
+    }//GEN-LAST:event_btnInitActionsActionPerformed
+
+    private void miInitNaoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miInitNaoActionPerformed
+        naoTHPanel.checkFileAvailability();
+        if (!naoTHPanel.isExecEnabled() || !naoTHPanel.isConfEnabled() || (!naoTHPanel.isLibEnabled() && !naoTHPanel.isLolaEnabled())) {
+            Logger.getGlobal().log(Level.SEVERE, "For initialising the robot naoth executable, Config directory and lola_adaptor executable (V6) or libNaoSMAL need to be available (V5 and lower)! ");
+            return;
+        }
+        naoTHPanel.setLibSelected();
+        naoTHPanel.setLolaSelected();
+        naoTHPanel.setExecSelected();
+        naoTHPanel.setConfSelected();
+
+        final JFileChooser chooser = new JFileChooser();
+        String libPath = config.getProperty("naoscp.libpath", ".");
+        chooser.setCurrentDirectory(new File(libPath));
+        chooser.setDialogTitle("Select toolchain \"extern/lib\" Directory");
+        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        chooser.setAcceptAllFileFilterUsed(false);
+
+        if (chooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) {
+            Logger.getGlobal().log(Level.INFO, "Deploying robot was canceled.");
+            return;
+        }
+
+        // sanity check
+        File libDir = chooser.getSelectedFile();
+        File gioFile = new File(libDir, "libgio-2.0.so");
+        File glibDir = new File(libDir, "glib-2.0");
+        if (!gioFile.isFile() || !glibDir.isDirectory()) {
+            chooser.setDialogTitle("Toolchain \"extern/lib\" Directory seems to be wrong. Try again.");
+            JOptionPane.showMessageDialog(this,
+                    "Toolchain \"extern/lib\" Directory seems to be wrong. Cannot find 'libgio-2.0.so' or 'glib-2.0'.",
+                    "ERROR", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        config.setProperty("naoscp.libpath", libDir.getAbsolutePath());
+
+        final File tmpDir = createTemporaryDirectory("nao_scp_init_");
+        if (tmpDir == null) {
+            return;
+        }
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    File setupDir = new File(tmpDir, "setup");
+                    File deployDir = new File(tmpDir, "setup/deploy");
+
+                    if (setupDir.isDirectory()) {
+                        //Logger.getGlobal().log(Level.SEVERE, "Could not clean the setup directory: " + setupDir.getAbsolutePath());
+                        FileUtils.deleteDir(setupDir);
+                    }
+
+                    if (!setupDir.mkdirs()) {
+                        Logger.getGlobal().log(Level.SEVERE, "Could not create setup directory: " + setupDir.getAbsolutePath());
+                    } else {
+                        // copy deploy stuff
+                        naoTHPanel.getAction().run(deployDir);
+                        FileUtils.copyFiles(new File(deployStickScriptPath), setupDir);
+
+                        // copy scripts
+                        FileUtils.copyFiles(new File(utilsPath + "/NaoConfigFiles"), setupDir);
+
+                        // copy libs
+                        File libDir = chooser.getSelectedFile();
+                        FileUtils.copyFiles(libDir, new File(setupDir + "/deploy", "/home/nao/lib"));
+
+                        // copy binaries
+                        File sysBinDir = new File(libDir.getParentFile(), "bin");
+                        FileUtils.copyFiles(sysBinDir, new File(setupDir + "/deploy", "/home/nao/bin"));
+
+                        // adjust network configuration
+                        NetwokPanel.NetworkConfig cfg = netwokPanel.getNetworkConfig();
+
+                        String networkScript = FileUtils.readFile(new File(setupDir, "startBrainwashing.sh"));
+                        networkScript = networkScript.replaceAll("NETWORK_WLAN_SSID=\".*\"", "NETWORK_WLAN_SSID=\""+cfg.getWlan_encryption().ssid+"\"");
+                        networkScript = networkScript.replaceAll("NETWORK_WLAN_PW=\".*\"", "NETWORK_WLAN_PW=\""+cfg.getWlan_encryption().key+"\"");
+                        networkScript = networkScript.replaceAll("NETWORK_WLAN_IP=\".*\"", "NETWORK_WLAN_IP=\""+cfg.getWlan().subnet+"\"");
+                        networkScript = networkScript.replaceAll("NETWORK_WLAN_MASK=\".*\"", "NETWORK_WLAN_MASK=\""+cfg.getWlan().mask+"\"");
+                        networkScript = networkScript.replaceAll("NETWORK_WLAN_BROADCAST=\".*\"", "NETWORK_WLAN_BROADCAST=\""+cfg.getWlan().broadcast+"\"");
+
+                        networkScript = networkScript.replaceAll("NETWORK_ETH_IP=\".*\"", "NETWORK_ETH_IP=\""+cfg.getLan().subnet+"\"");
+                        networkScript = networkScript.replaceAll("NETWORK_ETH_MASK=\".*\"", "NETWORK_ETH_MASK=\""+cfg.getLan().mask+"\"");
+                        networkScript = networkScript.replaceAll("NETWORK_ETH_BROADCAST=\".*\"", "NETWORK_ETH_BROADCAST=\""+cfg.getLan().broadcast+"\"");
+
+                        FileUtils.writeToFile(networkScript, new File(setupDir, "startBrainwashing.sh"));
+
+
+                        // zip the deploy directory for faster network transfer
+                        File setupZip = new File(tmpDir, "setup.zip");
+                        Logger.getGlobal().log(Level.INFO, "ZIP files to " + setupZip.getPath());
+                        FileUtils.zipDirectory(setupDir, setupZip);
+
+                        // try to connect to the robot
+                        Scp scp = null;
+                        String ip = null;
+                        int port = 22;
+                        while (scp == null) {
+                            JTextField ipField = new JTextField(ip, 12);
+                            JTextField portField = new JTextField(String.valueOf(port), 5);
+                            
+                            JPanel inputPanel = new JPanel();
+                            inputPanel.add(new JLabel("Robot IP:"));
+                            inputPanel.add(ipField);
+                            inputPanel.add(Box.createHorizontalStrut(15)); // Spacer
+                            inputPanel.add(new JLabel("Port:"));
+                            inputPanel.add(portField);
+                             
+                            int result = JOptionPane.showConfirmDialog(
+                                NaoSCP.this, 
+                                inputPanel, 
+                                "Connect to NAO Robot", 
+                                JOptionPane.OK_CANCEL_OPTION, 
+                                JOptionPane.QUESTION_MESSAGE
+                            );
+                            if (result != JOptionPane.OK_OPTION) {
+                                throw new IOException("Operation was canceled.");
+                            }
+                            ip = ipField.getText().trim();
+                            String portStr = portField.getText().trim();
+                            if (ip == null) {
+                                throw new IOException("Operation was canceled.");
+                            }
+                            try {
+                                scp = new Scp(ip, Integer.parseInt(portStr), "nao", "nao");
+                            } catch (JSchException ex) {
+                                Logger.getGlobal().log(Level.SEVERE, ex.getMessage());
+                            }
+                        }
+
+                        // copy to robot
+                        scp.setProgressMonitor(new BarProgressMonitor(jProgressBar));
+
+                        scp.mkdir("/home/nao/tmp");
+                        scp.cleardir("/home/nao/tmp");
+
+                        // copy files
+                        //scp.put(setupDir, "/home/nao/tmp");
+                        scp.put(setupZip, "/home/nao/tmp/setup.zip");
+
+                        //scp.chmod(755, "/home/nao/tmp/startBrainwashing.sh");
+
+                        Scp.CommandStream shell = scp.getShell();
+                        shell.run("cd /home/nao/tmp/");
+                        shell.run("sudo -u nao unzip -q setup.zip; cd ./setup; bash ./startBrainwashing.sh", "DONE");
+
+                        scp.disconnect();
+
+                        Logger.getGlobal().log(Level.INFO, "DONE");
+                    }
+                } catch (JSchException | SftpException | IOException | NaoSCPException ex) {
+                    Logger.getGlobal().log(Level.SEVERE, ex.getMessage());
+                }
+            }
+        }).start();
+    }//GEN-LAST:event_miInitNaoActionPerformed
+
     /**
      * Executes a single command on the robot.
      *
@@ -1025,16 +1033,18 @@ public class NaoSCP extends javax.swing.JPanel {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btDeploy;
-    private javax.swing.JButton btInintRobot;
     private javax.swing.JButton btSetNetwork;
     private javax.swing.JButton btWriteToStick;
     private javax.swing.JToggleButton btnActions;
+    private javax.swing.JToggleButton btnInitActions;
     private javax.swing.JProgressBar jProgressBar;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator2;
     private javax.swing.JPopupMenu.Separator jSeparator3;
     private javax.swing.JPanel logPanel;
     private naoscp.components.LogTextPanel logTextPanel;
+    private javax.swing.JMenuItem miInitBooster;
+    private javax.swing.JMenuItem miInitNao;
     private javax.swing.JMenuItem miMute;
     private javax.swing.JMenuItem miRestartNao;
     private javax.swing.JMenuItem miRestartNaoth;
@@ -1046,6 +1056,7 @@ public class NaoSCP extends javax.swing.JPanel {
     private naoscp.components.NaoTHPanel naoTHPanel;
     private naoscp.components.NetwokPanel netwokPanel;
     private javax.swing.JPopupMenu popupMenu;
+    private javax.swing.JPopupMenu popupMenuInit;
     private javax.swing.JPanel statusBarPanel;
     private javax.swing.JTextField txtDeployTag;
     private javax.swing.JFormattedTextField txtRobotNumber;
