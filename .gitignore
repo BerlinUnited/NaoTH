@@ -43,3 +43,6 @@ behavior-ic.dat
 
 # macOS
 .DS_Store
+
+# vscode
+.vscode/
