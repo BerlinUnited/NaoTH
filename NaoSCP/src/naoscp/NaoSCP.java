@@ -150,6 +150,7 @@ public class NaoSCP extends javax.swing.JPanel {
         netwokPanel = new naoscp.components.NetwokPanel();
         naoTHPanel = new naoscp.components.NaoTHPanel();
         statusBarPanel = new javax.swing.JPanel();
+        jToggleZip = new javax.swing.JToggleButton();
         txtRobotNumber = new javax.swing.JFormattedTextField();
         btDeploy = new javax.swing.JButton();
         txtDeployTag = new javax.swing.JTextField();
@@ -290,6 +291,11 @@ public class NaoSCP extends javax.swing.JPanel {
         statusBarPanel.setPreferredSize(new java.awt.Dimension(640, 24));
         statusBarPanel.setLayout(new javax.swing.BoxLayout(statusBarPanel, javax.swing.BoxLayout.X_AXIS));
 
+        jToggleZip.setSelected(true);
+        jToggleZip.setText("ZIP");
+        jToggleZip.setToolTipText("ZIP the data for deployment");
+        statusBarPanel.add(jToggleZip);
+
         txtRobotNumber.setColumns(3);
         txtRobotNumber.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0"))));
         txtRobotNumber.setToolTipText("Last octet of the robots ip address.");
@@ -336,7 +342,7 @@ public class NaoSCP extends javax.swing.JPanel {
         });
         statusBarPanel.add(btnInitActions);
 
-        btnActions.setText("▲");
+        btnActions.setText("?");
         btnActions.setBorderPainted(false);
         btnActions.setMargin(new java.awt.Insets(2, -4, 2, -4));
         btnActions.addActionListener(new java.awt.event.ActionListener() {
@@ -379,13 +385,16 @@ public class NaoSCP extends javax.swing.JPanel {
     private void btDeployActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btDeployActionPerformed
         this.logTextPanel.clear();
 
-        if(!txtRobotNumber.getText().trim().isEmpty()) {
+        if(!txtRobotNumber.getText().trim().isEmpty()) 
+        {
             setEnabledAll(false);
             new Thread(() -> {
                 // create deploy directory in systems 'temp' directory
                 final File targetDir = createTemporaryDirectory("nao_scp_deploy_");
-                if(targetDir != null) {
-                    try {
+                if(targetDir != null) 
+                {
+                    try 
+                    {
                         long start = System.currentTimeMillis();
 
                         // STEP 1: create the deploy directory for the playerNumber
@@ -399,7 +408,9 @@ public class NaoSCP extends javax.swing.JPanel {
 
                         if (!deployDir.mkdirs()) {
                             Logger.getGlobal().log(Level.SEVERE, "Could not create deploy out directory");
-                        } else {
+                        } 
+                        else 
+                        {
                             // try to establish a connection to the robot before assembling the files
                             String robotIp = getIpAddress();
                             Scp scp = new Scp(robotIp, "nao", "nao");
@@ -416,8 +427,12 @@ public class NaoSCP extends javax.swing.JPanel {
                             Logger.getGlobal().log(Level.INFO, "ZIP files to " + deployZip.getPath());
                             FileUtils.zipDirectory(deployDir, deployZip);
 
+                            //
                             // send stuff to robot
-
+                            //
+                            
+                            final String deployPathTmp = "/home/nao/tmp";
+                            
                             //Logger.getGlobal().log(Level.INFO, "mkdir /home/nao/tmp");
                             //scp.mkdir("/home/nao/tmp"); // just in case it doesn't exist
                             //Logger.getGlobal().log(Level.INFO, "rm -rf /home/nao/tmp/*");
@@ -425,24 +440,30 @@ public class NaoSCP extends javax.swing.JPanel {
 
                             // HACK: string obfuscation (echo -e '\\x44\\x4F\\x4E\\x45') prints 'DONE'
                             // we wait until echo is executed to be sure that the command is done
-                            shell.run("mkdir /home/nao/tmp; echo -e '\\x44\\x4F\\x4E\\x45'", "DONE");
-                            shell.run("rm -rf /home/nao/tmp/*; echo -e '\\x44\\x4F\\x4E\\x45'", "DONE");
-
-                            //scp.put(deployDir, "/home/nao/tmp/deploy");
-                            scp.put(deployZip, "/home/nao/tmp/deploy.zip");
-
-                            scp.put(new File(deployStickScriptPath), "/home/nao/tmp/setup.sh");
+                            shell.run("rm -rf " + deployPathTmp + "; echo -e '\\x44\\x4F\\x4E\\x45'", "DONE");
+                            shell.run("mkdir " + deployPathTmp + "; echo -e '\\x44\\x4F\\x4E\\x45'", "DONE");
+                            
+                            if(this.jToggleZip.isSelected()) {
+                                scp.put(deployZip, deployPathTmp + "/deploy.zip");
+                            } else {
+                                scp.put(deployDir, deployPathTmp + "/deploy");
+                            }
+                            
+                            scp.put(new File(deployStickScriptPath), deployPathTmp + "/setup.sh");
 
                             //scp.channel.chown(WIDTH, utilsPath);
-                            scp.chmod(755, "/home/nao/tmp/setup.sh");
+                            scp.chmod(755, deployPathTmp + "/setup.sh");
                             //scp.run("/home/nao/tmp", "./setup.sh");
 
                             // HACK: always stop naoth before proceeding
-                            //                        shell.run("naoth stop", "killing naoth cognition processes");
+                            //shell.run("naoth stop", "killing naoth cognition processes");
                             shell.run("su", "Password:");
                             shell.run("root");
-                            shell.run("cd /home/nao/tmp/");
-                            shell.run("sudo -u nao unzip -q deploy.zip; ./setup.sh", "DONE");
+                            shell.run("cd " + deployPathTmp);
+                            shell.run("./setup.sh", "DONE");
+                            
+                            // NOTE: the setup script will unzip the archive if necessary
+                            //shell.run("sudo -u nao unzip -q deploy.zip; ./setup.sh", "DONE");
                             //shell.run("./setup.sh", "DONE");
 
                             scp.disconnect();
@@ -450,11 +471,11 @@ public class NaoSCP extends javax.swing.JPanel {
                             Logger.getGlobal().log(Level.INFO, String.format("DONE (%.2f)", (System.currentTimeMillis() - start)/1000.0));
 
                             //NaoSCP.this.setEnabledAll(true);
-                            }
-                        } catch (JSchException | SftpException | IOException | NaoSCPException ex) {
-                            Logger.getGlobal().log(Level.SEVERE, ex.getMessage());
                         }
+                    } catch (JSchException | SftpException | IOException | NaoSCPException ex) {
+                        Logger.getGlobal().log(Level.SEVERE, ex.getMessage());
                     }
+                }
                 setEnabledAll(true);
             }).start();
         } else {
@@ -515,18 +536,17 @@ public class NaoSCP extends javax.swing.JPanel {
                 Logger.getGlobal().log(Level.INFO, "----" + dateFormat.format(new Date()) + "---");
                 Logger.getGlobal().log(Level.INFO, "Write to USB: " + targetDir);
 
-                try {
-                    File deployZip = new File(targetDir, "deploy.zip");
-                    // STEP 1: create the deploy directory for the playerNumber
-                    File deployDir = Files.createTempDirectory("naoscp_").toFile();
-
-                    // delete the target directory if it's existing,
-                    // so we have a fresh new directory
+                try 
+                {
+                    // STEP 1: backup and delete the old deploy directory on the 
+                    //         USB stick if it exists
                     File oldDeployDir = new File(targetDir, "deploy");
-                    if (oldDeployDir.isDirectory()) {
-                        // backup
+                    if (oldDeployDir.isDirectory()) 
+                    {
+                        // backup: use the colent to name the backup
                         File commentFile = new File(oldDeployDir, "comment.txt");
-                        if (commentFile.exists()) {
+                        if (commentFile.exists()) 
+                        {
                             String backup_name = FileUtils.readFile(commentFile);
 
                             File backup_dir = new File(targetDir, backup_name);
@@ -534,27 +554,48 @@ public class NaoSCP extends javax.swing.JPanel {
                                 Logger.getGlobal().log(Level.WARNING,
                                         String.format("Could not back up the deploy directory, file already exists: %s",
                                                 backup_dir.getAbsolutePath()));
-                            } else if (oldDeployDir.renameTo(backup_dir)) {
-                                oldDeployDir = new File(targetDir, "deploy");
-                            } else {
+                            } else if (!oldDeployDir.renameTo(backup_dir)) {
                                 Logger.getGlobal().log(Level.WARNING,
                                         String.format("Could not back up the deploy directory %s to %s",
                                         oldDeployDir.getAbsolutePath(), backup_dir.getAbsolutePath()));
                             }
                         } else {
+                            // no comment.txt => no backup
                             FileUtils.deleteDir(oldDeployDir);
                         }
                     }
+                    
+                    // STEP 2: backup and delete the old deploy.zip on the 
+                    //         USB stick if it exists
+                    File deployZip = new File(targetDir, "deploy.zip");
                     // also rename the zip file if it exists
                     if (deployZip.exists()) {
                         FileUtils.renameZipByComment(deployZip);
                     }
 
+                    
+                    // STEP 3: create the deploy directory for the playerNumber
+                    File deployDir;
+                    if(this.jToggleZip.isSelected()) {
+                        // local directory to collect the files for the zip
+                        deployDir = createTemporaryDirectory("nao_scp_deploy_");
+                    } else {
+                        // copy directly to the usb
+                        deployDir = new File(targetDir, "deploy");
+                    }
+                    
+                    
+                    // STEP 4: collect the files to be deployed
                     //NaoSCP.this.setEnabledAll(false);
                     naoTHPanel.getAction().run(deployDir);
+                    
+                    // STEP 5: copy the setup script on the USB stick
                     FileUtils.copyFiles(new File(deployStickScriptPath), targetDir);
                     //NaoSCP.this.setEnabledAll(true);
-
+                    
+                    
+                    // STEP 6: create a comment.txt and write it to the deploy dir
+                    
                     // get the current date and time
                     //String ISO_DATE_FORMAT = "yyyy-MM-dd";
                     String ISO_DATE_TIME_FORMAT = "yyyy-MM-dd-HH-mm-ss";
@@ -569,8 +610,11 @@ public class NaoSCP extends javax.swing.JPanel {
 
                     FileUtils.writeToFile(backup_tag, new File(deployDir, "comment.txt"));
 
-                    FileUtils.zipDirectory(deployDir, deployZip, "", backup_tag);
-
+                    // STEP 7: ZIP the directory to the stick
+                    if(this.jToggleZip.isSelected()) {
+                        FileUtils.zipDirectory(deployDir, deployZip, "", backup_tag);
+                    }
+                    
                     // unmount usb storage device if selected
                     deployDialog.closeUSBStorageDevice();
 
@@ -1041,6 +1085,7 @@ public class NaoSCP extends javax.swing.JPanel {
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator2;
     private javax.swing.JPopupMenu.Separator jSeparator3;
+    private javax.swing.JToggleButton jToggleZip;
     private javax.swing.JPanel logPanel;
     private naoscp.components.LogTextPanel logTextPanel;
     private javax.swing.JMenuItem miInitBooster;
