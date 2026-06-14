@@ -193,57 +193,61 @@ public class FileUtils
      */
     public static File renameZipByComment(File zipFile, File targetDirectory) throws NaoSCPException
     {
+        
+        // read the comment from the file
+        String comment = null;
         try (ZipFile zip = new ZipFile(zipFile)) {
-            String comment = zip.getComment();
-
-            if (comment == null || comment.trim().isEmpty()) {
-                return null; // No comment found
-            }
-
-            // Clean the comment to make it a valid filename
-            String cleanComment = comment.trim()
-                .replaceAll("[<>:\"/\\|?*]", "_") // Replace invalid filename characters
-                .replaceAll("\\s+", "_"); // Replace spaces with underscores
-
-            if (cleanComment.isEmpty()) {
-                return null; // Comment was only invalid characters
-            }
-
-            // Determine target directory
-            File targetDir = targetDirectory != null ? targetDirectory : zipFile.getParentFile();
-            if (targetDir == null) {
-                targetDir = new File("."); // Current directory if no parent
-            }
-
-            // Create new filename with .zip extension
-            String newFileName = cleanComment;
-            if (!newFileName.toLowerCase().endsWith(".zip")) {
-                newFileName += ".zip";
-            }
-
-            File newFile = new File(targetDir, newFileName);
-
-            // Handle filename conflicts by adding a number
-            int counter = 1;
-            while (newFile.exists()) {
-                String baseName = cleanComment;
-                if (baseName.toLowerCase().endsWith(".zip")) {
-                    baseName = baseName.substring(0, baseName.length() - 4);
-                }
-                newFileName = baseName + "_" + counter + ".zip";
-                newFile = new File(targetDir, newFileName);
-                counter++;
-            }
-
-            // Rename the file
-            if (zipFile.renameTo(newFile)) {
-                return newFile;
-            } else {
-                throw new NaoSCPException("Failed to rename zip file from " + zipFile.getName() + " to " + newFileName);
-            }
-
+            comment = zip.getComment();
         } catch (IOException ex) {
             throw new NaoSCPException("Error reading zip file: " + ex.getMessage());
+        }
+        // NOTE: the zip is automatically closed here
+        //       if it makes probems, then use zip.close()
+        
+        if (comment == null || comment.trim().isEmpty()) {
+            return null; // No comment found
+        }
+
+        // Clean the comment to make it a valid filename
+        String cleanComment = comment.trim()
+            .replaceAll("[<>:\"/\\|?*]", "_") // Replace invalid filename characters
+            .replaceAll("\\s+", "_"); // Replace spaces with underscores
+
+        if (cleanComment.isEmpty()) {
+            return null; // Comment was only invalid characters
+        }
+
+        // Determine target directory
+        File targetDir = targetDirectory != null ? targetDirectory : zipFile.getParentFile();
+        if (targetDir == null) {
+            targetDir = new File("."); // Current directory if no parent
+        }
+
+        // Create new filename with .zip extension
+        String newFileName = cleanComment;
+        if (!newFileName.toLowerCase().endsWith(".zip")) {
+            newFileName += ".zip";
+        }
+
+        File newFile = new File(targetDir, newFileName);
+
+        // Handle filename conflicts by adding a number
+        int counter = 1;
+        while (newFile.exists()) {
+            String baseName = cleanComment;
+            if (baseName.toLowerCase().endsWith(".zip")) {
+                baseName = baseName.substring(0, baseName.length() - 4);
+            }
+            newFileName = baseName + "_" + counter + ".zip";
+            newFile = new File(targetDir, newFileName);
+            counter++;
+        }
+
+        // Rename the file
+        if (zipFile.renameTo(newFile)) {
+            return newFile;
+        } else {
+            throw new NaoSCPException("Failed to rename zip file from " + zipFile.getName() + " to " + newFileName);
         }
     }
 
