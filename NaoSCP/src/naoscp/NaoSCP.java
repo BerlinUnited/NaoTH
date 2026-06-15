@@ -425,7 +425,7 @@ public class NaoSCP extends javax.swing.JPanel {
                             // zip files
                             File deployZip = new File(targetDir, "deploy.zip");
                             Logger.getGlobal().log(Level.INFO, "ZIP files to " + deployZip.getPath());
-                            FileUtils.zipDirectory(deployDir, deployZip);
+                            FileUtils.zipDirectory(deployDir, deployZip, "");
 
                             //
                             // send stuff to robot
