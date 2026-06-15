@@ -10,13 +10,14 @@ GameLogger::GameLogger()
   firstRecording(true),
   lastAudioDataTimestamp(0)
 {
-  // CAUTION: if you change this the collect stick needs to change as well
-  const std::string gameLogPath = "/home/booster/game.log";
-  const std::string imageLogPath = "/home/booster/images.log";
+  // NOTE: legacy code for reference and debugging
+  // ACHTUNG: if you change this the collect stick needs to change as well
+  //const std::string gameLogPath = "/home/nao/game.log";
+  //const std::string imageLogPath = "/home/nao/images.log";
 
-  logfileManager.openFile(gameLogPath);
+  logfileManager.openFile(params.gameLogPath);
 
-  imageOutFile.open(imageLogPath, ios::out | ios::binary);
+  imageOutFile.open(params.imageLogPath, ios::out | ios::binary);
   lastTimeImageRecorded = getFrameInfo();
 
   getDebugParameterList().add(&params);
