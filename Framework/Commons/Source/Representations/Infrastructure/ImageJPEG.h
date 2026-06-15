@@ -86,4 +86,4 @@ template<> class Serializer<ImageJPEGTop> : public Serializer<ImageJPEG> {};
 
 } // end namespace naoth
 
-#endif //_ImageJPEG_h_
+#endif //IMAGE_JPEG_H

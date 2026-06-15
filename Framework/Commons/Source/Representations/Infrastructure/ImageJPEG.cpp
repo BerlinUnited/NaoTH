@@ -26,7 +26,10 @@ static boolean empty_output_buffer (j_compress_ptr /*cinfo*/) {
 
 static void term_destination (j_compress_ptr /*cinfo*/) {}
 
-void ImageJPEG::compressImageAsync() {
+void ImageJPEG::compressImageAsync() 
+{
+  ASSERT(image != nullptr);
+
   // If there is any old thread waiting (and thus holding the lock), 
   // skip creating a JPEG image this frame.
   if(image_mutex.try_lock()) {
@@ -146,6 +149,8 @@ void ImageJPEG::compressImageAsync() {
 
 void ImageJPEG::decompressYUYV(const std::string& data, unsigned int width, unsigned int height)
 {
+  ASSERT(image != nullptr);
+
   std::unique_lock lock(image_mutex);
   CameraInfo newCameraInfo;
   newCameraInfo.resolutionHeight = height;
