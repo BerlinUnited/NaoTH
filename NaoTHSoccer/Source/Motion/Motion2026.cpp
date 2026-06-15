@@ -15,7 +15,7 @@ using namespace naoth;
 Motion2026::Motion2026()
   : ModuleManagerWithDebug(""),
     theLogProvider(NULL),
-    motionLogger("Motion2026Log")
+    motionLogger("MotionLog")
 {
   REGISTER_DEBUG_COMMAND(motionLogger.getCommand(), motionLogger.getDescription(), &motionLogger);
   registerLogableRepresentationList();
