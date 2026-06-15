@@ -114,6 +114,11 @@ private:
       PARAMETER_REGISTER(logPlainImages) = true;
       PARAMETER_REGISTER(logPlainImagesDelay) = 2000; // ms
       PARAMETER_REGISTER(logUltraSound) = false;
+      
+      // ACHTUNG: if you change this the collect stick needs to change as well
+      PARAMETER_REGISTER(gameLogPath) = "/home/nao/game.log";
+      PARAMETER_REGISTER(imageLogPath) = "/home/nao/images.log";
+      
       syncWithConfig();
     }
 
@@ -124,6 +129,9 @@ private:
     bool logPlainImages;
     int logPlainImagesDelay;
     bool logUltraSound;
+    
+    std::string gameLogPath;
+    std::string imageLogPath;
   } params;
 
 private:

@@ -36,23 +36,45 @@ BEGIN_DECLARE_MODULE(GameImageLogger)
 
 END_DECLARE_MODULE(GameImageLogger)
 
+
 class GameImageLogger : public GameImageLoggerBase
 {
+  
+private:
+  struct Parameters: public ParameterList
+  {
+    Parameters() : ParameterList("GameImageLogger")
+    {
+      PARAMETER_REGISTER(logJPEGImages) = false;
+      
+      // ACHTUNG: if you change this the collect stick needs to change as well
+      PARAMETER_REGISTER(imageLogPath) = "/home/nao/images_jpeg.log";
+      
+      syncWithConfig();
+    }
+
+    bool logJPEGImages;
+    std::string imageLogPath;
+  } params;  
+
 public:
-  GameImageLogger() {
+  GameImageLogger() 
+  {
     getImageJPEG().linkTo(getImage());
     getImageJPEGTop().linkTo(getImageTop());
 
-    const std::string imageLogPath = "/home/booster/images_jpeg.log";
+    // NOTE: legacy code for reference and debugging
+    //const std::string imageLogPath = "/home/nao/images_jpeg.log";
     //imageOutFile.open(imageLogPath, std::ios::out | std::ios::binary);
-
-    logfileManager.openFile(imageLogPath);
+    
+    logfileManager.openFile(params.imageLogPath);
 
     getDebugParameterList().add(&params);
   }
   
   virtual ~GameImageLogger() {
     logfileManager.closeFile();
+    // NOTE: legacy code for reference and debugging
     //imageOutFile.close();
     getDebugParameterList().remove(&params);
   }
@@ -97,20 +119,6 @@ public:
       });
     }
   }
-
-private:
-  struct Parameters: public ParameterList
-  {
-    Parameters() : ParameterList("GameImageLogger")
-    {
-      PARAMETER_REGISTER(logJPEGImages) = false;
-      //PARAMETER_REGISTER(logImagesDelay) = 2000; // ms
-      syncWithConfig();
-    }
-
-    bool logJPEGImages;
-    //int ImagesDelay;
-  } params;
 
 private:
   // TODO: make a memory aware LogfileManager that flushes whenever a certain memory
