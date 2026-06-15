@@ -41,7 +41,7 @@ import naoscp.tools.*;
  */
 public class NaoSCP extends javax.swing.JPanel {
 
-    public static final String VERSION = "1.2";
+    public static final String VERSION = "1.2.1";
 
     private final DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
 
@@ -59,7 +59,8 @@ public class NaoSCP extends javax.swing.JPanel {
     /**
      * Creates new form NaoSCP
      */
-    public NaoSCP() {
+    public NaoSCP() 
+    {
       boolean configLoaded = false;
       try {
         config.load(new FileReader(configPath));
@@ -96,6 +97,8 @@ public class NaoSCP extends javax.swing.JPanel {
       if (configLoaded) {
         naoTHPanel.setProperties(config);
       }
+      
+      Logger.getGlobal().log(Level.INFO, "NaoSCP v" + VERSION);
     }
 
     public String getBasePath() {
