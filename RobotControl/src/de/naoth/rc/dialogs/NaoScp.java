@@ -194,6 +194,8 @@ public class NaoScp extends AbstractDialog
      * @param ev 
      */
     private void labelClicked(MouseEvent ev) {
+        // set the starting directory to the current working directory
+        jarFileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
         if(jarFileChooser.showOpenDialog(this) ==  javax.swing.JFileChooser.APPROVE_OPTION) {
             File jar = jarFileChooser.getSelectedFile();
             if(checkNaoScpJarFile(jar)) {
