@@ -197,6 +197,13 @@
         <Property name="axis" type="int" value="0"/>
       </Layout>
       <SubComponents>
+        <Component class="javax.swing.JToggleButton" name="jToggleZip">
+          <Properties>
+            <Property name="selected" type="boolean" value="true"/>
+            <Property name="text" type="java.lang.String" value="ZIP"/>
+            <Property name="toolTipText" type="java.lang.String" value="ZIP the data for deployment"/>
+          </Properties>
+        </Component>
         <Component class="javax.swing.JFormattedTextField" name="txtRobotNumber">
           <Properties>
             <Property name="columns" type="int" value="3"/>

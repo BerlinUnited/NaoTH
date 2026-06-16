@@ -25,10 +25,14 @@ import naoscp.tools.BashColors;
  */
 public class LogTextPanel extends javax.swing.JPanel {
 
+    private String defaultText = null;
+    private final LogTextHandler textHandler = new LogTextHandler();
+            
     /**
      * Creates new form LogTextPanel
      */
-    public LogTextPanel() {
+    public LogTextPanel() 
+    {
         initComponents();
         
         StyledDocument doc = outputPanel.getStyledDocument();
@@ -57,72 +61,74 @@ public class LogTextPanel extends javax.swing.JPanel {
     }
 
     public void clear() {
-        outputPanel.setText("");
+        outputPanel.setText(null);
+        textHandler.publish(new LogRecord(Level.FINE, defaultText));
+    }
+    
+    public void setDefaultText(String text) {
+        defaultText = text;
     }
     
     public Handler getLogHandler() {
-        return new Handler() {
-
-            @Override
-            public void publish(LogRecord lr) {
-                StyledDocument doc = outputPanel.getStyledDocument();
-                
-                try {
-                    // try to parse console output
-                    if(lr.getLevel() == Level.FINEST) 
-                    {
-                        String pattern = "(\\e\\[(\\d{1,2}(;\\d{1,2})?)m)";
-                        String message = lr.getMessage();
-                        
-                        int idx = 0;
-                        String styleName = lr.getLevel().getName();
-                        Style style = doc.getStyle(styleName);
-                        
-                        for ( Matcher m = Pattern.compile(pattern).matcher(message); m.find(); ) 
-                        {
-                          if(idx < m.toMatchResult().start()) 
-                          {
-                            String msg = message.substring(idx, m.toMatchResult().start());
-                            doc.insertString(doc.getLength(), msg, style);
-                          }
-                          
-                          styleName = "bash_" + m.toMatchResult().group(2).replace(";", "_");
-                          System.out.println();
-                          style = doc.getStyle(styleName);
-                          idx = m.toMatchResult().end();
-                        }
-                        if(idx < message.length()) 
-                        {
-                          String msg = message.substring(idx);
-                          doc.insertString(doc.getLength(), msg, style);
-                        }
-                    }
-                    else
-                    {
-                        String levelName = lr.getLevel().getName();
-                        Style s = doc.getStyle(levelName);
-                        doc.insertString(doc.getLength(), lr.getMessage() + "\n", s);
-                    }
-                    
-                    outputPanel.setCaretPosition(doc.getLength());
-                } catch (BadLocationException ex) {
-                    
-                }
-            }
-           
-
-            @Override
-            public void flush() {
-                
-            }
-
-            @Override
-            public void close() throws SecurityException {
-                
-            }
-        };
+        return textHandler; 
     }
     
+    private class LogTextHandler extends Handler
+    {
+        @Override
+        public void publish(LogRecord lr) 
+        {
+            StyledDocument doc = outputPanel.getStyledDocument();
+
+            try {
+                // try to parse console output
+                if(lr.getLevel() == Level.FINEST) 
+                {
+                    String pattern = "(\\e\\[(\\d{1,2}(;\\d{1,2})?)m)";
+                    String message = lr.getMessage();
+
+                    int idx = 0;
+                    String styleName = lr.getLevel().getName();
+                    Style style = doc.getStyle(styleName);
+
+                    for ( Matcher m = Pattern.compile(pattern).matcher(message); m.find(); ) 
+                    {
+                      if(idx < m.toMatchResult().start()) 
+                      {
+                        String msg = message.substring(idx, m.toMatchResult().start());
+                        doc.insertString(doc.getLength(), msg, style);
+                      }
+
+                      styleName = "bash_" + m.toMatchResult().group(2).replace(";", "_");
+                      System.out.println();
+                      style = doc.getStyle(styleName);
+                      idx = m.toMatchResult().end();
+                    }
+                    if(idx < message.length()) 
+                    {
+                      String msg = message.substring(idx);
+                      doc.insertString(doc.getLength(), msg, style);
+                    }
+                }
+                else
+                {
+                    String levelName = lr.getLevel().getName();
+                    Style s = doc.getStyle(levelName);
+                    doc.insertString(doc.getLength(), lr.getMessage() + "\n", s);
+                }
+
+                outputPanel.setCaretPosition(doc.getLength());
+            } catch (BadLocationException ex) {
+
+            }
+        }
+
+        @Override
+        public void flush() {}
+
+        @Override
+        public void close() throws SecurityException {}
+    };
    
     
     /**
