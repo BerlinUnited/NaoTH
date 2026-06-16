@@ -91,14 +91,15 @@ public class NaoSCP extends javax.swing.JPanel {
 
       initComponents();
 
+      logTextPanel.setDefaultText(String.format("NaoSCP v %s", VERSION));
+      logTextPanel.clear();
+      
       Logger.getGlobal().addHandler(logTextPanel.getLogHandler());
       Logger.getGlobal().setLevel(Level.ALL);
 
       if (configLoaded) {
         naoTHPanel.setProperties(config);
       }
-      
-      Logger.getGlobal().log(Level.INFO, "NaoSCP v" + VERSION);
     }
 
     public String getBasePath() {
