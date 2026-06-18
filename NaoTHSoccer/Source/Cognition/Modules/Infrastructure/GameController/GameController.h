@@ -3,7 +3,6 @@
 
 #include <ModuleFramework/Module.h>
 
-#include <Tools/Debug/DebugRequest.h>
 #include <Representations/Infrastructure/FrameInfo.h>
 #include "Representations/Infrastructure/LEDRequest.h"
 #include "Representations/Infrastructure/ButtonState.h"
@@ -18,6 +17,12 @@
 #include "Representations/Modeling/RobotPose.h"
 #include "Representations/Modeling/BallModel.h"
 #include "Representations/Modeling/TeamState.h"
+
+
+#include <Tools/Debug/DebugRequest.h>
+
+// DEBUG: for now it's here for debugging
+//#include "Tools/Communication/Network/SPLGameController.h"
 
 using namespace naoth;
 
@@ -65,6 +70,9 @@ private:
 
   int setPlaySecondsRemaining;
   int lastSetPlayTime;
+
+// DEBUG: for now it's here for debugging
+//private: SPLGameController theGameController;
 };
 
 #endif // GAMECONTROLLER_H

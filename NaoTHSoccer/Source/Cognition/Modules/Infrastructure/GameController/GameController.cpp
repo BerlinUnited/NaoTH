@@ -127,6 +127,9 @@ GameController::GameController()
 
 void GameController::execute()
 {
+  // DEBUG: for now it's here for debugging
+  //theGameController.get(getGameData());
+  
   PlayerInfo::RobotState oldRobotState = getPlayerInfo().robotState;
   GameData::TeamColor oldTeamColor = getPlayerInfo().teamColor;
 
@@ -273,6 +276,10 @@ void GameController::execute()
     getGameReturnData().ballAge      = getFrameInfo().getTimeSince(getBallModel().getFrameInfoWhenBallWasSeen().getTime());
     getGameReturnData().ballPosition = getBallModel().position;
   }
+
+  // DEBUG: for now it's here for debugging
+  //theGameController.set(getGameReturnData());
+
 } // end execute
 
 // standby removed in 2026
