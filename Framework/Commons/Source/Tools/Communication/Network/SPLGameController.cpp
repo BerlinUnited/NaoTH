@@ -21,6 +21,7 @@
 
 using namespace naoth;
 using namespace std;
+using namespace hsl;
 
 SPLGameController::SPLGameController()
   : exiting(false),

@@ -8,8 +8,6 @@
 #include <mutex>
 #include <thread>
 
-using namespace hsl;
-
 class SPLGameController
 {
 public:
@@ -33,8 +31,8 @@ private:
   int returnPort;
   GSocketAddress* gamecontrollerAddress;
 
-  RoboCupGameControlData dataIn;
-  RoboCupGameControlReturnData dataOut;
+  hsl::RoboCupGameControlData dataIn;
+  hsl::RoboCupGameControlReturnData dataOut;
 
   naoth::GameData data;
   std::mutex  dataMutex;
@@ -42,7 +40,7 @@ private:
 
   GError* bindAndListen(unsigned int port = GAMECONTROLLER_DATA_PORT);
 
-  void sendData(const RoboCupGameControlReturnData& data);
+  void sendData(const hsl::RoboCupGameControlReturnData& data);
 };
 
 #endif // SPLGAMECONTROLLER_H
