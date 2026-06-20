@@ -124,13 +124,15 @@ std::string GameData::toString(Penalty value)
 
     RETURN_VALUE_TO_STR(illegal_positioning);
     RETURN_VALUE_TO_STR(motion_in_set);
-    RETURN_VALUE_TO_STR(local_game_stuck);
+    RETURN_VALUE_TO_STR(motion_in_stop);
     RETURN_VALUE_TO_STR(incapable_robot);
     RETURN_VALUE_TO_STR(pickup);
     RETURN_VALUE_TO_STR(ball_holding);
     RETURN_VALUE_TO_STR(leaving_the_field);
     RETURN_VALUE_TO_STR(playing_with_arms_hands);
     RETURN_VALUE_TO_STR(pushing);
+    
+    RETURN_VALUE_TO_STR(cautioned);
     RETURN_VALUE_TO_STR(sent_off);
     RETURN_VALUE_TO_STR(substitute);
     RETURN_VALUE_TO_STR(manual);
@@ -175,13 +177,15 @@ GameData::Penalty GameData::penaltyFromString(const std::string& str)
 
   RETURN_STING_TO_VALUE(illegal_positioning, str);
   RETURN_STING_TO_VALUE(motion_in_set, str);
-  RETURN_STING_TO_VALUE(local_game_stuck, str);
+  RETURN_STING_TO_VALUE(motion_in_stop, str);
   RETURN_STING_TO_VALUE(incapable_robot, str);
   RETURN_STING_TO_VALUE(pickup, str);
   RETURN_STING_TO_VALUE(ball_holding, str);
   RETURN_STING_TO_VALUE(leaving_the_field, str);
   RETURN_STING_TO_VALUE(playing_with_arms_hands, str);
   RETURN_STING_TO_VALUE(pushing, str);
+  
+  RETURN_STING_TO_VALUE(cautioned, str);
   RETURN_STING_TO_VALUE(sent_off, str);
   RETURN_STING_TO_VALUE(substitute, str);
   RETURN_STING_TO_VALUE(manual, str);
@@ -235,12 +239,12 @@ void GameData::parseTeamInfo(TeamInfo& teamInfoDst, const hsl::TeamInfo& teamInf
     // MAX_NUM_PLAYERS is used to iterate over all possible players
     if (teamInfoSrc.players[i].penalty != PENALTY_SUBSTITUTE){ // only add non-substituted players
       // copy data from spl::RobotInfo
-      teamInfoDst.players[i+1] = RobotInfo();
-      teamInfoDst.players[i+1].secsTillUnpenalised = teamInfoSrc.players[i].secsTillUnpenalised;
-      teamInfoDst.players[i+1].penalty             = (Penalty)teamInfoSrc.players[i].penalty;
-
-      // ACHTUNG: casting to signed values - time can be negative (!)
-      teamInfoDst.players[i+1].secsTillUnpenalised = (int8_t)teamInfoSrc.players[i].secsTillUnpenalised;
+      RobotInfo robotInfo;
+      robotInfo.penalty             = (Penalty)teamInfoSrc.players[i].penalty;
+      robotInfo.secsTillUnpenalised = teamInfoSrc.players[i].secsTillUnpenalised;
+      robotInfo.cautions            = teamInfoSrc.players[i].cautions;
+      // store the new info in the map under player number = i+1
+      teamInfoDst.players[i+1] = robotInfo;
     }
     ASSERT(teamInfoDst.players.size() <= playersPerTeam);
   }
@@ -274,8 +278,12 @@ void GameData::print(ostream& stream) const
   /*for(size_t i = 0; i < ownTeam.players.size(); ++i) {
     stream << "      |- " << (i+1) << ": " << toString(ownTeam.players[i].penalty) << " - " << ownTeam.players[i].secsTillUnpenalised << std::endl;
   }*/
-  for ( std::pair<size_t, RobotInfo> currentPlayer : ownTeam.players){
-    stream << "      |- " << (currentPlayer.first) << ": " << toString(currentPlayer.second.penalty) << " - " << currentPlayer.second.secsTillUnpenalised << std::endl;
+  for (const auto& [playerNumber, robotInfo] : ownTeam.players){
+    stream << "      |- " << playerNumber << ": " 
+           << toString(robotInfo.penalty) << " - " 
+           << robotInfo.secsTillUnpenalised << " | " 
+           << "cautions :" << robotInfo.cautions
+           << std::endl;
   }
 
   stream << std::endl;
@@ -286,8 +294,12 @@ void GameData::print(ostream& stream) const
   stream << " |- penaltyShot = " << oppTeam.penaltyShot << std::endl;
   stream << " |- messageBudget = " << ownTeam.messageBudget << std::endl;
   stream << " |- players (penalty, time until unpenalize in s):" << std::endl;
-  for ( std::pair<size_t, RobotInfo> currentPlayer : oppTeam.players){
-    stream << "      |- " << (currentPlayer.first) << ": " << toString(currentPlayer.second.penalty) << " - " << currentPlayer.second.secsTillUnpenalised << std::endl;
+  for ( const auto& [playerNumber, robotInfo] : oppTeam.players){
+    stream << "      |- " << playerNumber << ": " 
+           << toString(robotInfo.penalty) << " - " 
+           << robotInfo.secsTillUnpenalised << " | " 
+           << "cautions :" << robotInfo.cautions
+           << std::endl;
   }
 }
 

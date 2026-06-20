@@ -50,15 +50,15 @@ public:
   enum CompetitionType
   {
     competition_type_small   = COMPETITION_TYPE_SMALL,
-    competition_type_middle   = COMPETITION_TYPE_MIDDLE,
+    competition_type_middle  = COMPETITION_TYPE_MIDDLE,
     competition_type_large   = COMPETITION_TYPE_LARGE,
   };
 
   enum GamePhase
   {
     normal        = GAME_PHASE_NORMAL,
-    penaltyshoot  = GAME_PHASE_PENALTYSHOOT,
-    overtime      = GAME_PHASE_EXTRATIME,
+    penaltyshoot  = GAME_PHASE_PENALTY_SHOOT_OUT,
+    overtime      = GAME_PHASE_EXTRA_TIME,
     timeout       = GAME_PHASE_TIMEOUT
   };
 
@@ -91,13 +91,15 @@ public:
 
     illegal_positioning       = PENALTY_ILLEGAL_POSITIONING,
     motion_in_set             = PENALTY_MOTION_IN_SET,
-    local_game_stuck          = PENALTY_LOCAL_GAME_STUCK,
+    motion_in_stop            = PENALTY_MOTION_IN_STOP,
     incapable_robot           = PENALTY_INCAPABLE_ROBOT,
     pickup                    = PENALTY_PICK_UP,
     ball_holding              = PENALTY_BALL_HOLDING,
     leaving_the_field         = PENALTY_LEAVING_THE_FIELD,
     playing_with_arms_hands   = PENALTY_PLAYING_WITH_ARMS_HANDS,
     pushing                   = PENALTY_PUSHING,
+    
+    cautioned                 = PENALTY_CAUTIONED,
     sent_off                  = PENALTY_SENT_OFF,
     substitute                = PENALTY_SUBSTITUTE,
     manual,
@@ -106,11 +108,18 @@ public:
 
   struct RobotInfo
   {
-    RobotInfo() : penalty(penalty_none), secsTillUnpenalised(0) {}
+    RobotInfo() : 
+      penalty(penalty_none), 
+      secsTillUnpenalised(0), 
+      cautions(0) 
+    {}
+    
     Penalty penalty;             // penalty state of the player
 
     // ACHTUNG: time can be negative (!)
     int secsTillUnpenalised;          // estimate of time till unpenalised
+    
+    int cautions;
 
     bool isPenalized() const { return penalty != penalty_none; }
   };
