@@ -23,8 +23,8 @@ option treat_lifted
   {
     decision {
       // todo: use body.lifted_up and test
-      if(body.foot.groundcontact.left &&
-         body.foot.groundcontact.right &&
+      if((body.foot.groundcontact.left ||
+         body.foot.groundcontact.right) &&
          body.foot.groundcontact.statetime > 100)
         goto idle;
       else
