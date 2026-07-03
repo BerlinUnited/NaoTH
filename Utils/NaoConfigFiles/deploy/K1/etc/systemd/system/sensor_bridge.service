@@ -4,12 +4,12 @@ Description = Booster K1 Body Bridge Service
 #Wants = lola.service pulseaudio.service
 #Requires = lola.service
 #Requires = pulseaudio.service
-ConditionPathExists=/home/booster/naoth/bin/body_bridge.py
+ConditionPathExists=/home/booster/naoth/bin/ros_sensor_bridge_cool.py
 
 [Service]
 Type=idle
 WorkingDirectory=/home/booster/naoth/
-ExecStart = /usr/bin/python3 -u /home/booster/naoth/bin/body_bridge.py
+ExecStart = /usr/bin/python3 -u /home/booster/naoth/bin/ros_sensor_bridge_cool.py
 StandardOutput=journal
 StandardError=journal
 
