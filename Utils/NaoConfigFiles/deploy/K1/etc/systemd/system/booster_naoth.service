@@ -1,0 +1,18 @@
+[Unit]
+Description = Booster K1 Body Bridge Service
+After = image_bridge.service sensor_bridge.service body_bridge.service
+Wants = image_bridge.service sensor_bridge.service body_bridge.service
+Requires = image_bridge.service
+Requires = sensor_bridge.service
+Requires = body_bridge.service
+ConditionPathExists=/home/booster/naoth/bin/naoth-booster
+
+[Service]
+Type=idle
+WorkingDirectory= /home/booster/naoth/
+ExecStart = /home/booster/naoth/bin/naoth-booster
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy = default.target
