@@ -5,7 +5,7 @@
 void TFLiteModelNaoTH32::predict(const BallCandidates::PatchYUVClassified &patch, double meanBrightness)
 {
     // create input data from patch (TODO: why not use a Y-patch directly and save the copy operation?)
-    ASSERT(patch.size() == 16);
+    ASSERT(patch.size() == 32);
 
 
     // Copy patch data to input tensor
