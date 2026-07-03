@@ -12,6 +12,7 @@
 #include "Classifier/mbc_36ksm_finetuned_crop.h"
 #include "Classifier/mbd_gopen_56k.h"
 #include "Classifier/TFLiteModelNaoTH.h"
+#include "Classifier/TFLiteModelNaoTH32.h"
 
 using namespace std;
 
@@ -158,7 +159,7 @@ std::map<string, std::shared_ptr<AbstractCNNFinder> > CNNBallDetector::createCNN
   result.insert({ "bc_36k_labor", std::make_shared<TFLiteModelNaoTH>("ball_classifier_36k_2024-05-17v2.tflite", false, false, true)});
   result.insert({ "bc_36k_labor_f32", std::make_shared<TFLiteModelNaoTH>("ball_classifier_36k_2024-05-17v2_float32.tflite", false, false, true)});
   
-
+  result.insert({ "bc-rc26-150k", std::make_shared<TFLiteModelNaoTH32>("bc-rc26-150k.tflite", false, false, true)});
 
   return result;
 }
@@ -197,7 +198,7 @@ std::map<string, std::shared_ptr<AbstractCNNFinder> > CNNBallDetector::createCNN
 void CNNBallDetector::calculateCandidates()
 {
   // the used patch size
-  const int patch_size = 16;
+  //const int patch_size = 32; // is parameter now
 
   // NOTE: at this point. the PatchList is already sorted with the most promising patches first
   int index = 0;
@@ -210,7 +211,7 @@ void CNNBallDetector::calculateCandidates()
         break;
       }
 
-      static BallCandidates::PatchYUVClassified patch((*i).min, (*i).max, patch_size);
+      static BallCandidates::PatchYUVClassified patch((*i).min, (*i).max, params.patch_size);
       patch.min = (*i).min;
       patch.max = (*i).max;
 
@@ -297,7 +298,7 @@ void CNNBallDetector::calculateCandidates()
         for(unsigned int x = 0; x < patch.size(); x++) {
           for(unsigned int y = 0; y < patch.size(); y++) 
           {
-            unsigned char pixelY = patch.data[x*patch_size + y].pixel.y;
+            unsigned char pixelY = patch.data[x*params.patch_size + y].pixel.y;
 
             // draw each image pixel this patch pixel occupies
             for(unsigned int px=0; px < pixelWidth; px++) {
@@ -344,14 +345,14 @@ void CNNBallDetector::calculateCandidates()
       STOPWATCH_START("CNNBallDetector:classifierPredict");
       cnn->predict(patch, params.cnn.classifierMeanBrightnessOffset);
       STOPWATCH_STOP("CNNBallDetector:classifierPredict");
-
+      std::cout << "Ball Confidence" << cnn->getBallConfidence() << std::endl;
       // only run the detector if the classifier predicted a ball in the patch
       if (cnn->getBallConfidence() >= selectedCNNThreshold || redCount > params.redCount) 
       {
         
         // HACK: resizing the patch with postBorder helps the classifier
         // but worsens the detector, so keep a copy of the original patch
-        static BallCandidates::PatchYUVClassified patchForDetector((*i).min, (*i).max, patch_size);
+        static BallCandidates::PatchYUVClassified patchForDetector((*i).min, (*i).max, params.patch_size);
         patchForDetector.min = (*i).min;
         patchForDetector.max = (*i).max;
         PatchWork::subsampling(getImage(), getFieldColorPercept(), patchForDetector);

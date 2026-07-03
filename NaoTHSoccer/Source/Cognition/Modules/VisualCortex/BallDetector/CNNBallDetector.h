@@ -158,6 +158,7 @@ private:
 
       PARAMETER_REGISTER(redCount) = 2;
 
+      PARAMETER_REGISTER(patch_size) = 16;
       PARAMETER_REGISTER(classifier) = "fy1500_conf";
       PARAMETER_REGISTER(classifierClose) = "fy1500_conf";
 
@@ -206,6 +207,7 @@ private:
     double brightnessMultiplierTopDark;
 
     int redCount;
+    int patch_size;
   } params;
 
 private:
