@@ -1,6 +1,7 @@
 import threading, socket, time
 
 from GameControlData import GameControlData
+from GameControlData import GAMECONTROLLER_DATA_PORT
 
 class GameController(threading.Thread):
     """
@@ -20,7 +21,7 @@ class GameController(threading.Thread):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-        self.socket.bind(('', GameControlData.GAMECONTROLLER_DATA_PORT))
+        self.socket.bind(('', GAMECONTROLLER_DATA_PORT))
         self.socket.settimeout(5)  # in sec
 
         self.__source = str(source) if source is not None else None
