@@ -94,6 +94,11 @@ class BallPatchDetector : public BallPatchDetectorBase
 
       int area_below_factor;
 
+      bool add_patch_by_last_percept;
+      bool add_patch_by_ball_model;
+
+      int averageY;
+
       Parameter() : ParameterList("BallPatchDetector")
       {
         PARAMETER_REGISTER(borderRadiusFactorClose) = 0.5;
@@ -101,6 +106,11 @@ class BallPatchDetector : public BallPatchDetectorBase
         PARAMETER_REGISTER(maxInnerGreenDensitiy) = 0.5;
 
         PARAMETER_REGISTER(area_below_factor) = 4;
+
+        PARAMETER_REGISTER(add_patch_by_last_percept) = true;
+        PARAMETER_REGISTER(add_patch_by_ball_model) = true;
+
+        PARAMETER_REGISTER(averageY) = 1;
 
         syncWithConfig();
       };

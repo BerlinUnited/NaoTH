@@ -29,13 +29,17 @@ void BallPatchDetector::execute(const CameraInfo::CameraID id)
   // Compute candidate ball patches using the faster scan path.
   calculateKeyPointsFast(getBallDetectorIntegralImage(), getBestPatchList());
 
-  addPatchByLastPercept();
+  if (params.add_patch_by_last_percept) {
+    addPatchByLastPercept();
+  }
 
   // add the last ball model at the end of the now sorted list, so we check it last
   // FIXME: if there are more patches in the list than the maxNumberOfKeys specifies,
   // the last ball model will not be checked
   // FIXME maxNumberOfKeys is probable not implemented after moving this from cnn to ballpatchdetector
-  addPatchByLastBall();
+  if(params.add_patch_by_ball_model) {
+    addPatchByLastBall();
+  }
 
   // Debug drawing: show candidate patch boxes in the selected camera image.
   DEBUG_REQUEST("Vision:BallPatchDetector:drawPatches",
@@ -171,7 +175,7 @@ void BallPatchDetector::calculateKeyPointsFast(const ImageType& integralImage, B
         below = integralImage.getSumForRect(point.x-radius, point.y+radius, point.x+radius, point.y+radius_below, 0);
       }
 
-      if (inner*2 > area && greenInner <= params.maxInnerGreenDensitiy && below*params.area_below_factor < area)
+      if (inner*2 > area*params.averageY && greenInner <= params.maxInnerGreenDensitiy && below*params.area_below_factor < area)
       {
         // value is the ratio of non white pixels in a given area
         double value = ((double)inner)/((double)(area));
@@ -381,7 +385,8 @@ BestPatchList::Patch BallPatchDetector::refineKeyPoint(const BestPatchList::Patc
   return maxPatch;
 }
 
-void BallPatchDetector::addPatchByLastPercept() {
+void BallPatchDetector::addPatchByLastPercept() 
+{
     // iterating over all the percepts from the last execution cycle here
     for(MultiBallPercept::ConstABPIterator iter = getMultiBallPercept().begin(); iter != getMultiBallPercept().end(); iter++) {
       // add each percept to the ball patch list
