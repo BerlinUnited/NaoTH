@@ -211,6 +211,11 @@ void CNNBallDetector::calculateCandidates()
         break;
       }
 
+      // this is needed later, because the actual patch will be modified
+      const Vector2d patch_original_min((*i).min);
+      const Vector2d patch_original_max((*i).max);
+      
+      // HACK: reuse memory?
       static BallCandidates::PatchYUVClassified patch((*i).min, (*i).max, params.patch_size);
       patch.min = (*i).min;
       patch.max = (*i).max;
@@ -372,7 +377,14 @@ void CNNBallDetector::calculateCandidates()
           Vector2d ballCenterInPatch(pos.x * patchForDetector.width(), pos.y*patchForDetector.width());
           //addBallPercept(ballCenterInPatch + patchForDetector.min, radius*patchForDetector.width());
           
-          addBallPercept(ballCenterInPatch + patchForDetector.min, patch.radius());
+          // this radius might be enlarged
+          //const double estimated_radius = patch.radius();
+          //const Vector2d estimate_center = ballCenterInPatch + patchForDetector.min;
+
+          const double estimated_radius = static_cast<double>(patch_original_max.x - patch_original_min.x)/2.0;
+          const Vector2d estimate_center = patchForDetector.center();
+
+          addBallPercept(estimate_center, estimated_radius);
         }        
       }
 
